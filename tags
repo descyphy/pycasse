@@ -11,13 +11,11 @@ B	tests/test_dyn.py	/^B = np.array([[0], [1]])$/;"	v
 DQN	tests/OpenAIGym/test.py	/^class DQN:$/;"	c
 EPS	pystl/contracts.py	/^EPS = 10**-4$/;"	v
 EPS	pystl/core.py	/^EPS = 10**-4$/;"	v
-EPS	pystl/parser.py	/^EPS = 10**-4$/;"	v
 Expression	pystl/parser.py	/^class Expression():$/;"	c
 IISsolver	tests/test_dyn.py	/^IISsolver = SMCSolver()$/;"	v
 M	pystl/contracts.py	/^M = 10**4$/;"	v
 M	pystl/core.py	/^M = 10**4$/;"	v
 M	pystl/dynamics.py	/^M = 10**4$/;"	v
-M	pystl/parser.py	/^M = 10**4$/;"	v
 MILPSolver	pystl/core.py	/^class MILPSolver:$/;"	c
 MILPsolver	tests/test_dyn.py	/^MILPsolver = MILPSolver()$/;"	v
 NontemporalFormula	pystl/parser.py	/^class NontemporalFormula(ASTObject):$/;"	c
@@ -97,12 +95,12 @@ conjunction	pystl/contracts.py	/^def conjunction(c1, c2):$/;"	f
 contract	pystl/contracts.py	/^class contract:$/;"	c
 description	setup.py	/^      description='Python Module for Reasoning with Contracts written in STL or StSTL',$/;"	v
 done	tests/OpenAIGym/test_manual.py	/^done = False$/;"	v
+e	tests/test_ast.py	/^e = Expression("1 + a + 3+ 2b")$/;"	v
 end	tests/test_dyn.py	/^end = time.time()$/;"	v
 env	tests/OpenAIGym/test.py	/^env = gym.make('MountainCar-v0')$/;"	v
 env	tests/OpenAIGym/test_manual.py	/^env = gym.make('highway-v0')$/;"	v
 env	tests/OpenAIGym/test_manual.py	/^env = gym.wrappers.Monitor(env, ".\/vid", video_callable=lambda episode_id: True,force=True)$/;"	v
 episodes	tests/OpenAIGym/test.py	/^    episodes = 5$/;"	v
-f	tests/test_ast.py	/^f = p("(& (> a 0) (<= b 0) (> c 0))")$/;"	v
 find_conflicts	pystl/core.py	/^    def find_conflicts(self, certificate):$/;"	m	class:SMCSolver
 find_opt_param	pystl/contracts.py	/^	def find_opt_param(self, objective, N=100):$/;"	m	class:contract
 find_opt_param_refinement	pystl/contracts.py	/^def find_opt_param_refinement(c1, c2, objective):$/;"	f
@@ -115,7 +113,6 @@ merge_variables	pystl/contracts.py	/^def merge_variables(c, c1, c2):$/;"	f
 name	pystl/parser.py	/^    def name(self):$/;"	m	class:Parser
 negate	pystl/parser.py	/^    def negate(self, operator):$/;"	m	class:Parser
 node_id	pystl/parser.py	/^    node_id = 0$/;"	v	class:Parser
-p	tests/test_ast.py	/^p = Parser()$/;"	v
 packages	setup.py	/^      packages=find_packages(),$/;"	v
 printInfo	pystl/contracts.py	/^	def printInfo(self):$/;"	m	class:contract
 quotient	pystl/contracts.py	/^def quotient(c, c2):$/;"	f

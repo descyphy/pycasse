@@ -1,10 +1,6 @@
 import re
 from collections import defaultdict
 
-# Define global constants
-M = 10**4
-EPS = 10**-4
-
 # Define AST classes
 class ASTObject():
     """
@@ -43,8 +39,11 @@ class Expression():
 
     def __construct(self, term):
         """ Add terms. """
-        data = re.findall("([+-]?)\s*([0-9]*)\s*([a-zA-Z]+)\s*", term)
+        data = re.findall("([+-]?)\s*([0-9]*)\s*([a-zA-Z]*)", term)
         for t in data:
+            if t == ('', '', ''):
+                continue
+
             multiplier = 0
             if (t[0] == "" or t[0] == "+"):
                 multiplier = 1
