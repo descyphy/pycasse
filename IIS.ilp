@@ -14,7 +14,9 @@ Subject To
  R8: - x[0]_3 - x[1]_3 + x[0]_4 = 0
  R9: - x[1]_3 + x[1]_4 - u[0]_3 = 0
  R10: - x[0]_4 - x[1]_4 + x[0]_5 = 0
+ R11: - x[1]_4 + x[1]_5 - u[0]_4 = 0
  R12: - x[0]_5 - x[1]_5 + x[0]_6 = 0
+ R13: - x[1]_5 + x[1]_6 - u[0]_5 = 0
  R14: - x[0]_6 - x[1]_6 + x[0]_7 = 0
  R16: - x[0]_7 - x[1]_7 + x[0]_8 = 0
  R18: - x[0]_8 - x[1]_8 + x[0]_9 = 0
@@ -37,8 +39,9 @@ Subject To
  R52: - x[0]_25 - x[1]_25 + x[0]_26 = 0
  R54: - x[0]_26 - x[1]_26 + x[0]_27 = 0
  R56: - x[0]_27 - x[1]_27 + x[0]_28 = 0
- b_assign: b_1_t_28 = 1
- GC56: b_1_t_28 = 1 -> - x[0]_28 <= -245
+ R58: - x[0]_28 - x[1]_28 + x[0]_29 = 0
+ b_assign: b_1_t_29 = 1
+ GC58: b_1_t_29 = 1 -> - x[0]_29 <= -245
 Bounds
  x[0]_0 free
  x[1]_0 free
@@ -51,9 +54,9 @@ Bounds
  x[0]_4 free
  x[1]_4 free
  x[0]_5 free
- -infinity <= x[1]_5 <= 10
+ x[1]_5 free
  x[0]_6 free
- -infinity <= x[1]_6 <= 10
+ x[1]_6 free
  x[0]_7 free
  -infinity <= x[1]_7 <= 10
  x[0]_8 free
@@ -97,10 +100,14 @@ Bounds
  x[0]_27 free
  -infinity <= x[1]_27 <= 10
  x[0]_28 free
+ -infinity <= x[1]_28 <= 10
+ x[0]_29 free
  -infinity <= u[0]_0 <= 1
  -infinity <= u[0]_1 <= 1
  -infinity <= u[0]_2 <= 1
  -infinity <= u[0]_3 <= 1
+ -infinity <= u[0]_4 <= 1
+ -infinity <= u[0]_5 <= 1
 Binaries
- b_1_t_28
+ b_1_t_29
 End
