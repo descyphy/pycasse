@@ -572,11 +572,11 @@ class MILPSolver:
         print("====================================================================================")
         print("Initializing MILP solver...")
 
-        reset()
-
         self.verbose = verbose
         self.mode = mode
         self.objective = None
+
+        self.reset()
 
     def reset(self):
         # Initialize attributes
@@ -585,7 +585,7 @@ class MILPSolver:
 
         # Initialize convex solvers
         self.model = gp.Model() # Convex solver for solving the MILP convex problem
-        if not verbose:
+        if not self.verbose:
             self.model.setParam("OutputFlag", 0)
 
         # Initialize dictionary of Gurobi variables
@@ -620,7 +620,7 @@ class MILPSolver:
         """ Solves the MILP problem """
         # Add constraints of the contract and dynamics to the SAT, main, and SSF convex solver
         for c in self.constraint:
-            self.set_constraints(c)
+            self.set_constraint(c)
 
 
         # Solve the convex problem
@@ -659,14 +659,14 @@ class MILPSolver:
             self.model.setObjective(self.MILP_convex_var['b_t_0'], GRB.MINIMIZE)
         elif self.objective == 'max':
             self.model.setObjective(self.MILP_convex_var['b_t_0'], GRB.MAXIMIZE)
-
     def set_node_constraint(self, node, start_time = 0, end_time = 1):
         """
         Adds SAT and convex constraints from a contract to SAT and convex solvers.
         """
-        # print(node)
+        print(repr(node))
+        input()
 
-        # Add Boolean variables to the MILP convex solver
+        # 1. Add Boolean variables to the MILP convex solver
         for t in range(start_time, end_time):
             if self.mode == 'Boolean':
                 self.add_binary_variable(node.name, t)
@@ -674,7 +674,9 @@ class MILPSolver:
                 self.add_continous_variable(node.name, t)
             else:
                 assert(false)
+        input()
 
+        #  2. construct constraints according to the operation type
         if node.class_id in ('AP', 'StAP'):
             self.set_ap_stap_constraint(node, start_time, end_time)
         elif node.operator in ('G', 'F'): # Temporal unary operators
@@ -688,15 +690,17 @@ class MILPSolver:
             for subformula in node.formula_list:
                 self.set_node_constraint(subformula, start_time=start_time, end_time=end_time)
 
-                # Add Boolean constraints to MILP convex solver
-                for t in range(start_time, end_time):
-                    if node.operator == '&': # AND
-                        self.add_constraint_and(self.variable[t][node.name], [self.variable[t][f.name] for f in node.formula_list])
-                    elif node.operator == '|': # OR
-                        self.add_constraint_or(self.variable[t][node.name], [self.variable[t][f.name] for f in node.formula_list])
-                    else:
-                        assert(False)
+            # Add Boolean constraints to MILP convex solver
+            for t in range(start_time, end_time):
+                if node.operator == '&': # AND
+                    self.add_constraint_and(self.variable[t][node.name], [self.variable[t][f.name] for f in node.formula_list])
+                elif node.operator == '|': # OR
+                    self.add_constraint_or(self.variable[t][node.name], [self.variable[t][f.name] for f in node.formula_list])
+                else:
+                    assert(False)
+            input()
     def set_ap_stap_constraint(self, node, start_time = 0, end_time = 1):
+        #  1. construct the expression for constraint: expr <= 0
         if node.class_id == 'AP': # If the current node is an AP,
             expr = node.expr
             operator = node.operator
@@ -714,9 +718,13 @@ class MILPSolver:
             expr.add(None, EPS)
         else: assert(operator == '=>')
 
+        print(expr)
+        input()
 
-        #  add variables of contract to model
-        for var_name in expr.terms:
+        #  2. add variables of contract in every concerned time period to model
+        #  3. caculate the usage of nondeterminate uncontrolled variables
+        nondeter_uncontrolled_vars_term = np.zeros(len(self.contract.nondeter_uncontrolled_vars['var_names']))
+        for (var_name , multiplier) in expr.terms.items():
             if var_name in self.contract.controlled_vars['var_names']:
                 idx = self.contract.controlled_vars['var_names'].index(var_name)
                 lb = self.contract.controlled_vars['bounds'][idx, 0]
@@ -725,46 +733,52 @@ class MILPSolver:
                 idx = self.contract.deter_uncontrolled_vars['var_names'].index(var_name)
                 lb = self.contract.deter_uncontrolled_vars['bounds'][idx, 0]
                 ub = self.contract.deter_uncontrolled_vars['bounds'][idx, 1]
-            for t in range(start_time, end_time):
-                self.add_continous_variable(var_name, t, lb, ub)
+            elif var_name in self.contract.nondeter_uncontrolled_vars['var_names']:
+                idx = self.contract.nondeter_uncontrolled_vars['var_names'].index(var_name)
+                nondeter_uncontrolled_vars_term[idx] = multiplier
+            else: assert(var_name == None)
+
+            if var_name in self.contract.controlled_vars['var_names'] or var_name in self.contract.deter_uncontrolled_vars['var_names']:
+                for t in range(start_time, end_time):
+                    self.add_continous_variable(var_name, t, lb, ub)
+        print(nondeter_uncontrolled_vars_term)
+        input()
 
             
-        # Add convex constraints
-        constraint = 0
-        nondeter_uncontrolled_vars_term = np.zeros(len(self.contract.nondeter_uncontrolled_vars['var_names']))
-        for var_name, multiplier in expr.terms.items():
-            for t in range(node.start_time, node.end_time):
+        # 4. Add convex constraints
+        for t in range(start_time, end_time):
+            constraint = 0
+            for var_name, multiplier in expr.terms.items():
                 if var_name in self.contract.controlled_vars['var_names'] or var_name in self.contract.deter_uncontrolled_vars['var_names']:
-                    constraints += multiplier * self.variable[t][var_name]
-                elif var_name in self.contract.nondeter_uncontrolled_vars['var_names']:
-                    idx = self.contract.nondeter_uncontrolled_vars['var_names'].index(var_name)
-                    nondeter_uncontrolled_vars_term[idx] = multiplier
-                else:
-                    assert(var_name == None)
+                    constraint += multiplier * self.variable[t][var_name]
+                elif var_name == None:
                     constraint += multiplier
+                else: assert(var_name in self.contract.nondeter_uncontrolled_vars['var_names'])
 
                 # Add convex constraints
-                if node.class_id == 'AP': # 'AP'
-                    self.add_constraint(self.variable[t][var_name], constraint)
+            if node.class_id == 'AP': # 'AP'
+                self.add_constraint(self.variable[t][node.name], constraint)
 
-                elif node.class_id == 'StAP': # 'StAP'
-                    expectation = nondeter_uncontrolled_vars_term@self.contract.nondeter_uncontrolled_vars['mean']
-                    variance = nondeter_uncontrolled_vars_term@self.contract.nondeter_uncontrolled_vars['cov']@nondeter_uncontrolled_vars_term.T
+            elif node.class_id == 'StAP': # 'StAP'
+                expectation = nondeter_uncontrolled_vars_term@self.contract.nondeter_uncontrolled_vars['mean']
+                variance = nondeter_uncontrolled_vars_term@self.contract.nondeter_uncontrolled_vars['cov']@nondeter_uncontrolled_vars_term.T
 
-                    constraint += expectatio norm.ppf(node.prob) * math.sqrt(variance)
+                constraint += expectation + norm.ppf(node.prob) * math.sqrt(variance)
 
-                    if (node.negation):
-                        constraint *= -1
+                if (node.negation):
+                    constraint *= -1
 
-                    self.add_constraint(self.variable[t][var_name], constraint)
+                self.add_constraint(self.variable[t][node.name], constraint)
+        input()
     def set_G_F_constraint(self, node, start_time = 0, end_time = 1):
         self.set_node_constraint(node.formula_list[0], start_time=start_time+node.start_time, end_time=end_time+node.end_time)
         # Build tmp_prop_formula to encode the logic
         for t in range(start_time, end_time):
             if node.operator == 'G': # Globally
-                self.add_constraint_and(self.variable[t][node.name], [self.node[t_i][node.formula_list[0].name] for t_i in range(t + node.start_time, t + node.end_time)])
+                self.add_constraint_and(self.variable[t][node.name], [self.variable[t_i][node.formula_list[0].name] for t_i in range(t + node.start_time, t + node.end_time + 1)])
             elif node.operator == 'F': # Finally
-                self.add_constraint_or(self.variable[t][node.name], [self.node[t_i][node.formula_list[0].name] for t_i in range(t + node.start_time, t + node.end_time)])
+                self.add_constraint_or(self.variable[t][node.name], [self.variable[t_i][node.formula_list[0].name] for t_i in range(t + node.start_time, t + node.end_time + 1)])
+        input()
     def set_U_R_constraint(self, node, start_time = 0, end_time = 1):
         self.set_node_constraint(node.formula_list[0], start_time=start_time, end_time=end_time+node.end_time)
         self.set_node_constraint(node.formula_list[1], start_time=start_time+node.start_time, end_time=end_time+node.end_time)
@@ -777,21 +791,24 @@ class MILPSolver:
             else:
                 assert(false)
             if node.operator == 'U': # Globally
-                self.add_constraint_and(self.variable[t]["{}_aux".format(node.name)], [self.variable[t_i][node.formula_list[0].name] for t_i in range(start_time, t)] + [self.variable[t][node.formula_list[1].name])
+                self.add_constraint_and(self.variable[t]["{}_aux".format(node.name)], [self.variable[t_i][node.formula_list[0].name] for t_i in range(start_time, t)] + [self.variable[t][node.formula_list[1].name]])
 
         for t in range(start_time, end_time):
             if node.operator == 'U': # Globally
                 # Add anxiliary Boolean constraints to MILP convex solver
                 self.add_constraint_and(self.variable[t][node.name], [self.variable[t_i]["{}_aux".format(node.name)] for t_i in range(t + node.start_time, t + node.end_time)])
     def add_binary_variable(self, var_name, time):
+        print("adding binary variable: var: {}, t: {}".format(var_name, time))
         self.variable.extend([{} for i in range(time + 1 - len(self.variable))])
         self.variable[time][var_name] = self.model.addVar(vtype=GRB.BINARY, name="{}_{}".format(var_name, time))
         self.model.update()
     def add_continous_variable(self, var_name, time, lb = -M, ub = M):
+        print("adding continuous variable: var: {}, t: {}, lb: {}, ub: {}".format(var_name, time, lb, ub))
         self.variable.extend([{} for i in range(time + 1 - len(self.variable))])
         self.variable[time][var_name] = self.model.addVar(vtype=GRB.CONTINUOUS, lb=lb, ub=ub, name="{}_{}".format(var_name, time))
         self.model.update()
     def add_constraint(self, var, value):
+        print("adding constraint: var: {}, value: {}".format(var, value))
         if self.mode == 'Boolean':
             if isinstance(value, (int, float)):
                 if value <= 0:
@@ -805,20 +822,21 @@ class MILPSolver:
             self.model.addConstr(var == value)
         else: assert(False)
     def add_constraint_and(self, var, var_list):
+        print("adding and constraint: var: {}, var_list: {}".format(var, var_list))
         if self.mode == 'Boolean':
-            self.model.addConstr(len(var_list) * var <= gp.quicksum(*var_list))
-            self.model.addConstr(len(var_list) - 1 + var >= gp.quicksum(*var_list))
+            self.model.addConstr(len(var_list) * var <= gp.quicksum(var_list))
+            self.model.addConstr(len(var_list) - 1 + var >= gp.quicksum(var_list))
         elif self.mode == 'Quantitative':
-            self.model.addConstr(var == gp.min_(*var_list))
+            self.model.addConstr(var == gp.min_(var_list))
         else: assert(False)
     def add_constraint_or(self, var, var_list):
+        print("adding or constraint: var: {}, var_list: {}".format(var, var_list))
         if self.mode == 'Boolean':
-            self.model.addConstr(var <= gp.quicksum(* var_list))
-            self.model.addConstr(len(var_list) * var >= gp.quicksum(* var_list))
+            self.model.addConstr(var <= gp.quicksum(var_list))
+            self.model.addConstr(len(var_list) * var >= gp.quicksum(var_list))
         elif self.mode == 'Quantitative':
-            self.model.addConstr(var == gp.max_(*var_list))
+            self.model.addConstr(var == gp.max_(var_list))
         else: assert(False)
-
     def add_dyn_constraint(self):
         """
         Adds constraints for the system dynamics given as a discrete-time state-space model with process and measurement noise to the main convex solver.

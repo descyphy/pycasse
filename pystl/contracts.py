@@ -197,8 +197,8 @@ class contract:
 			print("Contract {} is compatible.\n".format(self.id))
 			if print_sol:
 				print("Printing a behavior that satisfies the assumption of the contract {}...".format(self.id))
-				for v in solver.MILP_convex_solver.getVars():
-					if 'b' not in v.varName:
+				for v in solver.model.getVars():
+					if 'node' not in v.varName:
 						print("{} {}".format(v.varName, v.x))
 				print("")
 		else:
@@ -231,8 +231,8 @@ class contract:
 			print("Contract {} is consistent.\n".format(self.id))
 			if print_sol:
 				print("Printing a behavior that satisfies the saturated guarantee of the contract {}...".format(self.id))
-				for v in solver.MILP_convex_solver.getVars():
-					if 'b' not in v.varName:
+				for v in solver.model.getVars():
+					if 'node' not in v.varName:
 						print("{} {}".format(v.varName, v.x))
 				print("")
 		else:
@@ -267,8 +267,8 @@ class contract:
 			print("Contract {} is feasible.\n".format(self.id))
 			if print_sol:
 				print("Printing a behavior that satisfies both the assumption and guarantee of the contract {}...".format(self.id))
-				for v in solver.MILP_convex_solver.getVars():
-					if 'b' not in v.varName:
+				for v in solver.model.getVars():
+					if 'node' not in v.varName:
 						print("{} {}".format(v.varName, v.x))
 				print("")
 		else:
@@ -296,8 +296,8 @@ class contract:
 			print("Condition 1 for refinement violated. Contract {} does not refine contract {}.\n".format(self.id, contract2refine.id))
 			if print_sol:
 				print("Printing a counterexample which violates condition 1 for refinement...")
-				for v in solver.MILP_convex_solver.getVars():
-					if 'b' not in v.varName:
+				for v in solver.model.getVars():
+					if 'node' not in v.varName:
 						print("{} {}".format(v.varName, v.x))
 				print("")
 			return
@@ -321,8 +321,8 @@ class contract:
 			print("Condition 2 for refinement violated. Contract {} does not refine contract {}.\n".format(self.id, contract2refine.id))
 			if print_sol:
 				print("Printing a counterexample which violates condition 2 for refinement...")
-				for v in solver.MILP_convex_solver.getVars():
-					if 'b' not in v.varName:
+				for v in solver.model.getVars():
+					if 'node' not in v.varName:
 						print("{} {}".format(v.varName, v.x))
 				print("")
 			return

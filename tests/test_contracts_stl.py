@@ -14,6 +14,7 @@ c1.printInfo()                        # Print c1
 c1.checkCompat(print_sol=True)        # Check compatibility of c1
 c1.checkConsis(print_sol=True)        # Check consistency of c1
 c1.checkFeas(print_sol=True)          # Check feasiblity of c1
+input()
 
 c2 = contract('c2')                   # Create a contract c2
 c2.set_assume('(F[1,2] (=> x 4))')    # Set/define the assumptions
