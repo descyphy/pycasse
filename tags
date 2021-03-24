@@ -29,7 +29,7 @@ __add__	pystl/parser.py	/^    def __add__(self, other):$/;"	m	class:Expression	f
 __call__	pystl/parser.py	/^    def __call__(self, logic_formula, negation = False):$/;"	m	class:Parser	file:
 __construct	pystl/parser.py	/^    def __construct(self, term):$/;"	m	class:Expression	file:
 __init__	pystl/contracts.py	/^	def __init__(self, id = ''):$/;"	m	class:contract
-__init__	pystl/core.py	/^    def __init__(self, verbose=False):$/;"	m	class:MILPSolver
+__init__	pystl/core.py	/^    def __init__(self, verbose=False, mode = "Boolean"):$/;"	m	class:MILPSolver
 __init__	pystl/core.py	/^    def __init__(self, verbose=False, solver='gurobi'):$/;"	m	class:SMCSolver
 __init__	pystl/dynamics.py	/^    def __init__(self, x_len=None, u_len=None, y_len=None, x_bounds=None, u_bounds=None, y_bounds=None, x0=None, A=None, B=None, C=None, D=None, Q=None, R=None):	$/;"	m	class:lin_dyn
 __init__	pystl/dynamics.py	/^    def __init__(self, x_len=None, u_len=None, y_len=None, x_bounds=None, u_bounds=None, y_bounds=None, x0=None, A=None, B=None, C=None, D=None, Q=None, R=None, dt = 1):	$/;"	m	class:lin_dyn_diff
@@ -40,6 +40,7 @@ __init__	pystl/parser.py	/^    def __init__(self, name, operator, formula_list):
 __init__	pystl/parser.py	/^    def __init__(self, name, operator, start_time, end_time, formula_list):$/;"	m	class:TemporalFormula
 __init__	pystl/parser.py	/^    def __init__(self, term = None):$/;"	m	class:Expression
 __init__	tests/OpenAIGym/test.py	/^    def __init__(self, action_space, state_space):$/;"	m	class:DQN
+__mul__	pystl/parser.py	/^    def __mul__(self, other):$/;"	m	class:Expression	file:
 __repr__	pystl/parser.py	/^    def __repr__(self):$/;"	m	class:ASTObject	file:
 __repr__	pystl/parser.py	/^    def __repr__(self):$/;"	m	class:AtomicPredicate	file:
 __repr__	pystl/parser.py	/^    def __repr__(self):$/;"	m	class:Expression	file:
@@ -55,17 +56,20 @@ __str__	pystl/parser.py	/^    def __str__(self):$/;"	m	class:StochasticAtomicPre
 __str__	pystl/parser.py	/^    def __str__(self):$/;"	m	class:TemporalFormula	file:
 __sub__	pystl/parser.py	/^    def __sub__(self, other):$/;"	m	class:Expression	file:
 act	tests/OpenAIGym/test.py	/^    def act(self, state):$/;"	m	class:DQN
+add	pystl/parser.py	/^    def add(self, term, multiplier):$/;"	m	class:Expression
 add_Bool_constraints	pystl/core.py	/^    def add_Bool_constraints(self):$/;"	m	class:SMCSolver
 add_SAT_constraints	pystl/core.py	/^    def add_SAT_constraints(self, conflict_assignments):$/;"	m	class:SMCSolver
-add_constraints	pystl/core.py	/^    def add_constraints(self):$/;"	m	class:MILPSolver
+add_binary_variable	pystl/core.py	/^    def add_binary_variable(self, var_name, time):$/;"	m	class:MILPSolver
+add_constraint	pystl/core.py	/^    def add_constraint(self, var, value):$/;"	m	class:MILPSolver
+add_constraint_and	pystl/core.py	/^    def add_constraint_and(self, var, var_list):$/;"	m	class:MILPSolver
+add_constraint_or	pystl/core.py	/^    def add_constraint_or(self, var, var_list):$/;"	m	class:MILPSolver
 add_constraints	pystl/core.py	/^    def add_constraints(self):$/;"	m	class:SMCSolver
+add_continous_variable	pystl/core.py	/^    def add_continous_variable(self, var_name, time, lb = -M, ub = M):$/;"	m	class:MILPSolver
 add_contract	pystl/core.py	/^    def add_contract(self, contract):$/;"	m	class:MILPSolver
 add_contract	pystl/core.py	/^    def add_contract(self, contract):$/;"	m	class:SMCSolver
 add_contract_constraints	pystl/core.py	/^    def add_contract_constraints(self, parse_tree_node, start_time = 0, end_time = 0):$/;"	m	class:SMCSolver
-add_contract_constraints	pystl/core.py	/^    def add_contract_constraints(self, parse_tree_node, start_time = 0, end_time = 0, mode='Qualitative'):$/;"	m	class:MILPSolver
-add_dyn_constraints	pystl/core.py	/^    def add_dyn_constraints(self):$/;"	m	class:MILPSolver
+add_dyn_constraint	pystl/core.py	/^    def add_dyn_constraint(self):$/;"	m	class:MILPSolver
 add_dyn_constraints	pystl/core.py	/^    def add_dyn_constraints(self):$/;"	m	class:SMCSolver
-add_dynamics	pystl/core.py	/^    def add_dynamics(self, dynamics):$/;"	m	class:MILPSolver
 add_dynamics	pystl/core.py	/^    def add_dynamics(self, dynamics):$/;"	m	class:SMCSolver
 author	setup.py	/^      author='Chanwook Oh',$/;"	v
 author_email	setup.py	/^      author_email='chanwooo@usc.edu',$/;"	v
@@ -119,13 +123,18 @@ quotient	pystl/contracts.py	/^def quotient(c, c2):$/;"	f
 randomAction	tests/OpenAIGym/test_manual.py	/^    randomAction = env.action_space.sample()$/;"	v
 remember	tests/OpenAIGym/test.py	/^    def remember(self, state, action, reward, next_state, done):$/;"	m	class:DQN
 replay	tests/OpenAIGym/test.py	/^    def replay(self):$/;"	m	class:DQN
-reset	pystl/core.py	/^    def reset(self, verbose=False):$/;"	m	class:MILPSolver
+reset	pystl/core.py	/^    def reset(self):$/;"	m	class:MILPSolver
 saturate	pystl/contracts.py	/^	def saturate(self):$/;"	m	class:contract
 separation	pystl/contracts.py	/^def separation(c, c2):$/;"	f
+set_G_F_constraint	pystl/core.py	/^    def set_G_F_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
+set_U_R_constraint	pystl/core.py	/^    def set_U_R_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
+set_ap_stap_constraint	pystl/core.py	/^    def set_ap_stap_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
 set_assume	pystl/contracts.py	/^	def set_assume(self, assumption):$/;"	m	class:contract
+set_constraint	pystl/core.py	/^    def set_constraint(self, constraint):$/;"	m	class:MILPSolver
 set_controlled_vars	pystl/contracts.py	/^	def set_controlled_vars(self, var_names, bounds = np.array([]), vtypes = []):$/;"	m	class:contract
 set_deter_uncontrolled_vars	pystl/contracts.py	/^	def set_deter_uncontrolled_vars(self, var_names, bounds = np.array([]), vtypes = []):$/;"	m	class:contract
 set_guaran	pystl/contracts.py	/^	def set_guaran(self, guarantee):$/;"	m	class:contract
+set_node_constraint	pystl/core.py	/^    def set_node_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
 set_nondeter_uncontrolled_vars	pystl/contracts.py	/^	def set_nondeter_uncontrolled_vars(self, var_names, mean = np.array([]), cov = np.array([]), dtype = 'GAUSSIAN'):$/;"	m	class:contract
 set_params	pystl/contracts.py	/^	def set_params(self, param_names, bounds = np.array([]), ptypes = []):$/;"	m	class:contract
 solve	pystl/core.py	/^    def solve(self, certificate='SSF'):$/;"	m	class:SMCSolver

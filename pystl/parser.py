@@ -55,11 +55,14 @@ class Expression():
             if t[1] != "":
                 multiplier *= float(t[1])
 
-            self.terms[t[2]] += multiplier
+            self.add(t[2], multiplier)
+    def add(self, term, multiplier):
+        term = None if term == "" else term
+        self.terms[term] += multiplier
     def __str__(self):
         return repr(self)
     def __repr__(self):
-        return ' + '.join(['{}{}'.format(multiplier, term) for (term, multiplier) in self.terms.items()])
+        return ' + '.join(['{}{}'.format(multiplier, term) if term != None else '{}'.format(multiplier) for (term, multiplier) in self.terms.items()])
     def __add__(self, other):
         res = Expression()
         res.terms.update(self.terms)
@@ -71,6 +74,10 @@ class Expression():
         res.terms.update(self.terms)
         for (term, multiplier) in other.terms.items():
             res.terms[term] -= multiplier
+        return res
+    def __mul__(self, other):
+        res = Expression()
+        res.terms = defaultdict(int, {t: other * m for (t, m) in self.terms.items()})
         return res
 
 class AtomicPredicate(ASTObject):

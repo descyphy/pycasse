@@ -567,337 +567,259 @@ class MILPSolver:
         b_var_num
     """
 
-    def __init__(self, verbose=False):
+    def __init__(self, verbose=False, mode = "Boolean"):
+        assert(mode in ("Boolean", "Quantitative"))
         print("====================================================================================")
         print("Initializing MILP solver...")
 
+        reset()
+
+        self.verbose = verbose
+        self.mode = mode
+        self.objective = None
+
+    def reset(self):
         # Initialize attributes
         self.contract = None
-        self.dynamics = None
-        self.verbose = verbose
-        self.start_time = 0
-        self.end_time = M
+        self.constraint = []
 
         # Initialize convex solvers
-        self.MILP_convex_solver = gp.Model() # Convex solver for solving the MILP convex problem
-
+        self.model = gp.Model() # Convex solver for solving the MILP convex problem
         if not verbose:
-            self.MILP_convex_solver.setParam("OutputFlag", 0)
+            self.model.setParam("OutputFlag", 0)
 
         # Initialize dictionary of Gurobi variables
-        self.MILP_convex_var = {}
+        self.variable = []
     
-    def reset(self, verbose=False):
-        """ Resets the MILP solver. """
-        # Initialize attributes
-        self.contract = None
-        self.dynamics = None
-        self.verbose = verbose
-        self.start_time = 0
-        self.end_time = M
-
-        # Initialize convex solvers
-        self.MILP_convex_solver = gp.Model() # Convex solver for solving the MILP convex problem
-
-        if not verbose:
-            self.MILP_convex_solver.setParam("OutputFlag", 0)
-
-        # Initialize dictionary of Gurobi variables
-        self.MILP_convex_var = {}
-
     def add_contract(self, contract):
         """
         Adds a contract to the SMC solver.
         """
         self.contract = contract
 
-    def add_dynamics(self, dynamics):
-        """
-        Adds a dynamics to the SMC solver.
-        """
-        self.dynamics = dynamics
+        if self.contract.assumption == 'True' and self.contract.guarantee == 'True':
+            pass
+        elif self.contract.assumption == 'True':
+            self.constraint.append(self.contract.guarantee)
+        else:
+            self.constraint.append(self.contract.sat_guarantee)
 
-    def add_constraints(self):
+    #  def add_dynamics(self, dynamics):
+    #      """
+    #      Adds a dynamics to the SMC solver.
+    #      """
+    #      #  self.dynamics = dynamics
+
+    #  def add_constraint(self, constraint):
+    #      """
+    #      Adds a constraint to the SMC solver.
+    #      """
+    #      self.constraint.append(constraint)
+
+    def solve(self, objective=None):
+        """ Solves the MILP problem """
+        # Add constraints of the contract and dynamics to the SAT, main, and SSF convex solver
+        for c in self.constraint:
+            self.set_constraints(c)
+
+
+        # Solve the convex problem
+        self.model.optimize()
+        self.model.write('MILP.lp')
+        
+        if self.model.getAttr("Status") == 2: # If MILP is successfully solved,
+            if self.verbose:
+                print("MILP solved.")
+            # # Print the MILP solution
+            # for v in self.model.getVars():
+            #   if 'b' not in v.varName:
+            #       print('%s %g' % (v.varName, v.x))
+            return True
+
+        else:
+            if self.verbose:
+                print('There exists no solution.')
+            return False
+
+    def set_constraint(self, constraint):
         """
         Adds contraints to the solvers.
         """
         # Build the parse tree
-        if self.contract.assumption == 'True' and self.contract.guarantee == 'True':
-            return
-        elif self.contract.assumption == 'True':
-            parse_tree_root, start_time, end_time = parse_ststl('b', self.contract.guarantee)
-        else:
-            # parse_tree_root, start_time, end_time = parse_ststl('b', '(& ' + self.contract.assumption + ' ' + self.contract.guarantee + ')')
-            parse_tree_root, start_time, end_time = parse_ststl('b', self.contract.sat_guarantee)
+        parse_tree_root = Parser()(constraint)
 
-        # Set the time horizon
-        self.start_time = start_time
-        self.end_time = end_time
+        self.set_node_constraint(parse_tree_root)
 
-        # Add the constraints from the dynamics
-        if self.dynamics is not None:
-            self.add_dyn_constraints()
+        if self.mode == 'Boolean':
+            self.model.addConstr(self.variable[0][parse_tree_root.name] == 1)
+        elif self.mode == 'Quantitative':
+            self.model.addConstr(self.variable[0][parse_tree_root.name] >= 1)
 
-        #  print(parse_tree_root)
-        #  input()
-        # Add the constraints from the parse tree
-        self.add_contract_constraints(parse_tree_root)
+        if self.objective == 'min':
+            self.model.setObjective(self.MILP_convex_var['b_t_0'], GRB.MINIMIZE)
+        elif self.objective == 'max':
+            self.model.setObjective(self.MILP_convex_var['b_t_0'], GRB.MAXIMIZE)
 
-    def add_contract_constraints(self, parse_tree_node, start_time = 0, end_time = 0, mode='Qualitative'):
+    def set_node_constraint(self, node, start_time = 0, end_time = 1):
         """
         Adds SAT and convex constraints from a contract to SAT and convex solvers.
         """
-        # print(parse_tree_node)
-            
+        # print(node)
+
         # Add Boolean variables to the MILP convex solver
-        for i in range(start_time, end_time+1):
-            if mode == 'Qualitative':
-                self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] = self.MILP_convex_solver.addVar(vtype=GRB.BINARY, name=parse_tree_node.name + '_t_' + str(i))
+        for t in range(start_time, end_time):
+            if self.mode == 'Boolean':
+                self.add_binary_variable(node.name, t)
+            elif self.mode == 'Quantitative':
+                self.add_continous_variable(node.name, t)
             else:
-                self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] = self.MILP_convex_solver.addVar(vtype=GRB.CONTINUOUS, lb=-M, ub=M, name=parse_tree_node.name + '_t_' + str(i))
+                assert(false)
 
-        if parse_tree_node.name == 'b':
-            if mode == 'Qualitative':
-                self.MILP_convex_solver.addConstr(self.MILP_convex_var['b_t_0'] == 1)
-            else:
-                self.MILP_convex_solver.addConstr(self.MILP_convex_var['b_t_0'] >= 0)
-        
-        # Update the MILP convex solver
-        self.MILP_convex_solver.update()
+        if node.class_id in ('AP', 'StAP'):
+            self.set_ap_stap_constraint(node, start_time, end_time)
+        elif node.operator in ('G', 'F'): # Temporal unary operators
+            self.set_G_F_constraint(node, start_time, end_time)
+        elif node.operator in ('U', 'R'): # Temporal binary operator
+            self.set_U_R_constraint(node, start_time, end_time)
+        elif node.operator == '!': # Non-temporal unary operator
+            assert(False)
+        else: # Non-temporal multinary operator
+            # Recursions
+            for subformula in node.formula_list:
+                self.set_node_constraint(subformula, start_time=start_time, end_time=end_time)
 
-        if parse_tree_node.class_id in ('AP', 'StAP'): # If the current node is an AP or a StAP, add convex constraints
-            #  print(start_time, parse_tree_node.start_time)
-            #  print(end_time, parse_tree_node.end_time)
-            #  input()
-            
-            # Initialize dictionary of variables and fetch the operator
-            var_dict = {}
-            operator = ''
-
-            if parse_tree_node.class_id == 'AP': # If the current node is an AP,
-                left_terms = parse_tree_node.expr_left.terms
-                right_terms = parse_tree_node.expr_right.terms
-                operator = parse_tree_node.operator
-
-            else: # If the current node is a stochastic AP,
-                left_terms = parse_tree_node.ap.expr_left.terms
-                right_terms = parse_tree_node.ap.expr_right.terms
-                operator = parse_tree_node.ap.operator
-
-            for term in left_terms:
-                if term.variable in var_dict.keys():
-                    var_dict[term.variable] += term.multiplier
-                else:
-                    var_dict[term.variable] = term.multiplier
-
-            for term in right_terms:
-                if term.variable in var_dict.keys():
-                    var_dict[term.variable] -= term.multiplier
-                else:
-                    var_dict[term.variable] = -term.multiplier
-                
-            if operator == "=>":
-                for k, v in var_dict.items():
-                    var_dict[k] = -v
-            elif operator == '>':
-                for k, v in var_dict.items():
-                    var_dict[k] = -v
-                var_dict[None] += EPS
-            elif operator == '<':
-                var_dict[None] += EPS
-
-            for t in range(parse_tree_node.start_time, parse_tree_node.end_time+1):
-                # Add convex variables
-                if self.dynamics is None:
-                    for var in var_dict.keys():
-                        var_name = '{}_{}'.format(var, t)
-                        if var in self.contract.controlled_vars['var_names']:
-                            if self.MILP_convex_solver.getVarByName(var_name) is None:
-                                idx = self.contract.controlled_vars['var_names'].index(var)
-                                lb = self.contract.controlled_vars['bounds'][idx, 0]
-                                ub = self.contract.controlled_vars['bounds'][idx, 1]
-                                self.MILP_convex_var[var_name] = self.MILP_convex_solver.addVar(vtype=GRB.CONTINUOUS, lb = lb, ub = ub, name = var_name)
-
-                        elif var in self.contract.deter_uncontrolled_vars['var_names']:
-                            if self.MILP_convex_solver.getVarByName(var_name) is None:
-                                idx = self.contract.deter_uncontrolled_vars['var_names'].index(var)
-                                lb = self.contract.deter_uncontrolled_vars['bounds'][idx, 0]
-                                ub = self.contract.deter_uncontrolled_vars['bounds'][idx, 1]
-                                self.MILP_convex_var[var_name] = self.MILP_convex_solver.addVar(vtype=GRB.CONTINUOUS, lb = lb, ub = ub, name = var_name)
-
-                # Update the MILP convex solver
-                self.MILP_convex_solver.update()
-            
-            w_vars = self.contract.nondeter_uncontrolled_vars['var_names']
-            if w_vars != []:
-                a = np.zeros(len(w_vars))
-
-            # Add convex constraints
-            for t in range(parse_tree_node.start_time, parse_tree_node.end_time+1):
-                # Initialize mean and var
-                tmp_mean = 0
-                tmp_var = 0
-
-                # Fetch multipliers of variables
-                for k, v in var_dict.items():
-                    if k is not None:
-                        if 'w' not in k:
-                            tmp_mean += v*self.MILP_convex_var[k+'_'+str(t)]
-                        else: # TODO: tmp_mean and tmp_var for 'w'
-                            a[w_vars.index(k)] = v
+                # Add Boolean constraints to MILP convex solver
+                for t in range(start_time, end_time):
+                    if node.operator == '&': # AND
+                        self.add_constraint_and(self.variable[t][node.name], [self.variable[t][f.name] for f in node.formula_list])
+                    elif node.operator == '|': # OR
+                        self.add_constraint_or(self.variable[t][node.name], [self.variable[t][f.name] for f in node.formula_list])
                     else:
-                        tmp_mean += v
+                        assert(False)
+    def set_ap_stap_constraint(self, node, start_time = 0, end_time = 1):
+        if node.class_id == 'AP': # If the current node is an AP,
+            expr = node.expr
+            operator = node.operator
+        elif node.class_id == 'StAP': # If the current node is a stochastic AP,
+            expr = node.ap.expr
+            operator = node.ap.operator
+        else: assert(False)
+                
+        if operator == "=>":
+            expr *= -1
+        elif operator == '>':
+            expr *= -1
+            expr.add(None, EPS)
+        elif operator == '<':
+            expr.add(None, EPS)
+        else: assert(operator == '=>')
+
+
+        #  add variables of contract to model
+        for var_name in expr.terms:
+            if var_name in self.contract.controlled_vars['var_names']:
+                idx = self.contract.controlled_vars['var_names'].index(var_name)
+                lb = self.contract.controlled_vars['bounds'][idx, 0]
+                ub = self.contract.controlled_vars['bounds'][idx, 1]
+            elif var_name in self.contract.deter_uncontrolled_vars['var_names']:
+                idx = self.contract.deter_uncontrolled_vars['var_names'].index(var_name)
+                lb = self.contract.deter_uncontrolled_vars['bounds'][idx, 0]
+                ub = self.contract.deter_uncontrolled_vars['bounds'][idx, 1]
+            for t in range(start_time, end_time):
+                self.add_continous_variable(var_name, t, lb, ub)
+
+            
+        # Add convex constraints
+        constraint = 0
+        nondeter_uncontrolled_vars_term = np.zeros(len(self.contract.nondeter_uncontrolled_vars['var_names']))
+        for var_name, multiplier in expr.terms.items():
+            for t in range(node.start_time, node.end_time):
+                if var_name in self.contract.controlled_vars['var_names'] or var_name in self.contract.deter_uncontrolled_vars['var_names']:
+                    constraints += multiplier * self.variable[t][var_name]
+                elif var_name in self.contract.nondeter_uncontrolled_vars['var_names']:
+                    idx = self.contract.nondeter_uncontrolled_vars['var_names'].index(var_name)
+                    nondeter_uncontrolled_vars_term[idx] = multiplier
+                else:
+                    assert(var_name == None)
+                    constraint += multiplier
 
                 # Add convex constraints
-                if parse_tree_node.class_id == 'AP': # 'AP'
-                    if mode == 'Qualitative':
-                        self.MILP_convex_solver.addConstr((self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 1) >> (tmp_mean <= 0))
-                        self.MILP_convex_solver.addConstr((self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 0) >> (tmp_mean >= EPS))
-                    else:
-                        self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == tmp_mean <= 0)
+                if node.class_id == 'AP': # 'AP'
+                    self.add_constraint(self.variable[t][var_name], constraint)
 
-                else: # 'StAP'
-                    tmp_mean += a@self.contract.nondeter_uncontrolled_vars['mean']
-                    tmp_var += a@self.contract.nondeter_uncontrolled_vars['cov']@a.T
-                    tmp = tmp_mean + norm.ppf(parse_tree_node.prob)*math.sqrt(tmp_var)
+                elif node.class_id == 'StAP': # 'StAP'
+                    expectation = nondeter_uncontrolled_vars_term@self.contract.nondeter_uncontrolled_vars['mean']
+                    variance = nondeter_uncontrolled_vars_term@self.contract.nondeter_uncontrolled_vars['cov']@nondeter_uncontrolled_vars_term.T
 
-                    tmp_eval = None
-                    if mode == 'Qualitative':
-                        if isinstance(tmp, (int, float)):
-                            if parse_tree_node.negation:
-                                if tmp >= 0:
-                                    tmp_eval = True
-                                else:
-                                    tmp_eval = False
-                            else:
-                                if tmp <= 0:
-                                    tmp_eval = True
-                                else:
-                                    tmp_eval = False
+                    constraint += expectatio norm.ppf(node.prob) * math.sqrt(variance)
 
-                        if parse_tree_node.negation:
-                            if tmp_eval is None:
-                                self.MILP_convex_solver.addConstr((self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 1) >> (tmp >= 0))
-                                self.MILP_convex_solver.addConstr((self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 0) >> (tmp <= EPS))
-                            else:
-                                if tmp_eval:
-                                    self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 1)
-                                else:
-                                    self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 0)
-                        else:
-                            if tmp_eval is None:
-                                self.MILP_convex_solver.addConstr((self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 1) >> (tmp <= 0))
-                                self.MILP_convex_solver.addConstr((self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 0) >> (tmp >= EPS))
-                            else:
-                                if tmp_eval:
-                                    self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 1)
-                                else:
-                                    self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 0)
-                    else:
-                        if parse_tree_node.negation:
-                            self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == -tmp)
-                        else:
-                            self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == tmp)
+                    if (node.negation):
+                        constraint *= -1
 
+                    self.add_constraint(self.variable[t][var_name], constraint)
+    def set_G_F_constraint(self, node, start_time = 0, end_time = 1):
+        self.set_node_constraint(node.formula_list[0], start_time=start_time+node.start_time, end_time=end_time+node.end_time)
+        # Build tmp_prop_formula to encode the logic
+        for t in range(start_time, end_time):
+            if node.operator == 'G': # Globally
+                self.add_constraint_and(self.variable[t][node.name], [self.node[t_i][node.formula_list[0].name] for t_i in range(t + node.start_time, t + node.end_time)])
+            elif node.operator == 'F': # Finally
+                self.add_constraint_or(self.variable[t][node.name], [self.node[t_i][node.formula_list[0].name] for t_i in range(t + node.start_time, t + node.end_time)])
+    def set_U_R_constraint(self, node, start_time = 0, end_time = 1):
+        self.set_node_constraint(node.formula_list[0], start_time=start_time, end_time=end_time+node.end_time)
+        self.set_node_constraint(node.formula_list[1], start_time=start_time+node.start_time, end_time=end_time+node.end_time)
 
-            # Update the MILP convex solver
-            self.MILP_convex_solver.update()
+        for t in range(start_time + node.start_time, end_time + node.end_time):
+            if self.mode == 'Boolean':
+                self.add_binary_variable("{}_aux".format(node.name), t)
+            elif self.mode == 'Quantitative':
+                self.add_continous_variable("{}_aux".format(node.name), t)
+            else:
+                assert(false)
+            if node.operator == 'U': # Globally
+                self.add_constraint_and(self.variable[t]["{}_aux".format(node.name)], [self.variable[t_i][node.formula_list[0].name] for t_i in range(start_time, t)] + [self.variable[t][node.formula_list[1].name])
 
-        else: # If the current node is not an AP or a StAP, add SAT constraints
-            if parse_tree_node.operator in ('G', 'F'): # Temporal unary operators
-                # Fetch a sub-formula
-                subformula = parse_tree_node.formula_list[0]
+        for t in range(start_time, end_time):
+            if node.operator == 'U': # Globally
+                # Add anxiliary Boolean constraints to MILP convex solver
+                self.add_constraint_and(self.variable[t][node.name], [self.variable[t_i]["{}_aux".format(node.name)] for t_i in range(t + node.start_time, t + node.end_time)])
+    def add_binary_variable(self, var_name, time):
+        self.variable.extend([{} for i in range(time + 1 - len(self.variable))])
+        self.variable[time][var_name] = self.model.addVar(vtype=GRB.BINARY, name="{}_{}".format(var_name, time))
+        self.model.update()
+    def add_continous_variable(self, var_name, time, lb = -M, ub = M):
+        self.variable.extend([{} for i in range(time + 1 - len(self.variable))])
+        self.variable[time][var_name] = self.model.addVar(vtype=GRB.CONTINUOUS, lb=lb, ub=ub, name="{}_{}".format(var_name, time))
+        self.model.update()
+    def add_constraint(self, var, value):
+        if self.mode == 'Boolean':
+            if isinstance(value, (int, float)):
+                if value <= 0:
+                    self.model.addConstr(var == 1)
+                else:
+                    self.model.addConstr(var == 0)
+            else:
+                self.model.addConstr((var == 1) >> (value <= 0))
+                self.model.addConstr((var == 0) >> (value >= EPS))
+        elif self.mode == 'Quantitative':
+            self.model.addConstr(var == value)
+        else: assert(False)
+    def add_constraint_and(self, var, var_list):
+        if self.mode == 'Boolean':
+            self.model.addConstr(len(var_list) * var <= gp.quicksum(*var_list))
+            self.model.addConstr(len(var_list) - 1 + var >= gp.quicksum(*var_list))
+        elif self.mode == 'Quantitative':
+            self.model.addConstr(var == gp.min_(*var_list))
+        else: assert(False)
+    def add_constraint_or(self, var, var_list):
+        if self.mode == 'Boolean':
+            self.model.addConstr(var <= gp.quicksum(* var_list))
+            self.model.addConstr(len(var_list) * var >= gp.quicksum(* var_list))
+        elif self.mode == 'Quantitative':
+            self.model.addConstr(var == gp.max_(*var_list))
+        else: assert(False)
 
-                # Recursion
-                self.add_contract_constraints(subformula, start_time=start_time+parse_tree_node.start_time, end_time=end_time+parse_tree_node.end_time)
-                
-                self.MILP_convex_solver.write('MILP.lp')
-
-                # Build tmp_prop_formula to encode the logic
-                for i in range(start_time, end_time+1):
-                    if parse_tree_node.operator == 'G': # Globally
-                        if mode == 'Qualitative':
-                            self.MILP_convex_solver.addConstr((parse_tree_node.end_time-parse_tree_node.start_time+1)*self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] <= gp.quicksum(self.MILP_convex_var[subformula.name + '_t_' + str(parse_tree_node.start_time+i+j)] for j in range(parse_tree_node.end_time-parse_tree_node.start_time+1)))
-                            self.MILP_convex_solver.addConstr(gp.quicksum(self.MILP_convex_var[subformula.name + '_t_' + str(parse_tree_node.start_time+i+j)] for j in range(parse_tree_node.end_time-parse_tree_node.start_time+1)) <= parse_tree_node.end_time - parse_tree_node.start_time + self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)])
-                        else:
-                            self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] == gp.min_(self.MILP_convex_var[subformula.name + '_t_' + str(parse_tree_node.start_time+i+j)] for j in range(parse_tree_node.end_time-parse_tree_node.start_time+1)))
-                        
-                    else: # Finally
-                        if mode == 'Qualitative':
-                            self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] <= gp.quicksum(self.MILP_convex_var[subformula.name + '_t_' + str(parse_tree_node.start_time+i+j)] for j in range(parse_tree_node.end_time-parse_tree_node.start_time+1)))
-                            self.MILP_convex_solver.addConstr(gp.quicksum(self.MILP_convex_var[subformula.name + '_t_' + str(parse_tree_node.start_time+i+j)] for j in range(parse_tree_node.end_time-parse_tree_node.start_time+1)) <= (parse_tree_node.end_time-parse_tree_node.start_time+1)*self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)])    
-                        else:
-                            self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] == gp.max_(self.MILP_convex_var[subformula.name + '_t_' + str(parse_tree_node.start_time+i+j)] for j in range(parse_tree_node.end_time-parse_tree_node.start_time+1)))
-
-                # Update the MILP convex solver
-                self.MILP_convex_solver.update()
-            
-            elif parse_tree_node.operator in ('U', 'R'): # Temporal binary operator
-                # Fetch two sub-formulas
-                subformula1 = parse_tree_node.formula_list[0]
-                subformula2 = parse_tree_node.formula_list[1]
-                
-                # Recursions
-                self.add_contract_constraints(subformula1, start_time=start_time, end_time=end_time+parse_tree_node.end_time)
-                self.add_contract_constraints(subformula2, start_time=start_time+parse_tree_node.start_time, end_time=end_time+parse_tree_node.end_time)
-
-                # Add Boolean constraints and variables to MILP convex solver
-                for i in range(start_time, end_time+1):
-                    for j in range(parse_tree_node.start_time, parse_tree_node.end_time+1):
-                        # Add anxiliary Boolean variable
-                        if parse_tree_node.name + '_t_' + str(i+j) + '_anx' not in self.MILP_convex_var.keys():
-                            self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i+j) + '_anx'] = self.MILP_convex_solver.addVar(vtype=GRB.BINARY, name=parse_tree_node.name + '_t_' + str(i+j) + '_anx')
-                
-                            # Add Boolean constraints to MILP convex solver
-                            self.MILP_convex_solver.addConstr((i+j-start_time+1)*self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i+j) + '_anx'] <= gp.quicksum(self.MILP_convex_var[subformula1.name + '_t_' + str(k)] for k in range(start_time, i+j)) + self.MILP_convex_var[subformula2.name + '_t_' + str(i+j)])
-                            self.MILP_convex_solver.addConstr(gp.quicksum(self.MILP_convex_var[subformula1.name + '_t_' + str(k)] for k in range(start_time, i+j)) + self.MILP_convex_var[subformula2.name + '_t_' + str(i+j)] <= i + j - start_time + self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i+j) + '_anx'])
-                
-                    # Add anxiliary Boolean constraints to MILP convex solver
-                    self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] <= gp.quicksum(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i+j) + '_anx'] for j in range(parse_tree_node.start_time, parse_tree_node.end_time+1)))
-                    self.MILP_convex_solver.addConstr(gp.quicksum(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i+j) + '_anx'] for j in range(parse_tree_node.start_time, parse_tree_node.end_time+1)) <= (parse_tree_node.end_time-parse_tree_node.start_time+1)*self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)])
-                    
-                # Update the MILP convex solver
-                self.MILP_convex_solver.update()
-            
-            elif parse_tree_node.operator == '!': # Non-temporal unary operator
-                # Fetch a sub-formula
-                subformula = parse_tree_node.formula_list[0]
-                
-                # Recursion
-                self.add_contract_constraints(subformula, start_time=start_time, end_time=end_time)
-
-                # Add Boolean constraints to MILP convex solver
-                for i in range(start_time, end_time+1):
-                    if mode == 'Qualitative':
-                        self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] == 1 - self.MILP_convex_var[subformula.name + '_t_' + str(i)])
-                    else:
-                        self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] == -self.MILP_convex_var[subformula.name + '_t_' + str(i)])
-                
-                # Update the MILP convex solver
-                self.MILP_convex_solver.update()
-
-            else: # Non-temporal multinary operator
-                # Recursions
-                for subformula in parse_tree_node.formula_list:
-                    self.add_contract_constraints(subformula, start_time=start_time, end_time=end_time)
-
-                # Add Boolean constraints to MILP convex solver
-                for i in range(start_time, end_time+1):
-                    if parse_tree_node.operator == '&': # AND
-                        if mode == 'Qualitative':
-                            self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] == gp.and_(self.MILP_convex_var[subformula.name + '_t_' + str(i)] for subformula in parse_tree_node.formula_list))
-                        else:
-                            self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] == gp.min_(self.MILP_convex_var[subformula.name + '_t_' + str(i)] for subformula in parse_tree_node.formula_list))
-                    else: # OR
-                        if mode == 'Qualitative':
-                            self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] == gp.or_(self.MILP_convex_var[subformula.name + '_t_' + str(i)] for subformula in parse_tree_node.formula_list))
-                        else:
-                            self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name + '_t_' + str(i)] == gp.max_(self.MILP_convex_var[subformula.name + '_t_' + str(i)] for subformula in parse_tree_node.formula_list))
-                        
-                # Update the MILP convex solver
-                self.MILP_convex_solver.update()
-
-    def add_dyn_constraints(self):
+    def add_dyn_constraint(self):
         """
         Adds constraints for the system dynamics given as a discrete-time state-space model with process and measurement noise to the main convex solver.
         """
@@ -907,7 +829,7 @@ class MILPSolver:
                 var_name = 'x[{}]_{}'.format(i, t)
                 lb = self.dynamics.x_bounds[i,0]
                 ub = self.dynamics.x_bounds[i,1]
-                self.MILP_convex_var[var_name] = self.MILP_convex_solver.addVar(vtype=GRB.CONTINUOUS, lb = lb, ub = ub, name = var_name)
+                self.MILP_convex_var[var_name] = self.model.addVar(vtype=GRB.CONTINUOUS, lb = lb, ub = ub, name = var_name)
             
         for t in range(self.start_time, self.end_time+1):
             if self.dynamics.y_len is not None:
@@ -915,7 +837,7 @@ class MILPSolver:
                     var_name = 'y[{}]_{}'.format(i, t)
                     lb = self.dynamics.y_bounds[i,0]
                     ub = self.dynamics.y_bounds[i,1]
-                    self.MILP_convex_var[var_name] = self.MILP_convex_solver.addVar(vtype=GRB.CONTINUOUS, lb = lb, ub = ub, name = var_name)
+                    self.MILP_convex_var[var_name] = self.model.addVar(vtype=GRB.CONTINUOUS, lb = lb, ub = ub, name = var_name)
         
         for t in range(self.start_time, self.end_time):
             if self.dynamics.u_len is not None:
@@ -923,63 +845,37 @@ class MILPSolver:
                     var_name = 'u[{}]_{}'.format(i, t)
                     lb = self.dynamics.u_bounds[i,0]
                     ub = self.dynamics.u_bounds[i,1]
-                    self.MILP_convex_var[var_name] = self.MILP_convex_solver.addVar(vtype=GRB.CONTINUOUS, lb = lb, ub = ub, name = var_name)
+                    self.MILP_convex_var[var_name] = self.model.addVar(vtype=GRB.CONTINUOUS, lb = lb, ub = ub, name = var_name)
 
         # Update MILP convex solver
-        self.MILP_convex_solver.update()
+        self.model.update()
 
         # Add the initial states constraints to convex solver
         for i in range(self.dynamics.x_len):
-            self.MILP_convex_solver.addConstr(self.MILP_convex_var['x[' + str(i) + ']_0'] == self.dynamics.x0[i, 0])
+            self.model.addConstr(self.MILP_convex_var['x[' + str(i) + ']_0'] == self.dynamics.x0[i, 0])
 
         # Update MILP convex solvers
-        self.MILP_convex_solver.update()
+        self.model.update()
 
         # Add convex constraints
         for t in range(self.start_time, self.end_time):
-            self.MILP_convex_solver.addConstrs(self.MILP_convex_var['x[' + str(i) + ']_' + str(t+1)] \
+            self.model.addConstrs(self.MILP_convex_var['x[' + str(i) + ']_' + str(t+1)] \
                                                 == gp.quicksum(self.dynamics.A[i,j]*self.MILP_convex_var['x[' + str(j) + ']_' + str(t)] for j in range(self.dynamics.x_len)) \
                                                     + gp.quicksum(self.dynamics.B[i,l]*self.MILP_convex_var['u[' + str(l) + ']_' + str(t)] for l in range(self.dynamics.u_len)) for i in range(self.dynamics.x_len))
             
             try:
-                self.MILP_convex_solver.addConstrs(self.MILP_convex_var['y[' + str(i) + ']_' + str(t+1)] \
+                self.model.addConstrs(self.MILP_convex_var['y[' + str(i) + ']_' + str(t+1)] \
                                                     == gp.quicksum(self.dynamics.C[i,j]*self.MILP_convex_var['x[' + str(j) + ']_' + str(t)] for j in range(self.dynamics.x_len)) \
                                                         + gp.quicksum(self.dynamics.D[i,l]*self.MILP_convex_var['u[' + str(l) + ']_' + str(t)] for l in range(self.dynamics.u_len)) for i in range(self.dynamics.y_len))
             except:
                 pass
 
         # Update MILP convex solver 
-        self.MILP_convex_solver.update()
+        self.model.update()
 
     # def add_NN_constraints(self):
     #   """
     #   Adds constraints for the NN to the main convex solver.
     #   """
 
-    def solve(self, objective=None):
-        """ Solves the MILP problem """
-        # Add constraints of the contract and dynamics to the SAT, main, and SSF convex solver
-        self.add_constraints()
-        if objective == 'min':
-            self.MILP_convex_solver.setObjective(self.MILP_convex_var['b_t_0'], GRB.MINIMIZE)
-        elif objective == 'max':
-            self.MILP_convex_solver.setObjective(self.MILP_convex_var['b_t_0'], GRB.MAXIMIZE)
-
-        # Solve the convex problem
-        self.MILP_convex_solver.optimize()
-        self.MILP_convex_solver.write('MILP.lp')
-        
-        if self.MILP_convex_solver.getAttr("Status") == 2: # If MILP is successfully solved,
-            if self.verbose:
-                print("MILP solved.")
-            # # Print the MILP solution
-            # for v in self.MILP_convex_solver.getVars():
-            #   if 'b' not in v.varName:
-            #       print('%s %g' % (v.varName, v.x))
-            return True
-
-        else:
-            if self.verbose:
-                print('There exists no solution.')
-            return False
 
