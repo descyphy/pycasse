@@ -29,7 +29,7 @@ __add__	pystl/parser.py	/^    def __add__(self, other):$/;"	m	class:Expression	f
 __call__	pystl/parser.py	/^    def __call__(self, logic_formula, negation = False):$/;"	m	class:Parser	file:
 __construct	pystl/parser.py	/^    def __construct(self, term):$/;"	m	class:Expression	file:
 __init__	pystl/contracts.py	/^	def __init__(self, id = ''):$/;"	m	class:contract
-__init__	pystl/core.py	/^    def __init__(self, verbose=False, mode = "Boolean"):$/;"	m	class:MILPSolver
+__init__	pystl/core.py	/^    def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi"):$/;"	m	class:MILPSolver
 __init__	pystl/core.py	/^    def __init__(self, verbose=False, solver='gurobi'):$/;"	m	class:SMCSolver
 __init__	pystl/dynamics.py	/^    def __init__(self, x_len=None, u_len=None, y_len=None, x_bounds=None, u_bounds=None, y_bounds=None, x0=None, A=None, B=None, C=None, D=None, Q=None, R=None):	$/;"	m	class:lin_dyn
 __init__	pystl/dynamics.py	/^    def __init__(self, x_len=None, u_len=None, y_len=None, x_bounds=None, u_bounds=None, y_bounds=None, x0=None, A=None, B=None, C=None, D=None, Q=None, R=None, dt = 1):	$/;"	m	class:lin_dyn_diff

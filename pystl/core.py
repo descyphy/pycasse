@@ -567,13 +567,15 @@ class MILPSolver:
         b_var_num
     """
 
-    def __init__(self, verbose=False, mode = "Boolean"):
+    def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi"):
         assert(mode in ("Boolean", "Quantitative"))
+        assert(solver in ("Gurobi", "Cplex"))
         print("====================================================================================")
         print("Initializing MILP solver...")
 
         self.verbose = verbose
         self.mode = mode
+        self.solver = solver
         self.objective = None
 
         self.reset()
@@ -584,9 +586,13 @@ class MILPSolver:
         self.constraint = []
 
         # Initialize convex solvers
-        self.model = gp.Model() # Convex solver for solving the MILP convex problem
-        if not self.verbose:
-            self.model.setParam("OutputFlag", 0)
+        if self.solver == "Gurobi":
+            self.model = gp.Model() # Convex solver for solving the MILP convex problem
+            if not self.verbose:
+                self.model.setParam("OutputFlag", 0)
+        elif self.solver == "Cplex":
+            self.model = cpx.Model(name="Model") # Convex solver for solving the MILP convex problem
+        else: assert(False)
 
         # Initialize dictionary of Gurobi variables
         self.variable = []
@@ -624,8 +630,12 @@ class MILPSolver:
 
 
         # Solve the convex problem
-        self.model.optimize()
-        self.model.write('MILP.lp')
+        if self.solver == "Gurobi":
+            self.model.optimize()
+            self.model.write('MILP.lp')
+        elif self.solver == "Cplex":
+        else: assert(False)
+
         
         if self.model.getAttr("Status") == 2: # If MILP is successfully solved,
             if self.verbose:
@@ -651,9 +661,17 @@ class MILPSolver:
         self.set_node_constraint(parse_tree_root)
 
         if self.mode == 'Boolean':
-            self.model.addConstr(self.variable[0][parse_tree_root.name] == 1)
+            if self.solver == "Gurobi":
+                self.model.addConstr(self.variable[0][parse_tree_root.name] == 1)
+            elif self.solver == "Cplex":
+                self.model.add_constraint(self.variable[0][parse_tree_root.name] == 1)
+            else: assert(False)
         elif self.mode == 'Quantitative':
-            self.model.addConstr(self.variable[0][parse_tree_root.name] >= 1)
+            if self.solver == "Gurobi":
+                self.model.addConstr(self.variable[0][parse_tree_root.name] >= 1)
+            elif self.solver == "Cplex":
+                self.model.add_constraint(self.variable[0][parse_tree_root.name] >= 1)
+            else: assert(False)
 
         if self.objective == 'min':
             self.model.setObjective(self.MILP_convex_var['b_t_0'], GRB.MINIMIZE)
@@ -800,42 +818,86 @@ class MILPSolver:
     def add_binary_variable(self, var_name, time):
         print("adding binary variable: var: {}, t: {}".format(var_name, time))
         self.variable.extend([{} for i in range(time + 1 - len(self.variable))])
-        self.variable[time][var_name] = self.model.addVar(vtype=GRB.BINARY, name="{}_{}".format(var_name, time))
-        self.model.update()
+
+        if self.solver == "Gurobi":
+            self.variable[time][var_name] = self.model.addVar(vtype=GRB.BINARY, name="{}_{}".format(var_name, time))
+            self.model.update()
+        elif self.solver == "Cplex":
+            self.variable[time][var_name] = self.model.binary_var(name="{}_{}".format(var_name, time))
+        else: assert(False)
     def add_continous_variable(self, var_name, time, lb = -M, ub = M):
         print("adding continuous variable: var: {}, t: {}, lb: {}, ub: {}".format(var_name, time, lb, ub))
         self.variable.extend([{} for i in range(time + 1 - len(self.variable))])
-        self.variable[time][var_name] = self.model.addVar(vtype=GRB.CONTINUOUS, lb=lb, ub=ub, name="{}_{}".format(var_name, time))
-        self.model.update()
+
+        if self.solver == "Gurobi":
+            self.variable[time][var_name] = self.model.addVar(vtype=GRB.CONTINUOUS, lb=lb, ub=ub, name="{}_{}".format(var_name, time))
+            self.model.update()
+        elif self.solver == "Cplex":
+            self.variable[time][var_name] = self.model.continuous_var(lb=lb, ub= ub, name="{}_{}".format(var_name, time))
+        else: assert(False)
     def add_constraint(self, var, value):
         print("adding constraint: var: {}, value: {}".format(var, value))
         if self.mode == 'Boolean':
             if isinstance(value, (int, float)):
                 if value <= 0:
-                    self.model.addConstr(var == 1)
+                    if self.solver == "Gurobi":
+                        self.model.addConstr(var == 1)
+                    elif self.solver == "Cplex":
+                        self.model.add_constraint(var == 1)
+                    else: assert(False)
                 else:
-                    self.model.addConstr(var == 0)
+                    if self.solver == "Gurobi":
+                        self.model.addConstr(var == 0)
+                    elif self.solver == "Cplex":
+                        self.model.add_constraint(var == 0)
+                    else: assert(False)
             else:
-                self.model.addConstr((var == 1) >> (value <= 0))
-                self.model.addConstr((var == 0) >> (value >= EPS))
+                if self.solver == "Gurobi":
+                    self.model.addConstr((var == 1) >> (value <= 0))
+                    self.model.addConstr((var == 0) >> (value >= EPS))
+                elif self.solver == "Cplex":
+                    self.model.add_constraint((var == 1) >> (value <= 0))
+                    self.model.add_constraint((var == 0) >> (value >= EPS))
+                else: assert(False)
         elif self.mode == 'Quantitative':
-            self.model.addConstr(var == value)
+            if self.solver == "Gurobi":
+                self.model.addConstr(var == value)
+            elif self.solver == "Cplex":
+                self.model.add_constraint(var == value)
+            else: assert(False)
         else: assert(False)
     def add_constraint_and(self, var, var_list):
         print("adding and constraint: var: {}, var_list: {}".format(var, var_list))
         if self.mode == 'Boolean':
-            self.model.addConstr(len(var_list) * var <= gp.quicksum(var_list))
-            self.model.addConstr(len(var_list) - 1 + var >= gp.quicksum(var_list))
+            if self.solver == "Gurobi":
+                self.model.addConstr(len(var_list) * var <= gp.quicksum(var_list))
+                self.model.addConstr(len(var_list) - 1 + var >= gp.quicksum(var_list))
+            elif self.solver == "Cplex":
+                self.model.add_constraint(len(var_list) * var <= self.model.sum(var_list))
+                self.model.add_constraint(len(var_list) - 1 + var >= self.model.sum(var_list))
+            else: assert(False)
         elif self.mode == 'Quantitative':
-            self.model.addConstr(var == gp.min_(var_list))
+            if self.solver == "Gurobi":
+                self.model.addConstr(var == gp.min_(var_list))
+            elif self.solver == "Cplex":
+                self.model.add_constraint(var == 
+            else: assert(False)
         else: assert(False)
     def add_constraint_or(self, var, var_list):
         print("adding or constraint: var: {}, var_list: {}".format(var, var_list))
         if self.mode == 'Boolean':
-            self.model.addConstr(var <= gp.quicksum(var_list))
-            self.model.addConstr(len(var_list) * var >= gp.quicksum(var_list))
+            if self.solver == "Gurobi":
+                self.model.addConstr(var <= gp.quicksum(var_list))
+                self.model.addConstr(len(var_list) * var >= gp.quicksum(var_list))
+            elif self.solver == "Cplex":
+                self.model.add_constraint(var <= self.model.sum(var_list))
+                self.model.add_constraint(len(var_list) * var >= self.model.sum(var_list))
+            else: assert(False)
         elif self.mode == 'Quantitative':
-            self.model.addConstr(var == gp.max_(var_list))
+            if self.solver == "Gurobi":
+                self.model.addConstr(var == gp.max_(var_list))
+            elif self.solver == "Cplex":
+            else: assert(False)
         else: assert(False)
     def add_dyn_constraint(self):
         """
