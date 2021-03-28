@@ -568,7 +568,7 @@ class MILPSolver:
         b_var_num
     """
 
-    def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi", debug = True):
+    def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi", debug = False):
         assert(mode in ("Boolean", "Quantitative"))
         assert(solver in ("Gurobi", "Cplex"))
         #  print("====================================================================================")
@@ -832,7 +832,6 @@ class MILPSolver:
             elif node.operator == 'R': # Globally
                 self.model_add_constraint_and(self.variable[t][node.name], [self.variable[t_i]["{}_aux_{}".format(node.name, t)] for t_i in range(t + node.start_time, t + node.end_time + 1)])
             else: assert(False)
-            input()
     def set_dynamic(self, dynamic):
         if self.debug:
             print(dynamic)

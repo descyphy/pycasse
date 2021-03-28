@@ -69,8 +69,11 @@ class Expression():
     def __add__(self, other):
         res = Expression()
         res.terms.update(self.terms)
-        for (term, multiplier) in other.terms.items():
-            res.terms[term] += multiplier
+        if isinstance(other, (int, float)):
+            res.terms[None] += other
+        else:
+            for (term, multiplier) in other.terms.items():
+                res.terms[term] += multiplier
         return res
     def __sub__(self, other):
         res = Expression()
@@ -281,7 +284,7 @@ class Parser():
         """
         # Split the logic formula to sub-level logic formulas
         operator, start_time, end_time, prob, substr_list = self.str2substr(logic_formula)
-        print(self.str2substr(logic_formula))
+        #  print(self.str2substr(logic_formula))
 
         # Create appropriate object of each sub-level logic formulas
         if operator in ('=>', '<=', '>', '<', '=='): # Inequality and equality operator
