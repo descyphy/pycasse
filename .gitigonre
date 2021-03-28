@@ -1,6 +1,0 @@
-tags
-!.gitignore
-.*
-*/__pycache__
-*/.*
-.vscode
