@@ -1,6 +1,8 @@
 import re
 from collections import defaultdict
 
+M = 10**4
+EPS = 10**-4
 # Define AST classes
 class ASTObject():
     """
@@ -39,10 +41,11 @@ class Expression():
 
     def __construct(self, term):
         """ Add terms. """
-        data = re.findall("([+-]?)\s*([0-9]*)\s*([a-zA-Z]*)", term)
+        data = re.findall("([+-])?\s*([0-9]*)?\s*([a-zA-Z][a-zA-Z0-9]*)?", term)
         for t in data:
             if t == ('', '', ''):
                 continue
+            #  print(data)
 
             multiplier = 0
             if (t[0] == "" or t[0] == "+"):
@@ -91,8 +94,19 @@ class AtomicPredicate(ASTObject):
     def __init__(self, name, operator, expr):
         """ Constructor method """
         super().__init__(name, 'AP')
-        self.operator  = operator
-        self.expr      = expr
+        if (operator == ">"):
+            self.operator  = "<="
+            self.expr      = expr * -1 + EPS
+        elif (operator == "=>"):
+            self.operator  = "<="
+            self.expr      = expr * -1
+        elif (operator == "<"):
+            self.operator  = "<="
+            self.expr      = expr + EPS
+        else:
+            assert(operator in ("==", "<="))
+            self.operator  = operator
+            self.expr      = expr
     def __str__(self):
         return '({} {} 0)'.format(self.expr, self.operator)
     def __repr__(self):
@@ -137,8 +151,10 @@ class TemporalFormula(ASTObject):
     def __str__(self):
         return "({}[{}, {}] {})".format(self.operator, self.start_time, self.end_time, str(self.formula_list[0]))
     def __repr__(self):
-        res = "{} -> {}[{}, {}] {}\n".format(self.name, self.operator, self.start_time, self.end_time, self.formula_list[0].name)
-        res += "  " + repr(self.formula_list[0]) + "\n"
+        res = "{} -> {}[{}, {}] ".format(self.name, self.operator, self.start_time, self.end_time)
+        res += " ".join(f.name for f in self.formula_list)
+        for f in self.formula_list:
+            res += "\n  " + "\n  ".join(repr(f).splitlines())
         return res
 
 class NontemporalFormula(ASTObject):
@@ -253,8 +269,8 @@ class Parser():
         else:
             assert(False)
     def name(self):
-        self.node_id += 1
-        return "node_{}".format(self.node_id)
+        Parser.node_id += 1
+        return "node_{}".format(Parser.node_id)
     # Define ststl parser
     def __call__(self, logic_formula, negation = False):
         """

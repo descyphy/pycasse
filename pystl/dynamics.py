@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 M = 10**4
 
@@ -249,3 +250,78 @@ class lin_dyn_diff:
                 raise Exception("Matrix R has wrong dimensions. It should be a len(y)-by-len(y) matrix.\n")
             else:
                 self.R = R
+
+class Dynamics:
+    def __init__(self, var_list, time = 0):
+        self.max_time = time
+        self.min_time = time
+
+        self.data = np.identity(len(var_list))
+        self.var2id = {}
+        for i, var in enumerate(var_list):
+            if var == None:
+                key = (None, 0)
+                self.min_time = 0
+            else:
+                key = (var, time)
+            self.var2id[key] = i
+        #  print(self.var2id)
+        #  print(self.data)
+    @staticmethod
+    def Next(other):
+        res = Dynamics([])
+        res.max_time = other.max_time
+        res.min_time = other.min_time + 1
+
+        res.data = other.data.copy()
+        for key, value in other.var2id.items():
+            if key[0] == None:
+                res.min_time = other.min_time
+                res.var2id[key] = value
+            else:
+                res.max_time = other.max_time + 1
+                res.var2id[(key[0], key[1] + 1)] = value
+        return res
+
+    def __add__(self, other):
+        return self.merge(other, 1)
+    def __sub__(self, other):
+        return self.merge(other, -1)
+    def __eq__(self, other):
+        return self.__sub__(other)
+    def __mul__(self, other):
+        res = copy.deepcopy(self)
+        if isinstance(other, (int, float)):
+            res.data *= other
+        else:
+            res.data = other @ res.data
+        return res
+    def __str__(self):
+        return repr(self)
+    def __repr__(self):
+        data = []
+        for row in range(len(self.data)):
+            expr = []
+            for key, idx in self.var2id.items():
+                if self.data[row, idx] != 0:
+                    if key == None:
+                        expr.append("{}".format(self.data[row, idx]))
+                    else:
+                        expr.append("{} {}_{}".format(self.data[row, idx], key[0], key[1]))
+            #  print(expr)
+            data.append(" + ".join(expr))
+        res = "time max: {}, min: {}\n".format(self.max_time, self.min_time)
+        res += "[ " + "\n  ".join(data) + " ]\n"
+        return res
+    def merge(self, other, multiplier):
+        res = copy.deepcopy(self)
+        for var, value in other.var2id.items():
+            #  print(var, value)
+            if var in res.var2id:
+                res.data[:, res.var2id[var]] += multiplier * other.data[:, value]
+            else:
+                res.max_time = max(res.max_time, var[1])
+                res.min_time = min(res.min_time, var[1])
+                res.data = np.hstack((res.data, multiplier * other.data[:, value, np.newaxis]))
+                res.var2id[var] = len(res.var2id)
+        return res
