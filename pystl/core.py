@@ -1,15 +1,13 @@
 import gurobipy as gp
 import numpy as np
 
-import docplex.mp.model as cpx
+from copy import deepcopy
+import cplex
 from gurobipy import GRB
 from z3 import *
 from pystl.contracts import *
 from pystl.parser import *
 from scipy.stats import norm
-
-M = 10**4
-EPS = 10**-4
 
 class SMCSolver:
     """
@@ -567,6 +565,8 @@ class MILPSolver:
         b_vars
         b_var_num
     """
+    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'constraints', 'dynamics'
+            , 'solver', 'model', 'idx', 'node_variable', 'contract_variable')
 
     def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi", debug = False):
         assert(mode in ("Boolean", "Quantitative"))
@@ -583,9 +583,9 @@ class MILPSolver:
         self.reset()
     def reset(self):
         # Initialize attributes
-        self.contract   = None
-        self.constraint = []
-        self.dynamic    = []
+        self.contract    = None
+        self.constraints = []
+        self.dynamics    = []
 
         # Initialize convex solvers
         if self.solver == "Gurobi":
@@ -593,41 +593,60 @@ class MILPSolver:
             if not self.verbose:
                 self.model.setParam("OutputFlag", 0)
         elif self.solver == "Cplex":
-            self.model = cpx.Model()
+            self.model = cplex.Cplex()
         else: assert(False)
 
         # Initialize dictionary of Gurobi variables
-        self.variable = []
+        self.idx               = 0 # for preprocessing
+        self.node_variable     = np.empty(0)
+        self.contract_variable = np.empty(0)
     def add_contract(self, contract):
         """
         Adds a contract to the SMC solver.
         """
         self.contract = contract
-
-        if self.contract.assumption == 'True' and self.contract.guarantee == 'True':
-            pass
-        elif self.contract.assumption == 'True':
-            self.constraint.append(self.contract.guarantee)
-        else:
-            self.constraint.append(self.contract.sat_guarantee)
     def add_constraint(self, constraint):
         """
         Adds a dynamics to the SMC solver.
         """
-        self.constraint.append(constraint)
+        self.constraints.append(constraint)
     def add_dynamic(self, dynamic):
         """
         Adds a dynamics to the SMC solver.
         """
-        self.dynamic.append(dynamic)
+        self.dynamics.append(dynamic)
     def solve(self, objective=None):
         """ Solves the MILP problem """
         # Add constraints of the contract and dynamics to the SAT, main, and SSF convex solver
-        for c in self.constraint:
+        assert(len(self.constraints) > 0)
+
+        self.preprocess()
+
+        if self.debug:
+            for c in self.constraints:
+                print(repr(c))
+            print("node variable shape: {}".format(self.node_variable.shape))
+            print("contract variable shape: {}".format(self.contract_variable.shape))
+            input()
+
+        for c in self.constraints:
             self.set_constraint(c)
 
-        for d in self.dynamic:
-            self.set_dynamic(d)
+        for d in self.dynamics:
+            self.set_dynamic(d.dynamic)
+
+        #  if self.objective == 'min':
+        #      if self.solver == "Gurobi":
+        #          self.model.setObjective(self.variable[0][parse_tree_root.name], GRB.MINIMIZE)
+        #      elif self.solver == "Cplex":
+        #          self.model.minimize(self.variable[0][parse_tree_root.name])
+        #      else: assert(False)
+        #  elif self.objective == 'max':
+        #      if self.solver == "Gurobi":
+        #          self.model.setObjective(self.variable[0][parse_tree_root.name], GRB.MAXIMIZE)
+        #      elif self.solver == "Cplex":
+        #          self.model.maximize(self.variable[0][parse_tree_root.name])
+        #      else: assert(False)
 
         # Solve the convex problem
         if self.solver == "Gurobi":
@@ -635,339 +654,408 @@ class MILPSolver:
             self.model.write('MILP.lp')
         elif self.solver == "Cplex":
             self.model.solve()
-            self.model.export_as_lp('./MILP.lp')
+            self.model.write('MILP.lp')
         else: assert(False)
 
-        
-        if (self.solver == 'Gurobi' and self.model.getAttr("Status") == 2) or (self.solver == 'Cplex' and 'optimal' in self.model.solve_details.status): # If MILP is successfully solved,
+        #  print solution
+        if (self.solver == 'Gurobi' and self.model.getAttr("Status") == 2) or (self.solver == 'Cplex' and self.model.solution.get_status() in (1,101)): # If MILP is successfully solved,
             if self.verbose:
                 print("MILP solved.")
             # # Print the MILP solution
-            # for v in self.model.getVars():
-            #   if 'b' not in v.varName:
-            #       print('%s %g' % (v.varName, v.x))
+                self.print_solution()
             return True
 
         else:
             if self.verbose:
                 print('There exists no solution.')
             return False
+    def preprocess(self):
+        self.idx = 0
+        for i, c in enumerate(self.constraints):
+            #  print(self.constraints[i])
+            (self.constraints[i], end_time) = self.preprocess_constraint(c, 1)
+            #  print(self.constraints[i])
+        if self.solver == "Gurobi":
+            self.node_variable = -1 * np.ones((self.idx, end_time), dtype = object)
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object) # -1 is to exclude constant variable
+        elif self.solver == "Cplex":
+            self.node_variable = -1 * np.ones((self.idx, end_time), dtype = object)
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object)
+        else: assert(False)
+    def preprocess_constraint(self, node, end_time):
+        #  if self.debug:
+        #      print(repr(node))
+        #      print(end_time)
+        if (node.ast_type == "Not"):
+            #  print("remove negation")
+            res = node.formula_list[0]
+
+            res.invert_ast_type()
+
+            if res.ast_type in ("AP", "StAP"):
+                res.expr *= -1
+                assert(len(res.formula_list) == 0)
+            else:
+                for i, f in enumerate(res.formula_list):
+                    res.formula_list[i] = ~f
+        else:
+            #  print("ignore")
+            res = node
+
+        res.idx = self.idx
+        self.idx += 1
+
+        #  if self.debug:
+        #      print("start traverse")
+        #      print(repr(res))
+        #      input()
+        if res.ast_type in ('G', 'F'):
+            (res.formula_list[0], end_time) = self.preprocess_constraint(res.formula_list[0], end_time + res.interval[1])
+        elif res.ast_type in ('U', 'R'):
+            (res.formula_list[0], e1) = self.preprocess_constraint(res.formula_list[0], end_time + res.interval[1])
+            (res.formula_list[1], e2) = self.preprocess_constraint(res.formula_list[1], end_time + res.interval[1])
+            end_time = max(e1, e2)
+        elif res.ast_type in ('And', 'Or'):
+            for i, f in enumerate(res.formula_list):
+                (res.formula_list[i], e) = self.preprocess_constraint(f, end_time)
+                end_time = max(e, end_time)
+
+        #  if self.debug:
+        #      print(repr(res))
+        #      print(end_time)
+        #      print("end traverse")
+        #      input()
+        return (res, end_time)
     def set_constraint(self, constraint):
         """
         Adds contraints to the solvers.
         """
         # Build the parse tree
-        parse_tree_root = Parser()(constraint)
-
-        self.set_node_constraint(parse_tree_root)
+        self.set_node_constraint(constraint)
 
         if self.mode == 'Boolean':
             if self.solver == "Gurobi":
-                self.model.addConstr(self.variable[0][parse_tree_root.name] == 1)
+                self.model.addConstr(self.node_variable[constraint.idx, 0] == 1)
             elif self.solver == "Cplex":
-                pass
-                self.model.add_constraint(ct=self.variable[0][parse_tree_root.name] == 1)
+                self.model.linear_constraints.add(lin_expr = [[[self.node_variable[constraint.idx, 0]], [1]]], senses = "E", rhs = [1])
             else: assert(False)
         elif self.mode == 'Quantitative':
             if self.solver == "Gurobi":
-                self.model.addConstr(self.variable[0][parse_tree_root.name] >= 1)
+                self.model.addConstr(self.node_variable[constraint.idx, 0] >= 0)
             elif self.solver == "Cplex":
-                pass
-                self.model.add_constraint(ct=self.variable[0][parse_tree_root.name] >= 1)
-            else: assert(False)
-
-        if self.objective == 'min':
-            if self.solver == "Gurobi":
-                self.model.setObjective(self.variable[0][parse_tree_root.name], GRB.MINIMIZE)
-            elif self.solver == "Cplex":
-                self.model.minimize(self.variable[0][parse_tree_root.name])
-            else: assert(False)
-        elif self.objective == 'max':
-            if self.solver == "Gurobi":
-                self.model.setObjective(self.variable[0][parse_tree_root.name], GRB.MAXIMIZE)
-            elif self.solver == "Cplex":
-                self.model.maximize(self.variable[0][parse_tree_root.name])
+                self.model.linear_constraints.add(lin_expr = [[[self.node_variable[constraint.idx, 0]], [1]]], senses = "G", rhs = [0])
             else: assert(False)
     def set_node_constraint(self, node, start_time = 0, end_time = 1):
         """
         Adds SAT and convex constraints from a contract to SAT and convex solvers.
         """
         if (self.debug):
-            print(repr(node))
+            print("setting node: {}".format(repr(node)))
             input()
 
         # 1. Add Boolean variables to the MILP convex solver
         for t in range(start_time, end_time):
             if self.mode == 'Boolean':
-                self.model_add_binary_variable(node.name, t)
+                self.model_add_binary_variable(node.idx, t)
             elif self.mode == 'Quantitative':
-                self.model_add_continous_variable(node.name, t)
+                self.model_add_continous_variable(node.idx, t)
             else:
                 assert(false)
         if (self.debug):
+            print(self.node_variable)
             input()
 
         #  2. construct constraints according to the operation type
-        if node.class_id in ('AP', 'StAP'):
+        if node.ast_type in ('AP', 'StAP'):
             self.set_ap_stap_constraint(node, start_time, end_time)
-        elif node.operator in ('G', 'F'): # Temporal unary operators
+        elif node.ast_type in ('G', 'F'): # Temporal unary operators
             self.set_G_F_constraint(node, start_time, end_time)
-        elif node.operator in ('U', 'R'): # Temporal binary operator
+        elif node.ast_type in ('U', 'R'): # Temporal binary operator
             self.set_U_R_constraint(node, start_time, end_time)
-        elif node.operator == '!': # Non-temporal unary operator
+        elif node.ast_type == 'Not': # Non-temporal unary operator
             assert(False)
-        else: # Non-temporal multinary operator
-            # Recursions
-            for subformula in node.formula_list:
-                self.set_node_constraint(subformula, start_time=start_time, end_time=end_time)
-
-            # Add Boolean constraints to MILP convex solver
-            for t in range(start_time, end_time):
-                if node.operator == '&': # AND
-                    self.model_add_constraint_and(self.variable[t][node.name], [self.variable[t][f.name] for f in node.formula_list])
-                elif node.operator == '|': # OR
-                    self.model_add_constraint_or(self.variable[t][node.name], [self.variable[t][f.name] for f in node.formula_list])
-                else:
-                    assert(False)
-            if (self.debug):
-                input()
-    def set_ap_stap_constraint(self, node, start_time = 0, end_time = 1):
-        #  1. construct the expression for constraint: expr <= 0
-        if node.class_id == 'AP': # If the current node is an AP,
-            expr = node.expr
-            operator = node.operator
-        elif node.class_id == 'StAP': # If the current node is a stochastic AP,
-            expr = node.ap.expr
-            operator = node.ap.operator
+        elif node.ast_type in ('And', 'Or'):
+            self.set_and_or_constraint(node, start_time, end_time)
         else: assert(False)
-                
+    def set_ap_stap_constraint(self, node, start_time = 0, end_time = 1):
         if (self.debug):
+            print("set constraints for AP or StAP")
+
+        #  1. construct the expression for constraint: expr <= 0
+        expr = node.expr.deter_data.copy()
+        if node.ast_type == 'StAP': # If the current node is a stochastic AP,
+            nondeter_data_size = len(node.expr.nondeter_data)
+            expectation = node.expr.nondeter_data @self.contract.nondeter_var_mean[:nondeter_data_size]
+            variance = node.expr.nondeter_data @self.contract.nondeter_var_cov[:nondeter_data_size, :nondeter_data_size]@ node.expr.nondeter_data.T
+
+            expr[0] += expectation + norm.ppf(node.prob) * math.sqrt(variance)
+
+        variables = np.nonzero(expr[1:])[0] + 1
+
+        if self.debug:
             print(expr)
-            print(operator)
-            input()
 
         #  2. add variables of contract in every concerned time period to model
-        #  3. caculate the usage of nondeterminate uncontrolled variables
-        nondeter_uncontrolled_vars_term = np.zeros(len(self.contract.nondeter_uncontrolled_vars['var_names']))
-        for (var_name , multiplier) in expr.terms.items():
-            if var_name in self.contract.controlled_vars['var_names']:
-                idx = self.contract.controlled_vars['var_names'].index(var_name)
-                lb = self.contract.controlled_vars['bounds'][idx, 0]
-                ub = self.contract.controlled_vars['bounds'][idx, 1]
-            elif var_name in self.contract.deter_uncontrolled_vars['var_names']:
-                idx = self.contract.deter_uncontrolled_vars['var_names'].index(var_name)
-                lb = self.contract.deter_uncontrolled_vars['bounds'][idx, 0]
-                ub = self.contract.deter_uncontrolled_vars['bounds'][idx, 1]
-            elif var_name in self.contract.nondeter_uncontrolled_vars['var_names']:
-                idx = self.contract.nondeter_uncontrolled_vars['var_names'].index(var_name)
-                nondeter_uncontrolled_vars_term[idx] = multiplier
-            else: assert(var_name == None)
-
-            if var_name in self.contract.controlled_vars['var_names'] or var_name in self.contract.deter_uncontrolled_vars['var_names']:
-                for t in range(start_time, end_time):
-                    self.model_add_continous_variable(var_name, t, lb, ub)
-        if (self.debug):
-            print(nondeter_uncontrolled_vars_term)
-            input()
-
-            
-        # 4. Add convex constraints
         for t in range(start_time, end_time):
-            constraint = 0
-            for var_name, multiplier in expr.terms.items():
-                if var_name in self.contract.controlled_vars['var_names'] or var_name in self.contract.deter_uncontrolled_vars['var_names']:
-                    constraint += multiplier * self.variable[t][var_name]
-                elif var_name == None:
-                    constraint += multiplier
-                else: assert(var_name in self.contract.nondeter_uncontrolled_vars['var_names'])
+            for v in variables:
+                if self.contract.deter_var_list[v].data_type == 'BINARY':
+                    self.model_add_binary_variable(v, t, var_type = 'contract')
+                elif self.contract.deter_var_list[v].data_type == 'CONTINUOUS':
+                    lb = self.contract.deter_var_list[v].bound[0]
+                    ub = self.contract.deter_var_list[v].bound[1]
+                    self.model_add_continous_variable(v, t, var_type = 'contract', lb = lb, ub = ub)
+                else: assert(False)
 
-                # Add convex constraints
-            if node.class_id == 'AP': # 'AP'
-                self.model_add_variable_constraint(self.variable[t][node.name], constraint, operator)
+            if (self.debug):
+                print(self.contract_variable)
 
-            elif node.class_id == 'StAP': # 'StAP'
-                expectation = nondeter_uncontrolled_vars_term@self.contract.nondeter_uncontrolled_vars['mean']
-                variance = nondeter_uncontrolled_vars_term@self.contract.nondeter_uncontrolled_vars['cov']@nondeter_uncontrolled_vars_term.T
 
-                constraint += expectation + norm.ppf(node.prob) * math.sqrt(variance)
-
-                if (node.negation):
-                    constraint *= -1
-
-                self.model_add_variable_constraint(self.variable[t][node.name], constraint, operator)
-        if (self.debug):
-            input()
+            # 3. Add convex constraints
+            self.model_add_inequality_constraint(node.idx, t, expr)
+            if (self.debug):
+                input()
     def set_G_F_constraint(self, node, start_time = 0, end_time = 1):
-        self.set_node_constraint(node.formula_list[0], start_time=start_time+node.start_time, end_time=end_time+node.end_time)
+        if (self.debug):
+            print("set constraints for G or F")
+        self.set_node_constraint(node.formula_list[0], start_time=start_time+node.interval[0], end_time=end_time+node.interval[1])
         # Build tmp_prop_formula to encode the logic
         for t in range(start_time, end_time):
-            if node.operator == 'G': # Globally
-                self.model_add_constraint_and(self.variable[t][node.name], [self.variable[t_i][node.formula_list[0].name] for t_i in range(t + node.start_time, t + node.end_time + 1)])
-            elif node.operator == 'F': # Finally
-                self.model_add_constraint_or(self.variable[t][node.name], [self.variable[t_i][node.formula_list[0].name] for t_i in range(t + node.start_time, t + node.end_time + 1)])
+            if node.ast_type == 'G': # Globally
+                self.model_add_constraint_and(self.node_variable[node.idx, t], self.node_variable[node.formula_list[0].idx, t + node.interval[0]: t + node.interval[1] + 1].tolist())
+            elif node.ast_type == 'F': # Finally
+                self.model_add_constraint_or(self.node_variable[node.idx, t], self.node_variable[node.formula_list[0].idx, t + node.interval[0]: t + node.interval[1] + 1].tolist())
             else: assert(False)
         if (self.debug):
+            print("afer setting constraints for And or Or")
+            print(node)
             input()
     def set_U_R_constraint(self, node, start_time = 0, end_time = 1):
-        self.set_node_constraint(node.formula_list[0], start_time=start_time, end_time=end_time+node.end_time)
-        self.set_node_constraint(node.formula_list[1], start_time=start_time+node.start_time, end_time=end_time+node.end_time)
+        if (self.debug):
+            print("set constraints for U or R")
+        self.set_node_constraint(node.formula_list[0], start_time=start_time, end_time=end_time+node.interval[1])
+        self.set_node_constraint(node.formula_list[1], start_time=start_time+node.interval[0], end_time=end_time+node.interval[1])
 
         for t in range(start_time, end_time):
-            for t_i in range(t + node.start_time, t + node.end_time + 1):
+            aux_variables = []
+            for t_i in range(t + node.interval[0], t + node.interval[1] + 1):
                 if self.mode == 'Boolean':
-                    self.model_add_binary_variable("{}_aux_{}".format(node.name, t), t_i)
+                    aux_variable = self.model_add_binary_variable_by_name("node_{}_aux_{}_{}".format(node.idx, t, t_i))
                 elif self.mode == 'Quantitative':
-                    self.model_add_continous_variable("{}_aux_{}".format(node.name, t), t_i)
+                    aux_variable = self.model_add_continuous_variable_by_name("node_{}_aux_{}_{}".format(node.idx, t, t_i))
                 else: assert(False)
 
-                if node.operator == 'U': # Globally
-                    self.model_add_constraint_and(self.variable[t]["{}_aux_{}".format(node.name, t)], [self.variable[t_i][node.formula_list[0].name] for t_i in range(t, t_i)] + [self.variable[t_i][node.formula_list[1].name]])
-                elif node.operator == 'R': # Globally
-                    self.model_add_constraint_or(self.variable[t]["{}_aux_{}".format(node.name, t)], [self.variable[t_i][node.formula_list[0].name] for t_i in range(t, t_i)] + [self.variable[t_i][node.formula_list[1].name]])
+                if node.ast_type == 'U': # Globally
+                    self.model_add_constraint_and(aux_variable, self.node_variable[node.formula_list[0].idx, t:t_i].tolist() + [self.node_variable[node.formula_list[1].idx, t_i]])
+                elif node.ast_type == 'R': # Globally
+                    self.model_add_constraint_or(aux_variable, self.node_variable[node.formula_list[0].idx, t:t_i].tolist() + [self.node_variable[node.formula_list[1].idx, t_i]])
                 else: assert(False)
 
-            if node.operator == 'U': # Globally
+                aux_variables.append(aux_variable)
+
+            if node.ast_type == 'U': # Globally
                 # Add anxiliary Boolean constraints to MILP convex solver
-                self.model_add_constraint_or(self.variable[t][node.name], [self.variable[t_i]["{}_aux_{}".format(node.name, t)] for t_i in range(t + node.start_time, t + node.end_time + 1)])
-            elif node.operator == 'R': # Globally
-                self.model_add_constraint_and(self.variable[t][node.name], [self.variable[t_i]["{}_aux_{}".format(node.name, t)] for t_i in range(t + node.start_time, t + node.end_time + 1)])
+                self.model_add_constraint_or(self.node_variable[node.idx, t], aux_variables)
+            elif node.ast_type == 'R': # Globally
+                self.model_add_constraint_and(self.node_variable[node.idx, t], aux_variables)
             else: assert(False)
+            if self.debug:
+                input()
+    def set_and_or_constraint(self, node, start_time = 0, end_time = 1):
+        # Recursions
+        if (self.debug):
+            print("set constraints for And or Or")
+        for subformula in node.formula_list:
+            self.set_node_constraint(subformula, start_time=start_time, end_time=end_time)
+
+        # Add Boolean constraints to MILP convex solver
+        for t in range(start_time, end_time):
+            if node.ast_type == 'And': # AND
+                self.model_add_constraint_and(self.node_variable[node.idx, t], [self.node_variable[f.idx,t] for f in node.formula_list])
+            elif node.ast_type == 'Or': # OR
+                self.model_add_constraint_or(self.node_variable[node.idx, t], [self.node_variable[f.idx,t] for f in node.formula_list])
+            else: assert(False)
+        if (self.debug):
+            print("afer setting constraints for And or Or")
+            print(node)
+            input()
     def set_dynamic(self, dynamic):
         if self.debug:
             print(dynamic)
             input()
         for row in range(len(dynamic.data)):
-            for t in range(0 + dynamic.min_time, len(self.variable) - dynamic.max_time):
-                constraint = 0
-                for var, key in dynamic.var2id.items():
-                    if (dynamic.data[row][key] != 0):
-                        var_name = var[0]
-                        var_time = var[1]
-                        if var_name in self.contract.controlled_vars['var_names']:
-                            idx = self.contract.controlled_vars['var_names'].index(var_name)
-                            lb = self.contract.controlled_vars['bounds'][idx, 0]
-                            ub = self.contract.controlled_vars['bounds'][idx, 1]
-                        elif var_name in self.contract.deter_uncontrolled_vars['var_names']:
-                            idx = self.contract.deter_uncontrolled_vars['var_names'].index(var_name)
-                            lb = self.contract.deter_uncontrolled_vars['bounds'][idx, 0]
-                            ub = self.contract.deter_uncontrolled_vars['bounds'][idx, 1]
-                        else: assert(var_name == None)
-                        if var_name in self.contract.controlled_vars['var_names'] or var_name in self.contract.deter_uncontrolled_vars['var_names']:
-                            self.model_add_continous_variable(var_name, t + var_time, lb, ub)
+            variable = [[],[]]
+            multiplier = []
+            for key, value in dynamic.var2id.items():
+                if dynamic.data[row, value] != 0:
+                    variable[0].append(key[0])
+                    variable[1].append(key[1])
+                    multiplier.append(dynamic.data[row,value])
+            variable = np.array(variable)
+            multiplier = np.array(multiplier)
+            if self.debug:
+                print("variable: {}".format(variable))
+                print("multiplier: {}".format(multiplier))
 
-                        if var_name in self.contract.controlled_vars['var_names'] or var_name in self.contract.deter_uncontrolled_vars['var_names']:
-                            constraint += dynamic.data[row][key] * self.variable[t + var_time][var_name]
-                        elif var_name == None:
-                            constraint += dynamic.data[row][key]
-                        else: assert(False)
-
-                self.model_add_constraint(constraint)
+            for _ in range(self.contract_variable.shape[1] - dynamic.max_time):
+                for i in range(variable.shape[1]):
+                    v = variable[0,i]
+                    t = variable[1,i]
+                    #  print(v, t)
+                    if self.contract.deter_var_list[v].data_type == 'BINARY':
+                        self.model_add_binary_variable(v, t, var_type = 'contract')
+                    elif self.contract.deter_var_list[v].data_type == 'CONTINUOUS':
+                        lb = self.contract.deter_var_list[v].bound[0]
+                        ub = self.contract.deter_var_list[v].bound[1]
+                        self.model_add_continous_variable(v, t, var_type = 'contract', lb = lb, ub = ub)
+                    else: assert(False)
+                #  print(self.contract_variable)
+                self.model_add_constraint(variable, multiplier)
+                variable[1] +=1
         if (self.debug):
             input()
-    def model_add_binary_variable(self, var_name, time):
+    def model_add_binary_variable(self, idx, time, var_type = 'node'):
+        assert(var_type in ('node', 'contract'))
         if (self.debug):
-            print("adding binary variable: var: {}, t: {}".format(var_name, time))
-        self.variable.extend([{} for i in range(time + 1 - len(self.variable))])
-        if var_name not in self.variable[time]:
-            if self.solver == "Gurobi":
-                self.variable[time][var_name] = self.model.addVar(vtype=GRB.BINARY, name="{}_{}".format(var_name, time))
-                self.model.update()
-            elif self.solver == "Cplex":
-                self.variable[time][var_name] = self.model.binary_var(name = "{}_{}".format(var_name, time))
-            else: assert(False)
-    def model_add_continous_variable(self, var_name, time, lb = -M, ub = M):
-        if (self.debug):
-            print("adding continuous variable: var: {}, t: {}, lb: {}, ub: {}".format(var_name, time, lb, ub))
-        self.variable.extend([{} for i in range(time + 1 - len(self.variable))])
+            print("adding binary variable: type: {}, idx: {}, t: {}".format(var_type, idx, time))
 
-        if var_name not in self.variable[time]:
-            if self.solver == "Gurobi":
-                self.variable[time][var_name] = self.model.addVar(vtype=GRB.CONTINUOUS, lb=lb, ub=ub, name="{}_{}".format(var_name, time))
-                self.model.update()
-            elif self.solver == "Cplex":
-                self.variable[time][var_name] = self.model.continuous_var(name = "{}_{}".format(var_name, time), lb = lb, ub = ub)
-            else: assert(False)
-    def model_add_variable_constraint(self, var, value, operator):
+        if (var_type == 'node'):
+            variable_array = self.node_variable
+        elif (var_type == 'contract'):
+            variable_array = self.contract_variable
+        else: assert(False)
+
+        if (not isinstance(variable_array[idx, time], gp.Var) and (variable_array[idx, time] == -1)):
+            variable_array[idx, time] = self.model_add_binary_variable_by_name("{}_{}_{}".format(var_type, idx, time))
+    def model_add_binary_variable_by_name(self, name):
+        if self.solver == "Gurobi":
+            res = self.model.addVar(vtype=GRB.BINARY, name=name)
+            self.model.update()
+            return res
+        elif self.solver == "Cplex":
+            (idx,) = (self.model.variables.add(names = [name], types = [self.model.variables.type.binary]))
+            return idx
+        else: assert(False)
+    def model_add_continous_variable(self, idx, time, lb = -M, ub = M, var_type = 'node'):
         if (self.debug):
-            print("adding constraint: var: {}, value: {}".format(var, value))
-        if operator == "<=":
-            if self.mode == 'Boolean':
-                if isinstance(value, (int, float)):
-                    if value <= 0:
-                        if self.solver == "Gurobi":
-                            self.model.addConstr(var == 1)
-                        elif self.solver == "Cplex":
-                            self.model.add_constraint(var == 1)
-                        else: assert(False)
-                    else:
-                        if self.solver == "Gurobi":
-                            self.model.addConstr(var == 0)
-                        elif self.solver == "Cplex":
-                            self.model.add_constraint(var == 0)
-                        else: assert(False)
-                else:
-                    if self.solver == "Gurobi":
-                        self.model.addConstr((var == 1) >> (value <= 0))
-                        self.model.addConstr((var == 0) >> (value >= EPS))
-                    elif self.solver == "Cplex":
-                        self.model.add_if_then((var == 1), (value <= 0))
-                        self.model.add_if_then((var == 0), (value >= EPS))
-                    else: assert(False)
-            elif self.mode == 'Quantitative':
-                if self.solver == "Gurobi":
-                    self.model.addConstr(var == value)
-                elif self.solver == "Cplex":
-                    self.model.add_constraint(var == value)
-                else: assert(False)
+            print("adding binary variable: type: {}, idx: {}, t: {}, lb:{}, ub:{}".format(var_type, idx, time, lb, ub))
+
+        if (var_type == 'node'):
+            variable_array = self.node_variable
+        elif (var_type == 'contract'):
+            variable_array = self.contract_variable
+        else: assert(False)
+
+        if (not isinstance(variable_array[idx, time], gp.Var) and (variable_array[idx, time] == -1)):
+            variable_array[idx, time] = self.model_add_continuous_variable_by_name("{}_{}_{}".format(var_type, idx, time), lb, ub)
+    def model_add_continuous_variable_by_name(self, name, lb = -M, ub = M):
+        if self.solver == "Gurobi":
+            res = self.model.addVar(vtype=GRB.CONTINUOUS, lb=lb, ub=ub, name=name)
+            self.model.update()
+            return res
+        elif self.solver == "Cplex":
+            (idx,) = self.model.variables.add(names = [name], types = [self.model.variables.type.continuous], lb=[lb], ub=[ub])
+            return idx
+        else: assert(False)
+    def model_add_inequality_constraint(self, node_idx, time, expr):
+        if (self.debug):
+            print("adding inequality constraint: node id: {}, time: {}, expr: {}".format(node_idx, time, expr))
+        mask = np.nonzero(expr[1:])[0] + 1
+        variable = self.contract_variable[:, time][mask]
+        multiplier = expr[mask]
+        rhs = expr[0]
+        if self.debug:
+            print("mask: {}".format(mask))
+            print("variable: {}".format(variable))
+            print("multiplier: {}".format(multiplier))
+            print("rhs: {}".format(rhs))
+        assert(len(variable) != 0)
+        if self.mode == 'Boolean':
+            if self.solver == "Gurobi":
+                self.model.addConstr((self.node_variable[node_idx, time] == 1) >> (np.sum(multiplier * variable) <= -rhs))
+                self.model.addConstr((self.node_variable[node_idx, time] == 0) >> (np.sum(multiplier * variable) >= -rhs + EPS))
+            elif self.solver == "Cplex":
+                lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
+                self.model.linear_constraints.add(lin_expr = (lin_expr * 2), senses = "LG", rhs = [-rhs+M, -rhs+EPS])
+            else: assert(False)
+        elif self.mode == 'Quantitative':
+            if self.solver == "Gurobi":
+                self.model.addConstr((self.node_variable[node_idx, time] == np.sum(multiplier * variable) + rhs))
+            elif self.solver == "Cplex":
+                lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
+                self.model.linear_constraints.add(lin_expr = lin_expr, senses = "E", rhs = [-rhs])
             else: assert(False)
         else: assert(False)
-    def model_add_constraint(self, value):
+    def model_add_constraint(self, variable, multiplier):
         if (self.debug):
-            print("adding constraint: value: {}".format(value))
+            print("adding constraint: variable: {}, multiplier: {}".format(self.contract_variable[variable[0], variable[1]], multiplier))
         if self.solver == "Gurobi":
-            self.model.addConstr(value == 0)
+            self.model.addConstr(np.sum(self.contract_variable[variable[0], variable[1]] * multiplier) == 0)
         elif self.solver == "Cplex":
-            self.model.add_constraint(value == 0)
+            lin_expr = [[self.contract_[variable[0], variable[1]].tolist(), multiplier.tolist()]]
+            self.model.linear_constraints.add(lin_expr = lin_expr, senses = "E", rhs = [0])
         else: assert(False)
     def model_add_constraint_and(self, var, var_list):
         if (self.debug):
-            print("adding and constraint: var: {}, var_list: {}".format(var, var_list))
+            print("adding and constraint: var: {}, expr: {}".format(var, var_list))
         if self.mode == 'Boolean':
             if self.solver == "Gurobi":
                 self.model.addConstr(var == gp.and_(var_list))
             elif self.solver == "Cplex":
-                self.model.add_constraint(var == self.model.logical_and(*var_list))
+                var_size = len(var_list)
+                lin_expr1 = [[[var] + var_list, [1] + [-1 if j == i else 0 for j in range(var_size)]] for i in range(var_size)]
+                self.model.linear_constraints.add(lin_expr = lin_expr1, senses = "L" * var_size, rhs = [0] * var_size)
+                lin_expr2 = [[[var] + var_list, [1] + [-1] * var_size]]
+                self.model.linear_constraints.add(lin_expr = lin_expr2, senses = "G", rhs = [1 - var_size])
             else: assert(False)
         elif self.mode == 'Quantitative':
             if self.solver == "Gurobi":
                 self.model.addConstr(var == gp.min_(var_list))
             elif self.solver == "Cplex":
-                self.model.add_constraint(var == self.model.min(var_list))
+                var_size = len(var_list)
+                lin_expr1 = [[[var] + var_list, [1] + [-1 if j == i else 0 for j in range(var_size)]] for i in range(var_size)]
+                self.model.linear_constraints.add(lin_expr = lin_expr1, senses = "L" * var_size, rhs = [0] * var_size)
             else: assert(False)
         else: assert(False)
     def model_add_constraint_or(self, var, var_list):
         if (self.debug):
-            print("adding or constraint: var: {}, var_list: {}".format(var, var_list))
+            print("adding or constraint: var: {}, expr: {}".format(var, var_list))
         if self.mode == 'Boolean':
             if self.solver == "Gurobi":
                 self.model.addConstr(var == gp.or_(var_list))
             elif self.solver == "Cplex":
-                self.model.add_constraint(var == self.model.logical_or(*var_list))
+                var_size = len(var_list)
+                lin_expr1 = [[[var] + var_list, [-1] + [1 if j == i else 0 for j in range(var_size)]] for i in range(var_size)]
+                self.model.linear_constraints.add(lin_expr = lin_expr1, senses = "L" * var_size, rhs = [0] * var_size)
+                lin_expr2 = [[[var] + var_list, [1] + [-1] * var_size]]
+                self.model.linear_constraints.add(lin_expr = lin_expr2, senses = "L", rhs = [0])
             else: assert(False)
         elif self.mode == 'Quantitative':
             if self.solver == "Gurobi":
                 self.model.addConstr(var == gp.max_(var_list))
             elif self.solver == "Cplex":
-                self.model.add_constraint(var == self.model.max(var_list))
+                var_size = len(var_list)
+                lin_expr1 = [[[var] + var_list, [-1] + [1 if j == i else 0 for j in range(var_size)]] for i in range(var_size)]
+                self.model.linear_constraints.add(lin_expr = lin_expr1, senses = "L" * var_size, rhs = [0] * var_size)
             else: assert(False)
         else: assert(False)
-    def print_var(self):
-        for t, variable_t in enumerate(self.variable):
-            for (var_name, var) in variable_t.items():
-                if 'node' not in var_name:
+    def print_solution(self):
+        (len_var, len_t) = self.contract_variable.shape
+        for v in range(len_var):
+            for t in range(len_t):
+                if (isinstance(self.contract_variable[v,t], gp.Var) or (self.contract_variable[v,t] != -1)):
                     if self.solver == "Gurobi":
-                        print("{}_{}: {}".format(var_name, t, var.x))
+                        print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.contract_variable[v,t].x))
                     elif self.solver == "Cplex":
-                        print("{}_{}: {}".format(var_name, t, var.solution_value))
+                        print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
                     else: assert(False)
+        #  (len_var, len_t) = self.node_variable.shape
+        #  for v in range(len_var):
+        #      for t in range(len_t):
+        #          if (isinstance(self.node_variable[v,t], gp.Var) or (self.node_variable[v,t] != -1)):
+        #              if self.solver == "Gurobi":
+        #                  print("node_{}_{}: {}".format(v, t, self.node_variable[v,t].x))
+        #              elif self.solver == "Cplex":
+        #                  print("node_{}_{}: {}".format(v, t, self.model.solution.get_values()[v]))
+        #                  print("node_{}_{}: {}".format(v, t, self.model.solution.get_values()[self.node_variable[v,t]]))
+        #              else: assert(False)
         print()
