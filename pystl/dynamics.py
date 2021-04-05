@@ -6,17 +6,20 @@ class Dynamics:
     def __init__(self, var_list, time = 0):
         self.max_time = time
 
-        len_var = len(set([None] + [v.idx for v in var_list]))
+        len_var = len(set([None] + [v.idx for v in var_list if isinstance(v, Var)]))
         self.data = np.zeros((len(var_list), len_var))
         self.var2id = {(0,0): 0}
         for i, var in enumerate(var_list):
-            assert(var is None, isinstance(var, (Var)))
-            if var is not None:
+            assert(isinstance(var, (int, float, Var)))
+            if isinstance(var, (int, float)):
+                key = (0, 0)
+                self.data[i, 0] += var
+            elif isinstance(var, Var):
                 key = (var.idx, time)
                 if key not in self.var2id:
                     self.var2id[key] = len(self.var2id)
-
                 self.data[i, self.var2id[key]] += 1
+            else: assert(False)
         #  print(self.var2id)
         #  print(self.data)
     def __add__(self, other):
@@ -30,7 +33,9 @@ class Dynamics:
         else:
             return self.merge(other, -1)
     def __eq__(self, other):
-        return Equation(self.__sub__(other))
+        if isinstance(other, list):
+            other = Dynamics(other)
+        return Equation(self - other)
     def __mul__(self, other):
         #  print(self)
         #  print(other)
@@ -53,10 +58,10 @@ class Dynamics:
         for row in range(len(self.data)):
             expr = []
             for key, idx in self.var2id.items():
-                if self.data[row, idx] != 0:
-                    if key[0] == 0:
-                        expr.append("{}".format(self.data[row, idx]))
-                    else:
+                if key[0] == 0:
+                    expr.append("{}".format(self.data[row, idx]))
+                else:
+                    if self.data[row, idx] != 0:
                         expr.append("{} {}_{}".format(self.data[row, idx], key[0], key[1]))
             #  print(expr)
             data.append(" + ".join(expr))

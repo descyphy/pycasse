@@ -4,10 +4,10 @@ from pystl import *
 import numpy as np
 
 c = contract('c')                     # Create a contract c
-c.set_assume('(G[0,3] (=> x 5))')     # Set/define the assumptions
-c.set_guaran('(G[1,4] (=> y 3))')     # Set/define the guarantees
 c.set_deter_uncontrolled_vars(['x'])  # Set a deterministic uncontrolled variable
 c.set_controlled_vars(['y'])          # Set a controlled variable
+c.set_assume('(G[0,3] (x => 5))')     # Set/define the assumptions
+c.set_guaran('(G[1,4] (y => 3))')     # Set/define the guarantees
 c.saturate()                          # Saturate c
 c.printInfo()                         # Print c
 
@@ -16,10 +16,10 @@ c.checkConsis(print_sol=True)         # Check consistency of c
 c.checkFeas(print_sol=True)           # Check feasiblity of c
 
 c2 = contract('c2')                   # Create a contract c2
-c2.set_assume('True')                 # Set/define the assumptions
-c2.set_guaran('(G[0,4] (<= y 2))')    # Set/define the guarantees
 c2.set_deter_uncontrolled_vars(['x']) # Set a deterministic uncontrolled variable
 c2.set_controlled_vars(['y'])         # Set a controlled variable
+c2.set_assume('True')                 # Set/define the assumptions
+c2.set_guaran('(G[0,4] (y <= 2))')    # Set/define the guarantees
 c2.saturate()                         # Saturate c2
 c2.printInfo()                        # Print c2
 

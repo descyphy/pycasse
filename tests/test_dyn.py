@@ -25,7 +25,6 @@ u = Dynamics([u1])
 A = np.array([[1, 1], [0, 1]])
 B = np.array([[0], [1]])
 
-
 solver = MILPSolver()
 solver.add_contract(c)
 solver.add_dynamic(x * A + u * B == Next(x))

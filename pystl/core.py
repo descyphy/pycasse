@@ -772,11 +772,16 @@ class MILPSolver:
             self.set_G_F_constraint(node, start_time, end_time)
         elif node.ast_type in ('U', 'R'): # Temporal binary operator
             self.set_U_R_constraint(node, start_time, end_time)
-        elif node.ast_type == 'Not': # Non-temporal unary operator
-            assert(False)
         elif node.ast_type in ('And', 'Or'):
             self.set_and_or_constraint(node, start_time, end_time)
-        else: assert(False)
+        elif node.ast_type == 'Not': # Non-temporal unary operator
+            assert(node is false)
+            self.set_false_constraint(node, start_time, end_time)
+        elif node.ast_type in ('True'):
+            self.set_true_constraint(node, start_time, end_time)
+        else:
+            print(node.ast_type)
+            assert(False)
     def set_ap_stap_constraint(self, node, start_time = 0, end_time = 1):
         if (self.debug):
             print("set constraints for AP or StAP")
@@ -878,6 +883,38 @@ class MILPSolver:
             print("afer setting constraints for And or Or")
             print(node)
             input()
+    def set_true_constraint(self, node, start_time = 0, end_time = 1):
+        # Recursions
+        if (self.debug):
+            print("set constraints for true")
+
+        for t in range(start_time, end_time):
+            variable_idx = np.array([[node.idx], [t]])
+            if self.mode == 'Boolean':
+                self.model_add_constraint(variable_idx, [1], 1, 'node')
+            elif self.mode == 'Quantitative':
+                self.model_add_constraint(variable_idx, [1], M, 'node')
+            else: assert(False)
+        if (self.debug):
+            print("afer setting constraints for true")
+            print(node)
+            input()
+    def set_false_constraint(self, node, start_time = 0, end_time = 1):
+        # Recursions
+        if (self.debug):
+            print("set constraints for false")
+
+        for t in range(start_time, end_time):
+            variable_idx = np.array([[node.idx], [t]])
+            if self.mode == 'Boolean':
+                self.model_add_constraint(variable_idx, [1], 0, 'node')
+            elif self.mode == 'Quantitative':
+                self.model_add_constraint(variable_idx, [1], -M, 'node')
+            else: assert(False)
+        if (self.debug):
+            print("afer setting constraints for false")
+            print(node)
+            input()
     def set_dynamic(self, dynamic):
         if self.debug:
             print(dynamic)
@@ -885,16 +922,22 @@ class MILPSolver:
         for row in range(len(dynamic.data)):
             variable = [[],[]]
             multiplier = []
+            rhs = 0
             for key, value in dynamic.var2id.items():
                 if dynamic.data[row, value] != 0:
-                    variable[0].append(key[0])
-                    variable[1].append(key[1])
-                    multiplier.append(dynamic.data[row,value])
+                    if key[0] != 0:
+                        variable[0].append(key[0])
+                        variable[1].append(key[1])
+                        multiplier.append(dynamic.data[row,value])
+                    else:
+                        assert(key[1] == 0)
+                        rhs += dynamic.data[row,value]
             variable = np.array(variable)
             multiplier = np.array(multiplier)
             if self.debug:
                 print("variable: {}".format(variable))
                 print("multiplier: {}".format(multiplier))
+                print("rhs: {}".format(rhs))
 
             for _ in range(self.contract_variable.shape[1] - dynamic.max_time):
                 for i in range(variable.shape[1]):
@@ -909,7 +952,7 @@ class MILPSolver:
                         self.model_add_continous_variable(v, t, var_type = 'contract', lb = lb, ub = ub)
                     else: assert(False)
                 #  print(self.contract_variable)
-                self.model_add_constraint(variable, multiplier)
+                self.model_add_constraint(variable, multiplier, -rhs)
                 variable[1] +=1
         if (self.debug):
             input()
@@ -985,14 +1028,22 @@ class MILPSolver:
                 self.model.linear_constraints.add(lin_expr = lin_expr, senses = "E", rhs = [-rhs])
             else: assert(False)
         else: assert(False)
-    def model_add_constraint(self, variable, multiplier):
+    def model_add_constraint(self, variable, multiplier, rhs, var_type = 'contract'):
+        if (var_type == 'node'):
+            variable_array = self.node_variable
+        elif (var_type == 'contract'):
+            variable_array = self.contract_variable
+        else: assert(False)
+
         if (self.debug):
-            print("adding constraint: variable: {}, multiplier: {}".format(self.contract_variable[variable[0], variable[1]], multiplier))
+            print("adding constraint: variable: {}, multiplier: {}, rhs: {}".format(variable_array[variable[0], variable[1]], multiplier, rhs))
+
+
         if self.solver == "Gurobi":
-            self.model.addConstr(np.sum(self.contract_variable[variable[0], variable[1]] * multiplier) == 0)
+            self.model.addConstr(np.sum(variable_array[variable[0], variable[1]] * multiplier) == rhs)
         elif self.solver == "Cplex":
-            lin_expr = [[self.contract_[variable[0], variable[1]].tolist(), multiplier.tolist()]]
-            self.model.linear_constraints.add(lin_expr = lin_expr, senses = "E", rhs = [0])
+            lin_expr = [[variable_array[variable[0], variable[1]].tolist(), multiplier.tolist()]]
+            self.model.linear_constraints.add(lin_expr = lin_expr, senses = "E", rhs = [rhs])
         else: assert(False)
     def model_add_constraint_and(self, var, var_list):
         if (self.debug):

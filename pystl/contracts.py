@@ -287,14 +287,14 @@ class contract:
                 extra_nondeter_id.append(i)
         #  print(nondeter_id_map)
 
-        if len(extra_nondeter_id) > 0:
-            self_len = len(self.nondeter_var_cov)
-            contract_len = len(extra_nondeter_id)
+        extra_nondeter_id = np.array(extra_nondeter_id)
+        self_len = len(self.nondeter_var_cov)
+        contract_len = len(extra_nondeter_id)
+        if contract_len > 0:
             if self_len == 0:
                 self.nondeter_var_mean = contract.nondeter_var_mean[extra_nondeter_id]
                 self.nondeter_var_cov = contract.nondeter_var_cov[extra_nondeter_id, extra_nondeter_id]
             else:
-                extra_nondeter_id = np.array(extra_nondeter_id)
                 self.nondeter_var_mean = np.concatenate((self.nondeter_var_mean, contract.nondeter_var_mean[extra_nondeter_id]))
                 #  print(self.nondeter_var_cov)
                 #  print(np.zeros((self_len, contract_len)))
@@ -303,57 +303,58 @@ class contract:
                 self.nondeter_var_cov = np.block([[self.nondeter_var_cov, np.zeros((self_len, contract_len))], [np.zeros((contract_len, self_len)), contract.nondeter_var_cov[extra_nondeter_id, extra_nondeter_id]]])
         return (np.array(deter_id_map), np.array(nondeter_id_map))
 
-#      def find_opt_param(self, objective, N=100):
-#          """ Find an optimal set of parameters for a contract given an objective function. """
-#          # Build a MILP Solver
-#          solver = MILPSolver()
-#          print("Finding an optimal set of parameters for contract {}...".format(self.id))
-#
-#          # Build a deepcopy of the contract
-#          c = deepcopy(self)
-#
-#          # Sample the parameters N times
-#          sampled_param = np.random.rand(N, len(self.parameters['param_names']))
-#          for i in range(len(self.parameters['param_names'])):
-#              sampled_param[:,1] *= self.parameters['bounds'][i,1] - self.parameters['bounds'][i,0]
-#              sampled_param[:,1] += self.parameters['bounds'][i,0]
-#
-#          # Initialize the figure
-#          fig = plt.figure()
-#          plt.xlabel(self.parameters['param_names'][0])
-#          plt.ylabel(self.parameters['param_names'][1])
-#          plt.xlim([self.parameters['bounds'][0,0], self.parameters['bounds'][0,1]])
-#          plt.ylim([self.parameters['bounds'][1,0], self.parameters['bounds'][1,1]])
-#
-#          # Replace the parameters with parameter samples and solve an optimization probelem
-#          for i in range(N):
-#              # Replace the parameters with parameter samples
-#              tmp_assumption = self.assumption
-#              tmp_guarantee = self.guarantee
-#              for j in range(len(self.parameters['param_names'])):
-#                  tmp_assumption = tmp_assumption.replace(self.parameters['param_names'][j], str(sampled_param[i,j]))
-#                  tmp_guarantee = tmp_guarantee.replace(self.parameters['param_names'][j], str(sampled_param[i,j]))
-#
-#              # Resets a MILP Solver
-#              solver.reset()
-#
-#              # Add a contract
-#              c.set_assume(tmp_assumption)
-#              c.set_guaran(tmp_guarantee)
-#              solver.add_contract(c)
-#
-#              # Solve the problem
-#              # print("Checking the set of parameters {}.".format(sampled_param[i,:]))
-#              solved = solver.solve(objective='min')
-#
-#              # Print the counterexample
-#              if solved:
-#                  plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'go')
-#              else:
-#                  plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'ro')
-#
-#          plt.savefig('test.jpg')
-#
+    def find_opt_param(self, objective, N=100):
+        """ Find an optimal set of parameters for a contract given an objective function. """
+        # Build a MILP Solver
+        solver = MILPSolver()
+        print("Finding an optimal set of parameters for contract {}...".format(self.id))
+
+        # Build a deepcopy of the contract
+        c = deepcopy(self)
+
+        # Sample the parameters N times
+        sampled_param = np.random.rand(N, len(self.parameters['param_names']))
+        for i in range(len(self.parameters['param_names'])):
+            sampled_param[:,1] *= self.parameters['bounds'][i,1] - self.parameters['bounds'][i,0]
+            sampled_param[:,1] += self.parameters['bounds'][i,0]
+
+        # Initialize the figure
+        fig = plt.figure()
+        plt.xlabel(self.parameters['param_names'][0])
+        plt.ylabel(self.parameters['param_names'][1])
+        plt.xlim([self.parameters['bounds'][0,0], self.parameters['bounds'][0,1]])
+        plt.ylim([self.parameters['bounds'][1,0], self.parameters['bounds'][1,1]])
+
+        # Replace the parameters with parameter samples and solve an optimization probelem
+        for i in range(N):
+            # Replace the parameters with parameter samples
+            tmp_assumption = self.assumption
+            tmp_guarantee = self.guarantee
+            for j in range(len(self.parameters['param_names'])):
+                tmp_assumption = tmp_assumption.replace(self.parameters['param_names'][j], str(sampled_param[i,j]))
+                tmp_guarantee = tmp_guarantee.replace(self.parameters['param_names'][j], str(sampled_param[i,j]))
+
+            # Resets a MILP Solver
+            solver.reset()
+
+            # Add a contract
+            c.set_assume(tmp_assumption)
+            c.set_guaran(tmp_guarantee)
+            solver.add_contract(c)
+
+            # Solve the problem
+            # print("Checking the set of parameters {}.".format(sampled_param[i,:]))
+            solved = solver.solve(objective='min')
+
+            # Print the counterexample
+            if solved:
+                plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'go')
+            else:
+                plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'ro')
+
+        plt.savefig('test.jpg')
+    def printInfo(self):
+        print(str(self))
     def __str__(self):
         """ Prints information of the contract """
         res = ''
@@ -391,7 +392,6 @@ class contract:
         return res
 #
 def conjunction(c1, c2):
-    pass
     """ Returns the conjunction of two contracts
 
     :param c1: A contract c1
@@ -413,11 +413,9 @@ def conjunction(c1, c2):
     conjoined.merge_contract(c2)
 
     # Find conjoined guarantee, G': G1 and G2
-    assumption2 = deepcopy(c2.assumption)
-    conjoined.assumption = conjoined.assumption | assumption2
+    conjoined.assumption = conjoined.assumption | deepcopy(c2.assumption)
 
-    guarantee2 = deepcopy(c2.sat_guarantee)
-    conjoined.guarantee = conjoined.sat_guarantee & guarantee2
+    conjoined.guarantee = conjoined.sat_guarantee & deepcopy(c2.sat_guarantee)
     conjoined.sat_guarantee = deepcopy(conjoined.guarantee)
 
     conjoined.isSat = True
@@ -445,13 +443,13 @@ def composition(c1, c2):
     composed.merge_contract(c2)
 
     # Find conjoined guarantee, G': G1 and G2
-    conjoined.assumption = (conjoined.assumption & deepcopy(c2.assumption)) | ~deepcopy(composed.sat_guarantee) | ~deepcopy(c2.sat_guarantee)
+    composed.assumption = (composed.assumption & deepcopy(c2.assumption)) | ~deepcopy(composed.sat_guarantee) | ~deepcopy(c2.sat_guarantee)
 
-    conjoined.guarantee = composed.sat_guarantee & deepcopy(c2.sat_guarantee)
-    conjoined.sat_guarantee = deepcopy(conjoined.guarantee)
+    composed.guarantee = composed.sat_guarantee & deepcopy(c2.sat_guarantee)
+    composed.sat_guarantee = deepcopy(composed.guarantee)
 
-    conjoined.isSat = True
-    return conjoined
+    composed.isSat = True
+    return composed
 
 def quotient(c, c2):
     pass

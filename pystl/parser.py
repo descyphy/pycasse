@@ -125,10 +125,14 @@ class ASTObject():
     def __str__(self):
         if self.ast_type == "True":
             return "TRUE"
+        elif self.ast_type == "False":
+            return "FALSE"
         else: assert(False)
     def __repr__(self):
         if self.ast_type == "True":
             return "{} -> TRUE".format(self.idx)
+        elif self.ast_type == "False":
+            return "{} -> FALSE".format(self.idx)
         else: assert(False)
     def U(self, interval, other):
         return TemporalFormula("U", [self, other], interval)
@@ -154,8 +158,8 @@ class ASTObject():
                 f.transform(deter_id_map, nondeter_id_map)
     @staticmethod
     def nontemporal_formula_construction(operator, formula_list, ignore_ap, drop_ap):
-        formula_list = [f for f in formula_list if f is not ignore_ap]
-        if any(f is drop_ap for f in formula_list):
+        formula_list = [f for f in formula_list if f.ast_type != ignore_ap.ast_type]
+        if any(f.ast_type == drop_ap.ast_type for f in formula_list):
             return drop_ap
         elif len(formula_list) == 0:
             return ignore_ap
@@ -298,13 +302,15 @@ def F(interval, ap):
     return TemporalFormula("F", [ap], interval)
 
 true = ASTObject("True")
-false = NontemporalFormula("Not", [true])
+false = ASTObject("False")
 
 def Neg(self):
     if self.ast_type == "Not":
         return self.formula_list[0]
     elif self.ast_type == "True":
         return false
+    elif self.ast_type == "False":
+        return true
     else:
         return NontemporalFormula("Not", [self])
 ASTObject.__invert__ = Neg

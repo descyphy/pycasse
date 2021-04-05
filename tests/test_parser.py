@@ -18,6 +18,12 @@ c1.saturate()                         # Saturate c1
 print(c1)
 input()
 
+#  print((x>0) | true)
+#  print((x>0) | false)
+#  print((x>0) & true)
+#  print((x>0) & false)
+#  input()
+
 p = Parser(c1)
 #  print(p("x", "const_variable"))
 #  print(p("y", "const_variable"))
