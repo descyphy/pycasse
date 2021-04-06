@@ -26,7 +26,7 @@ class Expression():
             self.deter_data[term.idx] = 1
             self.nondeter_data = np.empty(0)
         elif isinstance(term, pystl.variable.NondeterVar):
-            self.deter_data = np.empty(0)
+            self.deter_data = np.zeros(1)
             self.nondeter_data = np.zeros(term.idx + 1)
             self.nondeter_data[term.idx] = 1
         elif isinstance(term, Expression):
@@ -212,12 +212,16 @@ class StochasticAtomicPredicate(ASTObject):
     def __init__(self, expr, prob):
         """ Constructor method """
         super().__init__('StAP')
+        assert(isinstance(expr, Expression))
         self.expr = expr
-        self.prob = prob
+        self.prob = Expression(prob)
+    def probability(self):
+        assert(not np.any(self.prob.deter_data[1:]) and not np.any(self.prob.nondeter_data))
+        return self.prob.deter_data[0]
     def __str__(self):
-        return "P[{}] ({} <= 0)".format(self.prob, str(self.expr))
+        return "P[{}] ({} <= 0)".format(str(self.prob), str(self.expr))
     def __repr__(self):
-        return "{} -> P[{}] ({} <= 0)".format(self.idx, self.prob, str(self.expr))
+        return "{} -> P[{}] ({} <= 0)".format(self.idx, str(self.prob), str(self.expr))
 
 class TemporalFormula(ASTObject):
     """
@@ -319,7 +323,7 @@ ASTObject.__invert__ = Neg
 ststl_grammar = Grammar('''
 phi = (neg / paren_phi / true / false
      / and_outer / or_outer / implies_outer
-     / u / r / g / f / AP)
+     / u / r / g / f / AP / stAP)
 
 neg = ("~" / "!" / "¬") __ phi
 paren_phi = "(" __ phi __ ")"
@@ -343,10 +347,11 @@ f = "(" __ "F" interval __ phi __ ")"
 
 interval = "[" __ const __ "," __ const __ "]"
 
-stAP =  "(" __ "P[" __ const __ "]" __ AP __ ")"
-AP =  "(" __ expression __ comparison __ expression __ ")"
+stAP =  "(" __ "P[" __ expression_outer __ "]" __ AP __ ")"
+AP =  "(" __ expression_outer __ comparison __ expression_outer __ ")"
 
-expression = (term __ operator __ expression) / term
+expression_outer =  __ (expression_inner) __
+expression_inner = (term __ operator __ expression_inner) / term
 
 term = (const_variable/ const)
 const_variable = variable / (const __ variable)
@@ -388,35 +393,40 @@ class Parser(NodeVisitor):
             return (children[0][0] * children[0][2])
         else: assert(False)
     def visit_term(self, node, children):
-        return children[0]
-    def visit_expression(self, node, children):
-        if isinstance(children[0], (Expression, float)):
-            return children[0]
+        return Expression(children[0])
+    def visit_expression_inner(self, node, children):
+        #  print("expression_inner")
+        #  print(children)
+        #  input()
+        if isinstance(children[0], (Expression)):
+            return children
         elif len(children[0]) == 5:
             ((left, _, op, _, right),) = children
-            if op == '+':
-                return left + right
-            elif op == '-':
-                return left - right
-            elif op == '*':
-                return left * right
-            elif op == '/':
-                return left / right
-            else: assert(False)
+            if op == '-':
+                right[0] *= -1
+            else: assert(op == '+')
+            return [left] + right
         else: assert(False)
+    def visit_expression_outer(self, node, children):
+        #  print("expression_outer")
+        #  print(children)
+        #  input()
+        return reduce(op.add, children[1])
     def visit_AP(self, node, children):
         #  print(children)
         #  input()
-        (_, _, left, _, op, _, right, _, _) = children
-        if op == '<=' or op == '=<':
+        (_, _, left, _, operator, _, right, _, _) = children
+        #  print(left, right)
+        #  input()
+        if operator == '<=' or operator == '=<':
             return left <= right
-        elif op == '>=' or op == '=>':
+        elif operator == '>=' or operator == '=>':
             return left >= right
-        elif op == '>':
+        elif operator == '>':
             return left > right
-        elif op == '<':
+        elif operator == '<':
             return left < right
-        elif op == '=' or op == '==':
+        elif operator == '=' or operator == '==':
             return left == right
         else: assert(False)
     def visit_stAP(self, node, children):

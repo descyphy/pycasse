@@ -110,7 +110,7 @@ class contract:
         """
         res = []
         for i, name in enumerate(param_names):
-            data = DeterVar(name, len(self.deter_var_list), "parameter", data_type = dtypes[i] if dtypes != None else 'CONTINUOUS', bound = bounds[i] if bounds != None else None)
+            data = DeterVar(name, len(self.deter_var_list), "parameter", data_type = dtypes[i] if dtypes is not None else 'CONTINUOUS', bound = bounds[i] if bounds is not None else None)
             self.deter_var_list.append(data)
             self.deter_var_name2id[name] = len(self.deter_var_name2id)
 
@@ -191,10 +191,11 @@ class contract:
                 solver.print_solution()
         else:
             print("Contract {} is not consistent.\n".format(self.id))
-    def checkFeas(self, print_sol=False):
+    def checkFeas(self, print_sol=False, verbose = True):
         """ Checks feasibility of the contract """
 #          # Build a MILP Solver
-        print("Checking feasibility of the contract {}...".format(self.id))
+        if verbose:
+            print("Checking feasibility of the contract {}...".format(self.id))
         solver = MILPSolver()
 #
         # Add a contract
@@ -204,13 +205,14 @@ class contract:
         # Solve the problem
         solved = solver.solve()
         # Print the solution
-        if solved:
+        if solved and verbose:
             print("Contract {} is feasible.\n".format(self.id))
             if print_sol:
                 print("Printing a behavior that satisfies both the assumption and guarantee of the contract {}...".format(self.id))
                 solver.print_solution()
-        else:
+        elif not solved and verbose:
             print("Contract {} is not feasible.\n".format(self.id))
+        return solved
     def checkRefine(self, contract2refine, print_sol=False):
         """ Checks whether contract2refine refines the contract """
         # Build a MILP Solver
@@ -302,52 +304,69 @@ class contract:
                 #  print(contract.nondeter_var_cov[extra_nondeter_id, extra_nondeter_id])
                 self.nondeter_var_cov = np.block([[self.nondeter_var_cov, np.zeros((self_len, contract_len))], [np.zeros((contract_len, self_len)), contract.nondeter_var_cov[extra_nondeter_id, extra_nondeter_id]]])
         return (np.array(deter_id_map), np.array(nondeter_id_map))
-
     def find_opt_param(self, objective, N=100):
         """ Find an optimal set of parameters for a contract given an objective function. """
         # Build a MILP Solver
-        solver = MILPSolver()
         print("Finding an optimal set of parameters for contract {}...".format(self.id))
+
+
+        variable = [False]
+        bounds = []
+        for v in self.deter_var_list[1:]:
+            if v.var_type == 'parameter':
+                variable.append(True)
+                bounds.append(v.bound)
+            else:
+                variable.append(False)
+        variable = np.array(variable)
+        bounds = np.array(bounds)
+        # Sample the parameters N times
+        sampled_param = np.random.rand(N, len(bounds))
+        sampled_param *= (bounds[:,1] - bounds[:,0])
+        sampled_param += bounds[:,0]
+        #  print(variable)
+        #  print(bounds)
+        #  print(sampled_param)
+        #  input()
+        def change(data, variable, values):
+            #  print(data)
+            #  print(variable)
+            #  print(values)
+            parameter = data[variable[:len(data)]] 
+            data[0] += np.sum(parameter * values[:len(parameter)])
+            data[variable[:len(data)]] = 0
+        def traverse(node, variable, values):
+            if node.ast_type == 'AP':
+                change(node.expr.deter_data, variable, values)
+            elif node.ast_type == 'StAP':
+                #  print(node.prob)
+                change(node.expr.deter_data, variable, values)
+                change(node.prob.deter_data, variable, values)
+            else:
+                for f in node.formula_list:
+                    traverse(f, variable, values)
 
         # Build a deepcopy of the contract
         c = deepcopy(self)
 
-        # Sample the parameters N times
-        sampled_param = np.random.rand(N, len(self.parameters['param_names']))
-        for i in range(len(self.parameters['param_names'])):
-            sampled_param[:,1] *= self.parameters['bounds'][i,1] - self.parameters['bounds'][i,0]
-            sampled_param[:,1] += self.parameters['bounds'][i,0]
+        x_id = np.argmax(variable)
+        y_id = x_id + 1 + np.argmax(variable[x_id + 1:])
 
-        # Initialize the figure
         fig = plt.figure()
-        plt.xlabel(self.parameters['param_names'][0])
-        plt.ylabel(self.parameters['param_names'][1])
-        plt.xlim([self.parameters['bounds'][0,0], self.parameters['bounds'][0,1]])
-        plt.ylim([self.parameters['bounds'][1,0], self.parameters['bounds'][1,1]])
+        plt.xlabel(self.deter_var_list[x_id].name)
+        plt.ylabel(self.deter_var_list[y_id].name)
+        plt.xlim(self.deter_var_list[x_id].bound[0], self.deter_var_list[x_id].bound[1])
+        plt.ylim(self.deter_var_list[y_id].bound[0], self.deter_var_list[y_id].bound[1])
 
-        # Replace the parameters with parameter samples and solve an optimization probelem
         for i in range(N):
-            # Replace the parameters with parameter samples
-            tmp_assumption = self.assumption
-            tmp_guarantee = self.guarantee
-            for j in range(len(self.parameters['param_names'])):
-                tmp_assumption = tmp_assumption.replace(self.parameters['param_names'][j], str(sampled_param[i,j]))
-                tmp_guarantee = tmp_guarantee.replace(self.parameters['param_names'][j], str(sampled_param[i,j]))
-
-            # Resets a MILP Solver
-            solver.reset()
-
-            # Add a contract
-            c.set_assume(tmp_assumption)
-            c.set_guaran(tmp_guarantee)
-            solver.add_contract(c)
-
-            # Solve the problem
-            # print("Checking the set of parameters {}.".format(sampled_param[i,:]))
-            solved = solver.solve(objective='min')
-
-            # Print the counterexample
-            if solved:
+            #  print(sampled_param[i])
+            c.assumption = deepcopy(self.assumption)
+            traverse(c.assumption, variable, sampled_param[i])
+            c.guarantee = deepcopy(self.guarantee)
+            traverse(c.guarantee, variable, sampled_param[i])
+            #  print(c)
+            #  input()
+            if c.checkFeas(print_sol = False, verbose = False):
                 plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'go')
             else:
                 plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'ro')

@@ -793,7 +793,7 @@ class MILPSolver:
             expectation = node.expr.nondeter_data @self.contract.nondeter_var_mean[:nondeter_data_size]
             variance = node.expr.nondeter_data @self.contract.nondeter_var_cov[:nondeter_data_size, :nondeter_data_size]@ node.expr.nondeter_data.T
 
-            expr[0] += expectation + norm.ppf(node.prob) * math.sqrt(variance)
+            expr[0] += expectation + norm.ppf(node.probability()) * math.sqrt(variance)
 
         variables = np.nonzero(expr[1:])[0] + 1
 
