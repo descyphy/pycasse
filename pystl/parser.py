@@ -19,7 +19,7 @@ class Expression():
     def __init__(self, term = None):
         """ Constructor method """
         if isinstance(term, (int, float)):
-            self.deter_data = np.array([term])
+            self.deter_data = np.array([term], dtype = float)
             self.nondeter_data = np.empty(0)
         elif isinstance(term, pystl.variable.DeterVar):
             self.deter_data = np.zeros(term.idx + 1)
@@ -32,7 +32,10 @@ class Expression():
         elif isinstance(term, Expression):
             self.deter_data = term.deter_data
             self.nondeter_data = term.nondeter_data
-        else: assert(term == None)
+        else:
+            self.deter_data = np.zeros(1)
+            self.nondeter_data = np.empty(0)
+            assert(term == None)
     def __str__(self):
         """ Prints information of the contract """  
         res = ["{}".format(self.deter_data[0])]
@@ -45,6 +48,8 @@ class Expression():
     def __add__(self, other):
         other = Expression(other)
         res = Expression()
+        #  print(other)
+        #  print(res)
         if len(self.deter_data) > len(other.deter_data):
             res.deter_data = deepcopy(self.deter_data)
             if len(other.deter_data) > 0:
@@ -381,7 +386,8 @@ class Parser(NodeVisitor):
             return self.contract.deter_var_list[self.contract.deter_var_name2id[var]]
         elif var in self.contract.nondeter_var_name2id:
             return self.contract.nondeter_var_list[self.contract.nondeter_var_name2id[var]]
-        else: assert(False)
+        else:
+            raise ValueError("Undefined variable name {}.".format(var))
     def visit_operator(self, node, children):
         return node.text
     def visit_comparison(self, node, _):

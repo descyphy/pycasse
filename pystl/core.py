@@ -4,10 +4,10 @@ import numpy as np
 from copy import deepcopy
 import cplex
 from gurobipy import GRB
+from scipy.stats import norm
 from z3 import *
 from pystl.contracts import *
 from pystl.parser import *
-from scipy.stats import norm
 
 class SMCSolver:
     """
@@ -692,8 +692,12 @@ class MILPSolver:
 
             res.invert_ast_type()
 
-            if res.ast_type in ("AP", "StAP"):
-                res.expr *= -1
+            if res.ast_type == "AP":
+                res.expr = -1 * res.expr + EPS
+                assert(len(res.formula_list) == 0)
+            elif res.ast_type == "StAP":
+                res.expr = -1 * res.expr + EPS
+                res.prob = 1 - res.prob
                 assert(len(res.formula_list) == 0)
             else:
                 for i, f in enumerate(res.formula_list):
@@ -774,13 +778,13 @@ class MILPSolver:
             self.set_U_R_constraint(node, start_time, end_time)
         elif node.ast_type in ('And', 'Or'):
             self.set_and_or_constraint(node, start_time, end_time)
-        elif node.ast_type == 'Not': # Non-temporal unary operator
-            assert(node is false)
-            self.set_false_constraint(node, start_time, end_time)
         elif node.ast_type in ('True'):
             self.set_true_constraint(node, start_time, end_time)
+        elif node.ast_type in ('False'):
+            self.set_false_constraint(node, start_time, end_time)
+        elif node.ast_type == 'Not': # Non-temporal unary operator
+            assert(False)
         else:
-            print(node.ast_type)
             assert(False)
     def set_ap_stap_constraint(self, node, start_time = 0, end_time = 1):
         if (self.debug):

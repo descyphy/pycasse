@@ -154,10 +154,12 @@ class contract:
             assumption = deepcopy(self.assumption)
             guarantee = deepcopy(self.guarantee)
             self.sat_guarantee = assumption.implies(guarantee)
-    def checkCompat(self, print_sol=False):
+            return
+    def checkCompat(self, print_sol=False, verbose = True):
         """ Checks compatibility of the contract """
         # Build a MILP Solver
-        print("Checking compatibility of the contract {}...".format(self.id))
+        if verbose:
+            print("Checking compatibility of the contract {}...".format(self.id))
         solver = MILPSolver()
         # Add a contract
         self.saturate()
@@ -166,18 +168,20 @@ class contract:
         # Solve the problem
         solved = solver.solve()
         # Print the solution
-        if solved:
+        if verbose and solved:
             print("Contract {} is compatible.\n".format(self.id))
             if print_sol:
                 solver.print_solution()
-        else:
+        elif verbose and not solved:
             print("Contract {} is not compatible.\n".format(self.id))
-    def checkConsis(self, print_sol=False):
+        return solved
+    def checkConsis(self, print_sol=False, verbose = True):
         """ Checks consistency of the contract """
-#          # Build a MILP Solver
-        print("Checking consistency of the contract {}...".format(self.id))
+        # Build a MILP Solver
+        if verbose:
+            print("Checking consistency of the contract {}...".format(self.id))
         solver = MILPSolver()
-#
+
         # Add a contract
         self.saturate()
         solver.add_contract(self)
@@ -185,12 +189,13 @@ class contract:
         # Solve the problem
         solved = solver.solve()
         # Print the solution
-        if solved:
+        if verbose and solved:
             print("Contract {} is consistent.\n".format(self.id))
             if print_sol:
                 solver.print_solution()
-        else:
+        elif verbose and not solved:
             print("Contract {} is not consistent.\n".format(self.id))
+        return solved
     def checkFeas(self, print_sol=False, verbose = True):
         """ Checks feasibility of the contract """
 #          # Build a MILP Solver
@@ -205,12 +210,12 @@ class contract:
         # Solve the problem
         solved = solver.solve()
         # Print the solution
-        if solved and verbose:
+        if verbose and solved:
             print("Contract {} is feasible.\n".format(self.id))
             if print_sol:
                 print("Printing a behavior that satisfies both the assumption and guarantee of the contract {}...".format(self.id))
                 solver.print_solution()
-        elif not solved and verbose:
+        elif verbose and not solved:
             print("Contract {} is not feasible.\n".format(self.id))
         return solved
     def checkRefine(self, contract2refine, print_sol=False):
@@ -224,9 +229,9 @@ class contract:
 
         print("Checking whether contract {} refines contract {}...".format(self.id, contract2refine.id))
         solver = MILPSolver()
-        solver.add_contract(self)
+        solver.add_contract(c1)
 
-        assumption1 = self.assumption
+        assumption1 = deepcopy(c1.assumption)
         assumption2 = deepcopy(contract2refine.assumption)
         assumption2.transform(deter_id_map, nondeter_id_map)
 
@@ -243,9 +248,9 @@ class contract:
 
         # Resets a MILP Solver
         solver.reset()
-        solver.add_contract(self)
+        solver.add_contract(c1)
 
-        guarantee1 = self.guarantee
+        guarantee1 = deepcopy(c1.guarantee)
         guarantee2 = deepcopy(contract2refine.guarantee)
         guarantee2.transform(deter_id_map, nondeter_id_map)
         solver.add_constraint(~(guarantee1.implies(guarantee2)))
@@ -371,7 +376,8 @@ class contract:
             else:
                 plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'ro')
 
-        plt.savefig('test.jpg')
+        #  plt.show()
+        #  plt.savefig('test.jpg')
     def printInfo(self):
         print(str(self))
     def __str__(self):
