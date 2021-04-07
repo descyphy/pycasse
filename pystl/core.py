@@ -568,7 +568,7 @@ class MILPSolver:
     __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'constraints', 'dynamics'
             , 'solver', 'model', 'idx', 'node_variable', 'contract_variable')
 
-    def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi", debug = False):
+    def __init__(self, verbose=False, mode = "Boolean", solver = "Cplex", debug = False):
         assert(mode in ("Boolean", "Quantitative"))
         assert(solver in ("Gurobi", "Cplex"))
         #  print("====================================================================================")
@@ -895,9 +895,9 @@ class MILPSolver:
         for t in range(start_time, end_time):
             variable_idx = np.array([[node.idx], [t]])
             if self.mode == 'Boolean':
-                self.model_add_constraint(variable_idx, [1], 1, 'node')
+                self.model_add_constraint(variable_idx, np.ones(1), 1, 'node')
             elif self.mode == 'Quantitative':
-                self.model_add_constraint(variable_idx, [1], M, 'node')
+                self.model_add_constraint(variable_idx, np.ones(1), M, 'node')
             else: assert(False)
         if (self.debug):
             print("afer setting constraints for true")
@@ -911,9 +911,9 @@ class MILPSolver:
         for t in range(start_time, end_time):
             variable_idx = np.array([[node.idx], [t]])
             if self.mode == 'Boolean':
-                self.model_add_constraint(variable_idx, [1], 0, 'node')
+                self.model_add_constraint(variable_idx, np.ones(1), 0, 'node')
             elif self.mode == 'Quantitative':
-                self.model_add_constraint(variable_idx, [1], -M, 'node')
+                self.model_add_constraint(variable_idx, np.ones(1), -M, 'node')
             else: assert(False)
         if (self.debug):
             print("afer setting constraints for false")

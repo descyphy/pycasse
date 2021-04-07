@@ -139,10 +139,6 @@ class ASTObject():
         elif self.ast_type == "False":
             return "{} -> FALSE".format(self.idx)
         else: assert(False)
-    def U(self, interval, other):
-        return TemporalFormula("U", [self, other], interval)
-    def R(self, interval, other):
-        return TemporalFormula("R", [self, other], interval)
     def invert_ast_type(self):
         assert(self.ast_type in ("AP", "StAP", "G", "F", "U", "R", "And", "Or", "Not"))
         if self.ast_type in ("AP", "StAP"):
@@ -161,29 +157,6 @@ class ASTObject():
         else:
             for f in self.formula_list:
                 f.transform(deter_id_map, nondeter_id_map)
-    @staticmethod
-    def nontemporal_formula_construction(operator, formula_list, ignore_ap, drop_ap):
-        formula_list = [f for f in formula_list if f.ast_type != ignore_ap.ast_type]
-        if any(f.ast_type == drop_ap.ast_type for f in formula_list):
-            return drop_ap
-        elif len(formula_list) == 0:
-            return ignore_ap
-        elif len(formula_list) == 1:
-            return formula_list[0]
-        else:
-            res = []
-            for f in formula_list:
-                if f.ast_type != operator:
-                    res.append(f)
-                else:
-                    res.extend(f.formula_list)
-            return NontemporalFormula(operator, res)
-    def __and__(self, other):
-        return ASTObject.nontemporal_formula_construction("And", [self, other], true, false)
-    def __or__(self, other):
-        return ASTObject.nontemporal_formula_construction("Or", [self, other], false, true)
-    def implies(self, other):
-        return ~self | other
 
 class AtomicPredicate(ASTObject):
     """
@@ -303,26 +276,64 @@ class NontemporalFormula(ASTObject):
             res += '\n  '.join(repr(f).splitlines())
         return res
 
-def P(prob, ap):
-    return StochasticAtomicPredicate(ap.expr, prob)
-def G(interval, ap):
-    return TemporalFormula("G", [ap], interval)
-def F(interval, ap):
-    return TemporalFormula("F", [ap], interval)
 
 true = ASTObject("True")
 false = ASTObject("False")
 
-def Neg(self):
-    if self.ast_type == "Not":
-        return self.formula_list[0]
-    elif self.ast_type == "True":
+def Neg(ap):
+    if ap.ast_type == "Not":
+        return ap.formula_list[0]
+    elif ap.ast_type == "True":
         return false
-    elif self.ast_type == "False":
+    elif ap.ast_type == "False":
         return true
     else:
-        return NontemporalFormula("Not", [self])
+        return NontemporalFormula("Not", [ap])
+def nontemporal_formula_construction(operator, formula_list, ignore_ap, drop_ap):
+    formula_list = [f for f in formula_list if f.ast_type != ignore_ap.ast_type]
+    if any(f.ast_type == drop_ap.ast_type for f in formula_list):
+        return drop_ap
+    elif len(formula_list) == 0:
+        return ignore_ap
+    elif len(formula_list) == 1:
+        return formula_list[0]
+    else:
+        res = []
+        for f in formula_list:
+            if f.ast_type != operator:
+                res.append(f)
+            else:
+                res.extend(f.formula_list)
+        return NontemporalFormula(operator, res)
+def And(*argv):
+    assert(len(argv) >= 2)
+    return nontemporal_formula_construction("And", argv, true, false)
+def Or(*argv):
+    assert(len(argv) >= 2)
+    return nontemporal_formula_construction("Or", argv, false, true)
+def Implies(ap, other):
+    return ~ap | other
+def P(prob, ap):
+    return StochasticAtomicPredicate(ap.expr, prob)
+def Globally(interval, ap):
+    return TemporalFormula("G", [ap], interval)
+def Eventually(interval, ap):
+    return TemporalFormula("F", [ap], interval)
+def Until(interval, ap, other):
+    return TemporalFormula("U", [ap, other], interval)
+def Release(interval, ap, other):
+    return TemporalFormula("R", [ap, other], interval)
+def U_R_wrapper(op):
+    def f(_1, _2, _3):
+        return op(_2, _1, _3)
+    return f
+
 ASTObject.__invert__ = Neg
+ASTObject.__and__ = And
+ASTObject.__or__ = Or
+ASTObject.implies = Implies
+ASTObject.Until = U_R_wrapper(Until)
+ASTObject.Release = U_R_wrapper(Release)
 
 # Define Parser
 ststl_grammar = Grammar('''
@@ -449,22 +460,22 @@ class Parser(NodeVisitor):
         #  print(children)
         #  input()
         (_, _, _, interval, _, phi, _, _) = children
-        return F(interval, phi)
+        return Eventually(interval, phi)
     def visit_g(self, node, children):
         #  print(children)
         #  input()
         (_, _, _, interval, _, phi, _, _) = children
-        return G(interval, phi)
+        return Globally(interval, phi)
     def visit_u(self, node, children):
         #  print(children)
         #  input()
         (_, _, phi1, _, _, interval, _, phi2, _, _) = children
-        return phi1.U(interval, phi2)
+        return Until(interval, phi1, phi2)
     def visit_r(self, node, children):
         #  print(children)
         #  input()
         (_, _, phi1, _, _, interval, _, phi2, _, _) = children
-        return phi1.R(interval, phi2)
+        return Release(interval, phi1, phi2)
     def visit_phi(self, node, children):
         #  print("phi:{}".format(children))
         #  input()

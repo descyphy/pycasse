@@ -18,6 +18,10 @@ c1.saturate()                         # Saturate c1
 print(c1)
 input()
 
+#  print(And(x>0, y> 0, z>0))
+#  print((x>0) & (y> 0) & (z>0))
+print((x>0).Until([0,2], (y> 0)))
+input()
 #  print((x>0) | true)
 #  print((x>0) | false)
 #  print((x>0) & true)

@@ -8,12 +8,10 @@ c1 = contract('c1')                         # Create a contract c1
 [x] = c1.set_deter_uncontrolled_vars(['x']) # Set a deterministic uncontrolled variable
 [y] = c1.set_controlled_vars(['y'])         # Set a controlled variable
 
-c1.set_assume(G([0,3], x >= 5))             # Set/define the assumptions
-c1.set_guaran(G([1,4], y >= 2))             # Set/define the guarantees
-#  c1.set_assume('(G[0,3] (x => 5))')
-#  c1.set_guaran('(G[0,4] (y => 2))')
+c1.set_assume('(G[0,3] (x => 5))')
+c1.set_guaran('(G[0,4] (y => 2))')
 c1.saturate()                               # Saturate c1
-#  c1.printInfo()
+c1.printInfo()
 
 c1.checkCompat(print_sol=True)              # Check compatibility of c1
 c1.checkConsis(print_sol=True)              # Check consistency of c1
@@ -23,10 +21,8 @@ c2 = contract('c2')                         # Create a contract c2
 [x] = c2.set_deter_uncontrolled_vars(['x']) # Set a deterministic uncontrolled variable
 [y] = c2.set_controlled_vars(['y'])         # Set a controlled variable
 
-c2.set_assume(F([1,2], x >= 4))             # Set/define the assumptions
-c2.set_guaran(G([0,4], y >= 3))             # Set/define the guarantees such that c2 refines c1
-#  c2.set_assume('(F[1,2] (x => 4))')
-#  c2.set_guaran('(G[0,4] (y => 3))')
+c2.set_assume('(F[1,2] (x => 4))')
+c2.set_guaran('(G[0,4] (y => 3))')
 c2.saturate()                               # Saturate c2
 #  c2.printInfo()
 
@@ -38,10 +34,8 @@ c3 = contract('c3')                         # Create a contract c3
 [x] = c3.set_deter_uncontrolled_vars(['x']) # Set a deterministic uncontrolled variable
 [y] = c3.set_controlled_vars(['y'])         # Set a controlled variable
 
-c3.set_assume(F([1,2], x >= 4))             # Set/define the assumptions
-c3.set_guaran(G([0,4], y >= 1))             # Set/define the guarantees such that c2 refines c1
-# c3.set_assume('(F[1,2] (x => 4))')
-# c3.set_guaran('(G[0,4] (y => 1))')
+c3.set_assume('(F[1,2] (x => 4))')
+c3.set_guaran('(G[0,4] (y => 1))')
 c3.saturate()                               # Saturate c3
 #  c3.printInfo()
 
