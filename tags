@@ -1,0 +1,258 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+A	tests/test_dyn.py	/^A = np.array([[1, 1], [0, 1]])$/;"	v
+ASTObject	pystl/parser.py	/^class ASTObject():$/;"	c
+And	pystl/parser.py	/^def And(*argv):$/;"	f
+AtomicPredicate	pystl/parser.py	/^class AtomicPredicate(ASTObject):$/;"	c
+B	tests/test_dyn.py	/^B = np.array([[0], [1]])$/;"	v
+DQN	tests/OpenAIGym/test.py	/^class DQN:$/;"	c
+DeterVar	pystl/variable.py	/^class DeterVar(Var):$/;"	c
+Dynamics	pystl/dynamics.py	/^class Dynamics:$/;"	c
+EPS	pystl/variable.py	/^EPS = float(10**-4)$/;"	v
+Equation	pystl/dynamics.py	/^class Equation:$/;"	c
+Eventually	pystl/parser.py	/^def Eventually(interval, ap):$/;"	f
+Expression	pystl/parser.py	/^class Expression():$/;"	c
+Globally	pystl/parser.py	/^def Globally(interval, ap):$/;"	f
+Implies	pystl/parser.py	/^def Implies(ap, other):$/;"	f
+M	pystl/variable.py	/^M = float(10**4)$/;"	v
+MILPSolver	pystl/core.py	/^class MILPSolver:$/;"	c
+Neg	pystl/parser.py	/^def Neg(ap):$/;"	f
+Next	pystl/dynamics.py	/^def Next(other):$/;"	f
+NondeterVar	pystl/variable.py	/^class NondeterVar(Var):$/;"	c
+NontemporalFormula	pystl/parser.py	/^class NontemporalFormula(ASTObject):$/;"	c
+Or	pystl/parser.py	/^def Or(*argv):$/;"	f
+P	pystl/parser.py	/^def P(prob, ap):$/;"	f
+Parser	pystl/parser.py	/^class Parser(NodeVisitor):$/;"	c
+Release	pystl/parser.py	/^def Release(interval, ap, other):$/;"	f
+SMCSolver	pystl/core.py	/^class SMCSolver:$/;"	c
+StochasticAtomicPredicate	pystl/parser.py	/^class StochasticAtomicPredicate(ASTObject):$/;"	c
+TemporalFormula	pystl/parser.py	/^class TemporalFormula(ASTObject):$/;"	c
+U_R_wrapper	pystl/parser.py	/^def U_R_wrapper(op):$/;"	f
+Until	pystl/parser.py	/^def Until(interval, ap, other):$/;"	f
+VIDEO_PATH	tests/OpenAIGym/test.py	/^VIDEO_PATH = "exp1.mp4"$/;"	v
+Var	pystl/variable.py	/^class Var:$/;"	c
+__add__	pystl/dynamics.py	/^    def __add__(self, other):$/;"	m	class:Dynamics	file:
+__add__	pystl/parser.py	/^    def __add__(self, other):$/;"	m	class:Expression	file:
+__add__	pystl/variable.py	/^    def __add__(self, other):$/;"	m	class:Var	file:
+__call__	pystl/parser.py	/^    def __call__(self, formula: str, rule: str = "phi"):$/;"	m	class:Parser	file:
+__eq__	pystl/dynamics.py	/^    def __eq__(self, other):$/;"	m	class:Dynamics	file:
+__eq__	pystl/parser.py	/^    def __eq__(self, other):$/;"	m	class:Expression	file:
+__eq__	pystl/variable.py	/^    def __eq__(self, other):$/;"	m	class:Var	file:
+__ge__	pystl/parser.py	/^    def __ge__(self, other):$/;"	m	class:Expression	file:
+__ge__	pystl/variable.py	/^    def __ge__(self, other):$/;"	m	class:Var	file:
+__gt__	pystl/parser.py	/^    def __gt__(self, other):$/;"	m	class:Expression	file:
+__gt__	pystl/variable.py	/^    def __gt__(self, other):$/;"	m	class:Var	file:
+__init__	pystl/contracts.py	/^    def __init__(self, id = ''):$/;"	m	class:contract
+__init__	pystl/core.py	/^    def __init__(self, verbose=False, mode = "Boolean", solver = "Cplex", debug = False):$/;"	m	class:MILPSolver
+__init__	pystl/core.py	/^    def __init__(self, verbose=False, solver='gurobi'):$/;"	m	class:SMCSolver
+__init__	pystl/dynamics.py	/^    def __init__(self, dynamic):$/;"	m	class:Equation
+__init__	pystl/dynamics.py	/^    def __init__(self, var_list, time = 0):$/;"	m	class:Dynamics
+__init__	pystl/parser.py	/^    def __init__(self, ast_type, formula_list = []):$/;"	m	class:ASTObject
+__init__	pystl/parser.py	/^    def __init__(self, contract):$/;"	m	class:Parser
+__init__	pystl/parser.py	/^    def __init__(self, expr):$/;"	m	class:AtomicPredicate
+__init__	pystl/parser.py	/^    def __init__(self, expr, prob):$/;"	m	class:StochasticAtomicPredicate
+__init__	pystl/parser.py	/^    def __init__(self, operator, formula_list):$/;"	m	class:NontemporalFormula
+__init__	pystl/parser.py	/^    def __init__(self, operator, formula_list, interval):$/;"	m	class:TemporalFormula
+__init__	pystl/parser.py	/^    def __init__(self, term = None):$/;"	m	class:Expression
+__init__	pystl/variable.py	/^    def __init__(self, name, idx):$/;"	m	class:Var
+__init__	pystl/variable.py	/^    def __init__(self, name, idx, data_type = 'GAUSSIAN'):$/;"	m	class:NondeterVar
+__init__	pystl/variable.py	/^    def __init__(self, name, idx, var_type, data_type = 'CONTINUOUS', bound = None):$/;"	m	class:DeterVar
+__init__	tests/OpenAIGym/test.py	/^    def __init__(self, action_space, state_space):$/;"	m	class:DQN
+__le__	pystl/parser.py	/^    def __le__(self, other):$/;"	m	class:Expression	file:
+__le__	pystl/variable.py	/^    def __le__(self, other):$/;"	m	class:Var	file:
+__lt__	pystl/parser.py	/^    def __lt__(self, other):$/;"	m	class:Expression	file:
+__lt__	pystl/variable.py	/^    def __lt__(self, other):$/;"	m	class:Var	file:
+__mul__	pystl/dynamics.py	/^    def __mul__(self, other):$/;"	m	class:Dynamics	file:
+__mul__	pystl/parser.py	/^    def __mul__(self, other):$/;"	m	class:Expression	file:
+__mul__	pystl/variable.py	/^    def __mul__(self, other):$/;"	m	class:Var	file:
+__radd__	pystl/parser.py	/^    def __radd__(self, other):$/;"	m	class:Expression	file:
+__radd__	pystl/variable.py	/^    def __radd__(self, other):$/;"	m	class:Var	file:
+__repr__	pystl/contracts.py	/^    def __repr__(self):$/;"	m	class:contract	file:
+__repr__	pystl/dynamics.py	/^    def __repr__(self):$/;"	m	class:Dynamics	file:
+__repr__	pystl/dynamics.py	/^    def __repr__(self):$/;"	m	class:Equation	file:
+__repr__	pystl/parser.py	/^    def __repr__(self):$/;"	m	class:ASTObject	file:
+__repr__	pystl/parser.py	/^    def __repr__(self):$/;"	m	class:AtomicPredicate	file:
+__repr__	pystl/parser.py	/^    def __repr__(self):$/;"	m	class:Expression	file:
+__repr__	pystl/parser.py	/^    def __repr__(self):$/;"	m	class:NontemporalFormula	file:
+__repr__	pystl/parser.py	/^    def __repr__(self):$/;"	m	class:StochasticAtomicPredicate	file:
+__repr__	pystl/parser.py	/^    def __repr__(self):$/;"	m	class:TemporalFormula	file:
+__repr__	pystl/variable.py	/^    def __repr__(self):$/;"	m	class:DeterVar	file:
+__repr__	pystl/variable.py	/^    def __repr__(self):$/;"	m	class:NondeterVar	file:
+__rmul__	pystl/parser.py	/^    def __rmul__(self, other):$/;"	m	class:Expression	file:
+__rmul__	pystl/variable.py	/^    def __rmul__(self, other):$/;"	m	class:Var	file:
+__rsub__	pystl/parser.py	/^    def __rsub__(self, other):$/;"	m	class:Expression	file:
+__rsub__	pystl/variable.py	/^    def __rsub__(self, other):$/;"	m	class:Var	file:
+__slots__	pystl/contracts.py	/^    __slots__ = ('id', 'deter_var_list', 'deter_var_name2id', 'nondeter_var_list', 'nondeter_var_name2id', 'nondeter_var_mean', 'nondeter_var_cov', 'assumption', 'guarantee', 'sat_guarantee', 'isSat')$/;"	v	class:contract
+__slots__	pystl/core.py	/^    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'constraints', 'dynamics'$/;"	v	class:MILPSolver
+__slots__	pystl/parser.py	/^    __slots__ = ('deter_data', 'nondeter_data')$/;"	v	class:Expression
+__slots__	pystl/parser.py	/^    __slots__ = ('expr')$/;"	v	class:AtomicPredicate
+__slots__	pystl/parser.py	/^    __slots__ = ('expr', 'prob')$/;"	v	class:StochasticAtomicPredicate
+__slots__	pystl/parser.py	/^    __slots__ = ('idx', 'ast_type', 'formula_list')$/;"	v	class:ASTObject
+__slots__	pystl/parser.py	/^    __slots__ = ('interval')$/;"	v	class:TemporalFormula
+__slots__	pystl/variable.py	/^    __slots__ = ('data_type')$/;"	v	class:NondeterVar
+__slots__	pystl/variable.py	/^    __slots__ = ('name', 'idx')$/;"	v	class:Var
+__slots__	pystl/variable.py	/^    __slots__ = ('var_type', 'data_type', 'bound')$/;"	v	class:DeterVar
+__str__	pystl/contracts.py	/^    def __str__(self):$/;"	m	class:contract	file:
+__str__	pystl/dynamics.py	/^    def __str__(self):$/;"	m	class:Dynamics	file:
+__str__	pystl/parser.py	/^    def __str__(self):$/;"	m	class:ASTObject	file:
+__str__	pystl/parser.py	/^    def __str__(self):$/;"	m	class:AtomicPredicate	file:
+__str__	pystl/parser.py	/^    def __str__(self):$/;"	m	class:Expression	file:
+__str__	pystl/parser.py	/^    def __str__(self):$/;"	m	class:NontemporalFormula	file:
+__str__	pystl/parser.py	/^    def __str__(self):$/;"	m	class:StochasticAtomicPredicate	file:
+__str__	pystl/parser.py	/^    def __str__(self):$/;"	m	class:TemporalFormula	file:
+__str__	pystl/variable.py	/^    def __str__(self):$/;"	m	class:DeterVar	file:
+__str__	pystl/variable.py	/^    def __str__(self):$/;"	m	class:NondeterVar	file:
+__sub__	pystl/dynamics.py	/^    def __sub__(self, other):$/;"	m	class:Dynamics	file:
+__sub__	pystl/parser.py	/^    def __sub__(self, other):$/;"	m	class:Expression	file:
+__sub__	pystl/variable.py	/^    def __sub__(self, other):$/;"	m	class:Var	file:
+__truediv__	pystl/dynamics.py	/^    def __truediv__(self, other):$/;"	m	class:Dynamics	file:
+__truediv__	pystl/parser.py	/^    def __truediv__(self, other):$/;"	m	class:Expression	file:
+__truediv__	pystl/variable.py	/^    def __truediv__(self, other):$/;"	m	class:Var	file:
+act	tests/OpenAIGym/test.py	/^    def act(self, state):$/;"	m	class:DQN
+add	pystl/dynamics.py	/^    def add(self, multiplier):$/;"	m	class:Dynamics
+add_Bool_constraints	pystl/core.py	/^    def add_Bool_constraints(self):$/;"	m	class:SMCSolver
+add_SAT_constraints	pystl/core.py	/^    def add_SAT_constraints(self, conflict_assignments):$/;"	m	class:SMCSolver
+add_constraint	pystl/core.py	/^    def add_constraint(self, constraint):$/;"	m	class:MILPSolver
+add_constraints	pystl/core.py	/^    def add_constraints(self):$/;"	m	class:SMCSolver
+add_contract	pystl/core.py	/^    def add_contract(self, contract):$/;"	m	class:MILPSolver
+add_contract	pystl/core.py	/^    def add_contract(self, contract):$/;"	m	class:SMCSolver
+add_contract_constraints	pystl/core.py	/^    def add_contract_constraints(self, parse_tree_node, start_time = 0, end_time = 0):$/;"	m	class:SMCSolver
+add_dyn_constraints	pystl/core.py	/^    def add_dyn_constraints(self):$/;"	m	class:SMCSolver
+add_dynamic	pystl/core.py	/^    def add_dynamic(self, dynamic):$/;"	m	class:MILPSolver
+add_dynamics	pystl/core.py	/^    def add_dynamics(self, dynamics):$/;"	m	class:SMCSolver
+author	setup.py	/^      author='Chanwook Oh',$/;"	v
+author_email	setup.py	/^      author_email='chanwooo@usc.edu',$/;"	v
+build_model	tests/OpenAIGym/test.py	/^    def build_model(self):$/;"	m	class:DQN
+c	tests/test_contracts_quotient.py	/^c = contract('c')                     # Create a contract c$/;"	v
+c	tests/test_dyn.py	/^c = contract('c')                                                  # Create a contract c$/;"	v
+c	tests/test_parameteric.py	/^c = contract('c')                                                # Create a contract c$/;"	v
+c1	tests/test_contracts_combine.py	/^c1 = contract('c1')                   # Create a contract c1$/;"	v
+c1	tests/test_contracts_stl.py	/^c1 = contract('c1')                         # Create a contract c1$/;"	v
+c1	tests/test_contracts_ststl.py	/^c1 = contract('c1')                                                      # Create a contract c1$/;"	v
+c1	tests/test_parser.py	/^c1 = contract('c1')                   # Create a contract c1$/;"	v
+c12_comp	tests/test_contracts_combine.py	/^c12_comp = composition(c1, c2)        # Composition of c1 and c2$/;"	v
+c12_conj	tests/test_contracts_combine.py	/^c12_conj = conjunction(c1, c2)        # Conjunction of c1 and c2$/;"	v
+c2	tests/test_contracts_combine.py	/^c2 = contract('c2')                   # Create a contract c2$/;"	v
+c2	tests/test_contracts_quotient.py	/^c2 = contract('c2')                   # Create a contract c2$/;"	v
+c2	tests/test_contracts_stl.py	/^c2 = contract('c2')                         # Create a contract c2$/;"	v
+c2	tests/test_contracts_ststl.py	/^c2 = contract('c2')                                  # Create a contract c2$/;"	v
+c2_comp	tests/test_contracts_quotient.py	/^c2_comp = composition(c2_quo, c2)     # Composition of c2_quo and c2$/;"	v
+c2_quo	tests/test_contracts_quotient.py	/^c2_quo = quotient(c, c2)              # Quotient c\/c2$/;"	v
+c3	tests/test_contracts_stl.py	/^c3 = contract('c3')                         # Create a contract c3$/;"	v
+c3	tests/test_contracts_ststl.py	/^c3 = contract('c3')                                  # Create a contract c3$/;"	v
+change	pystl/contracts.py	/^        def change(data, variable, values):$/;"	f	function:contract.find_opt_param
+checkCompat	pystl/contracts.py	/^    def checkCompat(self, print_sol=False, verbose = True):$/;"	m	class:contract
+checkConsis	pystl/contracts.py	/^    def checkConsis(self, print_sol=False, verbose = True):$/;"	m	class:contract
+checkFeas	pystl/contracts.py	/^    def checkFeas(self, print_sol=False, verbose = True):$/;"	m	class:contract
+checkRefine	pystl/contracts.py	/^    def checkRefine(self, contract2refine, print_sol=False):$/;"	m	class:contract
+composition	pystl/contracts.py	/^def composition(c1, c2):$/;"	f
+conjunction	pystl/contracts.py	/^def conjunction(c1, c2):$/;"	f
+contract	pystl/contracts.py	/^class contract:$/;"	c
+description	setup.py	/^      description='Python Module for Reasoning with Contracts written in STL or StSTL',$/;"	v
+done	tests/OpenAIGym/test_manual.py	/^done = False$/;"	v
+e1	tests/test_ast.py	/^e1 = Expression("x1 + x2 + 3 x3+ 5 a")$/;"	v
+e2	tests/test_ast.py	/^e2 = Expression("245 - 4a")$/;"	v
+end	tests/test_dyn.py	/^end = time.time()$/;"	v
+env	tests/OpenAIGym/test.py	/^env = gym.make('MountainCar-v0')$/;"	v
+env	tests/OpenAIGym/test_manual.py	/^env = gym.make('highway-v0')$/;"	v
+env	tests/OpenAIGym/test_manual.py	/^env = gym.wrappers.Monitor(env, ".\/vid", video_callable=lambda episode_id: True,force=True)$/;"	v
+episodes	tests/OpenAIGym/test.py	/^    episodes = 5$/;"	v
+f	pystl/parser.py	/^    def f(_1, _2, _3):$/;"	f	function:U_R_wrapper
+false	pystl/parser.py	/^false = ASTObject("False")$/;"	v
+find_conflicts	pystl/core.py	/^    def find_conflicts(self, certificate):$/;"	m	class:SMCSolver
+find_opt_param	pystl/contracts.py	/^    def find_opt_param(self, objective, N=100):$/;"	m	class:contract
+generic_visit	pystl/parser.py	/^    def generic_visit(self, _, children):$/;"	m	class:Parser
+get_reward	tests/OpenAIGym/test.py	/^def get_reward(state):$/;"	f
+implies	pystl/parser.py	/^        def implies(x, y):$/;"	f	function:Parser.visit_implies_outer
+invert_ast_type	pystl/parser.py	/^    def invert_ast_type(self):$/;"	m	class:ASTObject
+loss	tests/OpenAIGym/test.py	/^    loss = train_dqn(episodes)$/;"	v
+merge	pystl/dynamics.py	/^    def merge(self, other, multiplier):$/;"	m	class:Dynamics
+merge_contract	pystl/contracts.py	/^    def merge_contract(self, contract):$/;"	m	class:contract
+model_add_binary_variable	pystl/core.py	/^    def model_add_binary_variable(self, idx, time, var_type = 'node'):$/;"	m	class:MILPSolver
+model_add_binary_variable_by_name	pystl/core.py	/^    def model_add_binary_variable_by_name(self, name):$/;"	m	class:MILPSolver
+model_add_constraint	pystl/core.py	/^    def model_add_constraint(self, variable, multiplier, rhs, var_type = 'contract'):$/;"	m	class:MILPSolver
+model_add_constraint_and	pystl/core.py	/^    def model_add_constraint_and(self, var, var_list):$/;"	m	class:MILPSolver
+model_add_constraint_or	pystl/core.py	/^    def model_add_constraint_or(self, var, var_list):$/;"	m	class:MILPSolver
+model_add_continous_variable	pystl/core.py	/^    def model_add_continous_variable(self, idx, time, lb = -M, ub = M, var_type = 'node'):$/;"	m	class:MILPSolver
+model_add_continuous_variable_by_name	pystl/core.py	/^    def model_add_continuous_variable_by_name(self, name, lb = -M, ub = M):$/;"	m	class:MILPSolver
+model_add_inequality_constraint	pystl/core.py	/^    def model_add_inequality_constraint(self, node_idx, time, expr):$/;"	m	class:MILPSolver
+nontemporal_formula_construction	pystl/parser.py	/^def nontemporal_formula_construction(operator, formula_list, ignore_ap, drop_ap):$/;"	f
+nontemporal_op_inner	pystl/parser.py	/^    def nontemporal_op_inner(self, _, children):$/;"	m	class:Parser
+p	tests/test_parser.py	/^p = Parser(c1)$/;"	v
+packages	setup.py	/^      packages=find_packages(),$/;"	v
+preprocess	pystl/core.py	/^    def preprocess(self):$/;"	m	class:MILPSolver
+preprocess_constraint	pystl/core.py	/^    def preprocess_constraint(self, node, end_time):$/;"	m	class:MILPSolver
+printInfo	pystl/contracts.py	/^    def printInfo(self):$/;"	m	class:contract
+print_solution	pystl/core.py	/^    def print_solution(self):$/;"	m	class:MILPSolver
+probability	pystl/parser.py	/^    def probability(self):$/;"	m	class:StochasticAtomicPredicate
+quotient	pystl/contracts.py	/^def quotient(c, c2):$/;"	f
+randomAction	tests/OpenAIGym/test_manual.py	/^    randomAction = env.action_space.sample()$/;"	v
+remember	tests/OpenAIGym/test.py	/^    def remember(self, state, action, reward, next_state, done):$/;"	m	class:DQN
+replay	tests/OpenAIGym/test.py	/^    def replay(self):$/;"	m	class:DQN
+reset	pystl/core.py	/^    def reset(self):$/;"	m	class:MILPSolver
+saturate	pystl/contracts.py	/^    def saturate(self):$/;"	m	class:contract
+separation	pystl/contracts.py	/^def separation(c, c2):$/;"	f
+set_G_F_constraint	pystl/core.py	/^    def set_G_F_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
+set_U_R_constraint	pystl/core.py	/^    def set_U_R_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
+set_and_or_constraint	pystl/core.py	/^    def set_and_or_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
+set_ap_stap_constraint	pystl/core.py	/^    def set_ap_stap_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
+set_assume	pystl/contracts.py	/^    def set_assume(self, assumption):$/;"	m	class:contract
+set_constraint	pystl/core.py	/^    def set_constraint(self, constraint):$/;"	m	class:MILPSolver
+set_controlled_vars	pystl/contracts.py	/^    def set_controlled_vars(self, var_names, dtypes = None, bounds = None):$/;"	m	class:contract
+set_deter_uncontrolled_vars	pystl/contracts.py	/^    def set_deter_uncontrolled_vars(self, var_names, dtypes = None, bounds = None):$/;"	m	class:contract
+set_dynamic	pystl/core.py	/^    def set_dynamic(self, dynamic):$/;"	m	class:MILPSolver
+set_false_constraint	pystl/core.py	/^    def set_false_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
+set_guaran	pystl/contracts.py	/^    def set_guaran(self, guarantee):$/;"	m	class:contract
+set_node_constraint	pystl/core.py	/^    def set_node_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
+set_nondeter_uncontrolled_vars	pystl/contracts.py	/^    def set_nondeter_uncontrolled_vars(self, var_names, mean, cov, dtypes = None):$/;"	m	class:contract
+set_params	pystl/contracts.py	/^    def set_params(self, param_names, dtypes = None, bounds = None):$/;"	m	class:contract
+set_true_constraint	pystl/core.py	/^    def set_true_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
+solve	pystl/core.py	/^    def solve(self, certificate='SSF'):$/;"	m	class:SMCSolver
+solve	pystl/core.py	/^    def solve(self, objective=None):$/;"	m	class:MILPSolver
+solve_SAT	pystl/core.py	/^    def solve_SAT(self):$/;"	m	class:SMCSolver
+solve_main_convex	pystl/core.py	/^    def solve_main_convex(self):$/;"	m	class:SMCSolver
+solved	tests/test_dyn.py	/^solved = solver.solve()$/;"	v
+solver	tests/test_dyn.py	/^solver = MILPSolver()$/;"	v
+start	tests/test_dyn.py	/^start = time.time()$/;"	v
+state	tests/OpenAIGym/test_manual.py	/^state = env.reset()$/;"	v
+train_dqn	tests/OpenAIGym/test.py	/^def train_dqn(episode):$/;"	f
+transform	pystl/parser.py	/^    def transform(self, deter_id_map, nondeter_id_map):$/;"	m	class:ASTObject
+transform	pystl/parser.py	/^    def transform(self, deter_id_map, nondeter_id_map):$/;"	m	class:Expression
+traverse	pystl/contracts.py	/^        def traverse(node, variable, values):$/;"	f	function:contract.find_opt_param
+true	pystl/parser.py	/^true = ASTObject("True")$/;"	v
+u	tests/test_dyn.py	/^u = Dynamics([u1])$/;"	v
+version	setup.py	/^      version='1.1.0',$/;"	v
+visit_AP	pystl/parser.py	/^    def visit_AP(self, node, children):$/;"	m	class:Parser
+visit_and_inner	pystl/parser.py	/^    visit_and_inner = nontemporal_op_inner$/;"	v	class:Parser
+visit_and_outer	pystl/parser.py	/^    def visit_and_outer(self, node, children):$/;"	m	class:Parser
+visit_comparison	pystl/parser.py	/^    def visit_comparison(self, node, _):$/;"	m	class:Parser
+visit_const	pystl/parser.py	/^    def visit_const(self, node, _):$/;"	m	class:Parser
+visit_const_variable	pystl/parser.py	/^    def visit_const_variable(self, node, children):$/;"	m	class:Parser
+visit_expression_inner	pystl/parser.py	/^    def visit_expression_inner(self, node, children):$/;"	m	class:Parser
+visit_expression_outer	pystl/parser.py	/^    def visit_expression_outer(self, node, children):$/;"	m	class:Parser
+visit_f	pystl/parser.py	/^    def visit_f(self, node, children):$/;"	m	class:Parser
+visit_false	pystl/parser.py	/^    def visit_false(self, node, children):$/;"	m	class:Parser
+visit_g	pystl/parser.py	/^    def visit_g(self, node, children):$/;"	m	class:Parser
+visit_implies_inner	pystl/parser.py	/^    visit_implies_inner = nontemporal_op_inner$/;"	v	class:Parser
+visit_implies_outer	pystl/parser.py	/^    def visit_implies_outer(self, node, children):$/;"	m	class:Parser
+visit_interval	pystl/parser.py	/^    def visit_interval(self, node, children):$/;"	m	class:Parser
+visit_neg	pystl/parser.py	/^    def visit_neg(self, _, children):$/;"	m	class:Parser
+visit_operator	pystl/parser.py	/^    def visit_operator(self, node, children):$/;"	m	class:Parser
+visit_or_inner	pystl/parser.py	/^    visit_or_inner = nontemporal_op_inner$/;"	v	class:Parser
+visit_or_outer	pystl/parser.py	/^    def visit_or_outer(self, node, children):$/;"	m	class:Parser
+visit_paren_phi	pystl/parser.py	/^    def visit_paren_phi(self, node, children):$/;"	m	class:Parser
+visit_phi	pystl/parser.py	/^    def visit_phi(self, node, children):$/;"	m	class:Parser
+visit_r	pystl/parser.py	/^    def visit_r(self, node, children):$/;"	m	class:Parser
+visit_stAP	pystl/parser.py	/^    def visit_stAP(self, node, children):$/;"	m	class:Parser
+visit_term	pystl/parser.py	/^    def visit_term(self, node, children):$/;"	m	class:Parser
+visit_true	pystl/parser.py	/^    def visit_true(self, node, children):$/;"	m	class:Parser
+visit_u	pystl/parser.py	/^    def visit_u(self, node, children):$/;"	m	class:Parser
+visit_variable	pystl/parser.py	/^    def visit_variable(self, node, _):$/;"	m	class:Parser
+x	tests/test_dyn.py	/^x = Dynamics([x1, x2])$/;"	v
+x	tests/test_var.py	/^x = DeterVar('x', 1, 'controlled')$/;"	v
+y	tests/test_var.py	/^y = DeterVar('y', 2, 'controlled', bounds = np.array([0,5]))$/;"	v
+z	tests/test_var.py	/^z = NondeterVar('z', 0)$/;"	v
