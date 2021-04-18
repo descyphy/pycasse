@@ -617,7 +617,7 @@ class MILPSolver:
 		"""
 		self.dynamics = dynamics
 
-	def add_constraints(self):
+	def add_constraints(self, approx=None):
 		"""
 		Adds contraints to the solvers.
 		"""
@@ -634,14 +634,24 @@ class MILPSolver:
 		self.start_time = start_time
 		self.end_time = end_time
 
+		# Add parameters, if they exists
+		if not not self.contract.parameters['param_names']:
+			for i, param in enumerate(self.contract.parameters['param_names']):
+				lb = self.contract.parameters['bounds'][i,0]
+				ub = self.contract.parameters['bounds'][i,1]
+				self.MILP_convex_var[param] = self.MILP_convex_solver.addVar(vtype=GRB.CONTINUOUS, lb=lb, ub=ub, name=param)
+
+		# Update the MILP convex solver
+		self.MILP_convex_solver.update()
+
 		# Add the constraints from the dynamics
 		if self.dynamics is not None:
 			self.add_dyn_constraints()
 
 		# Add the constraints from the parse tree
-		self.add_contract_constraints(parse_tree_root)
+		self.add_contract_constraints(parse_tree_root, approx=approx)
 
-	def add_contract_constraints(self, parse_tree_node, start_time = 0, end_time = 0, mode='Qualitative'):
+	def add_contract_constraints(self, parse_tree_node, start_time = 0, end_time = 0, mode='Qualitative', approx=None):
 		"""
 		Adds SAT and convex constraints from a contract to SAT and convex solvers.
 		"""
@@ -656,9 +666,11 @@ class MILPSolver:
 
 		if parse_tree_node.name == 'b':
 			if mode == 'Qualitative':
-				self.MILP_convex_solver.addConstr(self.MILP_convex_var['b_t_0'] == 1)
+				if approx is None:
+					self.MILP_convex_solver.addConstr(self.MILP_convex_var['b_t_0'] == 1)
 			else:
-				self.MILP_convex_solver.addConstr(self.MILP_convex_var['b_t_0'] >= 0)
+				if approx is None:
+					self.MILP_convex_solver.addConstr(self.MILP_convex_var['b_t_0'] >= 0)
 		
 		# Update the MILP convex solver
 		self.MILP_convex_solver.update()
@@ -723,6 +735,7 @@ class MILPSolver:
 				# Update the MILP convex solver
 				self.MILP_convex_solver.update()
 			
+			# Build 
 			w_vars = self.contract.nondeter_uncontrolled_vars['var_names']
 			if w_vars != []:
 				a = np.zeros(len(w_vars))
@@ -736,10 +749,12 @@ class MILPSolver:
 				# Fetch multipliers of variables
 				for k, v in var_dict.items():
 					if k is not None:
-						if 'w' not in k:
-							tmp_mean += v*self.MILP_convex_var[k+'_'+str(t)]
-						else: # TODO: tmp_mean and tmp_var for 'w'
+						if 'c' in k:
+							tmp_mean += v*self.MILP_convex_var[k]
+						elif 'w' in k:
 							a[w_vars.index(k)] = v
+						else:
+							tmp_mean += v*self.MILP_convex_var[k+'_'+str(t)]
 					else:
 						tmp_mean += v
 
@@ -749,12 +764,56 @@ class MILPSolver:
 						self.MILP_convex_solver.addConstr((self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 1) >> (tmp_mean <= 0))
 						self.MILP_convex_solver.addConstr((self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == 0) >> (tmp_mean >= EPS))
 					else:
-						self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == tmp_mean <= 0)
+						self.MILP_convex_solver.addConstr(self.MILP_convex_var[parse_tree_node.name+'_t_'+str(t)] == tmp_mean)
 
 				else: # 'StAP'
 					tmp_mean += a@self.contract.nondeter_uncontrolled_vars['mean']
 					tmp_var += a@self.contract.nondeter_uncontrolled_vars['cov']@a.T
-					tmp = tmp_mean + norm.ppf(parse_tree_node.prob)*math.sqrt(tmp_var)
+
+					if approx == 'sufficient':
+						prob_param = parse_tree_node.prob
+						prob_param_idx = self.contract.parameters['param_names'].index(prob_param)
+						prob_param_bound = self.contract.parameters['bounds'][prob_param_idx, :]
+
+						if prob_param_bound[1] <= 0.5:
+							prob_param_bound_mean = np.mean(prob_param_bound)
+							tmp = tmp_mean + (norm.ppf(prob_param_bound_mean) + 1/norm.pdf(norm.ppf(prob_param_bound_mean)) * (self.MILP_convex_var[prob_param]-prob_param_bound_mean)) * math.sqrt(tmp_var)
+						else:
+							if prob_param_bound[0] == 0:
+								p_low = 10**-12
+							else:
+								p_low = prob_param_bound[0]
+
+							if prob_param_bound[1] == 1:
+								p_high = 1 - 10**-12
+							else:
+								p_high = prob_param_bound[1]
+
+							tmp = tmp_mean + (norm.ppf(p_low) + (norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low) * (self.MILP_convex_var[prob_param]-prob_param_bound[0])) * math.sqrt(tmp_var)
+
+					elif approx == 'necessary':
+						prob_param = parse_tree_node.prob
+						prob_param_idx = self.contract.parameters['param_names'].index(prob_param)
+						prob_param_bound = self.contract.parameters['bounds'][prob_param_idx, :]
+
+						if prob_param_bound[1] <= 0.5:
+							if prob_param_bound[0] == 0:
+								p_low = 10**-12
+							else:
+								p_low = prob_param_bound[0]
+
+							if prob_param_bound[1] == 1:
+								p_high = 1 - 10**-12
+							else:
+								p_high = prob_param_bound[1]
+
+							tmp = tmp_mean + (norm.ppf(p_low) + (norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low) * (self.MILP_convex_var[prob_param]-prob_param_bound[0])) * math.sqrt(tmp_var)
+						else:
+							prob_param_bound_mean = np.mean(prob_param_bound)
+							tmp = tmp_mean + (norm.ppf(prob_param_bound_mean) + 1/norm.pdf(norm.ppf(prob_param_bound_mean)) * (self.MILP_convex_var[prob_param]-prob_param_bound_mean)) * math.sqrt(tmp_var)
+
+					else:
+						tmp = tmp_mean + norm.ppf(parse_tree_node.prob)*math.sqrt(tmp_var)
 
 					tmp_eval = None
 					if mode == 'Qualitative':
@@ -805,8 +864,6 @@ class MILPSolver:
 
 				# Recursion
 				self.add_contract_constraints(subformula, start_time=start_time+parse_tree_node.start_time, end_time=end_time+parse_tree_node.end_time)
-				
-				self.MILP_convex_solver.write('MILP.lp')
 
 				# Build tmp_prop_formula to encode the logic
 				for i in range(start_time, end_time+1):
@@ -951,10 +1008,10 @@ class MILPSolver:
 	# 	Adds constraints for the NN to the main convex solver.
 	# 	"""
 
-	def solve(self, objective=None):
+	def solve(self, objective=None, approx=None):
 		""" Solves the MILP problem """
-		# Add constraints of the contract and dynamics to the SAT, main, and SSF convex solver
-		self.add_constraints()
+		# Add constraints of the contract and dynamics to the main convex solver
+		self.add_constraints(approx=approx)
 		if objective == 'min':
 			self.MILP_convex_solver.setObjective(self.MILP_convex_var['b_t_0'], GRB.MINIMIZE)
 		elif objective == 'max':

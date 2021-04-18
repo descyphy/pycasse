@@ -329,56 +329,183 @@ class contract:
 		
 		print("Contract {} refines {}.\n".format(self.id, contract2refine.id))
 
-	def find_opt_param(self, objective, N=100):
+	def find_opt_param(self, cost, maxPartition=100):
 		""" Find an optimal set of parameters for a contract given an objective function. """
 		# Build a MILP Solver
 		solver = MILPSolver()
 		print("Finding an optimal set of parameters for contract {}...".format(self.id))
-		
-		# Build a deepcopy of the contract
-		c = deepcopy(self)
 
-		# Sample the parameters N times
-		sampled_param = np.random.rand(N, len(self.parameters['param_names']))
-		for i in range(len(self.parameters['param_names'])):
-			sampled_param[:,1] *= self.parameters['bounds'][i,1] - self.parameters['bounds'][i,0]
-			sampled_param[:,1] += self.parameters['bounds'][i,0]
-		
-		# Initialize the figure
-		fig = plt.figure()
-		plt.xlabel(self.parameters['param_names'][0])
-		plt.ylabel(self.parameters['param_names'][1])
-		plt.xlim([self.parameters['bounds'][0,0], self.parameters['bounds'][0,1]])
-		plt.ylim([self.parameters['bounds'][1,0], self.parameters['bounds'][1,1]])
-		
-		# Replace the parameters with parameter samples and solve an optimization probelem
-		for i in range(N):
-			# Replace the parameters with parameter samples
-			tmp_assumption = self.assumption
-			tmp_guarantee = self.guarantee
-			for j in range(len(self.parameters['param_names'])):
-				tmp_assumption = tmp_assumption.replace(self.parameters['param_names'][j], str(sampled_param[i,j]))
-				tmp_guarantee = tmp_guarantee.replace(self.parameters['param_names'][j], str(sampled_param[i,j]))
-			
-			# Resets a MILP Solver
-			solver.reset()
-			
-			# Add a contract
-			c.set_assume(tmp_assumption)
-			c.set_guaran(tmp_guarantee)
-			solver.add_contract(c)
+		# Initialize the partitions
+		partitions = {0: self.parameters['bounds']} # 0: UNDET (undetermined), 1: SAT (satisfactory), 2: UNSAT (unsatisfactory)
 
-			# Solve the problem 
-			# print("Checking the set of parameters {}.".format(sampled_param[i,:]))
-			solved = solver.solve(objective='min')
-			
-			# Print the counterexample
-			if solved:
-				plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'go')
+		# Define a function which partitions a partition into two partitions.
+		def split_partition(partitions, partition_idx, includes_05=False, param_idx=None):
+			""" Splits a partition into two partitions. """
+			partition_len = len(partitions)
+			if includes_05:
+				for i in range(partition_len):
+					lower_bounds = deepcopy(partitions[i]).astype(float)
+					upper_bounds = deepcopy(partitions[i]).astype(float)
+					lower_bounds[param_idx, 1] = 0.5
+					upper_bounds[param_idx, 0] = 0.5
+					partitions[i] = lower_bounds
+					partitions[partition_len+i] = upper_bounds
 			else:
-				plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'ro')
+				param_num = len(partitions[0])
+				print(param_num)
+
+		# Check if there exist a stochastic parameter (a parameter concerning the probability of a stochastic atomic predicate)
+		stochastic_param = False
+		for i, param in enumerate(self.parameters['param_names']):
+			if 'p' in param:
+				stochastic_param = True
+				if self.parameters['bounds'][i,0] < 0.5 and 0.5 < self.parameters['bounds'][i,1]:
+					split_partition(partitions, None, includes_05=True, param_idx=i)
 		
-		plt.savefig('test.jpg')
+		# Initialize the partition states
+		partitions_states = np.zeros(len(partitions))
+		
+		# # Solve and partition until the maximum number of partition is reached
+		# while len(partitions) < maxPartition:
+		
+		# For each partition, determine whether UNDET, SAT, or UNSAT
+		for k, partition in partitions.items():
+
+			if stochastic_param:
+				# Build a deepcopy of the contract and add it to the solver
+				solver.reset()
+				c = deepcopy(self)
+				c.parameters['bounds'] = partition
+				solver.add_contract(c)
+
+				# Solve the sufficient problem
+				solved = solver.solve(objective='min', approx='sufficient') 
+
+				if solved:
+					# Print the MILP solution
+					for v in solver.MILP_convex_solver.getVars():
+						print('%s %g' % (v.varName, v.x))
+
+					# Get the value of 'b_t_0'
+					value = solver.MILP_convex_solver.getVarByName('b_t_0').x
+
+					if value == 1: # Might have to change the threshold later
+						print("Any set of parameters within the partition {} satisfies the contract.".format(partition.tolist()))
+
+					else:
+						# Build a deepcopy of the contract and add it to the solver
+						solver.reset()
+						c = deepcopy(self)
+						c.parameters['bounds'] = partition
+						solver.add_contract(c)
+
+						# Solve the necessary problem
+						solved = solver.solve(objective='max', approx='necessary') 
+
+						if solved:
+							# Print the MILP solution
+							for v in solver.MILP_convex_solver.getVars():
+								print('%s %g' % (v.varName, v.x))
+
+							# Get the value of 'b_t_0'
+							value = solver.MILP_convex_solver.getVarByName('b_t_0').x
+
+							if value == 1: # Might have to change the threshold later
+								print("Cannot determine whether the set of parameters within the partition {} satisfies or violates the contract.".format(partition.tolist()))
+							else:
+								print("No set of parameters within the partition {} satisfies the contract.".format(partition.tolist()))
+
+				else:
+					# Build a deepcopy of the contract and add it to the solver
+					solver.reset()
+					c = deepcopy(self)
+					c.parameters['bounds'] = partition
+					solver.add_contract(c)
+					
+					# Solve the sufficient problem
+					solved = solver.solve(objective='min')
+
+					if solved:
+						# Print the MILP solution
+						for v in solver.MILP_convex_solver.getVars():
+							print('%s %g' % (v.varName, v.x))
+
+						# Get the value of 'b_t_0'
+						value = solver.MILP_convex_solver.getVarByName('b_t_0').x
+
+						if value == 1: # Might have to change the threshold later
+							print("Any set of parameters within the partition {} satisfies the contract.".format(partition.tolist()))
+						
+						else:
+							# Build a deepcopy of the contract and add it to the solver
+							solver.reset()
+							c = deepcopy(self)
+							c.parameters['bounds'] = partition
+							solver.add_contract(c)
+
+							# Solve the necessary problem
+							solved = solver.solve(objective='max') 
+
+							if solved:
+								# Print the MILP solution
+								for v in solver.MILP_convex_solver.getVars():
+									print('%s %g' % (v.varName, v.x))
+
+								# Get the value of 'b_t_0'
+								value = solver.MILP_convex_solver.getVarByName('b_t_0').x
+
+								if value == 1: # Might have to change the threshold later
+									print("Cannot determine whether the set of parameters within the partition {} satisfies or violates the contract.".format(partition.tolist()))
+								else:
+									print("No set of parameters within the partition {} satisfies the contract.".format(partition.tolist()))
+
+
+		# # Find the SAT partition with the least cost
+
+		# # Build a deepcopy of the contract
+		# c = deepcopy(self)
+
+		# # Sample the parameters N times
+		# sampled_param = np.random.rand(N, len(self.parameters['param_names']))
+		# for i in range(len(self.parameters['param_names'])):
+		# 	sampled_param[:,1] *= self.parameters['bounds'][i,1] - self.parameters['bounds'][i,0]
+		# 	sampled_param[:,1] += self.parameters['bounds'][i,0]
+		
+		# # Initialize the figure
+		# fig = plt.figure()
+		# plt.xlabel(self.parameters['param_names'][0])
+		# plt.ylabel(self.parameters['param_names'][1])
+		# plt.xlim([self.parameters['bounds'][0,0], self.parameters['bounds'][0,1]])
+		# plt.ylim([self.parameters['bounds'][1,0], self.parameters['bounds'][1,1]])
+		
+		# # Replace the parameters with parameter samples and solve an optimization probelem
+		# for i in range(N):
+		# 	# Replace the parameters with parameter samples
+		# 	tmp_assumption = self.assumption
+		# 	tmp_guarantee = self.guarantee
+		# 	for j in range(len(self.parameters['param_names'])):
+		# 		tmp_assumption = tmp_assumption.replace(self.parameters['param_names'][j], str(sampled_param[i,j]))
+		# 		tmp_guarantee = tmp_guarantee.replace(self.parameters['param_names'][j], str(sampled_param[i,j]))
+			
+		# 	# Resets the MILP Solver
+		# 	solver.reset()
+			
+		# 	# Add a contract
+		# 	c.set_assume(tmp_assumption)
+		# 	c.set_guaran(tmp_guarantee)
+		# 	solver.add_contract(c)
+
+		# 	# Solve the problem 
+		# 	# print("Checking the set of parameters {}.".format(sampled_param[i,:]))
+		# 	solved = solver.solve(objective='min')
+			
+		# 	# Print the counterexample
+		# 	if solved:
+		# 		plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'go')
+		# 	else:
+		# 		plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'ro')
+		
+		# plt.savefig('test.jpg')
 
 	def printInfo(self):
 		""" Prints information of the contract """	

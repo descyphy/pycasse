@@ -163,7 +163,10 @@ def str2substr(str):
 		operator = part1[0]
 		start_time = 0
 		end_time = 0
-		prob = float(part1[2:len(part1)-1])
+		try:
+			prob = float(part1[2:len(part1)-1])
+		except:
+			prob = part1[2:len(part1)-1]
 	else:
 		operator = part1
 		start_time = 0
