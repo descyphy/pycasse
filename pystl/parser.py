@@ -1,294 +1,587 @@
+from copy import deepcopy
+from collections import defaultdict
+from functools import reduce
+import numpy as np
+import operator as op
+from parsimonious import Grammar, NodeVisitor
 import re
+import pystl.variable
 
-# Define global constants
-M = 10**4
-EPS = 10**-4
+from pystl.variable import M, EPS
 
 # Define AST classes
+class Expression():
+    """
+    A class for defining an expression objects.
+
+    :np.array data
+    """
+    __slots__ = ('deter_data', 'nondeter_data')
+    def __init__(self, term = None):
+        """ Constructor method """
+        if isinstance(term, (int, float)):
+            self.deter_data = np.array([term], dtype = float)
+            self.nondeter_data = np.empty(0)
+        elif isinstance(term, pystl.variable.DeterVar):
+            self.deter_data = np.zeros(term.idx + 1)
+            self.deter_data[term.idx] = 1
+            self.nondeter_data = np.empty(0)
+        elif isinstance(term, pystl.variable.NondeterVar):
+            self.deter_data = np.zeros(1)
+            self.nondeter_data = np.zeros(term.idx + 1)
+            self.nondeter_data[term.idx] = 1
+        elif isinstance(term, Expression):
+            self.deter_data = term.deter_data
+            self.nondeter_data = term.nondeter_data
+        else:
+            self.deter_data = np.zeros(1)
+            self.nondeter_data = np.empty(0)
+            assert(term == None)
+
+    def __str__(self):
+        """ Prints information of the contract """  
+        res = ["{}".format(self.deter_data[0])]
+        res += ["{} deter_var_{}".format(multiplier, i) for (i, multiplier) in enumerate(self.deter_data[1:])]
+        res += ["{} nondeter_var_{}".format(multiplier, i) for (i, multiplier) in enumerate(self.nondeter_data)]
+        return " + ".join(res)
+
+    def __repr__(self):
+        """ Prints information of the contract """  
+        return "Expression: {}".format(str(self))
+
+    def __add__(self, other):
+        other = Expression(other)
+        res = Expression()
+        #  print(other)
+        #  print(res)
+        if len(self.deter_data) > len(other.deter_data):
+            res.deter_data = deepcopy(self.deter_data)
+            if len(other.deter_data) > 0:
+                res.deter_data[:len(other.deter_data)] += other.deter_data
+        else:
+            res.deter_data = deepcopy(other.deter_data)
+            if len(self.deter_data) > 0:
+                res.deter_data[:len(self.deter_data)] += self.deter_data
+        if len(self.nondeter_data) > len(other.nondeter_data):
+            res.nondeter_data = deepcopy(self.nondeter_data)
+            if len(other.nondeter_data) > 0:
+                res.nondeter_data[:len(other.nondeter_data)] += other.nondeter_data
+        else:
+            res.nondeter_data = deepcopy(other.nondeter_data)
+            if len(self.nondeter_data) > 0:
+                res.nondeter_data[:len(self.nondeter_data)] += self.nondeter_data
+        return res
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __sub__(self, other):
+        return self + (other * -1)
+
+    def __rsub__(self, other):
+        return (-1 * self) + other
+
+    def __mul__(self, other):
+        assert(isinstance(other, (int, float)))
+        res = deepcopy(self)
+        res.deter_data *= other
+        res.nondeter_data *= other
+        return res
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __truediv__(self, other):
+        res = deepcopy(self)
+        res.deter_data /= other
+        res.nondeter_data /= other
+        return res
+
+    def __lt__(self, other):
+        return AtomicPredicate(self - other + EPS)
+
+    def __le__(self, other):
+        return AtomicPredicate(self - other)
+
+    def __gt__(self, other):
+        return AtomicPredicate(other - self + EPS)
+
+    def __ge__(self, other):
+        return AtomicPredicate(other - self)
+
+    def __eq__(self, other):
+        return AtomicPredicate(self - other) & AtomicPredicate(other - self)
+
+    def transform(self, deter_id_map, nondeter_id_map):
+        if (len(self.deter_data) > 0):
+            mask = deter_id_map[:len(self.deter_data)]
+            deter_data = np.zeros(np.max(mask) + 1)
+            deter_data[mask] = self.deter_data
+            self.deter_data = deter_data
+
+        if (len(self.nondeter_data) > 0):
+            mask = nondeter_id_map[:len(self.nondeter_data)]
+            nondeter_data = np.zeros(np.max(mask) + 1)
+            nondeter_data[mask] = self.nondeter_data
+            self.nondeter_data = nondeter_data
+
 class ASTObject():
-	"""
-	An abstract syntax tree (AST) class from which all AST objects are derived.
+    """
+    An abstract syntax tree (AST) class from which all AST objects are derived.
 
-	:param name: An unique name of an AST object.
-	:type name: str
-	:param class_id: Name of the object class which is shared by all objects of the same class. Determines the name space of the object.
-	:type class_id: str
-	"""
+    :param  idx          : An unique index of an AST object.
+    :type   idx          : int
+    :param  ast_type     : Name of the object class which is shared by all objects of the same class.
+    :type   ast_type     : str
+    :param  formula_list : children of the object.
+    :type   formula_list : list of ASTObject
+    """
+    __slots__ = ('idx', 'ast_type', 'formula_list')
 
-	def __init__(self, name, class_id):
-		""" Constructor method """
-		self.name = name
-		self.class_id = class_id
-	
-	def __str__(self):
-		return str(self.__dict__)
+    def __init__(self, ast_type, formula_list = []):
+        """ Constructor method """
+        self.idx          = -1
+        self.ast_type     = ast_type
+        self.formula_list = formula_list
 
-class Term(ASTObject):
-	"""
-	A class for defining a term objects.
-	
-	:param name: An unique name of an term object.
-	:type name: str
-	"""
+    def __str__(self):
+        if self.ast_type == "True":
+            return "TRUE"
+        elif self.ast_type == "False":
+            return "FALSE"
+        else: assert(False)
 
-	def __init__(self, name, str):
-		""" Constructor method """
-		super().__init__(name, 'TERM')
-		self.multiplier = 1
-		self.variable = None
-		self.__add_var_n_mul(str)
+    def __repr__(self):
+        if self.ast_type == "True":
+            return "{} -> TRUE".format(self.idx)
+        elif self.ast_type == "False":
+            return "{} -> FALSE".format(self.idx)
+        else: assert(False)
 
-	def __add_var_n_mul(self, str):
-		""" Add a variable and a multiplier. """
-		str_len = len(str)
-		for idx, char in enumerate(str):
-			if char.isalpha():
-				if idx == 1:
-					if str[0] == "-":
-						self.multiplier = -1
-					elif str[0] == "+":
-						self.multiplier = 1
-					else:
-						self.multiplier = float(str[0])
-				elif idx != 0:
-					self.multiplier = float(str[0:idx])
-				self.variable = str[idx:str_len]
-				break
-			if idx == str_len-1:
-				self.multiplier = float(str)
+    def invert_ast_type(self):
+        assert(self.ast_type in ("AP", "StAP", "G", "F", "U", "R", "And", "Or", "Not"))
+        if self.ast_type in ("AP", "StAP"):
+            pass
+        elif self.ast_type == "G": self.ast_type = "F"
+        elif self.ast_type == "F": self.ast_type = "G"
+        elif self.ast_type == "U": self.ast_type = "R"
+        elif self.ast_type == "R": self.ast_type = "U"
+        elif self.ast_type == "And": self.ast_type = "Or"
+        elif self.ast_type == "Or": self.ast_type = "And"
+        elif self.ast_type == "Not": assert(False)
+        else: assert(False)
 
-class Expression(ASTObject):
-	"""
-	A class for defining an expression objects.
-	
-	:param name: An unique name of an expression object.
-	:type name: str
-	"""
-
-	def __init__(self, name, str0):
-		""" Constructor method """
-		super().__init__(name, 'EXPR')
-		self.terms = []
-		self.__add_terms(str0)
-		# print(self)
-
-	def __add_terms(self, str0):
-		""" Add terms. """
-		num_term = 0
-		prev = 0
-		for idx, char in enumerate(str0):
-			if char in ('+', '-') and idx != prev:
-				num_term += 1
-				self.terms.append(Term(self.name+'_'+str(num_term), str0[prev:idx]))
-				prev = idx
-			if idx == len(str0)-1:
-				num_term += 1
-				self.terms.append(Term(self.name+'_'+str(num_term), str0[prev:idx+1]))
+    def transform(self, deter_id_map, nondeter_id_map):
+        if self.ast_type in ('AP', 'StAP'):
+            self.expr.transform(deter_id_map, nondeter_id_map)
+        else:
+            for f in self.formula_list:
+                f.transform(deter_id_map, nondeter_id_map)
 
 class AtomicPredicate(ASTObject):
-	"""
-	A class for defining an atomic predicate objects.
-	
-	:param name: An unique name of an atomic predicate object.
-	:type name: str
-	"""
+    """
+    A class for defining an atomic predicate objects.
+    
+    : param expr : An inequality expression
+    : type expr  : Expression
+    """
+    __slots__ = ('expr')
 
-	def __init__(self, name, operator, start_time, end_time, expr_left, expr_right):
-		""" Constructor method """
-		super().__init__(name, 'AP')
-		self.operator = operator
-		self.start_time = start_time
-		self.end_time = end_time
-		self.expr_left = expr_left
-		self.expr_right = expr_right
+    def __init__(self, expr):
+        """ Constructor method """
+        super().__init__('AP')
+        self.expr = expr
+
+    def __str__(self):
+        return "({} <= 0)".format(str(self.expr))
+
+    def __repr__(self):
+        return "{} -> ({} <= 0)".format(self.idx, str(self.expr))
 
 class StochasticAtomicPredicate(ASTObject):
-	"""
-	A class for defining a stochastic atomic predicate objects.
-	
-	:param name: An unique name of a stochastic atomic predicate object.
-	:type name: str
-	"""
+    """
+    A class for defining a stochastic atomic predicate objects.
+    
+    : param expr : An inequality expression
+    : type expr  : Expression
+    : param prob : An minimum limit for the probability of the object
+    : type prob  : float
+    """
 
-	def __init__(self, name, start_time, end_time, ap, prob, negation):
-		""" Constructor method """
-		super().__init__(name, 'StAP')
-		self.start_time = start_time
-		self.end_time = end_time
-		self.ap = ap
-		self.prob = prob
-		self.negation = negation
+    __slots__ = ('expr', 'prob')
+    def __init__(self, expr, prob):
+        """ Constructor method """
+        super().__init__('StAP')
+        assert(isinstance(expr, Expression))
+        self.expr = expr
+        self.prob = Expression(prob)
 
-class Formula(ASTObject):
-	"""
-	A class for defining a formula objects.
-	
-	:param name: An unique name of a formula object.
-	:type name: str
-	"""
+    def probability(self):
+        assert(not np.any(self.prob.deter_data[1:]) and not np.any(self.prob.nondeter_data))
+        return self.prob.deter_data[0]
 
-	def __init__(self, name, operator, start_time, end_time, formula_list):
-		""" Constructor method """
-		super().__init__(name, 'FORMULA')
-		self.operator = operator
-		self.start_time = start_time
-		self.end_time = end_time
-		self.formula_list = formula_list
+    def __str__(self):
+        return "P[{}] ({} <= 0)".format(str(self.prob), str(self.expr))
 
-# Define utility functions
-def str2substr(str):
-	"""
-	Returns a list of substrings.
-	"""
-	# TODO: True and False handling
+    def __repr__(self):
+        return "{} -> P[{}] ({} <= 0)".format(self.idx, str(self.prob), str(self.expr))
 
-	# Unnest the string, if applicable
-	str_len = len(str)
-	if str[0] == '(' and str[str_len-1] == ')':
-		tmp_str = str[1:str_len-1]
-	else:
-		tmp_str = str
+class TemporalFormula(ASTObject):
+    """
+    A class for defining a formula objects.
+    
+    :param name: An unique name of a formula object.
+    :type name: str
+    """
 
-	# Split the string into two parts
-	part1, part2 = tmp_str.split(' ', 1)
-	prob = None
+    __slots__ = ('interval')
+    def __init__(self, operator, formula_list, interval):
+        """ Constructor method """
+        assert(operator in ("G", "F", "U", "R"))
+        assert(operator not in ("G", "F") or len(formula_list) == 1)
+        assert(operator not in ("U", "R") or len(formula_list) == 2)
+        assert(isinstance(interval, list) and len(interval) ==2)
+        super().__init__(operator, formula_list)
+        self.interval = interval
 
-	# Find the start and end time
-	if part1[0] in ('G', 'F', 'U', 'R'):
-		operator = part1[0]
-		start_time, end_time = part1[2:len(part1)-1].split(',')
-		start_time = int(start_time)
-		end_time = int(end_time)
-	elif part1[0] == 'P':
-		operator = part1[0]
-		start_time = 0
-		end_time = 0
-		try:
-			prob = float(part1[2:len(part1)-1])
-		except:
-			prob = part1[2:len(part1)-1]
-	else:
-		operator = part1
-		start_time = 0
-		end_time = 0
+    def __str__(self):
+        if (self.ast_type in ("G", "F")):
+            return "({}[{}, {}] {})".format(self.ast_type, self.interval[0], self.interval[1], str(self.formula_list[0]))
+        elif (self.ast_type in ("U", "R")):
+            return "({} {}[{}, {}] {})".format(str(self.formula_list[0]), self.ast_type, self.interval[0], self.interval[1], str(self.formula_list[1]))
+        else:
+            assert(False)
 
-	# Find the list of substrings
-	substr_list = []
-	paren_count = 0
-	start = 0
-	if operator in ('=>', '<=', '>', '<', '=='): # Inequality and equality operator
-		substr_list = part2.split(' ')
-	elif operator == 'P': # Probability operator
-		substr_list.append(part2)
-	else: # Non-temporal or Temporal operator
-		for idx, char in enumerate(part2):
-			# Update paren_count
-			if char == '(':
-				paren_count += 1
-			elif char == ')':
-				paren_count -= 1
+    def __repr__(self):
+        if (self.ast_type in ("G", "F")):
+            res = "{} -> ({}[{}, {}] {})".format(self.idx, self.ast_type, self.interval[0], self.interval[1], self.formula_list[0].idx)
+        elif (self.ast_type in ("U", "R")):
+            res = "{} -> ({} {}[{}, {}] {})".format(self.idx, self.formula_list[0].idx, self.ast_type, self.interval[0], self.interval[1], self.formula_list[1].idx)
+        else:
+            assert(False)
 
-			# Add a substr to the substr_list
-			if idx != 0 and char != ' ' and paren_count == 0:
-				substr_list.append(part2[start:idx+1])
-				start = idx+2
+        for f in self.formula_list:
+            res += '\n  '
+            res += '\n  '.join(repr(f).splitlines())
+        return res
 
-	return operator, start_time, end_time, prob, substr_list
+class NontemporalFormula(ASTObject):
+    """
+    A class for defining a formula objects.
+    
+    :param name: An unique name of a formula object.
+    :type name: str
+    """
 
-# Define ststl parser
-def parse_ststl(name, logic_formula, logic_start_time = 0, logic_end_time = 0, negation = False):
-	"""
-	Parse a string in AST format representing a logic formula to a parse tree.
+    def __init__(self, operator, formula_list):
+        """ Constructor method """
+        assert(operator in ("And", "Or", "Not"))
+        assert(operator != "Not" or len(formula_list) == 1)
+        assert(operator == "Not" or len(formula_list) >= 2)
+        super().__init__(operator, formula_list)
 
-	:param logic_formula: A string in AST format representing a logic formula.
-	:type logic_formula: str
-	"""
-	# Split the logic formula to sub-level logic formulas
-	operator, start_time, end_time, prob, substr_list = str2substr(logic_formula)
-	# print(str2substr(logic_formula))
+    def __str__(self):
+        if self.ast_type == "And":
+            res = "(" + " & ".join([str(f) for f in self.formula_list]) + ")"
+        elif self.ast_type == "Or":
+            res = "(" + " | ".join([str(f) for f in self.formula_list]) + ")"
+        elif self.ast_type == "Not":
+            res = "(!{})".format(str(self.formula_list[0]))
+        else: assert(False)
+        return res
 
-	# Create appropriate object of each sub-level logic formulas
-	if operator in ('=>', '<=', '>', '<', '=='): # Inequality and equality operator
-		expr1 = Expression(name+'_1', substr_list[0])
-		expr2 = Expression(name+'_2', substr_list[1])
-		if negation:
-			if operator == '=>':
-				AP = AtomicPredicate(name, '<', logic_start_time, logic_end_time, expr1, expr2)
-			elif operator == '<=':
-				AP = AtomicPredicate(name, '>', logic_start_time, logic_end_time, expr1, expr2)
-			elif operator == '>':
-				AP = AtomicPredicate(name, '<=', logic_start_time, logic_end_time, expr1, expr2)
-			elif operator == '<':
-				AP = AtomicPredicate(name, '=>', logic_start_time, logic_end_time, expr1, expr2)
-			else: # '=='
-				AP = AtomicPredicate(name, '!=', logic_start_time, logic_end_time, expr1, expr2)
-		else:
-			AP = AtomicPredicate(name, operator, logic_start_time, logic_end_time, expr1, expr2)
-		# print(AP)
-		return AP, logic_start_time, logic_end_time
+    def __repr__(self):
+        res = "{} -> ".format(self.idx)
+        if self.ast_type == "And":
+            res += "(" + " & ".join([str(f.idx) for f in self.formula_list]) + ")"
+        elif self.ast_type == "Or":
+            res += "(" + " | ".join([str(f.idx) for f in self.formula_list]) + ")"
+        elif self.ast_type == "Not":
+            res += "(!{})".format(self.formula_list[0].idx)
+        else: assert(False)
 
-	elif operator == 'P': # Probability unary operator
-		AP, t1, t2 = parse_ststl(name+'_1', substr_list[0], logic_start_time=logic_start_time, logic_end_time=logic_end_time, negation=False)
-		stAP = StochasticAtomicPredicate(name, logic_start_time, logic_end_time, AP, prob, negation)
-		# print(stAP)
-		return stAP, t1, t2
+        for f in self.formula_list:
+            res += '\n  '
+            res += '\n  '.join(repr(f).splitlines())
+        return res
 
-	elif operator == '!': # Non-temporal unary operator
-		if negation:
-			formula, t1, t2 = parse_ststl(name, substr_list[0], logic_start_time=logic_start_time, logic_end_time=logic_end_time)
-		else:
-			formula, t1, t2 = parse_ststl(name, substr_list[0], logic_start_time=logic_start_time, logic_end_time=logic_end_time, negation=True)
-		# print(formula)
-		return formula, t1, t2
+true = ASTObject("True")
+false = ASTObject("False")
 
-	elif operator == '->': # Non-temporal binary operator
-		if negation:
-			subformula1, t1_1, t2_1 = parse_ststl(name+'_1', substr_list[0], logic_start_time=logic_start_time, logic_end_time=logic_end_time, negation=False)
-			subformula2, t1_2, t2_2 = parse_ststl(name+'_2', substr_list[1], logic_start_time=logic_start_time, logic_end_time=logic_end_time, negation=True)
-			formula = Formula(name, '&', start_time, end_time, [subformula1, subformula2])
-		else:
-			subformula1, t1_1, t2_1 = parse_ststl(name+'_1', substr_list[0], logic_start_time=logic_start_time, logic_end_time=logic_end_time, negation=True)
-			subformula2, t1_2, t2_2 = parse_ststl(name+'_2', substr_list[1], logic_start_time=logic_start_time, logic_end_time=logic_end_time, negation=False)
-			formula = Formula(name, '|', start_time, end_time, [subformula1, subformula2])
-		# print(formula)
-		return formula, min(t1_1, t1_2), max(t2_1, t2_2)
+def Neg(ap):
+    if ap.ast_type == "Not":
+        return ap.formula_list[0]
+    elif ap.ast_type == "True":
+        return false
+    elif ap.ast_type == "False":
+        return true
+    else:
+        return NontemporalFormula("Not", [ap])
 
-	elif operator in ('&', '|'): # Non-temporal multinary operator
-		subformula_list = []
-		for i in range(len(substr_list)):
-			tmp_subformula, t1, t2  = parse_ststl(name+'_'+str(i+1), substr_list[i], logic_start_time=logic_start_time, logic_end_time=logic_end_time, negation=negation)
-			subformula_list.append(tmp_subformula)
-		if negation:
-			if operator == '&':
-				formula = Formula(name, '|', start_time, end_time, subformula_list)
-			else:
-				formula = Formula(name, '&', start_time, end_time, subformula_list)
-		else:
-			formula = Formula(name, operator, start_time, end_time, subformula_list)
-		# print(formula)
-		return formula, t1, t2 
+def nontemporal_formula_construction(operator, formula_list, ignore_ap, drop_ap):
+    formula_list = [f for f in formula_list if f.ast_type != ignore_ap.ast_type]
+    if any(f.ast_type == drop_ap.ast_type for f in formula_list):
+        return drop_ap
+    elif len(formula_list) == 0:
+        return ignore_ap
+    elif len(formula_list) == 1:
+        return formula_list[0]
+    else:
+        res = []
+        for f in formula_list:
+            if f.ast_type != operator:
+                res.append(f)
+            else:
+                res.extend(f.formula_list)
+        return NontemporalFormula(operator, res)
 
-	elif operator in ('G', 'F'): # Temporal unary operators
-		subformula, t1, t2 = parse_ststl(name+'_1', substr_list[0], logic_start_time=logic_start_time+start_time, logic_end_time=logic_end_time+end_time, negation=negation)
-		if negation:
-			if operator == 'G':
-				formula = Formula(name, 'F', start_time, end_time, [subformula])
-			else:
-				formula = Formula(name, 'G', start_time, end_time, [subformula])
-		else:
-			formula = Formula(name, operator, start_time, end_time, [subformula])
-		# print(formula)
-		return formula, t1, t2 
+def And(*argv):
+    assert(len(argv) >= 2)
+    return nontemporal_formula_construction("And", argv, true, false)
 
-	elif operator in ('U', 'R'): # Temporal binary operator
-		subformula1, t1_1, t2_1  = parse_ststl(name+'_1', substr_list[0], logic_start_time=logic_start_time, logic_end_time=logic_end_time+end_time, negation=negation)
-		subformula2, t1_2, t2_2  = parse_ststl(name+'_2', substr_list[1], logic_start_time=logic_start_time+start_time, logic_end_time=logic_end_time+end_time, negation=negation)
-		if negation:
-			if operator == 'U':
-				formula = Formula(name, 'R', start_time, end_time, [subformula1, subformula2])
-			else:
-				formula = Formula(name, 'U', start_time, end_time, [subformula1, subformula2])
-		else:
-			formula = Formula(name, operator, start_time, end_time, [subformula1, subformula2])
-		# print(formula)
-		return formula, min(t1_1, t1_2), max(t2_1, t2_2)
+def Or(*argv):
+    assert(len(argv) >= 2)
+    return nontemporal_formula_construction("Or", argv, false, true)
+
+def Implies(ap, other):
+    return ~ap | other
+
+def P(prob, ap):
+    return StochasticAtomicPredicate(ap.expr, prob)
+
+def Globally(interval, ap):
+    return TemporalFormula("G", [ap], interval)
+
+def Eventually(interval, ap):
+    return TemporalFormula("F", [ap], interval)
+
+def Until(interval, ap, other):
+    return TemporalFormula("U", [ap, other], interval)
+
+def Release(interval, ap, other):
+    return TemporalFormula("R", [ap, other], interval)
+
+def U_R_wrapper(op):
+    def f(_1, _2, _3):
+        return op(_2, _1, _3)
+    return f
+
+ASTObject.__invert__ = Neg
+ASTObject.__and__ = And
+ASTObject.__or__ = Or
+ASTObject.implies = Implies
+ASTObject.Until = U_R_wrapper(Until)
+ASTObject.Release = U_R_wrapper(Release)
+
+# Define Parser
+ststl_grammar = Grammar('''
+phi = (neg / paren_phi / true / false
+     / and_outer / or_outer / implies_outer
+     / u / r / g / f / AP / stAP)
+
+neg = ("~" / "!" / "¬") __ phi
+paren_phi = "(" __ phi __ ")"
+
+true = "TRUE"/ "True"
+false = "FALSE"/ "False"
+
+and_outer = "(" __ and_inner __ ")"
+and_inner = (phi __ ("∧" / "and" / "&") __ and_inner) / phi
+
+or_outer = "(" __ or_inner __ ")"
+or_inner = (phi __ ("∨" / "or" / "|") __ or_inner) / phi
+
+implies_outer = "(" __ implies_inner __ ")"
+implies_inner = (phi __ ("→" / "->") __ implies_inner) / phi
+
+u = "(" __ phi _ "U" interval _ phi __ ")"
+r = "(" __ phi _ "R" interval _ phi __ ")"
+g = "(" __ "G" interval __ phi __ ")"
+f = "(" __ "F" interval __ phi __ ")"
+
+interval = "[" __ const __ "," __ const __ "]"
+
+stAP =  "(" __ "P[" __ expression_outer __ "]" __ AP __ ")"
+AP =  "(" __ expression_outer __ comparison __ expression_outer __ ")"
+
+expression_outer =  __ (expression_inner) __
+expression_inner = (term __ operator __ expression_inner) / term
+
+term = (const_variable/ const)
+const_variable = variable / (const __ variable)
+
+comparison = "<=" / ">=" / "=>" / "=<" / "<" / ">" / "=" / "=="
+operator = "+" / "-"
+variable = ~r"[a-z_][a-z_\\d]*"
+const = ~r"[-+]?(\\d*\\.\\d+|\\d+)"
+
+_ = ~r"\\s"+
+__ = ~r"\\s"*
+''')
+
+class Parser(NodeVisitor):
+    def __init__(self, contract):
+        super().__init__()
+        self.contract = contract
+
+    def __call__(self, formula: str, rule: str = "phi"):
+        return self.visit(ststl_grammar[rule].parse(formula))
+
+    def generic_visit(self, _, children):
+        return children
+
+    def visit_const(self, node, _):
+        return float(node.text)
+
+    def visit_variable(self, node, _):
+        var = node.text
+        if var in self.contract.deter_var_name2id:
+            return self.contract.deter_var_list[self.contract.deter_var_name2id[var]]
+        elif var in self.contract.nondeter_var_name2id:
+            return self.contract.nondeter_var_list[self.contract.nondeter_var_name2id[var]]
+        else:
+            raise ValueError("Undefined variable name {}.".format(var))
+
+    def visit_operator(self, node, children):
+        return node.text
+
+    def visit_comparison(self, node, _):
+        return node.text
+
+    def visit_const_variable(self, node, children):
+        if (isinstance(children[0], pystl.variable.Var)):
+            return Expression(children[0])
+        elif (len(children[0]) == 3):
+            return (children[0][0] * children[0][2])
+        else: assert(False)
+
+    def visit_term(self, node, children):
+        return Expression(children[0])
+
+    def visit_expression_inner(self, node, children):
+        #  print("expression_inner")
+        #  print(children)
+        #  input()
+        if isinstance(children[0], (Expression)):
+            return children
+        elif len(children[0]) == 5:
+            ((left, _, op, _, right),) = children
+            if op == '-':
+                right[0] *= -1
+            else: assert(op == '+')
+            return [left] + right
+        else: assert(False)
+
+    def visit_expression_outer(self, node, children):
+        #  print("expression_outer")
+        #  print(children)
+        #  input()
+        return reduce(op.add, children[1])
+
+    def visit_AP(self, node, children):
+        #  print(children)
+        #  input()
+        (_, _, left, _, operator, _, right, _, _) = children
+        #  print(left, right)
+        #  input()
+        if operator == '<=' or operator == '=<':
+            return left <= right
+        elif operator == '>=' or operator == '=>':
+            return left >= right
+        elif operator == '>':
+            return left > right
+        elif operator == '<':
+            return left < right
+        elif operator == '=' or operator == '==':
+            return left == right
+        else: assert(False)
+
+    def visit_stAP(self, node, children):
+        #  print(children)
+        #  input()
+        (_, _, _, _, prob, _, _, _, ap, _, _) = children
+        return P(prob, ap)
+
+    def visit_interval(self, node, children):
+        #  print(children)
+        #  input()
+        (_, _, left, _, _, _, right, _, _) = children
+        return [int(left), int(right)]
+
+    def visit_f(self, node, children):
+        #  print(children)
+        #  input()
+        (_, _, _, interval, _, phi, _, _) = children
+        return Eventually(interval, phi)
+
+    def visit_g(self, node, children):
+        #  print(children)
+        #  input()
+        (_, _, _, interval, _, phi, _, _) = children
+        return Globally(interval, phi)
+
+    def visit_u(self, node, children):
+        #  print(children)
+        #  input()
+        (_, _, phi1, _, _, interval, _, phi2, _, _) = children
+        return Until(interval, phi1, phi2)
+
+    def visit_r(self, node, children):
+        #  print(children)
+        #  input()
+        (_, _, phi1, _, _, interval, _, phi2, _, _) = children
+        return Release(interval, phi1, phi2)
+
+    def visit_phi(self, node, children):
+        #  print("phi:{}".format(children))
+        #  input()
+        return children[0]
+
+    def nontemporal_op_inner(self, _, children):
+        #  print("inner:{}".format(children))
+        #  input()
+        if isinstance(children[0], ASTObject):
+            return children
+        elif (len(children[0]) == 5):
+            ((left, _, _, _, right),) = children
+            return [left] + right
+        else: assert(False)
+
+    visit_or_inner = nontemporal_op_inner
+    visit_and_inner = nontemporal_op_inner
+    visit_implies_inner = nontemporal_op_inner
+
+    def visit_or_outer(self, node, children):
+        #  print("or outer:{}".format(children))
+        #  input()
+        return reduce(op.or_, children[2])
+
+    def visit_and_outer(self, node, children):
+        #  print("or outer:{}".format(children))
+        #  input()
+        return reduce(op.and_, children[2])
+
+    def visit_implies_outer(self, node, children):
+        #  print("or outer:{}".format(children))
+        #  input()
+        def implies(x, y):
+            return x.implies(y)
+
+        return reduce(implies, children[2])
+
+    def visit_true(self, node, children):
+        return true
+
+    def visit_false(self, node, children):
+        return false
+
+    def visit_phi(self, node, children):
+        return children[0]
+
+    def visit_neg(self, _, children):
+        #  print("neg:{}".format(children))
+        #  input()
+        return ~children[2]
+
+    def visit_paren_phi(self, node, children):
+        return children[2]
