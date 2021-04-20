@@ -8,6 +8,7 @@ import re
 import pystl.variable
 
 from pystl.variable import M, EPS
+
 # Define AST classes
 class Expression():
     """
@@ -36,15 +37,18 @@ class Expression():
             self.deter_data = np.zeros(1)
             self.nondeter_data = np.empty(0)
             assert(term == None)
+
     def __str__(self):
         """ Prints information of the contract """  
         res = ["{}".format(self.deter_data[0])]
         res += ["{} deter_var_{}".format(multiplier, i) for (i, multiplier) in enumerate(self.deter_data[1:])]
         res += ["{} nondeter_var_{}".format(multiplier, i) for (i, multiplier) in enumerate(self.nondeter_data)]
         return " + ".join(res)
+
     def __repr__(self):
         """ Prints information of the contract """  
         return "Expression: {}".format(str(self))
+
     def __add__(self, other):
         other = Expression(other)
         res = Expression()
@@ -67,35 +71,47 @@ class Expression():
             if len(self.nondeter_data) > 0:
                 res.nondeter_data[:len(self.nondeter_data)] += self.nondeter_data
         return res
+
     def __radd__(self, other):
         return self.__add__(other)
+
     def __sub__(self, other):
         return self + (other * -1)
+
     def __rsub__(self, other):
         return (-1 * self) + other
+
     def __mul__(self, other):
         assert(isinstance(other, (int, float)))
         res = deepcopy(self)
         res.deter_data *= other
         res.nondeter_data *= other
         return res
+
     def __rmul__(self, other):
         return self.__mul__(other)
+
     def __truediv__(self, other):
         res = deepcopy(self)
         res.deter_data /= other
         res.nondeter_data /= other
         return res
+
     def __lt__(self, other):
         return AtomicPredicate(self - other + EPS)
+
     def __le__(self, other):
         return AtomicPredicate(self - other)
+
     def __gt__(self, other):
         return AtomicPredicate(other - self + EPS)
+
     def __ge__(self, other):
         return AtomicPredicate(other - self)
+
     def __eq__(self, other):
         return AtomicPredicate(self - other) & AtomicPredicate(other - self)
+
     def transform(self, deter_id_map, nondeter_id_map):
         if (len(self.deter_data) > 0):
             mask = deter_id_map[:len(self.deter_data)]
@@ -127,18 +143,21 @@ class ASTObject():
         self.idx          = -1
         self.ast_type     = ast_type
         self.formula_list = formula_list
+
     def __str__(self):
         if self.ast_type == "True":
             return "TRUE"
         elif self.ast_type == "False":
             return "FALSE"
         else: assert(False)
+
     def __repr__(self):
         if self.ast_type == "True":
             return "{} -> TRUE".format(self.idx)
         elif self.ast_type == "False":
             return "{} -> FALSE".format(self.idx)
         else: assert(False)
+
     def invert_ast_type(self):
         assert(self.ast_type in ("AP", "StAP", "G", "F", "U", "R", "And", "Or", "Not"))
         if self.ast_type in ("AP", "StAP"):
@@ -151,6 +170,7 @@ class ASTObject():
         elif self.ast_type == "Or": self.ast_type = "And"
         elif self.ast_type == "Not": assert(False)
         else: assert(False)
+
     def transform(self, deter_id_map, nondeter_id_map):
         if self.ast_type in ('AP', 'StAP'):
             self.expr.transform(deter_id_map, nondeter_id_map)
@@ -171,8 +191,10 @@ class AtomicPredicate(ASTObject):
         """ Constructor method """
         super().__init__('AP')
         self.expr = expr
+
     def __str__(self):
         return "({} <= 0)".format(str(self.expr))
+
     def __repr__(self):
         return "{} -> ({} <= 0)".format(self.idx, str(self.expr))
 
@@ -193,11 +215,14 @@ class StochasticAtomicPredicate(ASTObject):
         assert(isinstance(expr, Expression))
         self.expr = expr
         self.prob = Expression(prob)
+
     def probability(self):
         assert(not np.any(self.prob.deter_data[1:]) and not np.any(self.prob.nondeter_data))
         return self.prob.deter_data[0]
+
     def __str__(self):
         return "P[{}] ({} <= 0)".format(str(self.prob), str(self.expr))
+
     def __repr__(self):
         return "{} -> P[{}] ({} <= 0)".format(self.idx, str(self.prob), str(self.expr))
 
@@ -218,6 +243,7 @@ class TemporalFormula(ASTObject):
         assert(isinstance(interval, list) and len(interval) ==2)
         super().__init__(operator, formula_list)
         self.interval = interval
+
     def __str__(self):
         if (self.ast_type in ("G", "F")):
             return "({}[{}, {}] {})".format(self.ast_type, self.interval[0], self.interval[1], str(self.formula_list[0]))
@@ -225,6 +251,7 @@ class TemporalFormula(ASTObject):
             return "({} {}[{}, {}] {})".format(str(self.formula_list[0]), self.ast_type, self.interval[0], self.interval[1], str(self.formula_list[1]))
         else:
             assert(False)
+
     def __repr__(self):
         if (self.ast_type in ("G", "F")):
             res = "{} -> ({}[{}, {}] {})".format(self.idx, self.ast_type, self.interval[0], self.interval[1], self.formula_list[0].idx)
@@ -252,6 +279,7 @@ class NontemporalFormula(ASTObject):
         assert(operator != "Not" or len(formula_list) == 1)
         assert(operator == "Not" or len(formula_list) >= 2)
         super().__init__(operator, formula_list)
+
     def __str__(self):
         if self.ast_type == "And":
             res = "(" + " & ".join([str(f) for f in self.formula_list]) + ")"
@@ -261,6 +289,7 @@ class NontemporalFormula(ASTObject):
             res = "(!{})".format(str(self.formula_list[0]))
         else: assert(False)
         return res
+
     def __repr__(self):
         res = "{} -> ".format(self.idx)
         if self.ast_type == "And":
@@ -276,7 +305,6 @@ class NontemporalFormula(ASTObject):
             res += '\n  '.join(repr(f).splitlines())
         return res
 
-
 true = ASTObject("True")
 false = ASTObject("False")
 
@@ -289,6 +317,7 @@ def Neg(ap):
         return true
     else:
         return NontemporalFormula("Not", [ap])
+
 def nontemporal_formula_construction(operator, formula_list, ignore_ap, drop_ap):
     formula_list = [f for f in formula_list if f.ast_type != ignore_ap.ast_type]
     if any(f.ast_type == drop_ap.ast_type for f in formula_list):
@@ -305,24 +334,33 @@ def nontemporal_formula_construction(operator, formula_list, ignore_ap, drop_ap)
             else:
                 res.extend(f.formula_list)
         return NontemporalFormula(operator, res)
+
 def And(*argv):
     assert(len(argv) >= 2)
     return nontemporal_formula_construction("And", argv, true, false)
+
 def Or(*argv):
     assert(len(argv) >= 2)
     return nontemporal_formula_construction("Or", argv, false, true)
+
 def Implies(ap, other):
     return ~ap | other
+
 def P(prob, ap):
     return StochasticAtomicPredicate(ap.expr, prob)
+
 def Globally(interval, ap):
     return TemporalFormula("G", [ap], interval)
+
 def Eventually(interval, ap):
     return TemporalFormula("F", [ap], interval)
+
 def Until(interval, ap, other):
     return TemporalFormula("U", [ap, other], interval)
+
 def Release(interval, ap, other):
     return TemporalFormula("R", [ap, other], interval)
+
 def U_R_wrapper(op):
     def f(_1, _2, _3):
         return op(_2, _1, _3)
@@ -385,12 +423,16 @@ class Parser(NodeVisitor):
     def __init__(self, contract):
         super().__init__()
         self.contract = contract
+
     def __call__(self, formula: str, rule: str = "phi"):
         return self.visit(ststl_grammar[rule].parse(formula))
+
     def generic_visit(self, _, children):
         return children
+
     def visit_const(self, node, _):
         return float(node.text)
+
     def visit_variable(self, node, _):
         var = node.text
         if var in self.contract.deter_var_name2id:
@@ -399,18 +441,23 @@ class Parser(NodeVisitor):
             return self.contract.nondeter_var_list[self.contract.nondeter_var_name2id[var]]
         else:
             raise ValueError("Undefined variable name {}.".format(var))
+
     def visit_operator(self, node, children):
         return node.text
+
     def visit_comparison(self, node, _):
         return node.text
+
     def visit_const_variable(self, node, children):
         if (isinstance(children[0], pystl.variable.Var)):
             return Expression(children[0])
         elif (len(children[0]) == 3):
             return (children[0][0] * children[0][2])
         else: assert(False)
+
     def visit_term(self, node, children):
         return Expression(children[0])
+
     def visit_expression_inner(self, node, children):
         #  print("expression_inner")
         #  print(children)
@@ -424,11 +471,13 @@ class Parser(NodeVisitor):
             else: assert(op == '+')
             return [left] + right
         else: assert(False)
+
     def visit_expression_outer(self, node, children):
         #  print("expression_outer")
         #  print(children)
         #  input()
         return reduce(op.add, children[1])
+
     def visit_AP(self, node, children):
         #  print(children)
         #  input()
@@ -446,36 +495,43 @@ class Parser(NodeVisitor):
         elif operator == '=' or operator == '==':
             return left == right
         else: assert(False)
+
     def visit_stAP(self, node, children):
         #  print(children)
         #  input()
         (_, _, _, _, prob, _, _, _, ap, _, _) = children
         return P(prob, ap)
+
     def visit_interval(self, node, children):
         #  print(children)
         #  input()
         (_, _, left, _, _, _, right, _, _) = children
         return [int(left), int(right)]
+
     def visit_f(self, node, children):
         #  print(children)
         #  input()
         (_, _, _, interval, _, phi, _, _) = children
         return Eventually(interval, phi)
+
     def visit_g(self, node, children):
         #  print(children)
         #  input()
         (_, _, _, interval, _, phi, _, _) = children
         return Globally(interval, phi)
+
     def visit_u(self, node, children):
         #  print(children)
         #  input()
         (_, _, phi1, _, _, interval, _, phi2, _, _) = children
         return Until(interval, phi1, phi2)
+
     def visit_r(self, node, children):
         #  print(children)
         #  input()
         (_, _, phi1, _, _, interval, _, phi2, _, _) = children
         return Release(interval, phi1, phi2)
+
     def visit_phi(self, node, children):
         #  print("phi:{}".format(children))
         #  input()
@@ -494,30 +550,38 @@ class Parser(NodeVisitor):
     visit_or_inner = nontemporal_op_inner
     visit_and_inner = nontemporal_op_inner
     visit_implies_inner = nontemporal_op_inner
+
     def visit_or_outer(self, node, children):
         #  print("or outer:{}".format(children))
         #  input()
         return reduce(op.or_, children[2])
+
     def visit_and_outer(self, node, children):
         #  print("or outer:{}".format(children))
         #  input()
         return reduce(op.and_, children[2])
+
     def visit_implies_outer(self, node, children):
         #  print("or outer:{}".format(children))
         #  input()
         def implies(x, y):
             return x.implies(y)
+
         return reduce(implies, children[2])
+
     def visit_true(self, node, children):
         return true
+
     def visit_false(self, node, children):
         return false
+
     def visit_phi(self, node, children):
         return children[0]
+
     def visit_neg(self, _, children):
         #  print("neg:{}".format(children))
         #  input()
         return ~children[2]
+
     def visit_paren_phi(self, node, children):
         return children[2]
-

@@ -1,5 +1,4 @@
 import sys
-sys.path.append("/home/kevin/Github/pystl")
 from pystl import *
 from pystl.parser import *
 import numpy as np
@@ -29,7 +28,7 @@ B = np.array([[0], [1]])
 solver = MILPSolver()
 solver.add_contract(c)
 #  solver.add_dynamic(x * A + u * B == (Next(x) - x)/0.5)
-solver.add_dynamic(x * A + u * B == Next(x))
+solver.add_dynamic(A * x + B * u == Next(x))
 solver.add_constraint(x1 == 0)
 solver.add_constraint(x2 == 0)
 solver.add_constraint(c.guarantee)
