@@ -567,7 +567,7 @@ class MILPSolver:
     __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'constraints', 'dynamics'
             , 'solver', 'model', 'idx', 'node_variable', 'contract_variable')
 
-    def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi", debug = True):
+    def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi", debug = False):
         assert(mode in ("Boolean", "Quantitative"))
         assert(solver in ("Gurobi", "Cplex"))
         #  print("====================================================================================")
@@ -637,7 +637,7 @@ class MILPSolver:
             self.set_constraint(c)
 
         for d in self.dynamics:
-            self.set_dynamic(d.dynamic)
+            self.set_dynamic(d.vector)
 
         #  if self.objective == 'min':
         #      if self.solver == "Gurobi":
@@ -669,6 +669,8 @@ class MILPSolver:
                 self.print_solution()
             return True
         else:
+            self.model.computeIIS()
+            self.model.write("model.ilp")
             if self.verbose:
                 print('There exists no solution.')
             return False

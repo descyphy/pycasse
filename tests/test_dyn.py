@@ -4,7 +4,6 @@ from pystl.parser import *
 import numpy as np
 import time
 
-
 # Build a contract
 c = contract('c')                                                  # Create a contract c
 [x1, x2] = c.set_deter_uncontrolled_vars(['x1', 'x2'], \
@@ -28,7 +27,7 @@ B = np.array([[0], [1]])
 solver = MILPSolver()
 solver.add_contract(c)
 #  solver.add_dynamic(x * A + u * B == (Next(x) - x)/0.5)
-solver.add_dynamic(A * x + B * u == Next(x))
+solver.add_dynamic(x * A + u * B == Next(x))
 solver.add_constraint(x1 == 0)
 solver.add_constraint(x2 == 0)
 solver.add_constraint(c.guarantee)

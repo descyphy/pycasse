@@ -61,12 +61,19 @@ class DeterVar(Var):
     __slots__ = ('var_type', 'data_type', 'bound')
     
     def __init__(self, name, idx, var_type, data_type = 'CONTINUOUS', bound = None):
+        """ Constructor. """
+        # Assertions
         assert(var_type in ('controlled', 'uncontrolled', 'parameter'))
         assert(data_type in ('BINARY', 'INTEGER', 'CONTINUOUS'))
+
+        # Inherit from Var class
         super().__init__(name, idx)
+        
+        # Set variable type and data_type
         self.var_type = var_type
         self.data_type = data_type
-        
+
+        # Set bounds
         if bound is None:
             if data_type in ('INTEGER', 'CONTINUOUS'):
                 self.bound = np.array([-M, M])
@@ -76,7 +83,6 @@ class DeterVar(Var):
         else:
             assert(bound.shape == (2,))
             self.bound = bound
-
         self.bound = self.bound.astype(float)
 
     def __str__(self):
@@ -101,8 +107,13 @@ class NondeterVar(Var):
     __slots__ = ('data_type')
     
     def __init__(self, name, idx, data_type = 'GAUSSIAN'):
+        # Assertions
         assert(data_type in ('GAUSSIAN'))
+
+        # Inherit from Var class
         super().__init__(name, idx)
+        
+        # Set data_type
         self.data_type = data_type
 
     def __str__(self):
