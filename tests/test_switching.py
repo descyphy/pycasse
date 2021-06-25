@@ -13,7 +13,8 @@ c = contract('c')
         # bounds = np.array([[-4, 4]]))
         bounds = np.array([[-10**4, 10**4]])) # Set a controlled variable
 c.set_assume('True') # Set/define the assumptions
-c.set_guaran('(F[0,50] ((-0.01 <= e1) & (e1 <= 0.01)))') # Set/define the guarantees
+c.set_guaran('True') # Set/define the guarantees
+# c.set_guaran('(F[0,50] ((-0.01 <= e1) & (e1 <= 0.01)))') # Set/define the guarantees
 # c.set_guaran('(!(F[0,30] ((-0.01 <= e1) & (e1 <= 0.01))))') # Set/define the guarantees
 c.checkSat()  # Saturate c
 c.printInfo() # Print c
@@ -22,8 +23,10 @@ c.printInfo() # Print c
 e = Vector([e1, e2])
 theta = Vector([theta])
 v = Vector([vf, vd])
-A_c = np.array([[0.9048, 0], [0.09516, 1]])
-B_c = np.array([[-0.1903], [-0.009675]])
+A_c1 = np.array([[0.9048, 0], [0.09516, 1]])
+B_c1 = np.array([[-0.1903], [-0.009675]])
+A_c2 = np.array([[1, 0], [0, 1]])
+B_c2 = np.array([[0], [0]])
 K_c = np.array([[-0.5635, -2.2316]])
 
 # Build a MILP solver
@@ -34,7 +37,8 @@ solver.add_contract(c)
 solver.add_constraint(c.guarantee)
 
 # Dynamics
-solver.add_dynamic(Next(e) == A_c * e + B_c * theta)
+# TODO: Add Switching
+solver.add_switching_dynamic([Next(e) == A_c1 * e + B_c1 * theta, Next(e) == A_c2 * e + B_c2 * theta])
 
 # Conditions that has to always hold
 solver.add_dynamic(theta == -K_c * e)

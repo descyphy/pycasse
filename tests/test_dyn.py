@@ -15,19 +15,19 @@ c.set_guaran('(F[0,30] (x1 >= 245))')                              # Set/define 
 #  c.set_guaran('(F[0,200] (x[0] => 1945))') # Set/define the guarantees
 #  c.set_guaran('(G[0,10] (F[0,30] (G[0,10] (x[0] => 245))))') # Set/define the guarantees
 #  c.set_guaran('(G[0,10] ((F[0,5] (x[0] => 3)) & (F[0,5] (x[0] <= 0))))') # Set/define the guarantees
-c.saturate()  # Saturate c
+c.checkSat()  # Saturate c
 c.printInfo()                                       # Print c2
 
 # Build a linear system dynamics
-x = Dynamics([x1, x2])
-u = Dynamics([u1])
+x = Vector([x1, x2])
+u = Vector([u1])
 A = np.array([[1, 1], [0, 1]])
 B = np.array([[0], [1]])
 
 solver = MILPSolver()
 solver.add_contract(c)
 #  solver.add_dynamic(x * A + u * B == (Next(x) - x)/0.5)
-solver.add_dynamic(x * A + u * B == Next(x))
+solver.add_dynamic(Next(x) == A * x + B * u)
 solver.add_constraint(x1 == 0)
 solver.add_constraint(x2 == 0)
 solver.add_constraint(c.guarantee)

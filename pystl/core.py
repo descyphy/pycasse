@@ -564,8 +564,8 @@ class MILPSolver:
         b_vars
         b_var_num
     """
-    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'constraints', 'dynamics'
-            , 'solver', 'model', 'idx', 'node_variable', 'contract_variable')
+    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'constraints', 'dynamics', 'switching_dynamics',
+            'solver', 'model', 'idx', 'node_variable', 'contract_variable')
 
     def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi", debug = False):
         assert(mode in ("Boolean", "Quantitative"))
@@ -585,6 +585,7 @@ class MILPSolver:
         self.contract    = None
         self.constraints = []
         self.dynamics    = []
+        self.switching_dynamics    = []
 
         # Initialize convex solvers
         if self.solver == "Gurobi":
@@ -617,14 +618,22 @@ class MILPSolver:
         Adds a dynamics to the SMC solver.
         """
         self.dynamics.append(dynamic)
+        print(dynamic)
+
+    def add_switching_dynamic(self, switching_dynamic):
+        """
+        Adds a dynamics to the SMC solver.
+        """
+        self.switching_dynamics.append(switching_dynamic)
+        print(switching_dynamic)
 
     def solve(self, objective=None):
         """ Solves the MILP problem """
         # Add constraints of the contract and dynamics to the SAT, main, and SSF convex solver
         assert(len(self.constraints) > 0)
-        # print(self.constraints)
 
         self.preprocess()
+        print(self.constraints)
 
         if self.debug:
             for c in self.constraints:
@@ -677,16 +686,19 @@ class MILPSolver:
 
     def preprocess(self):
         self.idx = 0
+        max_endtime = 0
         for i, c in enumerate(self.constraints):
             #  print(self.constraints[i])
             (self.constraints[i], end_time) = self.preprocess_constraint(c, 1)
+            if max_endtime < end_time:
+                max_endtime = end_time
             #  print(self.constraints[i])
         if self.solver == "Gurobi":
-            self.node_variable = -1 * np.ones((self.idx, end_time), dtype = object)
-            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object) # -1 is to exclude constant variable
+            self.node_variable = -1 * np.ones((self.idx, max_endtime), dtype = object)
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), max_endtime), dtype = object) # -1 is to exclude constant variable
         elif self.solver == "Cplex":
-            self.node_variable = -1 * np.ones((self.idx, end_time), dtype = object)
-            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object)
+            self.node_variable = -1 * np.ones((self.idx, max_endtime), dtype = object)
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), max_endtime), dtype = object)
         else: assert(False)
 
     def preprocess_constraint(self, node, end_time):
@@ -993,6 +1005,11 @@ class MILPSolver:
             variable_array = self.contract_variable
         else: assert(False)
 
+        # print(variable_array)
+        # print(idx)
+        # print(time)
+        # print(variable_array[idx, time])
+
         if (not isinstance(variable_array[idx, time], gp.Var) and (variable_array[idx, time] == -1)):
             variable_array[idx, time] = self.model_add_binary_variable_by_name("{}_{}_{}".format(var_type, idx, time))
 
@@ -1070,7 +1087,6 @@ class MILPSolver:
 
         if (self.debug):
             print("adding constraint: variable: {}, multiplier: {}, rhs: {}".format(variable_array[variable[0], variable[1]], multiplier, rhs))
-
 
         if self.solver == "Gurobi":
             self.model.addConstr(np.sum(variable_array[variable[0], variable[1]] * multiplier) == rhs)
