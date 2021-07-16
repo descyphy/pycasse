@@ -27,6 +27,7 @@ class SMCSolver:
         # Initialize attributes
         self.contract = None
         self.dynamics = None
+        self.switching_dynamics = None
         self.verbose = verbose
         self.start_time = 0
         self.end_time = M
@@ -65,6 +66,12 @@ class SMCSolver:
         Adds a dynamics to the SMC solver.
         """
         self.dynamics = dynamics
+
+    def add_switching_dynamics(self, dynamics):
+        """
+        Adds a dynamics to the SMC solver.
+        """
+        self.switching_dynamics = dynamics
 
     def add_constraints(self):
         """
@@ -564,7 +571,7 @@ class MILPSolver:
         b_vars
         b_var_num
     """
-    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'constraints', 'dynamics', 'switching_dynamics',
+    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'constraints', 'dynamics', 'switching_dynamics', 'switching_time',
             'solver', 'model', 'idx', 'node_variable', 'contract_variable')
 
     def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi", debug = False):
@@ -585,7 +592,8 @@ class MILPSolver:
         self.contract    = None
         self.constraints = []
         self.dynamics    = []
-        self.switching_dynamics    = []
+        self.switching_dynamics = []
+        self.switching_time = None
 
         # Initialize convex solvers
         if self.solver == "Gurobi":
@@ -620,12 +628,13 @@ class MILPSolver:
         self.dynamics.append(dynamic)
         print(dynamic)
 
-    def add_switching_dynamic(self, switching_dynamic):
+    def add_switching_dynamic(self, switching_dynamic, switching_time=None):
         """
         Adds a dynamics to the SMC solver.
         """
-        self.switching_dynamics.append(switching_dynamic)
-        print(switching_dynamic)
+        self.switching_dynamics = switching_dynamic
+        if switching_time is not None:
+            self.switching_time = switching_time
 
     def solve(self, objective=None):
         """ Solves the MILP problem """
@@ -647,6 +656,9 @@ class MILPSolver:
 
         for d in self.dynamics:
             self.set_dynamic(d.vector)
+
+        self.set_switching_dynamic()
+
 
         #  if self.objective == 'min':
         #      if self.solver == "Gurobi":
@@ -993,6 +1005,63 @@ class MILPSolver:
         if (self.debug):
             input()
 
+    def set_switching_dynamic(self):
+        print(self.switching_dynamics)
+        print(self.switching_time)
+        max_time = self.contract_variable.shape[1]
+        
+        bool_vars = self.model.addVars(max_time, vtype=GRB.BINARY, name='b_switching')
+        self.model.update()
+
+        for k in [0, 1]:
+            for dynamic in self.switching_dynamics[k]:
+                tmp_dyn = dynamic.vector
+                for row in range(len(tmp_dyn.data)):
+                    variable = [[],[]]
+                    multiplier = []
+                    rhs = 0
+                    for key, value in tmp_dyn.var2id.items():
+                        if tmp_dyn.data[row, value] != 0:
+                            if key[0] != 0:
+                                variable[0].append(key[0])
+                                variable[1].append(key[1])
+                                multiplier.append(tmp_dyn.data[row,value])
+                            else:
+                                assert(key[1] == 0)
+                                rhs += tmp_dyn.data[row,value]
+                    variable = np.array(variable)
+                    multiplier = np.array(multiplier)
+                    if self.debug:
+                        print("variable: {}".format(variable))
+                        print("multiplier: {}".format(multiplier))
+                        print("rhs: {}".format(rhs))
+
+                    for j in range(self.contract_variable.shape[1] - tmp_dyn.max_time):
+                        for i in range(variable.shape[1]):
+                            v = variable[0,i]
+                            t = variable[1,i]
+                            #  print(v, t)
+                            if self.contract.deter_var_list[v].data_type == 'BINARY':
+                                self.model_add_binary_variable(v, t, var_type = 'contract')
+                            elif self.contract.deter_var_list[v].data_type == 'CONTINUOUS':
+                                lb = self.contract.deter_var_list[v].bound[0]
+                                ub = self.contract.deter_var_list[v].bound[1]
+                                self.model_add_continous_variable(v, t, var_type = 'contract', lb = lb, ub = ub)
+                            else: assert(False)
+                        #  print(self.contract_variable)
+                        self.model.update()
+                        if self.switching_time is not None:
+                            if j < self.switching_time:
+                                self.model_add_switching_constraint(bool_vars[j], k, variable, multiplier, -rhs, value=0)
+                            else:
+                                self.model_add_switching_constraint(bool_vars[j], k, variable, multiplier, -rhs, value=1)
+                        else:
+                            self.model_add_switching_constraint(bool_vars[j], k, variable, multiplier, -rhs)
+                        variable[1] +=1
+        
+        if (self.debug):
+            input()
+
     def model_add_binary_variable(self, idx, time, var_type = 'node'):
         assert(var_type in ('node', 'contract'))
         
@@ -1004,11 +1073,6 @@ class MILPSolver:
         elif (var_type == 'contract'):
             variable_array = self.contract_variable
         else: assert(False)
-
-        # print(variable_array)
-        # print(idx)
-        # print(time)
-        # print(variable_array[idx, time])
 
         if (not isinstance(variable_array[idx, time], gp.Var) and (variable_array[idx, time] == -1)):
             variable_array[idx, time] = self.model_add_binary_variable_by_name("{}_{}_{}".format(var_type, idx, time))
@@ -1095,6 +1159,27 @@ class MILPSolver:
             self.model.linear_constraints.add(lin_expr = lin_expr, senses = "E", rhs = [rhs])
         else: assert(False)
 
+    def model_add_switching_constraint(self, bool, bool_value, variable, multiplier, rhs, var_type = 'contract', value = None):
+        if (var_type == 'node'):
+            variable_array = self.node_variable
+        elif (var_type == 'contract'):
+            variable_array = self.contract_variable
+        else: assert(False)
+
+        if (self.debug):
+            print("adding constraint: variable: {}, multiplier: {}, rhs: {}".format(variable_array[variable[0], variable[1]], multiplier, rhs))
+
+        if self.solver == "Gurobi":
+            self.model.addConstr((bool == bool_value) >> (np.sum(variable_array[variable[0], variable[1]] * multiplier) == rhs))
+            if value is not None:
+                self.model.addConstr(bool == value)
+            self.model.update()
+
+        elif self.solver == "Cplex":
+            lin_expr = [[variable_array[variable[0], variable[1]].tolist(), multiplier.tolist()]]
+            self.model.linear_constraints.add(lin_expr = lin_expr, senses = "E", rhs = [rhs])
+        else: assert(False)
+
     def model_add_constraint_and(self, var, var_list):
         if (self.debug):
             print("adding and constraint: var: {}, expr: {}".format(var, var_list))
@@ -1157,6 +1242,11 @@ class MILPSolver:
                     elif self.solver == "Cplex":
                         print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
                     else: assert(False)
+        
+        for t in range(len_t):
+            if self.solver == "Gurobi":
+                print("b_switching[{}]: {}".format(t, self.model.getVarByName("b_switching[{}]".format(t)).x))
+
         #  (len_var, len_t) = self.node_variable.shape
         #  for v in range(len_var):
         #      for t in range(len_t):

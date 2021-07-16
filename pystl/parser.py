@@ -1,10 +1,8 @@
 from copy import deepcopy
-from collections import defaultdict
 from functools import reduce
 import numpy as np
 import operator as op
 from parsimonious import Grammar, NodeVisitor
-import re
 import pystl.variable
 
 from pystl.variable import M, EPS

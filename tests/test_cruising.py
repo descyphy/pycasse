@@ -7,14 +7,12 @@ import time
 # Build a contract
 c = contract('c')
 [vd, vf, e1, e2] = c.set_deter_uncontrolled_vars(['vd', 'vf', 'e1', 'e2'], \
-        # bounds = np.array([[0, 35], [0, 10**4]]))
         bounds = np.array([[0, 35], [0, 10**4], [-10**4, 10**4], [-10**4, 10**4]])) # Set a deterministic uncontrolled variable
 [theta] = c.set_controlled_vars(['theta'], 
-        # bounds = np.array([[-4, 4]]))
         bounds = np.array([[-10**4, 10**4]])) # Set a controlled variable
 c.set_assume('True') # Set/define the assumptions
-c.set_guaran('(F[0,50] ((-0.01 <= e1) & (e1 <= 0.01)))') # Set/define the guarantees
-# c.set_guaran('(!(F[0,30] ((-0.01 <= e1) & (e1 <= 0.01))))') # Set/define the guarantees
+c.set_guaran('(F[0,100] ((-0.01 <= e1) & (e1 <= 0.01)))') # Set/define the guarantees
+# c.set_guaran('(!(F[0,100] ((-0.01 <= e1) & (e1 <= 0.01))))') # Set/define the guarantees
 c.checkSat()  # Saturate c
 c.printInfo() # Print c
 
