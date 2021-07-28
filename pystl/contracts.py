@@ -1,9 +1,9 @@
-from copy import deepcopy
 import numpy as np
-import random
+import gurobipy as gp
 import matplotlib.pyplot as plt
-from itertools import combinations
 
+from itertools import combinations
+from copy import deepcopy
 from numpy.lib.npyio import save
 from pystl.variable import DeterVar, NondeterVar, M, EPS
 from pystl.vector import Vector, Next
@@ -455,77 +455,6 @@ class contract:
         res += "    isSat: {}\n".format(self.isSat)
         return res
 
-    # def find_opt_param(self, objective, N=100):
-    #     """ Find an optimal set of parameters for a contract given an objective function. """
-    #     # Build a MILP Solver
-    #     print("Finding an optimal set of parameters for contract {}...".format(self.id))
-
-
-    #     variable = [False]
-    #     bounds = []
-    #     for v in self.deter_var_list[1:]:
-    #         if v.var_type == 'parameter':
-    #             variable.append(True)
-    #             bounds.append(v.bound)
-    #         else:
-    #             variable.append(False)
-    #     variable = np.array(variable)
-    #     bounds = np.array(bounds)
-    #     # Sample the parameters N times
-    #     sampled_param = np.random.rand(N, len(bounds))
-    #     sampled_param *= (bounds[:,1] - bounds[:,0])
-    #     sampled_param += bounds[:,0]
-    #     #  print(variable)
-    #     #  print(bounds)
-    #     #  print(sampled_param)
-    #     #  input()
-    #     def change(data, variable, values):
-    #         #  print(data)
-    #         #  print(variable)
-    #         #  print(values)
-    #         parameter = data[variable[:len(data)]] 
-    #         data[0] += np.sum(parameter * values[:len(parameter)])
-    #         data[variable[:len(data)]] = 0
-    #     def traverse(node, variable, values):
-    #         if node.ast_type == 'AP':
-    #             change(node.expr.deter_data, variable, values)
-    #         elif node.ast_type == 'StAP':
-    #             #  print(node.prob)
-    #             change(node.expr.deter_data, variable, values)
-    #             change(node.prob.deter_data, variable, values)
-    #         else:
-    #             for f in node.formula_list:
-    #                 traverse(f, variable, values)
-
-    #     # Build a deepcopy of the contract
-    #     c = deepcopy(self)
-
-    #     x_id = np.argmax(variable)
-    #     y_id = x_id + 1 + np.argmax(variable[x_id + 1:])
-
-    #     fig = plt.figure()
-    #     plt.xlabel(self.deter_var_list[x_id].name)
-    #     plt.ylabel(self.deter_var_list[y_id].name)
-    #     plt.xlim(self.deter_var_list[x_id].bound[0], self.deter_var_list[x_id].bound[1])
-    #     plt.ylim(self.deter_var_list[y_id].bound[0], self.deter_var_list[y_id].bound[1])
-
-    #     for i in range(N):
-    #         #  print(sampled_param[i])
-    #         c.assumption = deepcopy(self.assumption)
-    #         traverse(c.assumption, variable, sampled_param[i])
-    #         c.guarantee = deepcopy(self.guarantee)
-    #         traverse(c.guarantee, variable, sampled_param[i])
-    #         #  print(c)
-    #         #  input()
-    #         if c.checkFeas(print_sol = False, verbose = False):
-    #             plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'go')
-    #         else:
-    #             plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'ro')
-
-    #     #  plt.show()
-    #     #  plt.savefig('test.jpg')
-
-
 def conjunction(c1, c2):
     """ Returns the conjunction of two contracts
 
@@ -643,7 +572,6 @@ def separation(c, c2):
 
     return separation
 
-# def highway_setup(data):
 def env_load(H, init=None, savepath=True):
     """ Create a set of contracts for the vehicles on the highway environment.
 
@@ -745,7 +673,11 @@ def env_load(H, init=None, savepath=True):
         # print(uncontrolled_vars)
         # print(controlled_vars)
 
-        # Set guarantees
+        # print("vehicle_num: {}".format(vehicle_num))
+        # for region_param in region_params:
+        #     print(region_param)
+
+        # Find the guarantees formula and set the gurantees of the contract
         # Initialize guarantees
         guarantees_formula = "("
         # guarantees_formula = ""
@@ -768,6 +700,7 @@ def env_load(H, init=None, savepath=True):
         else:
             guarantees_formula = guarantees_formula[1:-1]
 
+        # Set the contracts
         tmp_contract.set_guaran(guarantees_formula)
         
         # Saturate contract
@@ -775,11 +708,23 @@ def env_load(H, init=None, savepath=True):
         # print(tmp_contract)
         # print(guarantees_formula)
         
-        # Set requirements
+        # Add the contract
         tmp_solver.add_contract(tmp_contract)
+
+        # Add the contract specifications
         tmp_solver.add_constraint(tmp_contract.guarantee)
+
+        # Set objectives
+        # TODO: Goal objectives
+        # print(tmp_contract.guarantee)
+        objective_func = gp.abs_(uncontrolled_vars[0]-uncontrolled_vars[1])
+
+        # TODO: Region objectives
+        region_params = np.array(data["vehicle"]["region"]["equation"][vehicle_num])
+
+        # TODO: Fuel objectives
         
-        # TODO:Set initial states. Make it automated not manual
+        # TODO: Set initial states. Make it automated not manual later.
         for var in uncontrolled_vars:
             if 'v_x' in var.name:
                 tmp_solver.add_constraint(var == 10)
