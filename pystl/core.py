@@ -699,10 +699,8 @@ class MILPSolver:
         self.idx = 0
         max_endtime = 0
         for i, c in enumerate(self.constraints):
-            print(c)
             (self.constraints[i], end_time) = self.preprocess_constraint(c, 1)
-            print(end_time)
-            input()
+            
             if max_endtime < end_time:
                 max_endtime = end_time
         if self.solver == "Gurobi":
@@ -714,11 +712,8 @@ class MILPSolver:
         else: assert(False)
 
     def preprocess_constraint(self, node, end_time):
-        #  if self.debug:
         if (node.ast_type == "Not"):
-            #  print("remove negation")
             res = node.formula_list[0]
-
             res.invert_ast_type()
 
             if res.ast_type == "AP":
@@ -732,17 +727,11 @@ class MILPSolver:
                 for i, f in enumerate(res.formula_list):
                     res.formula_list[i] = ~f
         else:
-            #  print("ignore")
             res = node
 
         res.idx = self.idx
         self.idx += 1
 
-        #  if self.debug:
-        #      print("start traverse")
-        #      print(repr(res))
-        #      input()
-        # print(res.ast_type)
         if res.ast_type in ('G', 'F'):
             (res.formula_list[0], end_time) = self.preprocess_constraint(res.formula_list[0], end_time + res.interval[1])
         elif res.ast_type in ('U', 'R'):
@@ -755,14 +744,6 @@ class MILPSolver:
                 (res.formula_list[i], e) = self.preprocess_constraint(f, current_end_time)
                 end_time = max(e, end_time)
 
-        # print(repr(node))
-        # print(end_time)
-
-        #  if self.debug:
-        #      print(repr(res))
-        #      print(end_time)
-        #      print("end traverse")
-        #      input()
         return (res, end_time)
 
     def set_constraint(self, constraint):
