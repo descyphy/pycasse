@@ -699,7 +699,10 @@ class MILPSolver:
         self.idx = 0
         max_endtime = 0
         for i, c in enumerate(self.constraints):
+            print(c)
             (self.constraints[i], end_time) = self.preprocess_constraint(c, 1)
+            print(end_time)
+            input()
             if max_endtime < end_time:
                 max_endtime = end_time
         if self.solver == "Gurobi":
@@ -747,8 +750,9 @@ class MILPSolver:
             (res.formula_list[1], e2) = self.preprocess_constraint(res.formula_list[1], end_time + res.interval[1])
             end_time = max(e1, e2)
         elif res.ast_type in ('And', 'Or'):
+            current_end_time = end_time
             for i, f in enumerate(res.formula_list):
-                (res.formula_list[i], e) = self.preprocess_constraint(f, end_time)
+                (res.formula_list[i], e) = self.preprocess_constraint(f, current_end_time)
                 end_time = max(e, end_time)
 
         # print(repr(node))

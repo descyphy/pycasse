@@ -677,9 +677,9 @@ Subject To
  GC285: node_18_9 = 0 -> contract_14_9 - contract_8_9 >= -1.9999
  GC286: node_18_10 = 1 -> contract_14_10 - contract_8_10 <= -2
  GC287: node_18_10 = 0 -> contract_14_10 - contract_8_10 >= -1.9999
- GC301: node_20_0 = 1 -> contract_1_0 <= -0
+ GC301: node_20_0 = 1 -> contract_1_0 <= 0
  GC302: node_20_0 = 0 -> contract_1_0 >= 0.0001
- GC303: node_21_0 = 1 -> - contract_1_0 <= -0
+ GC303: node_21_0 = 1 -> - contract_1_0 <= 0
  GC304: node_21_0 = 0 -> - contract_1_0 >= 0.0001
  GC306: node_23_0 = 1 -> contract_2_0 <= 8
  GC307: node_23_0 = 0 -> contract_2_0 >= 8.0001
@@ -689,9 +689,9 @@ Subject To
  GC312: node_26_0 = 0 -> contract_3_0 >= 10.0001
  GC313: node_27_0 = 1 -> - contract_3_0 <= -10
  GC314: node_27_0 = 0 -> - contract_3_0 >= -9.9999
- GC316: node_29_0 = 1 -> contract_4_0 <= -0
+ GC316: node_29_0 = 1 -> contract_4_0 <= 0
  GC317: node_29_0 = 0 -> contract_4_0 >= 0.0001
- GC318: node_30_0 = 1 -> - contract_4_0 <= -0
+ GC318: node_30_0 = 1 -> - contract_4_0 <= 0
  GC319: node_30_0 = 0 -> - contract_4_0 >= 0.0001
  GC321: node_32_0 = 1 -> contract_7_0 <= 50
  GC322: node_32_0 = 0 -> contract_7_0 >= 50.0001
@@ -705,13 +705,13 @@ Subject To
  GC332: node_38_0 = 0 -> contract_9_0 >= 10.0001
  GC333: node_39_0 = 1 -> - contract_9_0 <= -10
  GC334: node_39_0 = 0 -> - contract_9_0 >= -9.9999
- GC336: node_41_0 = 1 -> contract_10_0 <= -0
+ GC336: node_41_0 = 1 -> contract_10_0 <= 0
  GC337: node_41_0 = 0 -> contract_10_0 >= 0.0001
- GC338: node_42_0 = 1 -> - contract_10_0 <= -0
+ GC338: node_42_0 = 1 -> - contract_10_0 <= 0
  GC339: node_42_0 = 0 -> - contract_10_0 >= 0.0001
- GC341: node_44_0 = 1 -> contract_13_0 <= -0
+ GC341: node_44_0 = 1 -> contract_13_0 <= 0
  GC342: node_44_0 = 0 -> contract_13_0 >= 0.0001
- GC343: node_45_0 = 1 -> - contract_13_0 <= -0
+ GC343: node_45_0 = 1 -> - contract_13_0 <= 0
  GC344: node_45_0 = 0 -> - contract_13_0 >= 0.0001
  GC346: node_47_0 = 1 -> contract_14_0 <= 12
  GC347: node_47_0 = 0 -> contract_14_0 >= 12.0001
@@ -721,9 +721,9 @@ Subject To
  GC352: node_50_0 = 0 -> contract_15_0 >= 10.0001
  GC353: node_51_0 = 1 -> - contract_15_0 <= -10
  GC354: node_51_0 = 0 -> - contract_15_0 >= -9.9999
- GC356: node_53_0 = 1 -> contract_16_0 <= -0
+ GC356: node_53_0 = 1 -> contract_16_0 <= 0
  GC357: node_53_0 = 0 -> contract_16_0 >= 0.0001
- GC358: node_54_0 = 1 -> - contract_16_0 <= -0
+ GC358: node_54_0 = 1 -> - contract_16_0 <= 0
  GC359: node_54_0 = 0 -> - contract_16_0 >= 0.0001
 Bounds
  -10000 <= contract_13_0 <= 10000

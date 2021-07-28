@@ -1,4 +1,6 @@
 import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__) ) ) )
+
 from pystl import *
 import numpy as np
 
@@ -6,12 +8,14 @@ c1 = contract('c1')                         # Create a contract c1
 [x] = c1.set_deter_uncontrolled_vars(['x']) # Set a deterministic uncontrolled variable
 [y] = c1.set_controlled_vars(['y'])         # Set a controlled variable
 
-c1.set_assume('(G[0,3] (x => 5))')
+c1.set_assume('((G[0,3] (x => 5)) & (G[0,3] (y => 2)))')
 c1.set_guaran('(G[0,4] (y => 2))')
 c1.checkSat()                               # Saturate c1
 c1.printInfo()
 
 c1.checkCompat(print_sol=True)              # Check compatibility of c1
+print("end")
+input()
 c1.checkConsis(print_sol=True)              # Check consistency of c1
 c1.checkFeas(print_sol=True)                # Check feasiblity of c1
 
