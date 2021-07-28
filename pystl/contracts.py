@@ -2,7 +2,11 @@ from copy import deepcopy
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+from itertools import combinations
+
+from numpy.lib.npyio import save
 from pystl.variable import DeterVar, NondeterVar, M, EPS
+from pystl.vector import Vector, Next
 from pystl.parser import P, true, false, And, Or, Globally, Eventually, Until, Release, Parser
 from pystl.core import SMCSolver, MILPSolver
 
@@ -15,7 +19,7 @@ class contract:
     :type id: str
     """
 
-    __slots__ = ('id', 'deter_var_list', 'deter_var_name2id', 'nondeter_var_list', 'nondeter_var_name2id', 'nondeter_var_mean', 'nondeter_var_cov', 'assumption', 'guarantee', 'sat_guarantee', 'isSat')
+    __slots__ = ('id', 'deter_var_list', 'deter_var_name2id', 'nondeter_var_list', 'nondeter_var_name2id', 'nondeter_var_mean', 'nondeter_var_cov', 'assumption', 'guarantee', 'sat_guarantee', 'isSat', 'objectives')
 
     def __init__(self, id = ''):
         """ Constructor method """
@@ -30,6 +34,7 @@ class contract:
         self.guarantee            = false
         self.sat_guarantee        = false
         self.isSat                = False
+        self.objectives           = []
 
     def set_controlled_vars(self, var_names, dtypes = None, bounds = None):
         """ 
@@ -171,6 +176,7 @@ class contract:
         if verbose:
             print("Checking compatibility of the contract {}...".format(self.id))
         solver = MILPSolver()
+        #  solver = SMCSolver()
 
         # Add the contract and assumption constraints to the solver
         solver.add_contract(self)
@@ -195,6 +201,7 @@ class contract:
         if verbose:
             print("Checking consistency of the contract {}...".format(self.id))
         solver = MILPSolver()
+        #  solver = SMCSolver()
 
         # Add the contract and assumption constraints to the solver
         self.checkSat()
@@ -220,6 +227,7 @@ class contract:
         if verbose:
             print("Checking feasibility of the contract {}...".format(self.id))
         solver = MILPSolver()
+        #  solver = SMCSolver()
 
         # Add the contract and assumption constraints to the solver
         self.checkSat()
@@ -249,6 +257,7 @@ class contract:
         # Build a MILP Solver
         print("Checking whether contract {} refines contract {}...".format(self.id, contract2refine.id))
         solver = MILPSolver()
+        #  solver = SMCSolver()
 
         # Add constraints for refinement condition 1
         print("Checking condition 1 for refinement...")
@@ -633,3 +642,178 @@ def separation(c, c2):
     separation.isSat = True
 
     return separation
+
+# def highway_setup(data):
+def env_load(H, init=None, savepath=True):
+    """ Create a set of contracts for the vehicles on the highway environment.
+
+    :param data: [description]
+    :type data: [type]
+    """
+    # TODO: Temporary data goes here
+    # highway
+    data = {"scenario": "highway", "vehicle": {"id": [0, 1, 2], "width": 2.0, "length": 5.0, "target": [[100.0, 8.0], [100.0, 8.0], [100.0, 12.0]], "region": {"format": [["A", "B", "C", "D", "E"]], "representation": "Ax^2 + Bx + Cy^2 + Dy + E <= 0", "equation": [[[[0, -0.0, 0, 1.0, -10.0], [0, 0.0, 0, -1.0, 6.0], [0, -1.0, 0, -0.0, 0.0], [0, 1.0, 0, 0.0, -10000.0]]], [[[0, -0.0, 0, 1.0, -10.0], [0, 0.0, 0, -1.0, 6.0], [0, -1.0, 0, -0.0, 0.0], [0, 1.0, 0, 0.0, -10000.0]]], [[[0, -0.0, 0, 1.0, -14.0], [0, 0.0, 0, -1.0, 10.0], [0, -1.0, 0, -0.0, 0.0], [0, 1.0, 0, 0.0, -10000.0]]]]}}, "dynamics": {"x": ["d_x", "d_y", "v_x", "v_y"], "u": ["a_x", "a_y"], "dt": 1, "A": [[1, 0, "dt", 0], [0, 1, 0, "dt"], [0, 0, 1, 0], [0, 0, 0, 1]], "B": [[0, 0], [0, 0], ["dt", 0], [0, "dt"]]}, "physics": {"velocity_bound": 30, "acceleration_bound": 10}}
+    # # highway_merging
+    # data = {"scenario": "intersection", "vehicle": {"id": [0, 1], "width": 2.0, "length": 5.0, "target": [[-114.0, 2.000000000000007], [-2.0000000000000138, -114.0]], "region": {"format": [["A", "B", "C", "D", "E"]], "representation": "Ax^2 + Bx + Cy^2 + Dy + E <= 0", "equation": [[[[0, 1.0, 0, 0.0, 0.0], [0, -1.0, 0, -0.0, -4.0], [0, -0.0, 0, 1.0, -114.0], [0, 0.0, 0, -1.0, 14.0]], [[1, 28.0, 1, -28.0, 196.0], [-1, -28.0, -1, 28.0, -292.0], [0, -0.0, 0, 1.0, -14.0], [0, -1.0, 0, -6.123233995736766e-17, -14.0]], [[0, -6.217248937900877e-17, 0, -1.0, 0.0], [0, 6.217248937900877e-17, 0, 1.0, -4.0], [0, 1.0, 0, -6.217248937900877e-17, 14.0], [0, -1.0, 0, 6.217248937900877e-17, -114.0]]], [[[0, 5.995204332975846e-17, 0, 1.0, 0.0], [0, -5.995204332975846e-17, 0, -1.0, -4.0], [0, -1.0, 0, 5.995204332975846e-17, -114.0], [0, 1.0, 0, -5.995204332975846e-17, 14.0]], [[1, 28.0, 1, 28.0, 196.0], [-1, -28.0, -1, -28.0, -292.0], [0, -1.0, 0, 6.123233995736766e-17, -14.0], [0, 0.0, 0, -1.0, -14.0]], [[0, 1.0, 0, -1.1990408665951691e-16, 0.0], [0, -1.0, 0, 1.1990408665951691e-16, -4.0], [0, 1.1990408665951691e-16, 0, 1.0, 14.0], [0, -1.1990408665951691e-16, 0, -1.0, -114.0]]]]}}, "dynamics": {"x": ["d_x", "d_y", "v_x", "v_y"], "u": ["a_x", "a_y"], "dt": 1, "A": [[1, 0, "dt", 0], [0, 1, 0, "dt"], [0, 0, 1, 0], [0, 0, 0, 1]], "B": [[0, 0], [0, 0], ["dt", 0], [0, "dt"]]}, "physics": {"velocity_bound": 30, "acceleration_bound": 10}}
+    # # intersection
+    # data = {"scenario": "intersection", "vehicle": {"id": [0, 1], "width": 2.0, "length": 5.0, "target": [[-114.0, 2.000000000000007], [-2.0000000000000138, -114.0]], "region": {"format": [["A", "B", "C", "D", "E"]], "representation": "Ax^2 + Bx + Cy^2 + Dy + E <= 0", "equation": [[[[0, 1.0, 0, 0.0, 0.0], [0, -1.0, 0, -0.0, -4.0], [0, -0.0, 0, 1.0, -114.0], [0, 0.0, 0, -1.0, 14.0]], [[1, 28.0, 1, -28.0, 196.0], [-1, -28.0, -1, 28.0, -292.0], [0, -0.0, 0, 1.0, -14.0], [0, -1.0, 0, -6.123233995736766e-17, -14.0]], [[0, -6.217248937900877e-17, 0, -1.0, 0.0], [0, 6.217248937900877e-17, 0, 1.0, -4.0], [0, 1.0, 0, -6.217248937900877e-17, 14.0], [0, -1.0, 0, 6.217248937900877e-17, -114.0]]], [[[0, 5.995204332975846e-17, 0, 1.0, 0.0], [0, -5.995204332975846e-17, 0, -1.0, -4.0], [0, -1.0, 0, 5.995204332975846e-17, -114.0], [0, 1.0, 0, -5.995204332975846e-17, 14.0]], [[1, 28.0, 1, 28.0, 196.0], [-1, -28.0, -1, -28.0, -292.0], [0, -1.0, 0, 6.123233995736766e-17, -14.0], [0, 0.0, 0, -1.0, -14.0]], [[0, 1.0, 0, -1.1990408665951691e-16, 0.0], [0, -1.0, 0, 1.1990408665951691e-16, -4.0], [0, 1.1990408665951691e-16, 0, 1.0, 14.0], [0, -1.1990408665951691e-16, 0, -1.0, -114.0]]]]}}, "dynamics": {"x": ["d_x", "d_y", "v_x", "v_y"], "u": ["a_x", "a_y"], "dt": 1, "A": [[1, 0, "dt", 0], [0, 1, 0, "dt"], [0, 0, 1, 0], [0, 0, 0, 1]], "B": [[0, 0], [0, 0], ["dt", 0], [0, "dt"]]}, "physics": {"velocity_bound": 30, "acceleration_bound": 10}}
+    env = data["scenario"]
+
+    # Find dynamics
+    dt = int(data["dynamics"]["dt"])
+    A = np.array(data["dynamics"]["A"])
+    B = np.array(data["dynamics"]["B"])
+    A = np.where(A=="dt", dt, A)
+    B = np.where(B=="dt", dt, B)
+    A = A.astype(float)
+    B = B.astype(float)
+    
+    if savepath:
+        # Find region parameters
+        param = np.array(data["vehicle"]["region"]["equation"])
+
+        # Initialize plots and settings
+        if env in ("highway", "highway_merging"):
+            _, ax = plt.subplots(len(param), 1)
+        else:
+            _, ax = plt.subplots(1, len(param))
+        cmaps = ['Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
+                'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
+                'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
+
+        # For each vehicle, 
+        for vehicle_num in data["vehicle"]["id"]:
+            # For each region of a vehicle, find vertices and plot the region
+            region_count = 0
+            
+            im = None
+            for region_param in param[vehicle_num]:
+                f1 = lambda x,y : region_param[0,0]*x**2 + region_param[0,1]*x + region_param[0,2]*y**2 + region_param[0,3]*y + region_param[0,4]
+                f2 = lambda x,y : region_param[1,0]*x**2 + region_param[1,1]*x + region_param[1,2]*y**2 + region_param[1,3]*y + region_param[1,4]
+                f3 = lambda x,y : region_param[2,0]*x**2 + region_param[2,1]*x + region_param[2,2]*y**2 + region_param[2,3]*y + region_param[2,4]
+                f4 = lambda x,y : region_param[3,0]*x**2 + region_param[3,1]*x + region_param[3,2]*y**2 + region_param[3,3]*y + region_param[3,4]
+
+                if env in ("highway", "highway_merging"):
+                    x = np.linspace(-10,550,1000)
+                    y = np.linspace(-20,20,1000)
+                else:
+                    x = np.linspace(-50,50,1000)
+                    y = np.linspace(-50,50,1000)
+                x,y = np.meshgrid(x,y)
+
+                if im is None:
+                    im = ((f1(x,y)<=0) & (f2(x,y)<=0) & (f3(x,y)<=0) & (f4(x,y)<=0)).astype(int) 
+                else:
+                    im += ((f1(x,y)<=0) & (f2(x,y)<=0) & (f3(x,y)<=0) & (f4(x,y)<=0)).astype(int) 
+
+                ax[vehicle_num].set_title("Vehicle {}".format(vehicle_num), fontsize=10)
+                region_count += 1
+            ax[vehicle_num].imshow(im, extent=(x.min(),x.max(),y.min(),y.max()), origin="lower", cmap=cmaps[vehicle_num])
+                
+        plt.savefig("test_{}.png".format(env))
+
+    # Create a contract for each vehicle
+    for vehicle_num in data["vehicle"]["id"]:
+        # Build a MILP solver
+        tmp_solver = MILPSolver()
+
+        # Initialize a contract
+        tmp_contract = contract("vehicle_{}".format(vehicle_num))
+
+        # Set deterministic uncontrolled and controlled variables
+        velocity_bound = data["physics"]["velocity_bound"]
+        acceleration_bound = data["physics"]["acceleration_bound"]
+        uncontrolled_vars = []
+        controlled_vars = []
+        uncontrolled_bounds = np.empty((0,2))
+        controlled_bounds = np.empty((0,2))
+
+        for tmp_vehicle_num in data["vehicle"]["id"]:
+            x_tmp = [s + "_{}".format(tmp_vehicle_num) for s in data["dynamics"]["x"]]
+            u_tmp = [s + "_{}".format(tmp_vehicle_num) for s in data["dynamics"]["u"]]
+            uncontrolled_vars = uncontrolled_vars + x_tmp
+            uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[-M, M], [-M, M], [-velocity_bound, velocity_bound], [-velocity_bound, velocity_bound]]), axis=0)
+            if tmp_vehicle_num == vehicle_num:
+                controlled_vars = controlled_vars + u_tmp
+                controlled_bounds = np.append(controlled_bounds, np.array([[-acceleration_bound, acceleration_bound], [-acceleration_bound, acceleration_bound]]), axis=0)
+            else:
+                uncontrolled_vars = uncontrolled_vars + u_tmp
+                uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[-acceleration_bound, acceleration_bound], [-acceleration_bound, acceleration_bound]]), axis=0)
+
+        uncontrolled_vars = tmp_contract.set_deter_uncontrolled_vars(uncontrolled_vars, bounds = uncontrolled_bounds)
+        controlled_vars = tmp_contract.set_controlled_vars(controlled_vars, bounds = controlled_bounds)
+        # print(uncontrolled_vars)
+        # print(controlled_vars)
+
+        # Set guarantees
+        # Initialize guarantees
+        guarantees_formula = "("
+        # guarantees_formula = ""
+        
+        # Find goal guarantees
+        guarantees_formula += "(F[0,{}] (({} == {}) & ({} == {})))".format(H, "{}_{}".format(data["dynamics"]["x"][0], vehicle_num), data["vehicle"]["target"][vehicle_num][0], "{}_{}".format(data["dynamics"]["x"][1], vehicle_num), data["vehicle"]["target"][vehicle_num][1])
+        
+        # Find no collision guarantees
+        vehicle_width = data["vehicle"]["width"]
+        # vehicle_length = data["vehicle"]["length"]
+        if len(data["vehicle"]["id"]) >= 2:
+            for i in data["vehicle"]["id"]:
+                if i != vehicle_num:
+                    guarantees_formula += " & (G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {})))".format(H, 
+                                            "{}_{}".format(data["dynamics"]["x"][0], vehicle_num), "{}_{}".format(data["dynamics"]["x"][0], i), vehicle_width, 
+                                            "{}_{}".format(data["dynamics"]["x"][0], i), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num), vehicle_width, 
+                                            "{}_{}".format(data["dynamics"]["x"][1], vehicle_num), "{}_{}".format(data["dynamics"]["x"][1], i), vehicle_width, 
+                                            "{}_{}".format(data["dynamics"]["x"][1], i), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num), vehicle_width)
+            guarantees_formula += ')'
+        else:
+            guarantees_formula = guarantees_formula[1:-1]
+
+        tmp_contract.set_guaran(guarantees_formula)
+        
+        # Saturate contract
+        tmp_contract.checkSat()
+        # print(tmp_contract)
+        # print(guarantees_formula)
+        
+        # Set requirements
+        tmp_solver.add_contract(tmp_contract)
+        tmp_solver.add_constraint(tmp_contract.guarantee)
+        
+        # TODO:Set initial states. Make it automated not manual
+        for var in uncontrolled_vars:
+            if 'v_x' in var.name:
+                tmp_solver.add_constraint(var == 10)
+            elif 'v_y' in var.name:
+                tmp_solver.add_constraint(var == 0)
+            elif var.name == 'd_x_0':
+                tmp_solver.add_constraint(var == 0)
+            elif var.name == 'd_y_0':
+                tmp_solver.add_constraint(var == 8)
+            elif var.name == 'd_x_1':
+                tmp_solver.add_constraint(var == 50)
+            elif var.name == 'd_y_1':
+                tmp_solver.add_constraint(var == 8)
+            elif var.name == 'd_x_2':
+                tmp_solver.add_constraint(var == 0)
+            elif var.name == 'd_y_2':
+                tmp_solver.add_constraint(var == 12)
+        
+        # Set Dynamics
+        checked_ego = False
+        for tmp_vehicle_num in data["vehicle"]["id"]: 
+            # Build a linear system dynamics
+            tmp_x = Vector(uncontrolled_vars[6*tmp_vehicle_num-2*checked_ego:6*tmp_vehicle_num+4-2*checked_ego])
+            if vehicle_num == tmp_vehicle_num:
+                tmp_u = Vector(controlled_vars)
+                checked_ego = True
+            else:
+                tmp_u = Vector(uncontrolled_vars[6*tmp_vehicle_num+4-2*checked_ego: 6*tmp_vehicle_num+6-2*checked_ego])
+
+            tmp_solver.add_dynamic(Next(tmp_x) == A * tmp_x + B * tmp_u)
+        
+        # Solve the problem using MILP solver
+        solved = tmp_solver.solve()
+        if solved:
+            tmp_solver.print_solution()
+
+env_load(10)

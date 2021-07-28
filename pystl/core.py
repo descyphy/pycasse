@@ -626,7 +626,6 @@ class MILPSolver:
         Adds a dynamics to the SMC solver.
         """
         self.dynamics.append(dynamic)
-        print(dynamic)
 
     def add_switching_dynamic(self, switching_dynamic, switching_time=None):
         """
@@ -642,7 +641,7 @@ class MILPSolver:
         assert(len(self.constraints) > 0)
 
         self.preprocess()
-        print(self.constraints)
+        # print(self.constraints)
 
         if self.debug:
             for c in self.constraints:
@@ -657,7 +656,7 @@ class MILPSolver:
         for d in self.dynamics:
             self.set_dynamic(d.vector)
 
-        self.set_switching_dynamic()
+        # self.set_switching_dynamic()
 
 
         #  if self.objective == 'min':
@@ -700,11 +699,9 @@ class MILPSolver:
         self.idx = 0
         max_endtime = 0
         for i, c in enumerate(self.constraints):
-            #  print(self.constraints[i])
             (self.constraints[i], end_time) = self.preprocess_constraint(c, 1)
             if max_endtime < end_time:
                 max_endtime = end_time
-            #  print(self.constraints[i])
         if self.solver == "Gurobi":
             self.node_variable = -1 * np.ones((self.idx, max_endtime), dtype = object)
             self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), max_endtime), dtype = object) # -1 is to exclude constant variable
@@ -715,8 +712,6 @@ class MILPSolver:
 
     def preprocess_constraint(self, node, end_time):
         #  if self.debug:
-        #      print(repr(node))
-        #      print(end_time)
         if (node.ast_type == "Not"):
             #  print("remove negation")
             res = node.formula_list[0]
@@ -744,6 +739,7 @@ class MILPSolver:
         #      print("start traverse")
         #      print(repr(res))
         #      input()
+        # print(res.ast_type)
         if res.ast_type in ('G', 'F'):
             (res.formula_list[0], end_time) = self.preprocess_constraint(res.formula_list[0], end_time + res.interval[1])
         elif res.ast_type in ('U', 'R'):
@@ -754,6 +750,9 @@ class MILPSolver:
             for i, f in enumerate(res.formula_list):
                 (res.formula_list[i], e) = self.preprocess_constraint(f, end_time)
                 end_time = max(e, end_time)
+
+        # print(repr(node))
+        # print(end_time)
 
         #  if self.debug:
         #      print(repr(res))
@@ -1243,9 +1242,9 @@ class MILPSolver:
                         print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
                     else: assert(False)
         
-        for t in range(len_t):
-            if self.solver == "Gurobi":
-                print("b_switching[{}]: {}".format(t, self.model.getVarByName("b_switching[{}]".format(t)).x))
+        # for t in range(len_t):
+        #     if self.solver == "Gurobi":
+        #         print("b_switching[{}]: {}".format(t, self.model.getVarByName("b_switching[{}]".format(t)).x))
 
         #  (len_var, len_t) = self.node_variable.shape
         #  for v in range(len_var):

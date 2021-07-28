@@ -14,14 +14,14 @@ c1 = contract('c1')                   # Create a contract c1
 #  c1.set_assume("((x <= 3) U[0,3] (x >=5))")    # Set/define the assumptions
 #  c1.set_guaran("(G[1,4] (y >= 2))")             # Set/define the guarantees
 
-c1.saturate()                         # Saturate c1
+c1.checkSat()                         # Saturate c1
 print(c1)
 input()
 
 #  print(And(x>0, y> 0, z>0))
 #  print((x>0) & (y> 0) & (z>0))
-print((x>0).Until([0,2], (y> 0)))
-input()
+#  print((x>0).Until([0,2], (y> 0)))
+#  input()
 #  print((x>0) | true)
 #  print((x>0) | false)
 #  print((x>0) & true)
@@ -29,7 +29,7 @@ input()
 #  input()
 
 p = Parser(c1)
-#  print(p("x", "const_variable"))
+#  print(p("3x", "const_variable"))
 #  print(p("y", "const_variable"))
 #  print(p("3x + 2y + 2z", "expression_outer"))
 #  print(p("(2y + 4 - 2 > 3)", "AP"))
@@ -45,4 +45,8 @@ p = Parser(c1)
 #  print(p("((y<=0) -> (x <= 0) -> (z <= 0))", "implies_outer"))
 #  print(p("True", "true"))
 #  print(p("!(x>0)"))
+#  print(p("((x == 10000.0) & (y == 8.0))", "and_outer"))
+#  print(p("((y<2) & (x + 2 < 2))", "and_outer"))
+print(p("(F[0,10] ((x == 10000.0) & (y == 8.0)))", "f"))
+# print(p("(F[0,10] ((x == 10000.0) & (y == 8.0)))"))
 input()

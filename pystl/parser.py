@@ -12,23 +12,26 @@ class Expression():
     """
     A class for defining an expression objects.
 
-    :np.array data
+    : param deter_data    : An np array of deterministic variables.
+    : type deter_data     : np.array
+    : param nondeter_data : An np array of non-deterministic variables.
+    : type nondeter_data  : np.array
     """
     __slots__ = ('deter_data', 'nondeter_data')
     def __init__(self, term = None):
         """ Constructor method """
-        if isinstance(term, (int, float)):
+        if isinstance(term, (int, float)):                    # when input is integer or float
             self.deter_data = np.array([term], dtype = float)
             self.nondeter_data = np.empty(0)
-        elif isinstance(term, pystl.variable.DeterVar):
+        elif isinstance(term, pystl.variable.DeterVar):       # when input is a deterministic variable
             self.deter_data = np.zeros(term.idx + 1)
             self.deter_data[term.idx] = 1
             self.nondeter_data = np.empty(0)
-        elif isinstance(term, pystl.variable.NondeterVar):
+        elif isinstance(term, pystl.variable.NondeterVar):    # when input is a non-deterministic variable
             self.deter_data = np.zeros(1)
             self.nondeter_data = np.zeros(term.idx + 1)
             self.nondeter_data[term.idx] = 1
-        elif isinstance(term, Expression):
+        elif isinstance(term, Expression):                    # when input is already an Expression
             self.deter_data = term.deter_data
             self.nondeter_data = term.nondeter_data
         else:
@@ -52,16 +55,16 @@ class Expression():
         res = Expression()
         #  print(other)
         #  print(res)
-        if len(self.deter_data) > len(other.deter_data):
-            res.deter_data = deepcopy(self.deter_data)
+        if len(self.deter_data) > len(other.deter_data): # First, we compare the length of the deterministic data.
+            res.deter_data = deepcopy(self.deter_data)   # Then, we combine the data with smaller length to the bigger one.
             if len(other.deter_data) > 0:
                 res.deter_data[:len(other.deter_data)] += other.deter_data
         else:
             res.deter_data = deepcopy(other.deter_data)
             if len(self.deter_data) > 0:
                 res.deter_data[:len(self.deter_data)] += self.deter_data
-        if len(self.nondeter_data) > len(other.nondeter_data):
-            res.nondeter_data = deepcopy(self.nondeter_data)
+        if len(self.nondeter_data) > len(other.nondeter_data): # First, we compare the length of the non-deterministic data.
+            res.nondeter_data = deepcopy(self.nondeter_data)   # Then, we combine the data with smaller length to the bigger one.
             if len(other.nondeter_data) > 0:
                 res.nondeter_data[:len(other.nondeter_data)] += other.nondeter_data
         else:
@@ -90,6 +93,7 @@ class Expression():
         return self.__mul__(other)
 
     def __truediv__(self, other):
+        assert(isinstance(other, (int, float)))
         res = deepcopy(self)
         res.deter_data /= other
         res.nondeter_data /= other
@@ -111,6 +115,9 @@ class Expression():
         return AtomicPredicate(self - other) & AtomicPredicate(other - self)
 
     def transform(self, deter_id_map, nondeter_id_map):
+        """ 
+        Transform the data according to the index map
+        """
         if (len(self.deter_data) > 0):
             mask = deter_id_map[:len(self.deter_data)]
             deter_data = np.zeros(np.max(mask) + 1)
@@ -373,12 +380,11 @@ ASTObject.Release = U_R_wrapper(Release)
 
 # Define Parser
 ststl_grammar = Grammar('''
-phi = (neg / paren_phi / true / false
+phi = (neg / true / false
      / and_outer / or_outer / implies_outer
      / u / r / g / f / AP / stAP)
 
 neg = ("~" / "!" / "¬") __ phi
-paren_phi = "(" __ phi __ ")"
 
 true = "TRUE"/ "True"
 false = "FALSE"/ "False"
@@ -408,7 +414,7 @@ expression_inner = (term __ operator __ expression_inner) / term
 term = (const_variable/ const)
 const_variable = variable / (const __ variable)
 
-comparison = "<=" / ">=" / "=>" / "=<" / "<" / ">" / "=" / "=="
+comparison = "<=" / ">=" / "=>" / "=<" / "<" / ">" / "=="
 operator = "+" / "-"
 variable = ~r"[a-z_][a-z_\\d]*"
 const = ~r"[-+]?(\\d*\\.\\d+|\\d+)"
@@ -441,12 +447,15 @@ class Parser(NodeVisitor):
             raise ValueError("Undefined variable name {}.".format(var))
 
     def visit_operator(self, node, children):
+        #  value returned is "+" or "-"
         return node.text
 
     def visit_comparison(self, node, _):
+        #  value returned is "<=" or ">=" or "=>" or "=<" or "<" or ">" or "=" or "=="
         return node.text
 
     def visit_const_variable(self, node, children):
+        #  children is either [Var] or [[value, [], Var]]
         if (isinstance(children[0], pystl.variable.Var)):
             return Expression(children[0])
         elif (len(children[0]) == 3):
@@ -454,9 +463,11 @@ class Parser(NodeVisitor):
         else: assert(False)
 
     def visit_term(self, node, children):
+        #  children is either [Var] or [Expression]
         return Expression(children[0])
 
     def visit_expression_inner(self, node, children):
+        #  children is either [Expression] or [[Expression, [[]], '+' or '-', [[]], [Expression]]]
         #  print("expression_inner")
         #  print(children)
         #  input()
@@ -471,12 +482,14 @@ class Parser(NodeVisitor):
         else: assert(False)
 
     def visit_expression_outer(self, node, children):
+        #  children is [[], [Expression, ..., Expression]]
         #  print("expression_outer")
         #  print(children)
         #  input()
         return reduce(op.add, children[1])
 
     def visit_AP(self, node, children):
+        #  children is [[], [], Expression, [], '>' or '<' or '>=' or '<=', [[]], Expression, [], []]
         #  print(children)
         #  input()
         (_, _, left, _, operator, _, right, _, _) = children
@@ -495,36 +508,42 @@ class Parser(NodeVisitor):
         else: assert(False)
 
     def visit_stAP(self, node, children):
+        #  children is [[], [], [], [], Expression, [], [], [[]], Ap, [], []]
         #  print(children)
         #  input()
         (_, _, _, _, prob, _, _, _, ap, _, _) = children
         return P(prob, ap)
 
     def visit_interval(self, node, children):
+        #  children is [[], [], float, [], [], [], float, [], []]
         #  print(children)
         #  input()
         (_, _, left, _, _, _, right, _, _) = children
         return [int(left), int(right)]
 
     def visit_f(self, node, children):
+        #  children is [[], [], [], [float, float], [[]], ASTObject, [], []]
         #  print(children)
         #  input()
         (_, _, _, interval, _, phi, _, _) = children
         return Eventually(interval, phi)
 
     def visit_g(self, node, children):
+        #  children is [[], [], [], [float, float], [[]], ASTObject, [], []]
         #  print(children)
         #  input()
         (_, _, _, interval, _, phi, _, _) = children
         return Globally(interval, phi)
 
     def visit_u(self, node, children):
+        #  children is [[], [], [], [float, float], [[]], ASTObject, [], []]
         #  print(children)
         #  input()
         (_, _, phi1, _, _, interval, _, phi2, _, _) = children
         return Until(interval, phi1, phi2)
 
     def visit_r(self, node, children):
+        #  children is [[], [], [], [float, float], [[]], ASTObject, [], []]
         #  print(children)
         #  input()
         (_, _, phi1, _, _, interval, _, phi2, _, _) = children
@@ -536,6 +555,7 @@ class Parser(NodeVisitor):
         return children[0]
 
     def nontemporal_op_inner(self, _, children):
+        #  children is either [ASTObject] or [[ASTObject, [[]], [[]], [[]], [ASTObject]]]
         #  print("inner:{}".format(children))
         #  input()
         if isinstance(children[0], ASTObject):
@@ -550,16 +570,19 @@ class Parser(NodeVisitor):
     visit_implies_inner = nontemporal_op_inner
 
     def visit_or_outer(self, node, children):
+        #  children is [[], [], [ASTObject, ..., ASTObject]]
         #  print("or outer:{}".format(children))
         #  input()
         return reduce(op.or_, children[2])
 
     def visit_and_outer(self, node, children):
+        #  children is [[], [], [ASTObject, ..., ASTObject]]
         #  print("or outer:{}".format(children))
         #  input()
         return reduce(op.and_, children[2])
 
     def visit_implies_outer(self, node, children):
+        #  children is [[], [], [ASTObject, ..., ASTObject]]
         #  print("or outer:{}".format(children))
         #  input()
         def implies(x, y):
