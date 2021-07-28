@@ -761,4 +761,4 @@ def env_load(H, init=None, savepath=True):
         if solved:
             tmp_solver.print_solution()
 
-env_load(10)
+#  env_load(10)
