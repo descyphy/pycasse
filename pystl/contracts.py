@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from itertools import combinations
 from copy import deepcopy
 from numpy.lib.npyio import save
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__) ) ) )
 from pystl.variable import DeterVar, NondeterVar, M, EPS
 from pystl.vector import Vector, Next
 from pystl.parser import P, true, false, And, Or, Globally, Eventually, Until, Release, Parser
@@ -761,4 +763,5 @@ def env_load(H, init=None, savepath=True):
         if solved:
             tmp_solver.print_solution()
 
-env_load(10)
+if __name__ == '__main__':
+    env_load(10)

@@ -990,8 +990,6 @@ class MILPSolver:
             input()
 
     def set_switching_dynamic(self):
-        print(self.switching_dynamics)
-        print(self.switching_time)
         max_time = self.contract_variable.shape[1]
         
         bool_vars = self.model.addVars(max_time, vtype=GRB.BINARY, name='b_switching')
