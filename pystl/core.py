@@ -9,6 +9,69 @@ from z3 import *
 from pystl.contracts import *
 from pystl.parser import *
 
+class Preprocess:
+    def __init__(self, solver, debug = False):
+        self.idx = 0
+        self.solver = solver
+        self.debug = debug
+    def __call__(self):
+        end_time = 0
+        for i, c in enumerate(self.solver.constraints):
+            #  print(self.constraints[i])
+            (self.solver.constraints[i], t) = self.preprocess(c, 1)
+            end_time = max(end_time, t)
+            #  print(self.constraints[i])
+        return self.idx, end_time
+    def preprocess(self, node, end_time):
+        if self.debug:
+            print(repr(node))
+            print(end_time)
+        if (node.ast_type == "Not"):
+            #  print("remove negation")
+            res = node.formula_list[0]
+
+            res.invert_ast_type()
+
+            if res.ast_type == "AP":
+                res.expr = -1 * res.expr + EPS
+                assert(len(res.formula_list) == 0)
+            elif res.ast_type == "StAP":
+                res.expr = -1 * res.expr + EPS
+                res.prob = 1 - res.prob
+                assert(len(res.formula_list) == 0)
+            else:
+                for i, f in enumerate(res.formula_list):
+                    res.formula_list[i] = ~f
+        else:
+            #  print("ignore")
+            res = node
+
+        res.idx = self.idx
+        self.idx += 1
+
+        if self.debug:
+            print("start traverse")
+            print(repr(res))
+            input()
+        if res.ast_type in ('G', 'F'):
+            (res.formula_list[0], end_time) = self.preprocess(res.formula_list[0], end_time + res.interval[1])
+        elif res.ast_type in ('U', 'R'):
+            (res.formula_list[0], e1) = self.preprocess(res.formula_list[0], end_time + res.interval[1])
+            (res.formula_list[1], e2) = self.preprocess(res.formula_list[1], end_time + res.interval[1])
+            end_time = max(e1, e2)
+        elif res.ast_type in ('And', 'Or'):
+            current_end_time = end_time
+            for i, f in enumerate(res.formula_list):
+                (res.formula_list[i], e) = self.preprocess_constraint(f, current_end_time)
+                end_time = max(e, end_time)
+
+        if self.debug:
+            print(repr(res))
+            print(end_time)
+            print("end traverse")
+            input()
+        return (res, end_time)
+
 class SMCSolver:
     """
 
@@ -605,7 +668,6 @@ class MILPSolver:
         else: assert(False)
 
         # Initialize dictionary of Gurobi variables
-        self.idx               = 0 # for preprocessing
         self.node_variable     = np.empty(0)
         self.contract_variable = np.empty(0)
 
@@ -861,7 +923,7 @@ class MILPSolver:
     def set_U_R_constraint(self, node, start_time = 0, end_time = 1):
         if (self.debug):
             print("set constraints for U or R")
-        self.set_node_constraint(node.formula_list[0], start_time=start_time, end_time=end_time+node.interval[1])
+        self.set_node_constraint(node.formula_list[0], start_time=start_time, end_time=end_time+node.interval[1] - 1)
         self.set_node_constraint(node.formula_list[1], start_time=start_time+node.interval[0], end_time=end_time+node.interval[1])
 
         for t in range(start_time, end_time):

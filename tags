@@ -39,6 +39,7 @@ NontemporalFormula	pystl/parser.py	/^class NontemporalFormula(ASTObject):$/;"	c
 Or	pystl/parser.py	/^def Or(*argv):$/;"	f
 P	pystl/parser.py	/^def P(prob, ap):$/;"	f
 Parser	pystl/parser.py	/^class Parser(NodeVisitor):$/;"	c
+Preprocess	pystl/core.py	/^class Preprocess:$/;"	c
 Release	pystl/parser.py	/^def Release(interval, ap, other):$/;"	f
 SMCSolver	pystl/core.py	/^class SMCSolver:$/;"	c
 StochasticAtomicPredicate	pystl/parser.py	/^class StochasticAtomicPredicate(ASTObject):$/;"	c
@@ -52,6 +53,7 @@ __add__	pystl/parser.py	/^    def __add__(self, other):$/;"	m	class:Expression	f
 __add__	pystl/variable.py	/^    def __add__(self, other):$/;"	m	class:Var	file:
 __add__	pystl/vector.py	/^    def __add__(self, other):$/;"	m	class:Vector	file:
 __array_priority__	pystl/vector.py	/^    __array_priority__ = MAGIC_NUMBER$/;"	v	class:Vector
+__call__	pystl/core.py	/^    def __call__(self):$/;"	m	class:Preprocess	file:
 __call__	pystl/parser.py	/^    def __call__(self, formula: str, rule: str = "phi"):$/;"	m	class:Parser	file:
 __eq__	pystl/parser.py	/^    def __eq__(self, other):$/;"	m	class:Expression	file:
 __eq__	pystl/variable.py	/^    def __eq__(self, other):$/;"	m	class:Var	file:
@@ -61,6 +63,7 @@ __ge__	pystl/variable.py	/^    def __ge__(self, other):$/;"	m	class:Var	file:
 __gt__	pystl/parser.py	/^    def __gt__(self, other):$/;"	m	class:Expression	file:
 __gt__	pystl/variable.py	/^    def __gt__(self, other):$/;"	m	class:Var	file:
 __init__	pystl/contracts.py	/^    def __init__(self, id = ''):$/;"	m	class:contract
+__init__	pystl/core.py	/^    def __init__(self, solver, debug = False):$/;"	m	class:Preprocess
 __init__	pystl/core.py	/^    def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi", debug = False):$/;"	m	class:MILPSolver
 __init__	pystl/core.py	/^    def __init__(self, verbose=False, solver='gurobi'):$/;"	m	class:SMCSolver
 __init__	pystl/parser.py	/^    def __init__(self, ast_type, formula_list = []):$/;"	m	class:ASTObject
@@ -217,6 +220,7 @@ nontemporal_op_inner	pystl/parser.py	/^    def nontemporal_op_inner(self, _, chi
 p	tests/test_parser.py	/^p = Parser(c1)$/;"	v
 packages	setup.py	/^      packages=find_packages(),$/;"	v
 preprocess	pystl/core.py	/^    def preprocess(self):$/;"	m	class:MILPSolver
+preprocess	pystl/core.py	/^    def preprocess(self, node, end_time):$/;"	m	class:Preprocess
 preprocess_constraint	pystl/core.py	/^    def preprocess_constraint(self, node, end_time):$/;"	m	class:MILPSolver
 printInfo	pystl/contracts.py	/^    def printInfo(self):$/;"	m	class:contract
 print_solution	pystl/core.py	/^    def print_solution(self):$/;"	m	class:MILPSolver
