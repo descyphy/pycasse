@@ -1170,7 +1170,7 @@ class MILPSolver:
         #  1. handle linear term
         mask = np.nonzero(expr[:,0])[0]
         if mask.size > 0:
-            constr += np.sum(self.contract_variable[mask, time] * expr[mask])
+            constr += np.sum(self.contract_variable[mask, time] * expr[mask, 0])
 
         #  2. handle quadratic term
         if expr.shape[1] >= 2:
