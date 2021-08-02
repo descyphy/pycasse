@@ -600,9 +600,9 @@ def env_load(H, init=None, savepath=True):
     # TODO: Temporary data goes here
     # highway
     data = {"scenario": "highway", "vehicle": {"id": [0, 1, 2], "width": 2.0, "length": 5.0, "target": [[100.0, 8.0], [100.0, 8.0], [100.0, 12.0]], "region": {"format": [["A", "B", "C", "D", "E"]], "representation": "Ax^2 + Bx + Cy^2 + Dy + E <= 0", "equation": [[[[0, -0.0, 0, 1.0, -10.0], [0, 0.0, 0, -1.0, 6.0], [0, -1.0, 0, -0.0, 0.0], [0, 1.0, 0, 0.0, -10000.0]]], [[[0, -0.0, 0, 1.0, -10.0], [0, 0.0, 0, -1.0, 6.0], [0, -1.0, 0, -0.0, 0.0], [0, 1.0, 0, 0.0, -10000.0]]], [[[0, -0.0, 0, 1.0, -14.0], [0, 0.0, 0, -1.0, 10.0], [0, -1.0, 0, -0.0, 0.0], [0, 1.0, 0, 0.0, -10000.0]]]]}}, "dynamics": {"x": ["d_x", "d_y", "v_x", "v_y"], "u": ["a_x", "a_y"], "dt": 1, "A": [[1, 0, "dt", 0], [0, 1, 0, "dt"], [0, 0, 1, 0], [0, 0, 0, 1]], "B": [[0, 0], [0, 0], ["dt", 0], [0, "dt"]]}, "physics": {"velocity_bound": 30, "acceleration_bound": 10}}
-    # # highway_merging
+    # highway_merging
     # data = {"scenario": "intersection", "vehicle": {"id": [0, 1], "width": 2.0, "length": 5.0, "target": [[-114.0, 2.000000000000007], [-2.0000000000000138, -114.0]], "region": {"format": [["A", "B", "C", "D", "E"]], "representation": "Ax^2 + Bx + Cy^2 + Dy + E <= 0", "equation": [[[[0, 1.0, 0, 0.0, 0.0], [0, -1.0, 0, -0.0, -4.0], [0, -0.0, 0, 1.0, -114.0], [0, 0.0, 0, -1.0, 14.0]], [[1, 28.0, 1, -28.0, 196.0], [-1, -28.0, -1, 28.0, -292.0], [0, -0.0, 0, 1.0, -14.0], [0, -1.0, 0, -6.123233995736766e-17, -14.0]], [[0, -6.217248937900877e-17, 0, -1.0, 0.0], [0, 6.217248937900877e-17, 0, 1.0, -4.0], [0, 1.0, 0, -6.217248937900877e-17, 14.0], [0, -1.0, 0, 6.217248937900877e-17, -114.0]]], [[[0, 5.995204332975846e-17, 0, 1.0, 0.0], [0, -5.995204332975846e-17, 0, -1.0, -4.0], [0, -1.0, 0, 5.995204332975846e-17, -114.0], [0, 1.0, 0, -5.995204332975846e-17, 14.0]], [[1, 28.0, 1, 28.0, 196.0], [-1, -28.0, -1, -28.0, -292.0], [0, -1.0, 0, 6.123233995736766e-17, -14.0], [0, 0.0, 0, -1.0, -14.0]], [[0, 1.0, 0, -1.1990408665951691e-16, 0.0], [0, -1.0, 0, 1.1990408665951691e-16, -4.0], [0, 1.1990408665951691e-16, 0, 1.0, 14.0], [0, -1.1990408665951691e-16, 0, -1.0, -114.0]]]]}}, "dynamics": {"x": ["d_x", "d_y", "v_x", "v_y"], "u": ["a_x", "a_y"], "dt": 1, "A": [[1, 0, "dt", 0], [0, 1, 0, "dt"], [0, 0, 1, 0], [0, 0, 0, 1]], "B": [[0, 0], [0, 0], ["dt", 0], [0, "dt"]]}, "physics": {"velocity_bound": 30, "acceleration_bound": 10}}
-    # # intersection
+    # intersection
     # data = {"scenario": "intersection", "vehicle": {"id": [0, 1], "width": 2.0, "length": 5.0, "target": [[-114.0, 2.000000000000007], [-2.0000000000000138, -114.0]], "region": {"format": [["A", "B", "C", "D", "E"]], "representation": "Ax^2 + Bx + Cy^2 + Dy + E <= 0", "equation": [[[[0, 1.0, 0, 0.0, 0.0], [0, -1.0, 0, -0.0, -4.0], [0, -0.0, 0, 1.0, -114.0], [0, 0.0, 0, -1.0, 14.0]], [[1, 28.0, 1, -28.0, 196.0], [-1, -28.0, -1, 28.0, -292.0], [0, -0.0, 0, 1.0, -14.0], [0, -1.0, 0, -6.123233995736766e-17, -14.0]], [[0, -6.217248937900877e-17, 0, -1.0, 0.0], [0, 6.217248937900877e-17, 0, 1.0, -4.0], [0, 1.0, 0, -6.217248937900877e-17, 14.0], [0, -1.0, 0, 6.217248937900877e-17, -114.0]]], [[[0, 5.995204332975846e-17, 0, 1.0, 0.0], [0, -5.995204332975846e-17, 0, -1.0, -4.0], [0, -1.0, 0, 5.995204332975846e-17, -114.0], [0, 1.0, 0, -5.995204332975846e-17, 14.0]], [[1, 28.0, 1, 28.0, 196.0], [-1, -28.0, -1, -28.0, -292.0], [0, -1.0, 0, 6.123233995736766e-17, -14.0], [0, 0.0, 0, -1.0, -14.0]], [[0, 1.0, 0, -1.1990408665951691e-16, 0.0], [0, -1.0, 0, 1.1990408665951691e-16, -4.0], [0, 1.1990408665951691e-16, 0, 1.0, 14.0], [0, -1.1990408665951691e-16, 0, -1.0, -114.0]]]]}}, "dynamics": {"x": ["d_x", "d_y", "v_x", "v_y"], "u": ["a_x", "a_y"], "dt": 1, "A": [[1, 0, "dt", 0], [0, 1, 0, "dt"], [0, 0, 1, 0], [0, 0, 0, 1]], "B": [[0, 0], [0, 0], ["dt", 0], [0, "dt"]]}, "physics": {"velocity_bound": 30, "acceleration_bound": 10}}
     env = data["scenario"]
 
@@ -716,6 +716,7 @@ def env_load(H, init=None, savepath=True):
             guarantees_formula = guarantees_formula[1:-1]
 
         # Set the contracts
+        print(guarantees_formula)
         tmp_contract.set_guaran(guarantees_formula)
         
         # Saturate contract
@@ -727,40 +728,62 @@ def env_load(H, init=None, savepath=True):
         tmp_solver.add_contract(tmp_contract)
 
         # Add the contract specifications
-        tmp_solver.add_constraint(tmp_contract.guarantee)
+        tmp_solver.add_hard_constraint(tmp_contract.guarantee)
 
-        # # TODO: Region constraints
-        # region_params = np.array(data["vehicle"]["region"]["equation"][vehicle_num])
-        # ego_vars = uncontrolled_vars[6*vehicle_num:6*vehicle_num+4]
+        # Region constraints
+        region_params = np.array(data["vehicle"]["region"]["equation"][vehicle_num])
+        ego_vars = uncontrolled_vars[6*vehicle_num:6*vehicle_num+4]
+        ego_x_var_name = ego_vars[0].name
+        ego_y_var_name = ego_vars[1].name
 
-        # if region_params == 1:
-        #     region_formula = "(G[0,{}] (({}{} + {} <= 0) & ({} <= 0) & ({} <= 0) & ({} <= 0)))".format(H)
-        # # else:
-        # #     region_formula = "(F[0,{}] (".format(H)
-        # #     for 
-        # print(region_params)
-        # print(region_formula)
-        # print(tmp_solver.constraints)
-        # input()
+        if len(region_params) == 1:
+            region_param = region_params[0]
+            # region_formula = "(G[0,{}] (({}{} {}**2 {} {} {} {} {} {}**2 {} {} {} {} {} <= 0) & ({}{} {}**2 {} {} {} {} {} {}**2 {} {} {} {} {} <= 0) & ({}{} {}**2 {} {} {} {} {} {}**2 {} {} {} {} {} <= 0) & ({}{} {}**2 {} {} {} {} {} {}**2 {} {} {} {} {} <= 0)))".format(H, 
+            #                    ""*(region_param[0][0]>=0) + "-"*(region_param[0][0]<0), abs(region_param[0][0]), ego_x_var_name, "+"*(region_param[0][1]>=0) + "-"*(region_param[0][1]<0), abs(region_param[0][1]), ego_x_var_name, 
+            #                    "+"*(region_param[0][2]>=0) + "-"*(region_param[0][2]<0), abs(region_param[0][2]), ego_y_var_name, "+"*(region_param[0][3]>=0) + "-"*(region_param[0][3]<0), abs(region_param[0][3]), ego_y_var_name, "+"*(region_param[0][4]>=0) + "-"*(region_param[0][4]<0), abs(region_param[0][4]),
+            #                    ""*(region_param[1][0]>=0) + "-"*(region_param[1][0]<0), abs(region_param[1][0]), ego_x_var_name, "+"*(region_param[1][1]>=0) + "-"*(region_param[1][1]<0), abs(region_param[1][1]), ego_x_var_name, 
+            #                    "+"*(region_param[1][2]>=0) + "-"*(region_param[1][2]<0), abs(region_param[1][2]), ego_y_var_name, "+"*(region_param[1][3]>=0) + "-"*(region_param[1][3]<0), abs(region_param[1][3]), ego_y_var_name, "+"*(region_param[1][4]>=0) + "-"*(region_param[1][4]<0), abs(region_param[1][4]),
+            #                    ""*(region_param[2][0]>=0) + "-"*(region_param[2][0]<0), abs(region_param[2][0]), ego_x_var_name, "+"*(region_param[2][1]>=0) + "-"*(region_param[2][1]<0), abs(region_param[2][1]), ego_x_var_name, 
+            #                    "+"*(region_param[2][2]>=0) + "-"*(region_param[2][2]<0), abs(region_param[2][2]), ego_y_var_name, "+"*(region_param[2][3]>=0) + "-"*(region_param[2][3]<0), abs(region_param[2][3]), ego_y_var_name, "+"*(region_param[2][4]>=0) + "-"*(region_param[2][4]<0), abs(region_param[2][4]),
+            #                    ""*(region_param[3][0]>=0) + "-"*(region_param[3][0]<0), abs(region_param[3][0]), ego_x_var_name, "+"*(region_param[3][1]>=0) + "-"*(region_param[3][1]<0), abs(region_param[3][1]), ego_x_var_name, 
+            #                    "+"*(region_param[3][2]>=0) + "-"*(region_param[3][2]<0), abs(region_param[3][2]), ego_y_var_name, "+"*(region_param[3][3]>=0) + "-"*(region_param[3][3]<0), abs(region_param[3][3]), ego_y_var_name, "+"*(region_param[3][4]>=0) + "-"*(region_param[3][4]<0), abs(region_param[3][4]))
+            region_formula ="(G[0,{}] (({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0) & ({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0) & ({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0) & ({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0)))".format(H, 
+                               region_param[0][0], ego_x_var_name, region_param[0][1], ego_x_var_name, region_param[0][2], ego_y_var_name, region_param[0][3], ego_y_var_name, region_param[0][4],
+                               region_param[1][0], ego_x_var_name, region_param[1][1], ego_x_var_name, region_param[1][2], ego_y_var_name, region_param[1][3], ego_y_var_name, region_param[1][4],
+                               region_param[2][0], ego_x_var_name, region_param[2][1], ego_x_var_name, region_param[2][2], ego_y_var_name, region_param[2][3], ego_y_var_name, region_param[2][4],
+                               region_param[3][0], ego_x_var_name, region_param[3][1], ego_x_var_name, region_param[3][2], ego_y_var_name, region_param[3][3], ego_y_var_name, region_param[3][4])
+            print(region_formula)
+            tmp_solver.add_soft_constraint(region_formula)
+        else:
+            for region_param in region_params:
+                region_formula = "(G[0,{}] (({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0) & ({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0) & ({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0) & ({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0)))".format(H, 
+                               region_param[0][0], ego_x_var_name, region_param[0][1], ego_x_var_name, region_param[0][2], ego_y_var_name, region_param[0][3], ego_y_var_name, region_param[0][4],
+                               region_param[1][0], ego_x_var_name, region_param[1][1], ego_x_var_name, region_param[1][2], ego_y_var_name, region_param[1][3], ego_y_var_name, region_param[1][4],
+                               region_param[2][0], ego_x_var_name, region_param[2][1], ego_x_var_name, region_param[2][2], ego_y_var_name, region_param[2][3], ego_y_var_name, region_param[2][4],
+                               region_param[3][0], ego_x_var_name, region_param[3][1], ego_x_var_name, region_param[3][2], ego_y_var_name, region_param[3][3], ego_y_var_name, region_param[3][4])
+                tmp_solver.add_soft_constraint(region_formula)
+        
+        print(tmp_solver.hard_constraints)
+        print(tmp_solver.soft_constraints)
 
         ## TODO: Set initial states. Make it automated not manual later.
         for var in uncontrolled_vars:
             if 'v_x' in var.name:
-                tmp_solver.add_constraint(var == 10)
+                tmp_solver.add_hard_constraint(var == 10)
             elif 'v_y' in var.name:
-                tmp_solver.add_constraint(var == 0)
+                tmp_solver.add_hard_constraint(var == 0)
             elif var.name == 'd_x_0':
-                tmp_solver.add_constraint(var == 0)
+                tmp_solver.add_hard_constraint(var == 0)
             elif var.name == 'd_y_0':
-                tmp_solver.add_constraint(var == 8)
+                tmp_solver.add_hard_constraint(var == 8)
             elif var.name == 'd_x_1':
-                tmp_solver.add_constraint(var == 50)
+                tmp_solver.add_hard_constraint(var == 50)
             elif var.name == 'd_y_1':
-                tmp_solver.add_constraint(var == 8)
+                tmp_solver.add_hard_constraint(var == 8)
             elif var.name == 'd_x_2':
-                tmp_solver.add_constraint(var == 0)
+                tmp_solver.add_hard_constraint(var == 0)
             elif var.name == 'd_y_2':
-                tmp_solver.add_constraint(var == 12)
+                tmp_solver.add_hard_constraint(var == 12)
         
         # Set Dynamics
         checked_ego = False

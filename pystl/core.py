@@ -14,6 +14,7 @@ class Preprocess:
         self.idx = 0
         self.solver = solver
         self.debug = debug
+
     def __call__(self):
         end_time = 0
         #  print(self.solver.constraints)
@@ -24,6 +25,7 @@ class Preprocess:
             end_time = max(end_time, t)
             #  print(self.constraints[i])
         return self.idx, end_time
+
     def preprocess(self, node, end_time):
         if self.debug:
             print(repr(node))
@@ -687,14 +689,26 @@ class MILPSolver:
 
     def add_hard_constraint(self, constraint):
         """
-        Adds a dynamics to the SMC solver.
+        Adds a hard constrint to the MILP solver.
         """
+        if (isinstance(constraint, str)): # If the constraint is given as a string
+            parser = Parser(self.contract) # Parse the string into an AST
+            constraint = parser(constraint)
+        elif (isinstance(constraint, ASTObject)): # If the constraint is given as an AST
+            constraint = constraint
+
         self.hard_constraints.append(constraint)
 
     def add_soft_constraint(self, constraint):
         """
-        Adds a dynamics to the SMC solver.
+        Adds a soft constrint to the MILP solver.
         """
+        if (isinstance(constraint, str)): # If the constraint is given as a string
+            parser = Parser(self.contract) # Parse the string into an AST
+            constraint = parser(constraint)
+        elif (isinstance(constraint, ASTObject)): # If the constraint is given as an AST
+            constraint = constraint
+
         self.soft_constraints.append(constraint)
 
     def add_dynamic(self, dynamic):
