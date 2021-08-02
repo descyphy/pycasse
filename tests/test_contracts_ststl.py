@@ -1,4 +1,5 @@
-import sys
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__) ) ) )
 from pystl import *
 import numpy as np
 
@@ -13,6 +14,8 @@ c1.saturate()                                                            # Satur
 c1.printInfo()                                                           # Print c1
 
 c1.checkCompat(print_sol=True)                       # Check compatibility of c1
+print("here")
+input()
 c1.checkConsis(print_sol=True)                       # Check consistency of c1
 c1.checkFeas(print_sol=True)                         # Check feasibility of c1
 

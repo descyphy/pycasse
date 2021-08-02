@@ -221,7 +221,6 @@ p	tests/test_parser.py	/^p = Parser(c1)$/;"	v
 packages	setup.py	/^      packages=find_packages(),$/;"	v
 preprocess	pystl/core.py	/^    def preprocess(self):$/;"	m	class:MILPSolver
 preprocess	pystl/core.py	/^    def preprocess(self, node, end_time):$/;"	m	class:Preprocess
-preprocess_constraint	pystl/core.py	/^    def preprocess_constraint(self, node, end_time):$/;"	m	class:MILPSolver
 printInfo	pystl/contracts.py	/^    def printInfo(self):$/;"	m	class:contract
 print_solution	pystl/core.py	/^    def print_solution(self):$/;"	m	class:MILPSolver
 probability	pystl/parser.py	/^    def probability(self):$/;"	m	class:StochasticAtomicPredicate

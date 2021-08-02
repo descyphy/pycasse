@@ -62,7 +62,7 @@ class Preprocess:
         elif res.ast_type in ('And', 'Or'):
             current_end_time = end_time
             for i, f in enumerate(res.formula_list):
-                (res.formula_list[i], e) = self.preprocess_constraint(f, current_end_time)
+                (res.formula_list[i], e) = self.preprocess(f, current_end_time)
                 end_time = max(e, end_time)
 
         if self.debug:
@@ -758,13 +758,7 @@ class MILPSolver:
             return False
 
     def preprocess(self):
-        self.idx = 0
-        max_endtime = 0
-        for i, c in enumerate(self.constraints):
-            (self.constraints[i], end_time) = self.preprocess_constraint(c, 1)
-            
-            if max_endtime < end_time:
-                max_endtime = end_time
+        (num_node, end_time) = Preprocess(self)()
         if self.solver == "Gurobi":
             self.node_variable = -1 * np.ones((self.idx, max_endtime), dtype = object)
             self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), max_endtime), dtype = object) # -1 is to exclude constant variable
@@ -772,41 +766,6 @@ class MILPSolver:
             self.node_variable = -1 * np.ones((self.idx, max_endtime), dtype = object)
             self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), max_endtime), dtype = object)
         else: assert(False)
-
-    def preprocess_constraint(self, node, end_time):
-        if (node.ast_type == "Not"):
-            res = node.formula_list[0]
-            res.invert_ast_type()
-
-            if res.ast_type == "AP":
-                res.expr = -1 * res.expr + EPS
-                assert(len(res.formula_list) == 0)
-            elif res.ast_type == "StAP":
-                res.expr = -1 * res.expr + EPS
-                res.prob = 1 - res.prob
-                assert(len(res.formula_list) == 0)
-            else:
-                for i, f in enumerate(res.formula_list):
-                    res.formula_list[i] = ~f
-        else:
-            res = node
-
-        res.idx = self.idx
-        self.idx += 1
-
-        if res.ast_type in ('G', 'F'):
-            (res.formula_list[0], end_time) = self.preprocess_constraint(res.formula_list[0], end_time + res.interval[1])
-        elif res.ast_type in ('U', 'R'):
-            (res.formula_list[0], e1) = self.preprocess_constraint(res.formula_list[0], end_time + res.interval[1])
-            (res.formula_list[1], e2) = self.preprocess_constraint(res.formula_list[1], end_time + res.interval[1])
-            end_time = max(e1, e2)
-        elif res.ast_type in ('And', 'Or'):
-            current_end_time = end_time
-            for i, f in enumerate(res.formula_list):
-                (res.formula_list[i], e) = self.preprocess_constraint(f, current_end_time)
-                end_time = max(e, end_time)
-
-        return (res, end_time)
 
     def set_constraint(self, constraint):
         """
