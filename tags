@@ -86,6 +86,7 @@ __lt__	pystl/variable.py	/^    def __lt__(self, other):$/;"	m	class:Var	file:
 __mul__	pystl/parser.py	/^    def __mul__(self, other):$/;"	m	class:Expression	file:
 __mul__	pystl/variable.py	/^    def __mul__(self, other):$/;"	m	class:Var	file:
 __mul__	pystl/vector.py	/^    def __mul__(self, other):$/;"	m	class:Vector	file:
+__pow__	pystl/variable.py	/^    def __pow__(self, other):$/;"	m	class:Var	file:
 __radd__	pystl/parser.py	/^    def __radd__(self, other):$/;"	m	class:Expression	file:
 __radd__	pystl/variable.py	/^    def __radd__(self, other):$/;"	m	class:Var	file:
 __radd__	pystl/vector.py	/^    def __radd__(self, other):$/;"	m	class:Vector	file:
@@ -107,8 +108,8 @@ __rsub__	pystl/parser.py	/^    def __rsub__(self, other):$/;"	m	class:Expression
 __rsub__	pystl/variable.py	/^    def __rsub__(self, other):$/;"	m	class:Var	file:
 __rsub__	pystl/vector.py	/^    def __rsub__(self, other):$/;"	m	class:Vector	file:
 __slots__	pystl/contracts.py	/^    __slots__ = ('id', 'deter_var_list', 'deter_var_name2id', 'nondeter_var_list', 'nondeter_var_name2id', 'nondeter_var_mean', 'nondeter_var_cov', 'assumption', 'guarantee', 'sat_guarantee', 'isSat', 'objectives')$/;"	v	class:contract
-__slots__	pystl/core.py	/^    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'constraints', 'dynamics', 'switching_dynamics', 'switching_time',$/;"	v	class:MILPSolver
-__slots__	pystl/parser.py	/^    __slots__ = ('deter_data', 'nondeter_data')$/;"	v	class:Expression
+__slots__	pystl/core.py	/^    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'hard_constraints', 'soft_constraints', 'soft_constraints_var', 'dynamics', 'switching_dynamics', 'switching_time',$/;"	v	class:MILPSolver
+__slots__	pystl/parser.py	/^    __slots__ = ('constant', 'deter_data', 'nondeter_data')$/;"	v	class:Expression
 __slots__	pystl/parser.py	/^    __slots__ = ('expr')$/;"	v	class:AtomicPredicate
 __slots__	pystl/parser.py	/^    __slots__ = ('expr', 'prob')$/;"	v	class:StochasticAtomicPredicate
 __slots__	pystl/parser.py	/^    __slots__ = ('idx', 'ast_type', 'formula_list')$/;"	v	class:ASTObject
@@ -134,10 +135,10 @@ __truediv__	pystl/variable.py	/^    def __truediv__(self, other):$/;"	m	class:Va
 __truediv__	pystl/vector.py	/^    def __truediv__(self, other):$/;"	m	class:Vector	file:
 _merge	pystl/vector.py	/^    def _merge(self, other, multiplier):$/;"	m	class:Vector
 act	tests/OpenAIGym/test.py	/^    def act(self, state):$/;"	m	class:DQN
+add	pystl/parser.py	/^        def add(x, y):$/;"	f	function:Expression.__add__
 add	pystl/vector.py	/^    def add(self, multiplier):$/;"	m	class:Vector
 add_Bool_constraints	pystl/core.py	/^    def add_Bool_constraints(self):$/;"	m	class:SMCSolver
 add_SAT_constraints	pystl/core.py	/^    def add_SAT_constraints(self, conflict_assignments):$/;"	m	class:SMCSolver
-add_constraint	pystl/core.py	/^    def add_constraint(self, constraint):$/;"	m	class:MILPSolver
 add_constraints	pystl/core.py	/^    def add_constraints(self):$/;"	m	class:SMCSolver
 add_contract	pystl/core.py	/^    def add_contract(self, contract):$/;"	m	class:MILPSolver
 add_contract	pystl/core.py	/^    def add_contract(self, contract):$/;"	m	class:SMCSolver
@@ -145,6 +146,8 @@ add_contract_constraints	pystl/core.py	/^    def add_contract_constraints(self, 
 add_dyn_constraints	pystl/core.py	/^    def add_dyn_constraints(self):$/;"	m	class:SMCSolver
 add_dynamic	pystl/core.py	/^    def add_dynamic(self, dynamic):$/;"	m	class:MILPSolver
 add_dynamics	pystl/core.py	/^    def add_dynamics(self, dynamics):$/;"	m	class:SMCSolver
+add_hard_constraint	pystl/core.py	/^    def add_hard_constraint(self, constraint):$/;"	m	class:MILPSolver
+add_soft_constraint	pystl/core.py	/^    def add_soft_constraint(self, constraint):$/;"	m	class:MILPSolver
 add_switching_dynamic	pystl/core.py	/^    def add_switching_dynamic(self, switching_dynamic, switching_time=None):$/;"	m	class:MILPSolver
 add_switching_dynamics	pystl/core.py	/^    def add_switching_dynamics(self, dynamics):$/;"	m	class:SMCSolver
 author	setup.py	/^      author='Chanwook Oh',$/;"	v
@@ -180,14 +183,13 @@ checkRefine	pystl/contracts.py	/^    def checkRefine(self, contract2refine, prin
 checkSat	pystl/contracts.py	/^    def checkSat(self):$/;"	m	class:contract
 composition	pystl/contracts.py	/^def composition(c1, c2):$/;"	f
 conjunction	pystl/contracts.py	/^def conjunction(c1, c2):$/;"	f
+constraints	pystl/core.py	/^    def constraints(self):$/;"	m	class:MILPSolver
 contract	pystl/contracts.py	/^class contract:$/;"	c
 description	setup.py	/^      description='Python Module for Reasoning with Contracts written in STL or StSTL',$/;"	v
 done	tests/OpenAIGym/test_manual.py	/^done = False$/;"	v
 e	tests/test_cruising.py	/^e = Vector([e1, e2])$/;"	v
 e	tests/test_following.py	/^e = Vector([e1, e2, e3])$/;"	v
 e	tests/test_switching.py	/^e = Vector([e1, e2, e3])$/;"	v
-e1	tests/test_ast.py	/^e1 = Expression("x1 + x2 + 3 x3+ 5 a")$/;"	v
-e2	tests/test_ast.py	/^e2 = Expression("245 - 4a")$/;"	v
 end	tests/test_cruising.py	/^end = time.time()$/;"	v
 end	tests/test_dyn.py	/^end = time.time()$/;"	v
 end	tests/test_following.py	/^end = time.time()$/;"	v
@@ -213,7 +215,7 @@ model_add_constraint_and	pystl/core.py	/^    def model_add_constraint_and(self, 
 model_add_constraint_or	pystl/core.py	/^    def model_add_constraint_or(self, var, var_list):$/;"	m	class:MILPSolver
 model_add_continous_variable	pystl/core.py	/^    def model_add_continous_variable(self, idx, time, lb = -M, ub = M, var_type = 'node'):$/;"	m	class:MILPSolver
 model_add_continuous_variable_by_name	pystl/core.py	/^    def model_add_continuous_variable_by_name(self, name, lb = -M, ub = M):$/;"	m	class:MILPSolver
-model_add_inequality_constraint	pystl/core.py	/^    def model_add_inequality_constraint(self, node_idx, time, expr):$/;"	m	class:MILPSolver
+model_add_inequality_constraint	pystl/core.py	/^    def model_add_inequality_constraint(self, node_idx, time, expr, constant):$/;"	m	class:MILPSolver
 model_add_switching_constraint	pystl/core.py	/^    def model_add_switching_constraint(self, bool, bool_value, variable, multiplier, rhs, var_type = 'contract', value = None):$/;"	m	class:MILPSolver
 nontemporal_formula_construction	pystl/parser.py	/^def nontemporal_formula_construction(operator, formula_list, ignore_ap, drop_ap):$/;"	f
 nontemporal_op_inner	pystl/parser.py	/^    def nontemporal_op_inner(self, _, children):$/;"	m	class:Parser
@@ -235,7 +237,7 @@ set_U_R_constraint	pystl/core.py	/^    def set_U_R_constraint(self, node, start_
 set_and_or_constraint	pystl/core.py	/^    def set_and_or_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
 set_ap_stap_constraint	pystl/core.py	/^    def set_ap_stap_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
 set_assume	pystl/contracts.py	/^    def set_assume(self, assumption):$/;"	m	class:contract
-set_constraint	pystl/core.py	/^    def set_constraint(self, constraint):$/;"	m	class:MILPSolver
+set_constraint	pystl/core.py	/^    def set_constraint(self, constraint, hard = True):$/;"	m	class:MILPSolver
 set_controlled_vars	pystl/contracts.py	/^    def set_controlled_vars(self, var_names, dtypes = None, bounds = None):$/;"	m	class:contract
 set_deter_uncontrolled_vars	pystl/contracts.py	/^    def set_deter_uncontrolled_vars(self, var_names, dtypes = None, bounds = None):$/;"	m	class:contract
 set_dynamic	pystl/core.py	/^    def set_dynamic(self, dynamic):$/;"	m	class:MILPSolver
@@ -243,11 +245,12 @@ set_false_constraint	pystl/core.py	/^    def set_false_constraint(self, node, st
 set_guaran	pystl/contracts.py	/^    def set_guaran(self, guarantee):$/;"	m	class:contract
 set_node_constraint	pystl/core.py	/^    def set_node_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
 set_nondeter_uncontrolled_vars	pystl/contracts.py	/^    def set_nondeter_uncontrolled_vars(self, var_names, mean, cov, dtypes = None):$/;"	m	class:contract
+set_objective	pystl/core.py	/^    def set_objective(self, objective):$/;"	m	class:MILPSolver
 set_params	pystl/contracts.py	/^    def set_params(self, param_names, dtypes = None, bounds = None):$/;"	m	class:contract
 set_switching_dynamic	pystl/core.py	/^    def set_switching_dynamic(self):$/;"	m	class:MILPSolver
 set_true_constraint	pystl/core.py	/^    def set_true_constraint(self, node, start_time = 0, end_time = 1):$/;"	m	class:MILPSolver
+solve	pystl/core.py	/^    def solve(self):$/;"	m	class:MILPSolver
 solve	pystl/core.py	/^    def solve(self, certificate='SSF'):$/;"	m	class:SMCSolver
-solve	pystl/core.py	/^    def solve(self, objective=None):$/;"	m	class:MILPSolver
 solve_SAT	pystl/core.py	/^    def solve_SAT(self):$/;"	m	class:SMCSolver
 solve_main_convex	pystl/core.py	/^    def solve_main_convex(self):$/;"	m	class:SMCSolver
 solved	tests/test_cruising.py	/^solved = solver.solve()$/;"	v
@@ -288,6 +291,7 @@ visit_false	pystl/parser.py	/^    def visit_false(self, node, children):$/;"	m	c
 visit_g	pystl/parser.py	/^    def visit_g(self, node, children):$/;"	m	class:Parser
 visit_implies_inner	pystl/parser.py	/^    visit_implies_inner = nontemporal_op_inner$/;"	v	class:Parser
 visit_implies_outer	pystl/parser.py	/^    def visit_implies_outer(self, node, children):$/;"	m	class:Parser
+visit_int	pystl/parser.py	/^    def visit_int(self, node, _):$/;"	m	class:Parser
 visit_interval	pystl/parser.py	/^    def visit_interval(self, node, children):$/;"	m	class:Parser
 visit_neg	pystl/parser.py	/^    def visit_neg(self, _, children):$/;"	m	class:Parser
 visit_operator	pystl/parser.py	/^    def visit_operator(self, node, children):$/;"	m	class:Parser
@@ -301,9 +305,10 @@ visit_term	pystl/parser.py	/^    def visit_term(self, node, children):$/;"	m	cla
 visit_true	pystl/parser.py	/^    def visit_true(self, node, children):$/;"	m	class:Parser
 visit_u	pystl/parser.py	/^    def visit_u(self, node, children):$/;"	m	class:Parser
 visit_variable	pystl/parser.py	/^    def visit_variable(self, node, _):$/;"	m	class:Parser
+visit_variable_power	pystl/parser.py	/^    def visit_variable_power(self, node, children):$/;"	m	class:Parser
 x	tests/test_dyn.py	/^x = Vector([x1, x2])$/;"	v
 x	tests/test_following.py	/^x = Vector([xr])$/;"	v
 x	tests/test_switching.py	/^x = Vector([xr])$/;"	v
 x	tests/test_var.py	/^x = DeterVar('x', 1, 'controlled')$/;"	v
-y	tests/test_var.py	/^y = DeterVar('y', 2, 'controlled', bounds = np.array([0,5]))$/;"	v
+y	tests/test_var.py	/^y = DeterVar('y', 2, 'controlled', bound = np.array([0,5]))$/;"	v
 z	tests/test_var.py	/^z = NondeterVar('z', 0)$/;"	v

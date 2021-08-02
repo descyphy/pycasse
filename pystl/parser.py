@@ -17,33 +17,46 @@ class Expression():
     : param nondeter_data : An np array of non-deterministic variables.
     : type nondeter_data  : np.array
     """
-    __slots__ = ('deter_data', 'nondeter_data')
+    __slots__ = ('constant', 'deter_data', 'nondeter_data')
     def __init__(self, term = None):
         """ Constructor method """
         if isinstance(term, (int, float)):                    # when input is integer or float
-            self.deter_data = np.array([term], dtype = float)
-            self.nondeter_data = np.empty(0)
-        elif isinstance(term, pystl.variable.DeterVar):       # when input is a deterministic variable
-            self.deter_data = np.zeros(term.idx + 1)
-            self.deter_data[term.idx] = 1
-            self.nondeter_data = np.empty(0)
-        elif isinstance(term, pystl.variable.NondeterVar):    # when input is a non-deterministic variable
-            self.deter_data = np.zeros(1)
-            self.nondeter_data = np.zeros(term.idx + 1)
-            self.nondeter_data[term.idx] = 1
+            self.constant = term
+            self.deter_data = np.empty((0,0))
+            self.nondeter_data = np.empty((0,0))
+        elif isinstance(term, pystl.variable.DeterVar) or (isinstance(term, tuple) and isinstance(term[0], pystl.variable.DeterVar)):
+            var = term if isinstance(term, pystl.variable.DeterVar) else term[0]
+            multiplier = 1 if isinstance(term, pystl.variable.DeterVar) else term[1]
+
+            self.constant = 0
+            self.deter_data = np.zeros((var.idx + 1, multiplier))
+            self.deter_data[var.idx, multiplier - 1] = 1
+            self.nondeter_data = np.empty((0,0))
+        elif isinstance(term, pystl.variable.NondeterVar) or (isinstance(term, tuple) and isinstance(term[0], pystl.variable.NondeterVar)):
+            var = term if isinstance(term, pystl.variable.NondeterVar) else term[0]
+            multiplier = 1 if isinstance(term, pystl.variable.NondeterVar) else term[1]
+
+            self.constant = 0
+            self.deter_data = np.empty((0,0))
+            self.nondeter_data = np.zeros((var.idx + 1, multiplier))
+            self.nondeter_data[var.idx, multiplier - 1] = 1
         elif isinstance(term, Expression):                    # when input is already an Expression
+            self.constant = term.constant
             self.deter_data = term.deter_data
             self.nondeter_data = term.nondeter_data
         else:
-            self.deter_data = np.zeros(1)
-            self.nondeter_data = np.empty(0)
-            assert(term == None)
+            self.constant = 0
+            self.deter_data = np.empty((0,0))
+            self.nondeter_data = np.empty((0,0))
+            assert(term is None)
 
     def __str__(self):
         """ Prints information of the contract """  
-        res = ["{}".format(self.deter_data[0])]
-        res += ["{} deter_var_{}".format(multiplier, i) for (i, multiplier) in enumerate(self.deter_data[1:])]
-        res += ["{} nondeter_var_{}".format(multiplier, i) for (i, multiplier) in enumerate(self.nondeter_data)]
+        res = ["{}".format(self.constant)]
+        for p in range(self.deter_data.shape[1]):
+            res += ["{} deter_var_{}**{}".format(multiplier, i, p+1) for (i, multiplier) in enumerate(self.deter_data[:, p]) if multiplier != 0]
+        for p in range(self.nondeter_data.shape[1]):
+            res += ["{} nondeter_var_{}**{}".format(multiplier, i, p+1) for (i, multiplier) in enumerate(self.nondeter_data[:, p]) if multiplier != 0]
         return " + ".join(res)
 
     def __repr__(self):
@@ -51,26 +64,27 @@ class Expression():
         return "Expression: {}".format(str(self))
 
     def __add__(self, other):
+        def add(x, y):
+            assert(x.shape[0] >= y.shape[0])
+            assert(x.shape[1] >= y.shape[1])
+            x[:y.shape[0], :y.shape[1]] += y
+
         other = Expression(other)
         res = Expression()
         #  print(other)
         #  print(res)
-        if len(self.deter_data) > len(other.deter_data): # First, we compare the length of the deterministic data.
-            res.deter_data = deepcopy(self.deter_data)   # Then, we combine the data with smaller length to the bigger one.
-            if len(other.deter_data) > 0:
-                res.deter_data[:len(other.deter_data)] += other.deter_data
-        else:
-            res.deter_data = deepcopy(other.deter_data)
-            if len(self.deter_data) > 0:
-                res.deter_data[:len(self.deter_data)] += self.deter_data
-        if len(self.nondeter_data) > len(other.nondeter_data): # First, we compare the length of the non-deterministic data.
-            res.nondeter_data = deepcopy(self.nondeter_data)   # Then, we combine the data with smaller length to the bigger one.
-            if len(other.nondeter_data) > 0:
-                res.nondeter_data[:len(other.nondeter_data)] += other.nondeter_data
-        else:
-            res.nondeter_data = deepcopy(other.nondeter_data)
-            if len(self.nondeter_data) > 0:
-                res.nondeter_data[:len(self.nondeter_data)] += self.nondeter_data
+        #  1. add constant
+        res.constant = self.constant + other.constant
+
+        #  2. add determinant var
+        res.deter_data = np.zeros((max(self.deter_data.shape[0], other.deter_data.shape[0]), max(self.deter_data.shape[1], other.deter_data.shape[1]))) 
+        add(res.deter_data, self.deter_data)
+        add(res.deter_data, other.deter_data)
+
+        #  3. add determinant var
+        res.nondeter_data = np.zeros((max(self.nondeter_data.shape[0], other.nondeter_data.shape[0]), max(self.nondeter_data.shape[1], other.nondeter_data.shape[1]))) 
+        add(res.nondeter_data, self.nondeter_data)
+        add(res.nondeter_data, other.nondeter_data)
         return res
 
     def __radd__(self, other):
@@ -85,6 +99,7 @@ class Expression():
     def __mul__(self, other):
         assert(isinstance(other, (int, float)))
         res = deepcopy(self)
+        res.constant *= other
         res.deter_data *= other
         res.nondeter_data *= other
         return res
@@ -95,6 +110,7 @@ class Expression():
     def __truediv__(self, other):
         assert(isinstance(other, (int, float)))
         res = deepcopy(self)
+        res.constant /= other
         res.deter_data /= other
         res.nondeter_data /= other
         return res
@@ -118,15 +134,15 @@ class Expression():
         """ 
         Transform the data according to the index map
         """
-        if (len(self.deter_data) > 0):
-            mask = deter_id_map[:len(self.deter_data)]
-            deter_data = np.zeros(np.max(mask) + 1)
+        if self.deter_data.size > 0:
+            mask = deter_id_map[:self.deter_data.shape[0]]
+            deter_data = np.zeros((np.max(mask) + 1, self.deter_data.shape[1]))
             deter_data[mask] = self.deter_data
             self.deter_data = deter_data
 
-        if (len(self.nondeter_data) > 0):
-            mask = nondeter_id_map[:len(self.nondeter_data)]
-            nondeter_data = np.zeros(np.max(mask) + 1)
+        if self.nondeter_data.size > 0:
+            mask = nondeter_id_map[:self.nondeter_data.shape[0]]
+            nondeter_data = np.zeros((np.max(mask) + 1, self.nondeter_data[1]))
             nondeter_data[mask] = self.nondeter_data
             self.nondeter_data = nondeter_data
 
@@ -223,7 +239,7 @@ class StochasticAtomicPredicate(ASTObject):
 
     def probability(self):
         assert(not np.any(self.prob.deter_data[1:]) and not np.any(self.prob.nondeter_data))
-        return self.prob.deter_data[0]
+        return self.prob.constant
 
     def __str__(self):
         return "P[{}] ({} <= 0)".format(str(self.prob), str(self.expr))
@@ -412,11 +428,13 @@ expression_outer =  __ (expression_inner) __
 expression_inner = (term __ operator __ expression_inner) / term
 
 term = (const_variable/ const)
-const_variable = variable / (const __ variable)
+const_variable = (const __ variable) / variable_power / variable
 
 comparison = "<=" / ">=" / "=>" / "=<" / "<" / ">" / "=="
 operator = "+" / "-"
+variable_power = variable __ "**" __ int
 variable = ~r"[a-z_][a-z_\\d]*"
+int = ~r"(\\d+)"
 const = ~r"[-+]?(\\d*\\.\\d+|\\d+)"
 
 _ = ~r"\\s"+
@@ -437,6 +455,9 @@ class Parser(NodeVisitor):
     def visit_const(self, node, _):
         return float(node.text)
 
+    def visit_int(self, node, _):
+        return int(node.text)
+
     def visit_variable(self, node, _):
         var = node.text
         if var in self.contract.deter_var_name2id:
@@ -445,6 +466,9 @@ class Parser(NodeVisitor):
             return self.contract.nondeter_var_list[self.contract.nondeter_var_name2id[var]]
         else:
             raise ValueError("Undefined variable name {}.".format(var))
+
+    def visit_variable_power(self, node, children):
+        return children[0]**children[4]
 
     def visit_operator(self, node, children):
         #  value returned is "+" or "-"
@@ -455,9 +479,11 @@ class Parser(NodeVisitor):
         return node.text
 
     def visit_const_variable(self, node, children):
-        #  children is either [Var] or [[value, [], Var]]
+        #  children is either [[value, [], Var]] or [Expression] or [Var]
         if (isinstance(children[0], pystl.variable.Var)):
             return Expression(children[0])
+        elif (isinstance(children[0], Expression)):
+            return children[0]
         elif (len(children[0]) == 3):
             return (children[0][0] * children[0][2])
         else: assert(False)

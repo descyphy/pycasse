@@ -9,16 +9,7 @@ c1 = contract('c1')                   # Create a contract c1
 [y] = c1.set_controlled_vars(['y'], bounds = np.array([[0,5]]))         # Set a controlled variable
 [z] = c1.set_nondeter_uncontrolled_vars(['z'], np.array([0]), np.array([[1]]))         # Set a controlled variable
 
-#  c1.set_assume((x <= 3).U([0,3], x >= 5))    # Set/define the assumptions
-#  c1.set_guaran(G([1,4], y >= 2))             # Set/define the guarantees
-#  c1.set_assume("((x <= 3) U[0,3] (x >=5))")    # Set/define the assumptions
-#  c1.set_guaran("(G[1,4] (y >= 2))")             # Set/define the guarantees
-
-c1.checkSat()                         # Saturate c1
-print(c1)
-input()
-
-#  print(And(x>0, y> 0, z>0))
+#  print(And(x**2>0, y> 0, z>0))
 #  print((x>0) & (y> 0) & (z>0))
 #  print((x>0).Until([0,2], (y> 0)))
 #  input()
@@ -29,8 +20,11 @@ input()
 #  input()
 
 p = Parser(c1)
+#  print(p("3", "int"))
+#  print(p("y", "variable"))
+#  print(p("y** 3", "variable_power"))
 #  print(p("3x", "const_variable"))
-#  print(p("y", "const_variable"))
+#  print(p("y**2", "const_variable"))
 #  print(p("3x + 2y + 2z", "expression_outer"))
 #  print(p("(2y + 4 - 2 > 3)", "AP"))
 #  print(p("(P[0.1] (3x - 2y + 2z < 3))", "stAP"))
@@ -47,6 +41,6 @@ p = Parser(c1)
 #  print(p("!(x>0)"))
 #  print(p("((x == 10000.0) & (y == 8.0))", "and_outer"))
 #  print(p("((y<2) & (x + 2 < 2))", "and_outer"))
-print(p("(F[0,10] ((x == 10000.0) & (y == 8.0)))", "f"))
+#  print(p("(F[0,10] ((x == 10000.0) & (y == 8.0)))", "f"))
 # print(p("(F[0,10] ((x == 10000.0) & (y == 8.0)))"))
 input()

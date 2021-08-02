@@ -1,11 +1,11 @@
-import gurobipy as gp
-import numpy as np
-
 from copy import deepcopy
 import cplex
 from gurobipy import GRB
+import gurobipy as gp
+import numpy as np
 from scipy.stats import norm
 from z3 import *
+
 from pystl.contracts import *
 from pystl.parser import *
 
@@ -16,6 +16,8 @@ class Preprocess:
         self.debug = debug
     def __call__(self):
         end_time = 0
+        #  print(self.solver.constraints)
+        #  input()
         for i, c in enumerate(self.solver.constraints):
             #  print(self.constraints[i])
             (self.solver.constraints[i], t) = self.preprocess(c, 1)
@@ -634,7 +636,7 @@ class MILPSolver:
         b_vars
         b_var_num
     """
-    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'constraints', 'dynamics', 'switching_dynamics', 'switching_time',
+    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'hard_constraints', 'soft_constraints', 'soft_constraints_var', 'dynamics', 'switching_dynamics', 'switching_time',
             'solver', 'model', 'idx', 'node_variable', 'contract_variable')
 
     def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi", debug = False):
@@ -653,7 +655,9 @@ class MILPSolver:
     def reset(self):
         # Initialize attributes
         self.contract    = None
-        self.constraints = []
+        self.hard_constraints = []
+        self.soft_constraints = []
+        self.soft_constraints_var = []
         self.dynamics    = []
         self.switching_dynamics = []
         self.switching_time = None
@@ -671,17 +675,27 @@ class MILPSolver:
         self.node_variable     = np.empty(0)
         self.contract_variable = np.empty(0)
 
+    @property
+    def constraints(self):
+        return self.hard_constraints + self.soft_constraints
+
     def add_contract(self, contract):
         """
         Adds a contract to the SMC solver.
         """
         self.contract = contract
 
-    def add_constraint(self, constraint):
+    def add_hard_constraint(self, constraint):
         """
         Adds a dynamics to the SMC solver.
         """
-        self.constraints.append(constraint)
+        self.hard_constraints.append(constraint)
+
+    def add_soft_constraint(self, constraint):
+        """
+        Adds a dynamics to the SMC solver.
+        """
+        self.soft_constraints.append(constraint)
 
     def add_dynamic(self, dynamic):
         """
@@ -697,29 +711,47 @@ class MILPSolver:
         if switching_time is not None:
             self.switching_time = switching_time
 
-    def solve(self, objective=None):
-        """ Solves the MILP problem """
-        # Add constraints of the contract and dynamics to the SAT, main, and SSF convex solver
-        assert(len(self.constraints) > 0)
-
-        self.preprocess()
-        # print(self.constraints)
+    def preprocess(self):
+        (num_node, end_time) = Preprocess(self)()
+        if self.solver == "Gurobi":
+            self.node_variable = -1 * np.ones((num_node, end_time), dtype = object)
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object) # -1 is to exclude constant variable
+        elif self.solver == "Cplex":
+            self.node_variable = -1 * np.ones((num_node, end_time), dtype = object)
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object)
+        else: assert(False)
 
         if self.debug:
-            for c in self.constraints:
+            for c in self.hard_constraints:
                 print(repr(c))
             print("node variable shape: {}".format(self.node_variable.shape))
             print("contract variable shape: {}".format(self.contract_variable.shape))
             input()
 
-        for c in self.constraints:
-            self.set_constraint(c)
+        for c in self.hard_constraints:
+            self.set_constraint(c, True)
+
+        for c in self.soft_constraints:
+            self.set_constraint(c, False)
 
         for d in self.dynamics:
             self.set_dynamic(d.vector)
 
         # self.set_switching_dynamic()
 
+        return end_time
+
+    def set_objective(self, objective):
+        if self.solver == "Gurobi":
+            self.model.setObjective(objective, GRB.MINIMIZE)
+        #  elif self.solver == "Cplex":
+        #      self.model.minimize(objective)
+        else: assert(False)
+
+    def solve(self):
+        """ Solves the MILP problem """
+        # Add constraints of the contract and dynamics to the SAT, main, and SSF convex solver
+        assert(len(self.hard_constraints) > 0)
 
         #  if self.objective == 'min':
         #      if self.solver == "Gurobi":
@@ -757,17 +789,7 @@ class MILPSolver:
                 print('There exists no solution.')
             return False
 
-    def preprocess(self):
-        (num_node, end_time) = Preprocess(self)()
-        if self.solver == "Gurobi":
-            self.node_variable = -1 * np.ones((self.idx, max_endtime), dtype = object)
-            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), max_endtime), dtype = object) # -1 is to exclude constant variable
-        elif self.solver == "Cplex":
-            self.node_variable = -1 * np.ones((self.idx, max_endtime), dtype = object)
-            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), max_endtime), dtype = object)
-        else: assert(False)
-
-    def set_constraint(self, constraint):
+    def set_constraint(self, constraint, hard = True):
         """
         Adds contraints to the solvers.
         """
@@ -776,15 +798,22 @@ class MILPSolver:
 
         if self.mode == 'Boolean':
             if self.solver == "Gurobi":
-                self.model.addConstr(self.node_variable[constraint.idx, 0] == 1)
-            elif self.solver == "Cplex":
-                self.model.linear_constraints.add(lin_expr = [[[self.node_variable[constraint.idx, 0]], [1]]], senses = "E", rhs = [1])
+                if hard:
+                    self.model.addConstr(self.node_variable[constraint.idx, 0] == 1)
+                else:
+                    self.soft_constraints_var.append(self.node_variable[constraint.idx, 0])
+                    
+            #  elif self.solver == "Cplex":
+            #      self.model.linear_constraints.add(lin_expr = [[[self.node_variable[constraint.idx, 0]], [1]]], senses = "E", rhs = [1])
             else: assert(False)
         elif self.mode == 'Quantitative':
             if self.solver == "Gurobi":
-                self.model.addConstr(self.node_variable[constraint.idx, 0] >= 0)
-            elif self.solver == "Cplex":
-                self.model.linear_constraints.add(lin_expr = [[[self.node_variable[constraint.idx, 0]], [1]]], senses = "G", rhs = [0])
+                if hard:
+                    self.model.addConstr(self.node_variable[constraint.idx, 0] >= 0)
+                else:
+                    self.soft_constraints_var.append(self.node_variable[constraint.idx, 0])
+            #  elif self.solver == "Cplex":
+            #      self.model.linear_constraints.add(lin_expr = [[[self.node_variable[constraint.idx, 0]], [1]]], senses = "G", rhs = [0])
             else: assert(False)
 
     def set_node_constraint(self, node, start_time = 0, end_time = 1):
@@ -829,21 +858,29 @@ class MILPSolver:
 
         #  1. construct the expression for constraint: expr <= 0
         expr = node.expr.deter_data.copy()
+        constant = node.expr.constant
         if node.ast_type == 'StAP': # If the current node is a stochastic AP,
-            nondeter_data_size = len(node.expr.nondeter_data)
-            expectation = node.expr.nondeter_data @self.contract.nondeter_var_mean[:nondeter_data_size]
-            variance = node.expr.nondeter_data @self.contract.nondeter_var_cov[:nondeter_data_size, :nondeter_data_size]@ node.expr.nondeter_data.T
+            assert(node.expr.nondeter_data.shape[1] == 1)
+            data = node.expr.nondeter_data[:, 0]
+            data_size = node.expr.nondeter_data.shape[0]
+            expectation = data @ self.contract.nondeter_var_mean[:data_size]
+            variance = data @ self.contract.nondeter_var_cov[:data_size, :data_size] @ data.T
+            #  print(data)
+            #  print(self.contract.nondeter_var_mean)
+            #  print(self.contract.nondeter_var_cov)
+            #  print(expectation)
+            #  print(variance)
 
-            expr[0] += expectation + norm.ppf(node.probability()) * math.sqrt(variance)
+            constant += expectation + norm.ppf(node.probability()) * math.sqrt(variance)
 
-        variables = np.nonzero(expr[1:])[0] + 1
+        variables = np.nonzero(expr)
 
         if self.debug:
             print(expr)
 
         #  2. add variables of contract in every concerned time period to model
         for t in range(start_time, end_time):
-            for v in variables:
+            for v in variables[0]:
                 if self.contract.deter_var_list[v].data_type == 'BINARY':
                     self.model_add_binary_variable(v, t, var_type = 'contract')
                 elif self.contract.deter_var_list[v].data_type == 'CONTINUOUS':
@@ -857,7 +894,7 @@ class MILPSolver:
 
 
             # 3. Add convex constraints
-            self.model_add_inequality_constraint(node.idx, t, expr)
+            self.model_add_inequality_constraint(node.idx, t, expr, constant)
             if (self.debug):
                 input()
 
@@ -1092,7 +1129,7 @@ class MILPSolver:
 
     def model_add_continous_variable(self, idx, time, lb = -M, ub = M, var_type = 'node'):
         if (self.debug):
-            print("adding binary variable: type: {}, idx: {}, t: {}, lb:{}, ub:{}".format(var_type, idx, time, lb, ub))
+            print("adding continuous variable: type: {}, idx: {}, t: {}, lb:{}, ub:{}".format(var_type, idx, time, lb, ub))
 
         if (var_type == 'node'):
             variable_array = self.node_variable
@@ -1113,35 +1150,43 @@ class MILPSolver:
             return idx
         else: assert(False)
 
-    def model_add_inequality_constraint(self, node_idx, time, expr):
+    def model_add_inequality_constraint(self, node_idx, time, expr, constant):
         if (self.debug):
-            print("adding inequality constraint: node id: {}, time: {}, expr: {}".format(node_idx, time, expr))
-        mask = np.nonzero(expr[1:])[0] + 1
-        variable = self.contract_variable[:, time][mask]
-        multiplier = expr[mask]
-        rhs = expr[0]
+            print("adding inequality constraint: node id: {}, time: {}, expr: {}, constant: {}".format(node_idx, time, expr, constant))
+        constr = constant
+        #  1. handle linear term
+        mask = np.nonzero(expr[:,0])[0]
+        if mask.size > 0:
+            constr += np.sum(self.contract_variable[mask, time] * expr[mask])
+
+        #  2. handle quadratic term
+        if expr.shape[1] >= 2:
+            mask = np.nonzero(expr[:,1])[0]
+            for m in mask:
+                multiplier = expr[m, 1]
+                constr += multiplier * (self.contract_variable[m, time] ** 2)
 
         if self.debug:
-            print("mask: {}".format(mask))
-            print("variable: {}".format(variable))
-            print("multiplier: {}".format(multiplier))
-            print("rhs: {}".format(rhs))
+            print("constraint: {}".format(constr <= 0))
+            #  print("mask: {}".format(mask))
+            #  print("variable: {}".format(variable))
+            #  print("multiplier: {}".format(multiplier))
+            #  print("rhs: {}".format(rhs))
 
-        assert(len(variable) != 0)
         if self.mode == 'Boolean':
             if self.solver == "Gurobi":
-                self.model.addConstr((self.node_variable[node_idx, time] == 1) >> (np.sum(multiplier * variable) <= -rhs))
-                self.model.addConstr((self.node_variable[node_idx, time] == 0) >> (np.sum(multiplier * variable) >= -rhs + EPS))
-            elif self.solver == "Cplex":
-                lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
-                self.model.linear_constraints.add(lin_expr = (lin_expr * 2), senses = "LG", rhs = [-rhs+M, -rhs+EPS])
+                self.model.addConstr(constr <= M * (1 - self.node_variable[node_idx, time]))
+                self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
+            #  elif self.solver == "Cplex":
+            #      lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
+            #      self.model.linear_constraints.add(lin_expr = (lin_expr * 2), senses = "LG", rhs = [-rhs+M, -rhs+EPS])
             else: assert(False)
         elif self.mode == 'Quantitative':
             if self.solver == "Gurobi":
-                self.model.addConstr((self.node_variable[node_idx, time] == np.sum(multiplier * variable) + rhs))
-            elif self.solver == "Cplex":
-                lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
-                self.model.linear_constraints.add(lin_expr = lin_expr, senses = "E", rhs = [-rhs])
+                self.model.addConstr(self.node_variable[node_idx, time] == constr)
+            #  elif self.solver == "Cplex":
+            #      lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
+            #      self.model.linear_constraints.add(lin_expr = lin_expr, senses = "E", rhs = [-rhs])
             else: assert(False)
         else: assert(False)
 

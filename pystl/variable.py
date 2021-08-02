@@ -15,7 +15,7 @@ class Var:
         return pystl.parser.Expression(self) + pystl.parser.Expression(other)
 
     def __radd__(self, other):
-        return self.__add__(other)
+        return pystl.parser.Expression(self) + pystl.parser.Expression(other)
 
     def __sub__(self, other):
         return pystl.parser.Expression(self) - pystl.parser.Expression(other)
@@ -33,6 +33,9 @@ class Var:
     def __truediv__(self, other):
         assert(isinstance(other, (int, float)))
         return pystl.parser.Expression(self) / other
+
+    def __pow__(self, other):
+        return pystl.parser.Expression((self, other))
 
     def __lt__(self, other):
         return pystl.parser.Expression(self) < pystl.parser.Expression(other)
