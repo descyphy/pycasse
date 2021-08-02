@@ -428,7 +428,7 @@ expression_outer =  __ (expression_inner) __
 expression_inner = (term __ operator __ expression_inner) / term
 
 term = (const_variable/ const)
-const_variable = (const __ variable) / variable_power / variable
+const_variable = ((const __ variable_power) / variable_power / (const __ variable) / variable)
 
 comparison = "<=" / ">=" / "=>" / "=<" / "<" / ">" / "=="
 operator = "+" / "-"
@@ -479,13 +479,13 @@ class Parser(NodeVisitor):
         return node.text
 
     def visit_const_variable(self, node, children):
-        #  children is either [[value, [], Var]] or [Expression] or [Var]
-        if (isinstance(children[0], pystl.variable.Var)):
-            return Expression(children[0])
+        #  children is either [[value, [], Expression]] or [Expression] or [[value, [], Var]] or [Var]
+        if (len(children[0]) == 3):
+            return (children[0][0] * children[0][2])
         elif (isinstance(children[0], Expression)):
             return children[0]
-        elif (len(children[0]) == 3):
-            return (children[0][0] * children[0][2])
+        elif (isinstance(children[0], pystl.variable.Var)):
+            return Expression(children[0])
         else: assert(False)
 
     def visit_term(self, node, children):
