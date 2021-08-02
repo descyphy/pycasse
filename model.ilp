@@ -1,66 +1,24 @@
 \ Model _copy
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
-  0 node_1_0 + 0 node_1_1 + 0 node_1_2 + 0 node_1_3 + 0 node_1_4
-   + 0 node_1_5 + 0 node_1_6 + 0 node_1_7 + 0 node_1_8 + 0 node_1_9
-   + 0 node_1_10 + 0 node_2_0 + 0 node_2_1 + 0 node_2_2 + 0 node_2_3
-   + 0 node_2_4 + 0 node_2_5 + 0 node_2_6 + 0 node_2_7 + 0 node_2_8
-   + 0 node_2_9 + 0 node_2_10 + 0 contract_13_0 + 0 contract_13_1
-   + 0 contract_13_2 + 0 contract_13_3 + 0 contract_13_4 + 0 contract_13_5
-   + 0 contract_13_6 + 0 contract_13_7 + 0 contract_13_8 + 0 contract_13_9
-   + 0 contract_13_10 + 0 node_3_0 + 0 node_3_1 + 0 node_3_2 + 0 node_3_3
-   + 0 node_3_4 + 0 node_3_5 + 0 node_3_6 + 0 node_3_7 + 0 node_3_8
-   + 0 node_3_9 + 0 node_3_10 + 0 node_4_0 + 0 node_4_1 + 0 node_4_2
-   + 0 node_4_3 + 0 node_4_4 + 0 node_4_5 + 0 node_4_6 + 0 node_4_7
-   + 0 node_4_8 + 0 node_4_9 + 0 node_4_10 + 0 node_5_0 + 0 node_5_1
-   + 0 node_5_2 + 0 node_5_3 + 0 node_5_4 + 0 node_5_5 + 0 node_5_6
-   + 0 node_5_7 + 0 node_5_8 + 0 node_5_9 + 0 node_5_10
+  0 node_1_0 + 0 node_7_0 + 0 node_8_0 + 0 node_8_1 + 0 node_8_2
+   + 0 node_8_3 + 0 node_8_4 + 0 node_8_5 + 0 node_8_6 + 0 node_8_7
+   + 0 node_8_8 + 0 node_8_9 + 0 node_8_10
 Subject To
- R0: node_0_0 = 1
- GC22: node_3_0 = 1 -> - contract_13_0 <= -10000
- GC24: node_3_1 = 1 -> - contract_13_1 <= -10000
- GC26: node_3_2 = 1 -> - contract_13_2 <= -10000
- GC28: node_3_3 = 1 -> - contract_13_3 <= -10000
- GC30: node_3_4 = 1 -> - contract_13_4 <= -10000
- GC32: node_3_5 = 1 -> - contract_13_5 <= -10000
- GC34: node_3_6 = 1 -> - contract_13_6 <= -10000
- GC36: node_3_7 = 1 -> - contract_13_7 <= -10000
- GC38: node_3_8 = 1 -> - contract_13_8 <= -10000
- GC40: node_3_9 = 1 -> - contract_13_9 <= -10000
- GC42: node_3_10 = 1 -> - contract_13_10 <= -10000
+ R98: 10000 node_9_5 <= 9998
+ R120: 10000 node_10_5 <= 9998
+ R142: 10000 node_11_5 <= 9998
+ R164: 10000 node_12_5 <= 9998
+ R176: node_0_0 = 1
 Bounds
- -infinity <= contract_13_0 <= 1000
- -infinity <= contract_13_1 <= 1000
- -infinity <= contract_13_2 <= 1000
- -infinity <= contract_13_3 <= 1000
- -infinity <= contract_13_4 <= 1000
- -infinity <= contract_13_5 <= 1000
- -infinity <= contract_13_6 <= 1000
- -infinity <= contract_13_7 <= 1000
- -infinity <= contract_13_8 <= 1000
- -infinity <= contract_13_9 <= 1000
- -infinity <= contract_13_10 <= 1000
 Binaries
- node_0_0 node_1_0 node_1_1 node_1_2 node_1_3 node_1_4 node_1_5 node_1_6
- node_1_7 node_1_8 node_1_9 node_1_10 node_2_0 node_2_1 node_2_2 node_2_3
- node_2_4 node_2_5 node_2_6 node_2_7 node_2_8 node_2_9 node_2_10 node_3_0
- node_3_1 node_3_2 node_3_3 node_3_4 node_3_5 node_3_6 node_3_7 node_3_8
- node_3_9 node_3_10 node_4_0 node_4_1 node_4_2 node_4_3 node_4_4 node_4_5
- node_4_6 node_4_7 node_4_8 node_4_9 node_4_10 node_5_0 node_5_1 node_5_2
- node_5_3 node_5_4 node_5_5 node_5_6 node_5_7 node_5_8 node_5_9 node_5_10
+ node_0_0 node_1_0 node_7_0 node_8_0 node_8_1 node_8_2 node_8_3 node_8_4
+ node_8_5 node_8_6 node_8_7 node_8_8 node_8_9 node_8_10 node_9_5 node_10_5
+ node_11_5 node_12_5
 General Constraints
- GC88: node_1_0 = AND ( node_2_0 , node_3_0 , node_4_0 , node_5_0 )
- GC89: node_1_1 = AND ( node_2_1 , node_3_1 , node_4_1 , node_5_1 )
- GC90: node_1_2 = AND ( node_2_2 , node_3_2 , node_4_2 , node_5_2 )
- GC91: node_1_3 = AND ( node_2_3 , node_3_3 , node_4_3 , node_5_3 )
- GC92: node_1_4 = AND ( node_2_4 , node_3_4 , node_4_4 , node_5_4 )
- GC93: node_1_5 = AND ( node_2_5 , node_3_5 , node_4_5 , node_5_5 )
- GC94: node_1_6 = AND ( node_2_6 , node_3_6 , node_4_6 , node_5_6 )
- GC95: node_1_7 = AND ( node_2_7 , node_3_7 , node_4_7 , node_5_7 )
- GC96: node_1_8 = AND ( node_2_8 , node_3_8 , node_4_8 , node_5_8 )
- GC97: node_1_9 = AND ( node_2_9 , node_3_9 , node_4_9 , node_5_9 )
- GC98: node_1_10 = AND ( node_2_10 , node_3_10 , node_4_10 , node_5_10 )
- GC99: node_0_0 = OR ( node_1_0 , node_1_1 , node_1_2 , node_1_3 ,
-   node_1_4 , node_1_5 , node_1_6 , node_1_7 , node_1_8 , node_1_9 ,
-   node_1_10 )
+ GC17: node_8_5 = OR ( node_9_5 , node_10_5 , node_11_5 , node_12_5 )
+ GC23: node_7_0 = AND ( node_8_0 , node_8_1 , node_8_2 , node_8_3 ,
+   node_8_4 , node_8_5 , node_8_6 , node_8_7 , node_8_8 , node_8_9 ,
+   node_8_10 )
+ GC24: node_0_0 = AND ( node_1_0 , node_7_0 )
 End

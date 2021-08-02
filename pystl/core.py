@@ -17,13 +17,11 @@ class Preprocess:
 
     def __call__(self):
         end_time = 0
-        #  print(self.solver.constraints)
-        #  input()
+        # print(self.solver.constraints)
+        # input()
         for i, c in enumerate(self.solver.constraints):
-            #  print(self.constraints[i])
             (self.solver.constraints[i], t) = self.preprocess(c, 1)
             end_time = max(end_time, t)
-            #  print(self.constraints[i])
         return self.idx, end_time
 
     def preprocess(self, node, end_time):
@@ -638,7 +636,7 @@ class MILPSolver:
         b_vars
         b_var_num
     """
-    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'hard_constraints', 'soft_constraints', 'soft_constraints_var', 'dynamics', 'switching_dynamics', 'switching_time',
+    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'hard_constraints', 'soft_constraints', 'soft_constraints_info', 'soft_constraints_var', 'dynamics', 'switching_dynamics', 'switching_time',
             'solver', 'model', 'idx', 'node_variable', 'contract_variable')
 
     def __init__(self, verbose=False, mode = "Boolean", solver = "Gurobi", debug = False):
@@ -659,6 +657,7 @@ class MILPSolver:
         self.contract    = None
         self.hard_constraints = []
         self.soft_constraints = []
+        self.soft_constraints_info = []
         self.soft_constraints_var = []
         self.dynamics    = []
         self.switching_dynamics = []
@@ -699,7 +698,7 @@ class MILPSolver:
 
         self.hard_constraints.append(constraint)
 
-    def add_soft_constraint(self, constraint):
+    def add_soft_constraint(self, constraint, region_num=None, time=None):
         """
         Adds a soft constrint to the MILP solver.
         """
@@ -710,6 +709,7 @@ class MILPSolver:
             constraint = constraint
 
         self.soft_constraints.append(constraint)
+        self.soft_constraints_info.append([region_num, time])
 
     def add_dynamic(self, dynamic):
         """
@@ -745,8 +745,10 @@ class MILPSolver:
         for c in self.hard_constraints:
             self.set_constraint(c, True)
 
+        count = 0
         for c in self.soft_constraints:
-            self.set_constraint(c, False)
+            self.set_constraint(c, False, soft_idx=count)
+            count += 1
 
         for d in self.dynamics:
             self.set_dynamic(d.vector)
@@ -802,7 +804,7 @@ class MILPSolver:
                 print('There exists no solution.')
             return False
 
-    def set_constraint(self, constraint, hard = True):
+    def set_constraint(self, constraint, hard, soft_idx=None):
         """
         Adds contraints to the solvers.
         """
@@ -814,7 +816,7 @@ class MILPSolver:
                 if hard:
                     self.model.addConstr(self.node_variable[constraint.idx, 0] == 1)
                 else:
-                    self.soft_constraints_var.append(self.node_variable[constraint.idx, 0])
+                    self.soft_constraints_var.append([self.node_variable[constraint.idx, 0], self.soft_constraints_info[soft_idx][0], self.soft_constraints_info[soft_idx][1]])
                     
             #  elif self.solver == "Cplex":
             #      self.model.linear_constraints.add(lin_expr = [[[self.node_variable[constraint.idx, 0]], [1]]], senses = "E", rhs = [1])
@@ -824,7 +826,8 @@ class MILPSolver:
                 if hard:
                     self.model.addConstr(self.node_variable[constraint.idx, 0] >= 0)
                 else:
-                    self.soft_constraints_var.append(self.node_variable[constraint.idx, 0])
+                    self.soft_constraints_var.append([self.node_variable[constraint.idx, 0], self.soft_constraints_info[soft_idx][0], self.soft_constraints_info[soft_idx][1]])
+
             #  elif self.solver == "Cplex":
             #      self.model.linear_constraints.add(lin_expr = [[[self.node_variable[constraint.idx, 0]], [1]]], senses = "G", rhs = [0])
             else: assert(False)
@@ -1167,6 +1170,7 @@ class MILPSolver:
         if (self.debug):
             print("adding inequality constraint: node id: {}, time: {}, expr: {}, constant: {}".format(node_idx, time, expr, constant))
         constr = constant
+        
         #  1. handle linear term
         mask = np.nonzero(expr[:,0])[0]
         if mask.size > 0:
@@ -1177,7 +1181,8 @@ class MILPSolver:
             mask = np.nonzero(expr[:,1])[0]
             for m in mask:
                 multiplier = expr[m, 1]
-                constr += multiplier * (self.contract_variable[m, time] ** 2)
+                # constr += multiplier * (self.contract_variable[m, time] ** 2)
+                constr += multiplier * (self.contract_variable[m, time] * self.contract_variable[m, time])
 
         if self.debug:
             print("constraint: {}".format(constr <= 0))
