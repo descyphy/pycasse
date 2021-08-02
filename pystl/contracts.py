@@ -673,10 +673,6 @@ def env_load(H, init=None, savepath=True):
         # print(uncontrolled_vars)
         # print(controlled_vars)
 
-        # print("vehicle_num: {}".format(vehicle_num))
-        # for region_param in region_params:
-        #     print(region_param)
-
         # Find the guarantees formula and set the gurantees of the contract
         # Initialize guarantees
         guarantees_formula = "("
@@ -705,7 +701,7 @@ def env_load(H, init=None, savepath=True):
         
         # Saturate contract
         tmp_contract.checkSat()
-        # print(tmp_contract)
+        print(tmp_contract)
         # print(guarantees_formula)
         
         # Add the contract
@@ -714,17 +710,21 @@ def env_load(H, init=None, savepath=True):
         # Add the contract specifications
         tmp_solver.add_constraint(tmp_contract.guarantee)
 
-        # Set objectives
-        # TODO: Goal objectives
-        # print(tmp_contract.guarantee)
-        objective_func = gp.abs_(uncontrolled_vars[0]-uncontrolled_vars[1])
+        # # TODO: Region constraints
+        # region_params = np.array(data["vehicle"]["region"]["equation"][vehicle_num])
+        # ego_vars = uncontrolled_vars[6*vehicle_num:6*vehicle_num+4]
 
-        # TODO: Region objectives
-        region_params = np.array(data["vehicle"]["region"]["equation"][vehicle_num])
+        # if region_params == 1:
+        #     region_formula = "(G[0,{}] (({}{} + {} <= 0) & ({} <= 0) & ({} <= 0) & ({} <= 0)))".format(H)
+        # # else:
+        # #     region_formula = "(F[0,{}] (".format(H)
+        # #     for 
+        # print(region_params)
+        # print(region_formula)
+        # print(tmp_solver.constraints)
+        # input()
 
-        # TODO: Fuel objectives
-        
-        # TODO: Set initial states. Make it automated not manual later.
+        ## TODO: Set initial states. Make it automated not manual later.
         for var in uncontrolled_vars:
             if 'v_x' in var.name:
                 tmp_solver.add_constraint(var == 10)
@@ -754,11 +754,33 @@ def env_load(H, init=None, savepath=True):
             else:
                 tmp_u = Vector(uncontrolled_vars[6*tmp_vehicle_num+4-2*checked_ego: 6*tmp_vehicle_num+6-2*checked_ego])
 
+            # Add dynamics
             tmp_solver.add_dynamic(Next(tmp_x) == A * tmp_x + B * tmp_u)
-        
+
+        ## Set objectives
+        # Initialize objective
+        objective_func = 0
+        # TODO: Goal objectives
+        # print(tmp_contract.guarantee)
+        # print(uncontrolled_vars[0].name)
+        # objective_func += gp.LinExpr([1,-1], [uncontrolled_vars[0], uncontrolled_vars[1]])
+
+        # TODO: Fuel objectives (Addition of u)
+        # print(tmp_contract.deter_var_list)
+        # print(controlled_vars)
+        # print(controlled_vars[0] + controlled_vars[1])
+        # for i in range(H-1):
+        #     print("{}_{}".format(controlled_vars[0].name, i))
+        #     print("contract_{}_{}".format(controlled_vars[0].idx, i))
+        #     objective_func += tmp_solver.model.getVarByName("contract_{}_{}".format(controlled_vars[0].idx, i))
+        # tmp_solver.add_constraint(controlled_vars[0]*controlled_vars[0] == 12)
+        # Set objectives
+        # print(objective_func)
+        input()
+
         # Solve the problem using MILP solver
-        solved = tmp_solver.solve()
+        solved = tmp_solver.solve(objective=objective_func)
         if solved:
             tmp_solver.print_solution()
 
-env_load(10)
+# env_load(10)

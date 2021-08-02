@@ -583,7 +583,7 @@ class MILPSolver:
         self.verbose   = verbose
         self.mode      = mode
         self.solver    = solver
-        self.objective = None
+        self.objective = []
         self.debug     = debug
         self.reset()
 
@@ -635,13 +635,12 @@ class MILPSolver:
         if switching_time is not None:
             self.switching_time = switching_time
 
-    def solve(self, objective=None):
+    def solve(self, objective=None, sense='min'):
         """ Solves the MILP problem """
         # Add constraints of the contract and dynamics to the SAT, main, and SSF convex solver
         assert(len(self.constraints) > 0)
 
         self.preprocess()
-        # print(self.constraints)
 
         if self.debug:
             for c in self.constraints:
@@ -658,19 +657,21 @@ class MILPSolver:
 
         # self.set_switching_dynamic()
 
+        # print(self.contract_variable)
+        # input()
 
-        #  if self.objective == 'min':
-        #      if self.solver == "Gurobi":
-        #          self.model.setObjective(self.variable[0][parse_tree_root.name], GRB.MINIMIZE)
-        #      elif self.solver == "Cplex":
-        #          self.model.minimize(self.variable[0][parse_tree_root.name])
-        #      else: assert(False)
-        #  elif self.objective == 'max':
-        #      if self.solver == "Gurobi":
-        #          self.model.setObjective(self.variable[0][parse_tree_root.name], GRB.MAXIMIZE)
-        #      elif self.solver == "Cplex":
-        #          self.model.maximize(self.variable[0][parse_tree_root.name])
-        #      else: assert(False)
+        # if sense == 'min':
+        #     if self.solver == "Gurobi":
+        #         self.model.setObjective(self.variable[0][parse_tree_root.name], GRB.MINIMIZE)
+        #     # elif self.solver == "Cplex":
+        #     #     self.model.minimize(self.variable[0][parse_tree_root.name])
+        #     else: assert(False)
+        # elif sense == 'max':
+        #     if self.solver == "Gurobi":
+        #         self.model.setObjective(self.variable[0][parse_tree_root.name], GRB.MAXIMIZE)
+        #     # elif self.solver == "Cplex":
+        #     #     self.model.maximize(self.variable[0][parse_tree_root.name])
+        #     else: assert(False)
 
         # Solve the optimization problem
         if self.solver == "Gurobi":
@@ -685,7 +686,6 @@ class MILPSolver:
         if (self.solver == 'Gurobi' and self.model.getAttr("Status") == 2) or (self.solver == 'Cplex' and self.model.solution.get_status() in (1,101)): # If MILP is successfully solved,
             if self.verbose:
                 print("MILP solved.")
-            # # Print the MILP solution
                 self.print_solution()
             return True
         else:
@@ -746,7 +746,7 @@ class MILPSolver:
 
         return (res, end_time)
 
-    def set_constraint(self, constraint):
+    def set_constraint(self, constraint, hard=True):
         """
         Adds contraints to the solvers.
         """
@@ -754,13 +754,13 @@ class MILPSolver:
         self.set_node_constraint(constraint)
 
         if self.mode == 'Boolean':
-            if self.solver == "Gurobi":
+            if self.solver == "Gurobi" and hard:
                 self.model.addConstr(self.node_variable[constraint.idx, 0] == 1)
             elif self.solver == "Cplex":
                 self.model.linear_constraints.add(lin_expr = [[[self.node_variable[constraint.idx, 0]], [1]]], senses = "E", rhs = [1])
             else: assert(False)
         elif self.mode == 'Quantitative':
-            if self.solver == "Gurobi":
+            if self.solver == "Gurobi" and hard:
                 self.model.addConstr(self.node_variable[constraint.idx, 0] >= 0)
             elif self.solver == "Cplex":
                 self.model.linear_constraints.add(lin_expr = [[[self.node_variable[constraint.idx, 0]], [1]]], senses = "G", rhs = [0])
