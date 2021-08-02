@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from itertools import combinations
 from copy import deepcopy
 from numpy.lib.npyio import save
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__) ) ) )
 from pystl.variable import DeterVar, NondeterVar, M, EPS
 from pystl.vector import Vector, Next
 from pystl.parser import P, true, false, And, Or, Globally, Eventually, Until, Release, Parser
@@ -24,8 +26,8 @@ class contract:
     def __init__(self, id = ''):
         """ Constructor method """
         self.id = id
-        self.deter_var_list       = [None]
-        self.deter_var_name2id    = {None: 0}
+        self.deter_var_list       = []
+        self.deter_var_name2id    = {}
         self.nondeter_var_list    = []
         self.nondeter_var_name2id = {}
         self.nondeter_var_mean    = np.empty(0)
@@ -183,6 +185,7 @@ class contract:
         solver.add_constraint(self.assumption)
 
         # Solve the problem
+        solver.preprocess()
         solved = solver.solve()
 
         # Print the solution
@@ -209,6 +212,7 @@ class contract:
         solver.add_constraint(self.sat_guarantee)
 
         # Solve the problem
+        solver.preprocess()
         solved = solver.solve()
 
         # Print the solution
@@ -235,6 +239,7 @@ class contract:
         solver.add_constraint(self.assumption & self.guarantee)
 
         # Solve the problem
+        solver.preprocess()
         solved = solver.solve()
 
         # Print the solution
@@ -268,6 +273,7 @@ class contract:
         solver.add_constraint(~(assumption2.implies(assumption1)))
         
         # Check refinement condition 1
+        solver.preprocess()
         solved = solver.solve()
 
         # Print the counterexample
@@ -289,6 +295,7 @@ class contract:
         solver.add_constraint(~(guarantee1.implies(guarantee2)))
 
         # Check refinement condition 2
+        solver.preprocess()
         solved = solver.solve()
 
         # Print the counterexample
@@ -304,8 +311,8 @@ class contract:
     def merge_contract_variables(self, contract):
         """ Merges contract variables. """
         # Determinate variables
-        deter_id_map = [0]
-        for var in contract.deter_var_list[1:]:
+        deter_id_map = []
+        for var in contract.deter_var_list:
             if var.name in self.deter_var_name2id:
                 deter_id_map.append(self.deter_var_name2id[var.name])
             else:
@@ -423,7 +430,7 @@ class contract:
         """ Prints information of the contract """
         res = ""
         res += "Contract ID: {}\n".format(self.id)
-        for v in self.deter_var_list[1:]:
+        for v in self.deter_var_list:
             res += "\n  "
             res += "\n    ".join(str(v).splitlines())
         for v in self.nondeter_var_list:
@@ -442,7 +449,7 @@ class contract:
         """ Prints information of the contract """
         res = ""
         res += "Contract ID: {}".format(self.id)
-        for v in self.deter_var_list[1:]:
+        for v in self.deter_var_list:
             res += "\n"
             res += "\n      ".join(repr(v).splitlines())
         for v in self.nondeter_var_list:
@@ -474,11 +481,23 @@ def conjunction(c1, c2):
     conjoined.id = (c1.id + '^' + c2.id)
 
     # Merge controlled and uncontrolled variables
-    conjoined.merge_contract(c2)
+    (deter_id_map, nondeter_id_map) = conjoined.merge_contract_variables(c2)
+    print(deter_id_map)
+    print(nondeter_id_map)
 
     # Find conjoined guarantee, G': G1 and G2
-    conjoined.assumption = conjoined.assumption | deepcopy(c2.assumption)
-    conjoined.guarantee = conjoined.sat_guarantee & deepcopy(c2.sat_guarantee)
+    assumption1 = deepcopy(conjoined.assumption)
+    assumption2 = deepcopy(c2.assumption)
+    assumption2.transform(deter_id_map, nondeter_id_map)
+    print(assumption2)
+    conjoined.assumption = assumption1 | assumption2
+
+    guarantee1 = deepcopy(conjoined.guarantee)
+    guarantee2 = deepcopy(c2.guarantee)
+    print(guarantee2)
+    guarantee2.transform(deter_id_map, nondeter_id_map)
+
+    conjoined.guarantee = guarantee1 & guarantee2
     conjoined.sat_guarantee = deepcopy(conjoined.guarantee)
     conjoined.isSat = True
 
@@ -779,8 +798,10 @@ def env_load(H, init=None, savepath=True):
         input()
 
         # Solve the problem using MILP solver
-        solved = tmp_solver.solve(objective=objective_func)
+        tmp_solver.preprocess()
+        solved = tmp_solver.solve()
         if solved:
             tmp_solver.print_solution()
 
-# env_load(10)
+if __name__ == '__main__':
+    env_load(10)

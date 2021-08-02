@@ -1,4 +1,5 @@
-import sys
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__) ) ) )
 from pystl import *
 import numpy as np
 
@@ -9,10 +10,10 @@ c1 = contract('c1')                                                      # Creat
 [y] = c1.set_controlled_vars(['y'])                                      # Set a controlled variable
 c1.set_assume('(G[0,3] (5 <= x))')                                       # Set/define the assumptions
 c1.set_guaran('(G[1,3] (P[0.85] (y-2w1+3w2 <= 8)))')                     # Set/define the guarantees
-c1.saturate()                                                            # Saturate c1
+c1.checkSat()                                                            # Saturate c1
 c1.printInfo()                                                           # Print c1
 
-c1.checkCompat(print_sol=True)                       # Check compatibility of c1
+#  c1.checkCompat(print_sol=True)                       # Check compatibility of c1
 c1.checkConsis(print_sol=True)                       # Check consistency of c1
 c1.checkFeas(print_sol=True)                         # Check feasibility of c1
 
