@@ -480,7 +480,7 @@ class Parser(NodeVisitor):
 
     def visit_const_variable(self, node, children):
         #  children is either [[value, [], Expression]] or [Expression] or [[value, [], Var]] or [Var]
-        if (len(children[0]) == 3):
+        if (isinstance(children[0], list) and len(children[0]) == 3):
             return (children[0][0] * children[0][2])
         elif (isinstance(children[0], Expression)):
             return children[0]

@@ -716,12 +716,12 @@ def env_load(H, init=None, savepath=True):
             guarantees_formula = guarantees_formula[1:-1]
 
         # Set the contracts
-        print(guarantees_formula)
         tmp_contract.set_guaran(guarantees_formula)
         
         # Saturate contract
         tmp_contract.checkSat()
         print(tmp_contract)
+        input()
         # print(guarantees_formula)
         
         # Add the contract
