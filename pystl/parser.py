@@ -7,7 +7,6 @@ import pystl.variable
 
 from pystl.variable import M, EPS
 
-# Define AST classes
 class Expression():
     """
     A class for defining an expression objects.
@@ -461,9 +460,9 @@ class Parser(NodeVisitor):
     def visit_variable(self, node, _):
         var = node.text
         if var in self.contract.deter_var_name2id:
-            return self.contract.deter_var_list[self.contract.deter_var_name2id[var]]
+            return self.contract.deter_var_list[self.contract.deter_var_name2id[var]-1]
         elif var in self.contract.nondeter_var_name2id:
-            return self.contract.nondeter_var_list[self.contract.nondeter_var_name2id[var]]
+            return self.contract.nondeter_var_list[self.contract.nondeter_var_name2id[var]-1]
         else:
             raise ValueError("Undefined variable name {}.".format(var))
 
@@ -626,8 +625,8 @@ class Parser(NodeVisitor):
         return children[0]
 
     def visit_neg(self, _, children):
-        #  print("neg:{}".format(children))
-        #  input()
+        # print("neg:{}".format(children))
+        # input()
         return ~children[2]
 
     def visit_paren_phi(self, node, children):

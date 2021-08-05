@@ -11,8 +11,8 @@ c = contract('c')
 [theta] = c.set_controlled_vars(['theta'], 
         bounds = np.array([[-10**4, 10**4]])) # Set a controlled variable
 c.set_assume('True') # Set/define the assumptions
-c.set_guaran('(F[0,100] ((-0.01 <= e1) & (e1 <= 0.01)))') # Set/define the guarantees
-# c.set_guaran('(!(F[0,100] ((-0.01 <= e1) & (e1 <= 0.01))))') # Set/define the guarantees
+# c.set_guaran('(F[0,100] ((-0.01 <= e1) & (e1 <= 0.01)))') # Set/define the guarantees
+c.set_guaran('(!(F[0,100] ((-0.01 <= e1) & (e1 <= 0.01))))') # Set/define the guarantees
 c.checkSat()  # Saturate c
 c.printInfo() # Print c
 
@@ -29,7 +29,7 @@ solver = MILPSolver()
 
 # Check property
 solver.add_contract(c)
-solver.add_constraint(c.guarantee)
+solver.add_hard_constraint(c.guarantee)
 
 # Dynamics
 solver.add_dynamic(Next(e) == A_c * e + B_c * theta)
@@ -40,11 +40,12 @@ solver.add_dynamic(np.array([[1,0]]) * v == np.array([[0,1]]) * v - np.array([[1
 solver.add_dynamic(np.array([[0,1]]) * v == 30)
 
 # Initial conditions
-solver.add_constraint(vf == 10)
-solver.add_constraint(e1 == 20)
-solver.add_constraint(e2 == 0)
+# solver.add_hard_constraint(vf == 10)
+# solver.add_hard_constraint(e1 == 0)
+solver.add_hard_constraint(e2 == 0)
 
 # Solve the problem using MILP solver
+solver.preprocess()
 start = time.time()
 solved = solver.solve()
 end = time.time()

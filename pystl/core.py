@@ -666,6 +666,7 @@ class MILPSolver:
         # Initialize convex solvers
         if self.solver == "Gurobi":
             self.model = gp.Model() # Convex solver for solving the MILP convex problem
+            # self.model.setParam("NonConvex", 2)
             if not self.verbose:
                 self.model.setParam("OutputFlag", 0)
         elif self.solver == "Cplex":
@@ -729,10 +730,10 @@ class MILPSolver:
         (num_node, end_time) = Preprocess(self)()
         if self.solver == "Gurobi":
             self.node_variable = -1 * np.ones((num_node, end_time), dtype = object)
-            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object) # -1 is to exclude constant variable
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list)+1, end_time), dtype = object) # -1 is to exclude constant variable
         elif self.solver == "Cplex":
             self.node_variable = -1 * np.ones((num_node, end_time), dtype = object)
-            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object)
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list)+1, end_time), dtype = object)
         else: assert(False)
 
         if self.debug:
@@ -760,6 +761,7 @@ class MILPSolver:
     def set_objective(self, objective):
         if self.solver == "Gurobi":
             self.model.setObjective(objective, GRB.MINIMIZE)
+            self.model.update()
         #  elif self.solver == "Cplex":
         #      self.model.minimize(objective)
         else: assert(False)
@@ -784,11 +786,11 @@ class MILPSolver:
 
         # Solve the optimization problem
         if self.solver == "Gurobi":
+            self.model.write('MILP.lp')
             self.model.optimize()
-            self.model.write('MILP.lp')
         elif self.solver == "Cplex":
-            self.model.solve()
             self.model.write('MILP.lp')
+            self.model.solve()
         else: assert(False)
 
         # Print solution
@@ -897,11 +899,11 @@ class MILPSolver:
         #  2. add variables of contract in every concerned time period to model
         for t in range(start_time, end_time):
             for v in variables[0]:
-                if self.contract.deter_var_list[v].data_type == 'BINARY':
+                if self.contract.deter_var_list[v-1].data_type == 'BINARY':
                     self.model_add_binary_variable(v, t, var_type = 'contract')
-                elif self.contract.deter_var_list[v].data_type == 'CONTINUOUS':
-                    lb = self.contract.deter_var_list[v].bound[0]
-                    ub = self.contract.deter_var_list[v].bound[1]
+                elif self.contract.deter_var_list[v-1].data_type == 'CONTINUOUS':
+                    lb = self.contract.deter_var_list[v-1].bound[0]
+                    ub = self.contract.deter_var_list[v-1].bound[1]
                     self.model_add_continous_variable(v, t, var_type = 'contract', lb = lb, ub = ub)
                 else: assert(False)
 
@@ -1046,17 +1048,15 @@ class MILPSolver:
 
             for _ in range(self.contract_variable.shape[1] - dynamic.max_time):
                 for i in range(variable.shape[1]):
-                    v = variable[0,i]
+                    v = variable[0,i]-1
                     t = variable[1,i]
-                    #  print(v, t)
                     if self.contract.deter_var_list[v].data_type == 'BINARY':
                         self.model_add_binary_variable(v, t, var_type = 'contract')
                     elif self.contract.deter_var_list[v].data_type == 'CONTINUOUS':
                         lb = self.contract.deter_var_list[v].bound[0]
                         ub = self.contract.deter_var_list[v].bound[1]
-                        self.model_add_continous_variable(v, t, var_type = 'contract', lb = lb, ub = ub)
+                        self.model_add_continous_variable(v+1, t, var_type = 'contract', lb = lb, ub = ub)
                     else: assert(False)
-                #  print(self.contract_variable)
                 self.model_add_constraint(variable, multiplier, -rhs)
                 variable[1] +=1
         
@@ -1068,6 +1068,8 @@ class MILPSolver:
         
         bool_vars = self.model.addVars(max_time, vtype=GRB.BINARY, name='b_switching')
         self.model.update()
+
+        # print(self.switching_dynamics)
 
         for k in [0, 1]:
             for dynamic in self.switching_dynamics[k]:
@@ -1094,7 +1096,7 @@ class MILPSolver:
 
                     for j in range(self.contract_variable.shape[1] - tmp_dyn.max_time):
                         for i in range(variable.shape[1]):
-                            v = variable[0,i]
+                            v = variable[0,i]-1
                             t = variable[1,i]
                             #  print(v, t)
                             if self.contract.deter_var_list[v].data_type == 'BINARY':
@@ -1194,7 +1196,8 @@ class MILPSolver:
         if self.mode == 'Boolean':
             if self.solver == "Gurobi":
                 self.model.addConstr(constr <= M * (1 - self.node_variable[node_idx, time]))
-                self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
+                # self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
+                self.model.addConstr(constr >= - M * (self.node_variable[node_idx, time]))
             #  elif self.solver == "Cplex":
             #      lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
             #      self.model.linear_constraints.add(lin_expr = (lin_expr * 2), senses = "LG", rhs = [-rhs+M, -rhs+EPS])
@@ -1300,14 +1303,22 @@ class MILPSolver:
 
     def print_solution(self):
         (len_var, len_t) = self.contract_variable.shape
-        for v in range(len_var):
+        for v in range(1,len_var):
             for t in range(len_t):
                 if (isinstance(self.contract_variable[v,t], gp.Var) or (self.contract_variable[v,t] != -1)):
                     if self.solver == "Gurobi":
-                        print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.contract_variable[v,t].x))
+                        print("{}_{}: {}".format(self.contract.deter_var_list[v-1].name, t, self.contract_variable[v,t].x))
                     elif self.solver == "Cplex":
-                        print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
+                        print("{}_{}: {}".format(self.contract.deter_var_list[v-1].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
                     else: assert(False)
+        
+        # for t in range(t):
+        #     var = self.model.getVarByName("regions_{}".format(t))
+        #     print("regions_{}: {}".format(t, var.x))
+        #     var = self.model.getVarByName("goal_y_{}".format(t))
+        #     print("goal_y_{}: {}".format(t, var.x))
+        # input()
+                    
         
         # for t in range(len_t):
         #     if self.solver == "Gurobi":
@@ -1324,3 +1335,25 @@ class MILPSolver:
         #                  print("node_{}_{}: {}".format(v, t, self.model.solution.get_values()[self.node_variable[v,t]]))
         #              else: assert(False)
         print()
+    
+    def fetch_control(self, controlled_vars):
+        """ 
+        Fetches the values of the controlled variables, if available.
+        """
+        # Initialize output
+        output = []
+
+        # Find the output
+        (_, len_t) = self.contract_variable.shape
+        for var in controlled_vars:
+            tmp_output = []
+            for t in range(len_t):
+                if isinstance(self.contract_variable[var.idx,t], gp.Var):
+                    if self.solver == "Gurobi":
+                        # print("{}_{}".format(self.contract.deter_var_list[var.idx-1].name, t))
+                        # print(self.contract_variable[var.idx, t].x)
+                        tmp_output.append(self.contract_variable[var.idx, t].x)
+            output.append(tmp_output)
+                    
+        return output
+

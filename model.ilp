@@ -1,0 +1,21 @@
+\ Model _copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Minimize
+  0 node_6_0 + 0 node_9_0
+Subject To
+ R405: 10000 node_5_0 + contract_2_0 <= 10010
+ R409: node_4_0 = 1
+ R410: contract_3_0 + 10000 node_8_0 <= 10000
+ R414: node_7_0 = 1
+ R721: contract_3_0 + contract_2_0 - contract_1_0 = 0
+ R822: contract_1_0 = 20
+Bounds
+ contract_3_0 free
+ contract_2_0 free
+ contract_1_0 free
+Binaries
+ node_4_0 node_5_0 node_6_0 node_7_0 node_8_0 node_9_0
+General Constraints
+ GC102: node_4_0 = AND ( node_5_0 , node_6_0 )
+ GC103: node_7_0 = AND ( node_8_0 , node_9_0 )
+End

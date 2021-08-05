@@ -33,7 +33,7 @@ solver = MILPSolver()
 
 # Check property
 solver.add_contract(c)
-solver.add_constraint(c.guarantee)
+solver.add_hard_constraint(c.guarantee)
 
 # Dynamics
 solver.add_switching_dynamic([[Next(e) == A_c * e + B_c * theta, theta == -K_c * e], [Next(e) == A_f * e + B_f * theta, theta == -K_f * e]], switching_time = 70)
@@ -43,11 +43,12 @@ solver.add_dynamic(np.array([[1,0,0]]) * e == np.array([[1,0]]) * v - np.array([
 solver.add_dynamic(np.array([[1,0]]) * v == 30) # vl = 30
 
 # Initial conditions
-solver.add_constraint(vf == 10)
-# solver.add_constraint(e1 == 20)
-# solver.add_constraint(e2 == 0)
+# solver.add_hard_constraint(vf == 10)
+# solver.add_hard_constraint(e1 == 20)
+# solver.add_hard_constraint(e2 == 0)
 
 # Solve the problem using MILP solver
+solver.preprocess()
 start = time.time()
 solved = solver.solve()
 end = time.time()
