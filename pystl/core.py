@@ -17,11 +17,14 @@ class Preprocess:
 
     def __call__(self):
         end_time = 0
-        # print(self.solver.constraints)
-        # input()
-        for i, c in enumerate(self.solver.constraints):
-            (self.solver.constraints[i], t) = self.preprocess(c, 1)
+        for i, c in enumerate(self.solver.hard_constraints):
+            (self.solver.hard_constraints[i], t) = self.preprocess(c, 1)
             end_time = max(end_time, t)
+
+        for i, c in enumerate(self.solver.soft_constraints):
+            (self.solver.soft_constraints[i], t) = self.preprocess(c, 1)
+            end_time = max(end_time, t)
+
         return self.idx, end_time
 
     def preprocess(self, node, end_time):
@@ -677,10 +680,6 @@ class MILPSolver:
         self.node_variable     = np.empty(0)
         self.contract_variable = np.empty(0)
 
-    @property
-    def constraints(self):
-        return self.hard_constraints + self.soft_constraints
-
     def add_contract(self, contract):
         """
         Adds a contract to the SMC solver.
@@ -696,8 +695,9 @@ class MILPSolver:
             constraint = parser(constraint)
         elif (isinstance(constraint, ASTObject)): # If the constraint is given as an AST
             constraint = constraint
+        else: assert(False)
 
-        self.hard_constraints.append(constraint)
+        self.hard_constraints.append(deepcopy(constraint))
 
     def add_soft_constraint(self, constraint, region_num=None, time=None):
         """
@@ -708,8 +708,9 @@ class MILPSolver:
             constraint = parser(constraint)
         elif (isinstance(constraint, ASTObject)): # If the constraint is given as an AST
             constraint = constraint
+        else: assert(False)
 
-        self.soft_constraints.append(constraint)
+        self.soft_constraints.append(deepcopy(constraint))
         self.soft_constraints_info.append([region_num, time])
 
     def add_dynamic(self, dynamic):
