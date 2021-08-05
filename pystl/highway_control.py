@@ -321,8 +321,8 @@ def highway_openloop(data, H, init=None, savepath=True):
 
         # Solve the problem using MILP solver
         solved = tmp_solver.solve()
-        # if solved:
-        #     tmp_solver.print_solution()
+        if solved:
+            tmp_solver.print_solution()
 
         # Fetch control output
         tmp_output = tmp_solver.fetch_control(controlled_vars)
