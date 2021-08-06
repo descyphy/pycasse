@@ -1353,7 +1353,11 @@ class MILPSolver:
                     if self.solver == "Gurobi":
                         # print("{}_{}".format(self.contract.deter_var_list[var.idx-1].name, t))
                         # print(self.contract_variable[var.idx, t].x)
-                        tmp_output.append(self.contract_variable[var.idx, t].x)
+                        try:
+                            tmp_output.append(self.contract_variable[var.idx, t].x)
+                        except:
+                            print("Failed to find an optimal path for {}\n".format(var))
+                            tmp_output.append(0)
             output.append(tmp_output)
                     
         return output

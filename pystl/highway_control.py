@@ -25,7 +25,7 @@ def highway_openloop(data, H, init=None, savepath=True):
     env = data["scenario"]
 
     # Find dynamics
-    dt = int(data["dynamics"]["dt"])
+    dt = float(data["dynamics"]["dt"])
     A = np.array(data["dynamics"]["A"])
     B = np.array(data["dynamics"]["B"])
     A = np.where(A=="dt", dt, A)
@@ -147,10 +147,10 @@ def highway_openloop(data, H, init=None, savepath=True):
                 if i != vehicle_num:
                     if env == "intersection":
                         guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(H, 
-                                                "{}_{}".format(data["dynamics"]["x"][0], vehicle_num), "{}_{}".format(data["dynamics"]["x"][0], i), vehicle_width, 
-                                                "{}_{}".format(data["dynamics"]["x"][0], i), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num), vehicle_width, 
-                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num), "{}_{}".format(data["dynamics"]["x"][1], i), vehicle_width, 
-                                                "{}_{}".format(data["dynamics"]["x"][1], i), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num), vehicle_width)
+                                                "{}_{}".format(data["dynamics"]["x"][0], vehicle_num), "{}_{}".format(data["dynamics"]["x"][0], i), 4, 
+                                                "{}_{}".format(data["dynamics"]["x"][0], i), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num), 4, 
+                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num), "{}_{}".format(data["dynamics"]["x"][1], i), 4, 
+                                                "{}_{}".format(data["dynamics"]["x"][1], i), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num), 4)
             
                     else:
                         guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(H, 
@@ -281,6 +281,7 @@ def highway_openloop(data, H, init=None, savepath=True):
             objective_func += 10**2*tmp_solver.model.getVarByName("goal_x_{}".format(i)) + 10**2*tmp_solver.model.getVarByName("goal_y_{}".format(i))
 
         # Fuel objectives (Sum of absolute values of u)
+        tmp_solver.model.write("MILP.lp")
         for i in range(H):
             # Find fule objectives in x and y axis
             tmp_solver.model_add_continuous_variable_by_name("fuel_x_{}".format(i), lb = 0, ub = acceleration_bound)
@@ -294,8 +295,7 @@ def highway_openloop(data, H, init=None, savepath=True):
             # Add fuel objective in x and y axis
             objective_func += tmp_solver.model.getVarByName("fuel_x_{}".format(i)) + tmp_solver.model.getVarByName("fuel_y_{}".format(i))
             
-
-        # # Add region constraints
+        # # Add region objectives
         # for t in range(H):
         #     # Add a binary variable for regions at time t
         #     tmp_solver.model_add_binary_variable_by_name("regions_{}".format(t))
@@ -306,12 +306,11 @@ def highway_openloop(data, H, init=None, savepath=True):
         #         for soft_const in tmp_solver.soft_constraints_var:
         #             if i == soft_const[1] and t == soft_const[2]:
         #                 region_exprs.append(soft_const[0])
-        #     tmp_solver.model.addConstr(tmp_solver.model.getVarByName("regions_{}".format(t)) == 1)
         #     tmp_solver.model.addConstr(tmp_solver.model.getVarByName("regions_{}".format(t)) == gp.or_(region_exprs))
         #     tmp_solver.model.update()
             
-            # # Add region objective
-            # objective_func += tmp_solver.model.getVarByName("regions_{}".format(t))
+        #     # Add region objective
+        #     objective_func += M*tmp_solver.model.getVarByName("regions_{}".format(t))
 
         # print(objective_func)
         # input()
@@ -321,8 +320,8 @@ def highway_openloop(data, H, init=None, savepath=True):
 
         # Solve the problem using MILP solver
         solved = tmp_solver.solve()
-        if solved:
-            tmp_solver.print_solution()
+        # if solved:
+        #     tmp_solver.print_solution()
 
         # Fetch control output
         tmp_output = tmp_solver.fetch_control(controlled_vars)
