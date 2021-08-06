@@ -1,154 +1,71 @@
 \ Model _copy
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
-  0 node_1_0 + 0 node_1_1 + 0 node_1_2 + 0 node_1_3 + 0 node_1_4
-   + 0 node_1_5 + 0 node_1_6 + 0 node_1_7 + 0 node_1_8 + 0 node_1_9
-   + 0 node_3_0 + 0 node_4_0 + 0 node_5_0 + 0 node_6_0 + 0 node_8_0
-   + 0 node_9_0 + 0 node_11_0 + 0 node_12_0 + 0 node_12_1 + 0 node_12_2
-   + 0 node_12_3 + 0 node_12_4 + 0 node_12_5 + 0 node_12_6 + 0 node_12_7
-   + 0 node_12_8 + 0 node_12_9 + 0 node_17_0 + 0 node_18_0 + 0 node_18_1
-   + 0 node_18_2 + 0 node_18_3 + 0 node_18_4 + 0 node_18_5 + 0 node_18_6
-   + 0 node_18_7 + 0 node_18_8 + 0 node_18_9 + 0 node_34_0 + 0 node_57_0
+  0 node_48_0 + 0 node_54_0 + 0 node_77_0 + 0 node_78_3 + 0 node_79_3
+   + 0 node_80_3 + 0 node_81_3 + 0 node_113_0 + 0 node_114_3 + 0 node_115_3
+   + 0 node_116_3 + 0 node_117_3 + 0 node_149_0 + 0 node_150_3
+   + 0 node_151_3 + 0 node_152_3 + 0 node_153_3 + 0 node_185_0
+   + 0 node_186_3 + 0 node_187_3 + 0 node_188_3 + 0 node_189_3
+   + 0 node_221_0 + 0 node_222_3 + 0 node_223_3 + 0 node_224_3
+   + 0 node_225_3 + 0 node_257_0 + 0 node_258_3 + 0 node_259_3
+   + 0 node_260_3 + 0 node_261_3 + 0 node_293_0 + 0 node_294_3
+   + 0 node_295_3 + 0 node_296_3 + 0 node_297_3
 Subject To
- R0: 10000 node_2_0 + contract_5_0 <= 10000
- R100: - contract_11_0 + 10000 node_7_0 <= 10000
- R160: node_0_0 = 1
- R165: 10000 node_13_2 + contract_1_2 - contract_13_2 <= 9996
- R185: - contract_1_2 + contract_13_2 + 10000 node_14_2 <= 9996
- R205: 10000 node_15_2 + contract_2_2 - contract_14_2 <= 9996
- R225: - contract_2_2 + contract_14_2 + 10000 node_16_2 <= 9996
- R245: - contract_13_2 + 10000 node_19_2 + contract_7_2 <= 9996
- R265: contract_13_2 - contract_7_2 + 10000 node_20_2 <= 9996
- R285: - contract_14_2 + 10000 node_21_2 + contract_8_2 <= 9996
- R305: contract_14_2 - contract_8_2 + 10000 node_22_2 <= 9996
- R321: node_10_0 = 1
- R322: contract_1_0 + 10000 node_24_0 <= 10002.20726718184
- R324: - contract_1_0 + 10000 node_25_0 <= 9997.792732818158
- R326: node_23_0 = 1
- R327: contract_2_0 + 10000 node_27_0 <= 10005.97753235507
- R329: - contract_2_0 + 10000 node_28_0 <= 9994.022467644929
- R331: node_26_0 = 1
- R332: 10000 node_30_0 + contract_3_0 <= 10005.87272869523
- R334: - contract_3_0 + 10000 node_31_0 <= 9994.127271304769
- R336: node_29_0 = 1
- R337: 10000 node_33_0 + contract_4_0 <= 9991.666666666661
- R341: node_32_0 = 1
- R342: contract_7_0 + 10000 node_36_0 <= 9993.024416889313
- R344: - contract_7_0 + 10000 node_37_0 <= 10006.97558311069
- R346: node_35_0 = 1
- R347: contract_8_0 + 10000 node_39_0 <= 9998
- R349: - contract_8_0 + 10000 node_40_0 <= 10002
- R351: node_38_0 = 1
- R352: 10000 node_42_0 + contract_9_0 <= 10007.72224565442
- R354: - contract_9_0 + 10000 node_43_0 <= 9992.27775434558
- R356: node_41_0 = 1
- R357: 10000 node_45_0 + contract_10_0 <= 10000
- R359: - contract_10_0 + 10000 node_46_0 <= 10000
- R361: node_44_0 = 1
- R362: contract_13_0 + 10000 node_48_0 <= 10002
- R364: - contract_13_0 + 10000 node_49_0 <= 9998
- R366: node_47_0 = 1
- R367: contract_14_0 + 10000 node_51_0 <= 9993.300920163212
- R369: - contract_14_0 + 10000 node_52_0 <= 10006.69907983679
- R371: node_50_0 = 1
- R379: - contract_16_0 + 10000 node_58_0 <= 9990.967586829875
- R381: node_56_0 = 1
- R598: - contract_1_0 + contract_1_1 - 0.3333333333333333 contract_3_0 = 0
- R599: - contract_1_1 + contract_1_2 - 0.3333333333333333 contract_3_1 = 0
- R607: - contract_2_0 + contract_2_1 - 0.3333333333333333 contract_4_0 = 0
- R608: - contract_2_1 + contract_2_2 - 0.3333333333333333 contract_4_1 = 0
- R616: - 0.3333333333333333 contract_5_0 - contract_3_0 + contract_3_1 = 0
- R625: - 0.3333333333333333 contract_6_0 - contract_4_0 + contract_4_1 = 0
- R634: - contract_7_0 + contract_7_1 - 0.3333333333333333 contract_9_0 = 0
- R635: - contract_7_1 + contract_7_2 - 0.3333333333333333 contract_9_1 = 0
- R643: - contract_8_0 + contract_8_1 - 0.3333333333333333 contract_10_0
-   = 0
- R644: - contract_8_1 + contract_8_2 - 0.3333333333333333 contract_10_1
-   = 0
- R652: - 0.3333333333333333 contract_11_0 - contract_9_0 + contract_9_1
-   = 0
- R661: - 0.3333333333333333 contract_12_0 - contract_10_0 + contract_10_1
-   = 0
- R670: - contract_13_0 + contract_13_1 - 0.3333333333333333 contract_15_0
-   = 0
- R671: - contract_13_1 + contract_13_2 - 0.3333333333333333 contract_15_1
-   = 0
- R679: - contract_14_0 + contract_14_1 - 0.3333333333333333 contract_16_0
-   = 0
- R680: - contract_14_1 + contract_14_2 - 0.3333333333333333 contract_16_1
-   = 0
- R697: - contract_16_0 + contract_16_1 - 0.3333333333333333 contract_18_0
-   = 0
+ R268: - contract_13_0 + 10000 node_49_0 <= 9472.075452442645
+ R270: node_47_0 = 1
+ R278: - contract_15_0 + 10000 node_55_0 <= 9986.949698371569
+ R280: node_53_0 = 1
+ R316: contract_13_3 + 10000 node_82_3 <= 10230
+ R364: contract_13_3 + 10000 node_118_3 <= 10230
+ R412: contract_13_3 + 10000 node_154_3 <= 10310
+ R460: contract_13_3 + 10000 node_190_3 <= 10310
+ R508: contract_13_3 + 10000 node_226_3 <= 10310
+ R556: contract_13_3 + 10000 node_262_3 <= 10540
+ R604: contract_13_3 + 10000 node_298_3 <= 10540
+ R670: - contract_13_0 + contract_13_1 - 0.5 contract_15_0 = 0
+ R671: - contract_13_1 + contract_13_2 - 0.5 contract_15_1 = 0
+ R672: - contract_13_2 + contract_13_3 - 0.5 contract_15_2 = 0
+ R682: - contract_15_0 + contract_15_1 - 0.5 contract_17_0 = 0
+ R683: - contract_15_1 + contract_15_2 - 0.5 contract_17_1 = 0
+ R697: regions_3 = 1
 Bounds
- contract_5_0 >= -5
- -infinity <= contract_6_0 <= 5
- contract_11_0 free
- contract_12_0 >= -5
- contract_1_0 free
  contract_13_0 free
- contract_1_1 free
  contract_13_1 free
- contract_1_2 free
  contract_13_2 free
- contract_2_0 free
- contract_14_0 free
- contract_2_1 free
- contract_14_1 free
- contract_2_2 free
- contract_14_2 free
- contract_7_0 free
- contract_7_1 free
- contract_7_2 free
- contract_8_0 free
- contract_8_1 free
- contract_8_2 free
- contract_3_0 free
- contract_4_0 free
- contract_9_0 free
- contract_10_0 free
- -10 <= contract_15_0 <= 10
- contract_16_0 free
- contract_3_1 free
- contract_4_1 >= -10
- -infinity <= contract_9_1 <= 10
- -infinity <= contract_10_1 <= 10
- -10 <= contract_15_1 <= 10
- -infinity <= contract_16_1 <= 10
- contract_18_0 >= -5
+ contract_13_3 free
+ contract_15_0 free
+ contract_15_1 free
+ contract_15_2 free
+ contract_17_0 >= -5
+ contract_17_1 >= -5
 Binaries
- node_0_0 node_1_0 node_1_1 node_1_2 node_1_3 node_1_4 node_1_5 node_1_6
- node_1_7 node_1_8 node_1_9 node_2_0 node_3_0 node_4_0 node_5_0 node_6_0
- node_7_0 node_8_0 node_9_0 node_10_0 node_11_0 node_12_0 node_12_1
- node_12_2 node_12_3 node_12_4 node_12_5 node_12_6 node_12_7 node_12_8
- node_12_9 node_13_2 node_14_2 node_15_2 node_16_2 node_17_0 node_18_0
- node_18_1 node_18_2 node_18_3 node_18_4 node_18_5 node_18_6 node_18_7
- node_18_8 node_18_9 node_19_2 node_20_2 node_21_2 node_22_2 node_23_0
- node_24_0 node_25_0 node_26_0 node_27_0 node_28_0 node_29_0 node_30_0
- node_31_0 node_32_0 node_33_0 node_34_0 node_35_0 node_36_0 node_37_0
- node_38_0 node_39_0 node_40_0 node_41_0 node_42_0 node_43_0 node_44_0
- node_45_0 node_46_0 node_47_0 node_48_0 node_49_0 node_50_0 node_51_0
- node_52_0 node_56_0 node_57_0 node_58_0
+ node_47_0 node_48_0 node_49_0 node_53_0 node_54_0 node_55_0 node_77_0
+ node_78_3 node_79_3 node_80_3 node_81_3 node_82_3 node_113_0 node_114_3
+ node_115_3 node_116_3 node_117_3 node_118_3 node_149_0 node_150_3
+ node_151_3 node_152_3 node_153_3 node_154_3 node_185_0 node_186_3
+ node_187_3 node_188_3 node_189_3 node_190_3 node_221_0 node_222_3
+ node_223_3 node_224_3 node_225_3 node_226_3 node_257_0 node_258_3
+ node_259_3 node_260_3 node_261_3 node_262_3 node_293_0 node_294_3
+ node_295_3 node_296_3 node_297_3 node_298_3 regions_3
 General Constraints
- GC0: node_1_0 = AND ( node_2_0 , node_3_0 , node_4_0 , node_5_0 ,
-   node_6_0 , node_7_0 , node_8_0 , node_9_0 )
- GC10: node_0_0 = AND ( node_1_0 , node_1_1 , node_1_2 , node_1_3 ,
-   node_1_4 , node_1_5 , node_1_6 , node_1_7 , node_1_8 , node_1_9 )
- GC13: node_12_2 = OR ( node_13_2 , node_14_2 , node_15_2 , node_16_2 )
- GC21: node_11_0 = AND ( node_12_0 , node_12_1 , node_12_2 , node_12_3 ,
-   node_12_4 , node_12_5 , node_12_6 , node_12_7 , node_12_8 , node_12_9 )
- GC24: node_18_2 = OR ( node_19_2 , node_20_2 , node_21_2 , node_22_2 )
- GC32: node_17_0 = AND ( node_18_0 , node_18_1 , node_18_2 , node_18_3 ,
-   node_18_4 , node_18_5 , node_18_6 , node_18_7 , node_18_8 , node_18_9 )
- GC33: node_10_0 = AND ( node_11_0 , node_17_0 )
- GC34: node_23_0 = AND ( node_24_0 , node_25_0 )
- GC35: node_26_0 = AND ( node_27_0 , node_28_0 )
- GC36: node_29_0 = AND ( node_30_0 , node_31_0 )
- GC37: node_32_0 = AND ( node_33_0 , node_34_0 )
- GC38: node_35_0 = AND ( node_36_0 , node_37_0 )
- GC39: node_38_0 = AND ( node_39_0 , node_40_0 )
- GC40: node_41_0 = AND ( node_42_0 , node_43_0 )
- GC41: node_44_0 = AND ( node_45_0 , node_46_0 )
- GC42: node_47_0 = AND ( node_48_0 , node_49_0 )
- GC43: node_50_0 = AND ( node_51_0 , node_52_0 )
- GC45: node_56_0 = AND ( node_57_0 , node_58_0 )
+ GC33: node_47_0 = AND ( node_48_0 , node_49_0 )
+ GC35: node_53_0 = AND ( node_54_0 , node_55_0 )
+ GC43: node_78_3 = AND ( node_79_3 , node_80_3 , node_81_3 , node_82_3 )
+ GC44: node_77_0 = AND ( node_78_3 )
+ GC55: node_114_3 = AND ( node_115_3 , node_116_3 , node_117_3 , node_118_3 )
+ GC56: node_113_0 = AND ( node_114_3 )
+ GC67: node_150_3 = AND ( node_151_3 , node_152_3 , node_153_3 , node_154_3 )
+ GC68: node_149_0 = AND ( node_150_3 )
+ GC79: node_186_3 = AND ( node_187_3 , node_188_3 , node_189_3 , node_190_3 )
+ GC80: node_185_0 = AND ( node_186_3 )
+ GC91: node_222_3 = AND ( node_223_3 , node_224_3 , node_225_3 , node_226_3 )
+ GC92: node_221_0 = AND ( node_222_3 )
+ GC103: node_258_3 = AND ( node_259_3 , node_260_3 , node_261_3 ,
+   node_262_3 )
+ GC104: node_257_0 = AND ( node_258_3 )
+ GC115: node_294_3 = AND ( node_295_3 , node_296_3 , node_297_3 ,
+   node_298_3 )
+ GC116: node_293_0 = AND ( node_294_3 )
+ GC124: regions_3 = OR ( node_77_0 , node_113_0 , node_149_0 , node_185_0 ,
+   node_221_0 , node_257_0 , node_293_0 )
 End

@@ -13,14 +13,6 @@ def highway_openloop(data, H, init=None, savepath=True):
     :param data: [description]
     :type data: [type]
     """
-    # TODO: Temporary data goes here
-    # highway
-    # data = {"scenario": "highway", "vehicle": {"id": [0, 1, 2], "width": 2.0, "length": 5.0, "target": [[200.0, 8.0], [200.0, 8.0], [200.0, 12.0]], "region": {"format": [["A", "B", "C", "D", "E"]], "representation": "Ax^2 + Bx + Cy^2 + Dy + E <= 0", "equation": [[[[0, -0.0, 0, 1.0, -10.0], [0, 0.0, 0, -1.0, 6.0], [0, -1.0, 0, -0.0, 0.0], [0, 1.0, 0, 0.0, -10000.0]]], [[[0, -0.0, 0, 1.0, -10.0], [0, 0.0, 0, -1.0, 6.0], [0, -1.0, 0, -0.0, 0.0], [0, 1.0, 0, 0.0, -10000.0]]], [[[0, -0.0, 0, 1.0, -14.0], [0, 0.0, 0, -1.0, 10.0], [0, -1.0, 0, -0.0, 0.0], [0, 1.0, 0, 0.0, -10000.0]]]]}}, "dynamics": {"x": ["d_x", "d_y", "v_x", "v_y"], "u": ["a_x", "a_y"], "dt": 1, "A": [[1, 0, "dt", 0], [0, 1, 0, "dt"], [0, 0, 1, 0], [0, 0, 0, 1]], "B": [[0, 0], [0, 0], ["dt", 0], [0, "dt"]]}, "physics": {"velocity_bound": 30, "acceleration_bound": 10}}
-    # highway_merging # TODO: RESOLVE - gurobipy.GurobiError: Q matrix is not positive semi-definite (PSD). Set NonConvex parameter to 2 to solve model.
-    # data = {"scenario": "intersection", "vehicle": {"id": [0, 1], "width": 2.0, "length": 5.0, "target": [[-114.0, 2], [-2, -114.0]], "region": {"format": [["A", "B", "C", "D", "E"]], "representation": "Ax^2 + Bx + Cy^2 + Dy + E <= 0", "equation": [[[[0, 1.0, 0, 0.0, 0.0], [0, -1.0, 0, -0.0, -4.0], [0, -0.0, 0, 1.0, -114.0], [0, 0.0, 0, -1.0, 14.0]], [[1, 28.0, 1, -28.0, 196.0], [-1, -28.0, -1, 28.0, -292.0], [0, -0.0, 0, 1.0, -14.0], [0, -1.0, 0, -6.123233995736766e-17, -14.0]], [[0, -6.217248937900877e-17, 0, -1.0, 0.0], [0, 6.217248937900877e-17, 0, 1.0, -4.0], [0, 1.0, 0, -6.217248937900877e-17, 14.0], [0, -1.0, 0, 6.217248937900877e-17, -114.0]]], [[[0, 5.995204332975846e-17, 0, 1.0, 0.0], [0, -5.995204332975846e-17, 0, -1.0, -4.0], [0, -1.0, 0, 5.995204332975846e-17, -114.0], [0, 1.0, 0, -5.995204332975846e-17, 14.0]], [[1, 28.0, 1, 28.0, 196.0], [-1, -28.0, -1, -28.0, -292.0], [0, -1.0, 0, 6.123233995736766e-17, -14.0], [0, 0.0, 0, -1.0, -14.0]], [[0, 1.0, 0, -1.1990408665951691e-16, 0.0], [0, -1.0, 0, 1.1990408665951691e-16, -4.0], [0, 1.1990408665951691e-16, 0, 1.0, 14.0], [0, -1.1990408665951691e-16, 0, -1.0, -114.0]]]]}}, "dynamics": {"x": ["d_x", "d_y", "v_x", "v_y"], "u": ["a_x", "a_y"], "dt": 1, "A": [[1, 0, "dt", 0], [0, 1, 0, "dt"], [0, 0, 1, 0], [0, 0, 0, 1]], "B": [[0, 0], [0, 0], ["dt", 0], [0, "dt"]]}, "physics": {"velocity_bound": 30, "acceleration_bound": 10}}
-    # intersection # TODO: RESOLVE - gurobipy.GurobiError: Q matrix is not positive semi-definite (PSD). Set NonConvex parameter to 2 to solve model.
-    # data = {"scenario": "intersection", "vehicle": {"id": [0, 1], "width": 2.0, "length": 5.0, "target": [[-114.0, 2.000000000000007], [-2.0000000000000138, -114.0]], "region": {"format": [["A", "B", "C", "D", "E"]], "representation": "Ax^2 + Bx + Cy^2 + Dy + E <= 0", "equation": [[[[0, 1.0, 0, 0.0, 0.0], [0, -1.0, 0, -0.0, -4.0], [0, -0.0, 0, 1.0, -114.0], [0, 0.0, 0, -1.0, 14.0]], [[1, 28.0, 1, -28.0, 196.0], [-1, -28.0, -1, 28.0, -292.0], [0, -0.0, 0, 1.0, -14.0], [0, -1.0, 0, -6.123233995736766e-17, -14.0]], [[0, -6.217248937900877e-17, 0, -1.0, 0.0], [0, 6.217248937900877e-17, 0, 1.0, -4.0], [0, 1.0, 0, -6.217248937900877e-17, 14.0], [0, -1.0, 0, 6.217248937900877e-17, -114.0]]], [[[0, 5.995204332975846e-17, 0, 1.0, 0.0], [0, -5.995204332975846e-17, 0, -1.0, -4.0], [0, -1.0, 0, 5.995204332975846e-17, -114.0], [0, 1.0, 0, -5.995204332975846e-17, 14.0]], [[1, 28.0, 1, 28.0, 196.0], [-1, -28.0, -1, -28.0, -292.0], [0, -1.0, 0, 6.123233995736766e-17, -14.0], [0, 0.0, 0, -1.0, -14.0]], [[0, 1.0, 0, -1.1990408665951691e-16, 0.0], [0, -1.0, 0, 1.1990408665951691e-16, -4.0], [0, 1.1990408665951691e-16, 0, 1.0, 14.0], [0, -1.1990408665951691e-16, 0, -1.0, -114.0]]]]}}, "dynamics": {"x": ["d_x", "d_y", "v_x", "v_y"], "u": ["a_x", "a_y"], "dt": 1, "A": [[1, 0, "dt", 0], [0, 1, 0, "dt"], [0, 0, 1, 0], [0, 0, 0, 1]], "B": [[0, 0], [0, 0], ["dt", 0], [0, "dt"]]}, "physics": {"velocity_bound": 30, "acceleration_bound": 10}}
-    
     # Fetch the environment name
     env = data["scenario"]
 
@@ -278,7 +270,7 @@ def highway_openloop(data, H, init=None, savepath=True):
             tmp_solver.model.update()
 
             # Add goal objective in x and y axis
-            objective_func += 10**2*tmp_solver.model.getVarByName("goal_x_{}".format(i)) + 10**2*tmp_solver.model.getVarByName("goal_y_{}".format(i))
+            objective_func += M*tmp_solver.model.getVarByName("goal_x_{}".format(i)) + M*tmp_solver.model.getVarByName("goal_y_{}".format(i))
 
         # Fuel objectives (Sum of absolute values of u)
         tmp_solver.model.write("MILP.lp")
@@ -320,8 +312,8 @@ def highway_openloop(data, H, init=None, savepath=True):
 
         # Solve the problem using MILP solver
         solved = tmp_solver.solve()
-        # if solved:
-        #     tmp_solver.print_solution()
+        if solved:
+            tmp_solver.print_solution()
 
         # Fetch control output
         tmp_output = tmp_solver.fetch_control(controlled_vars)
