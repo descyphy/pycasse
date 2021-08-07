@@ -11,8 +11,8 @@ c = contract('c')
 [theta] = c.set_controlled_vars(['theta'], 
         bounds = np.array([[-10**4, 10**4]])) # Set a controlled variable
 c.set_assume('True') # Set/define the assumptions
-c.set_guaran('(F[0,100] ((-0.01 <= e1) & (e1 <= 0.01) & (-0.01 <= e2) & (e2 <= 0.01)))') # Set/define the guarantees
-# c.set_guaran('(!(F[0,100] ((-0.01 <= e1) & (e1 <= 0.01))))') # Set/define the guarantees
+c.set_guaran('(F[0,100] (G[0,100] ((-0.01 <= e1) & (e1 <= 0.01) & (-0.01 <= e2) & (e2 <= 0.01))))') # Set/define the guarantees
+# c.set_guaran('(!(F[0,100] (G[0,100] ((-0.01 <= e1) & (e1 <= 0.01) & (-0.01 <= e2) & (e2 <= 0.01)))))') # Set/define the guarantees
 c.checkSat()  # Saturate c
 c.printInfo() # Print c
 
@@ -34,17 +34,18 @@ solver.add_hard_constraint(c.guarantee)
 
 # Dynamics
 solver.add_dynamic(Next(e) == A_f * e + B_f * theta)
-solver.add_dynamic(Next(x) == np.array([[1, -1]]) * v + 50)
+solver.add_dynamic(Next(x) == np.array([[1, -1]]) * v + 30)
 
 # Conditions that has to always hold
 solver.add_dynamic(theta == -K_f * e)
 solver.add_dynamic(np.array([[1,0,0]]) * e == np.array([[1,0]]) * v - np.array([[0,1]]) * v) # e1 = vl - vf
-solver.add_dynamic(np.array([[1,0]]) * v == 30) # vl = 30
+solver.add_dynamic(Next(np.array([[0,1]]) * v) == np.array([[0,1]]) * v)
+# solver.add_dynamic(np.array([[1,0]]) * v == 30) # vl = 30
 
 # Initial conditions
-solver.add_hard_constraint(xr == 20)
-solver.add_hard_constraint(vf == 10)
-solver.add_hard_constraint(e1 == 20)
+# solver.add_hard_constraint(xr == 20)
+# solver.add_hard_constraint(vf == 10)
+# solver.add_hard_constraint(e1 == 20)
 solver.add_hard_constraint(e2 == 20)
 solver.add_hard_constraint(e3 == 0)
 

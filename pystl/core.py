@@ -669,9 +669,9 @@ class MILPSolver:
         # Initialize convex solvers
         if self.solver == "Gurobi":
             self.model = gp.Model() # Convex solver for solving the MILP convex problem
-            self.model.setParam("NonConvex", 2)
             if not self.verbose:
                 self.model.setParam("OutputFlag", 0)
+            # self.model.setParam("NonConvex", 2)
         elif self.solver == "Cplex":
             self.model = cplex.Cplex()
         else: assert(False)
