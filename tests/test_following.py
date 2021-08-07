@@ -7,12 +7,12 @@ import time
 # Build a contract
 c = contract('c')
 [vl, vf, e1, e2, e3, xr] = c.set_deter_uncontrolled_vars(['vl', 'vf', 'e1', 'e2', 'e3', 'xr'],
-        bounds = np.array([[0, 35], [0, 10**4], [-10**4, 10**4], [-10**4, 10**4], [-10**4, 10**4], [-10**4, 10**4]])) # Set a deterministic uncontrolled variable
+        bounds = np.array([[0, 35], [0, 35], [-10**4, 10**4], [-10**4, 10**4], [-10**4, 10**4], [-10**4, 10**4]])) # Set a deterministic uncontrolled variable
 [theta] = c.set_controlled_vars(['theta'], 
         bounds = np.array([[-10**4, 10**4]])) # Set a controlled variable
 c.set_assume('True') # Set/define the assumptions
-c.set_guaran('(F[0,100] (G[0,100] ((-0.01 <= e1) & (e1 <= 0.01) & (-0.01 <= e2) & (e2 <= 0.01))))') # Set/define the guarantees
-# c.set_guaran('(!(F[0,100] (G[0,100] ((-0.01 <= e1) & (e1 <= 0.01) & (-0.01 <= e2) & (e2 <= 0.01)))))') # Set/define the guarantees
+# c.set_guaran('((F[0,100] (G[0,100] ((-0.1 <= e1) & (e1 <= 0.1) & (-0.1 <= e2) & (e2 <= 0.1)))) & (G[0,200] (xr > 0)))') # Set/define the guarantees
+c.set_guaran('(!((F[0,100] (G[0,50] ((-0.1 <= e1) & (e1 <= 0.1) & (-0.1 <= e2) & (e2 <= 0.1)))) & (G[0,150] (xr > 0))))') # Set/define the guarantees
 c.checkSat()  # Saturate c
 c.printInfo() # Print c
 
@@ -34,19 +34,19 @@ solver.add_hard_constraint(c.guarantee)
 
 # Dynamics
 solver.add_dynamic(Next(e) == A_f * e + B_f * theta)
-solver.add_dynamic(Next(x) == np.array([[1, -1]]) * v + 30)
+solver.add_dynamic(Next(x) == x + np.array([[0.1, -0.1]]) * v) # Next(xr) = xr + vl - vf
 
 # Conditions that has to always hold
 solver.add_dynamic(theta == -K_f * e)
 solver.add_dynamic(np.array([[1,0,0]]) * e == np.array([[1,0]]) * v - np.array([[0,1]]) * v) # e1 = vl - vf
-solver.add_dynamic(Next(np.array([[0,1]]) * v) == np.array([[0,1]]) * v)
+solver.add_dynamic(Next(np.array([[0,1]]) * v) == np.array([[0,1]]) * v) # vl is a constant 
 # solver.add_dynamic(np.array([[1,0]]) * v == 30) # vl = 30
 
 # Initial conditions
-# solver.add_hard_constraint(xr == 20)
+solver.add_hard_constraint(xr == vf + 4.5)
 # solver.add_hard_constraint(vf == 10)
 # solver.add_hard_constraint(e1 == 20)
-solver.add_hard_constraint(e2 == 20)
+solver.add_hard_constraint(e2 == 0)
 solver.add_hard_constraint(e3 == 0)
 
 # Solve the problem using MILP solver
