@@ -1337,7 +1337,7 @@ class MILPSolver:
         #              else: assert(False)
         print()
     
-    def fetch_control(self, controlled_vars):
+    def fetch_control(self, controlled_vars, length=1):
         """ 
         Fetches the values of the controlled variables, if available.
         """
@@ -1345,20 +1345,15 @@ class MILPSolver:
         output = []
 
         # Find the output
-        (_, len_t) = self.contract_variable.shape
         for var in controlled_vars:
-            tmp_output = []
-            for t in range(len_t):
-                if isinstance(self.contract_variable[var.idx,t], gp.Var):
-                    if self.solver == "Gurobi":
-                        # print("{}_{}".format(self.contract.deter_var_list[var.idx-1].name, t))
-                        # print(self.contract_variable[var.idx, t].x)
-                        try:
-                            tmp_output.append(self.contract_variable[var.idx, t].x)
-                        except:
-                            print("Failed to find an optimal path for {}\n".format(var))
-                            tmp_output.append(0)
-            output.append(tmp_output)
+            tmp_var_num = self.contract.deter_var_name2id[var]
+            tmp_var_name = "contract_{}_0".format(tmp_var_num)
+            for t in range(length):
+                try:
+                    output.append(self.model.getVarByName(tmp_var_name).x)
+                except:
+                    print("Failed to find an optimal path for {}\n".format(var))
+                    output.append(0)
                     
         return output
 
