@@ -759,9 +759,12 @@ class MILPSolver:
 
         return end_time
 
-    def set_objective(self, objective):
+    def set_objective(self, objective, sense='minimize'):
         if self.solver == "Gurobi":
-            self.model.setObjective(objective, GRB.MINIMIZE)
+            if sense == 'minimize':
+                self.model.setObjective(objective, GRB.MINIMIZE)
+            else:
+                self.model.setObjective(objective, GRB.MAXIMIZE)
             self.model.update()
         #  elif self.solver == "Cplex":
         #      self.model.minimize(objective)
@@ -1343,17 +1346,20 @@ class MILPSolver:
         """
         # Initialize output
         output = []
+        failure = False
 
         # Find the output
         for var in controlled_vars:
             tmp_var_num = self.contract.deter_var_name2id[var]
-            tmp_var_name = "contract_{}_0".format(tmp_var_num)
+            tmp_output = []
             for t in range(length):
+                tmp_var_name = "contract_{}_{}".format(tmp_var_num, t)
                 try:
-                    output.append(self.model.getVarByName(tmp_var_name).x)
+                    tmp_output.append(self.model.getVarByName(tmp_var_name).x)
                 except:
-                    print("Failed to find an optimal path for {}\n".format(var))
-                    output.append(0)
+                    tmp_output.append(0)
+                    failure = True
+            output.append(tmp_output)
                     
-        return output
+        return output, failure
 

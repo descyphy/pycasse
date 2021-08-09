@@ -1,33 +1,47 @@
 \ Model _copy
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
-  0 node_23_0 + 0 node_24_0 + 0 node_25_0 + 0 node_27_0 + 0 node_28_0
-   + 0 node_59_0 + 0 node_60_0 + 0 node_61_0 + 0 node_63_0 + 0 node_64_0
-   + 0 node_95_0 + 0 node_96_0 + 0 node_97_0 + 0 node_99_0 + 0 node_100_0
-   + 0 node_131_0 + 0 node_132_0 + 0 node_133_0 + 0 node_135_0
-   + 0 node_136_0
+  0 node_11_0 + 0 node_17_0 + 0 node_18_0 + 0 node_18_1 + 0 node_18_2
+   + 0 node_18_3 + 0 node_18_4 + 0 node_18_5 + 0 node_18_6 + 0 node_18_7
+   + 0 node_18_8 + 0 node_18_9 + 0 node_18_10
 Subject To
- R228: - contract_14_0 + 10000 node_26_0 <= 9990
- R276: - contract_14_0 + 10000 node_62_0 <= 9994
- R324: - contract_14_0 + 10000 node_98_0 <= 9998
- R372: - contract_14_0 + 10000 node_134_0 <= 10001
- R490: regions_0 = 1
- state_2_1: contract_14_0 = -12.8125
+ R267: - contract_13_1 + 10000 node_19_1 + contract_7_1 <= 9997
+ R289: contract_13_1 - contract_7_1 + 10000 node_20_1 <= 9997
+ R311: - contract_14_1 + 10000 node_21_1 + contract_8_1 <= 9997
+ R333: contract_14_1 - contract_8_1 + 10000 node_22_1 <= 9997
+ R353: node_10_0 = 1
+ R634: - contract_7_0 + contract_7_1 - 0.5 contract_9_0 = 0
+ R644: - contract_8_0 + contract_8_1 - 0.5 contract_10_0 = 0
+ R674: - contract_13_0 + contract_13_1 - 0.5 contract_15_0 = 0
+ R684: - contract_14_0 + contract_14_1 - 0.5 contract_16_0 = 0
+ state_1_0: contract_7_0 = 1.785553074424307
+ state_1_1: contract_8_0 = -2
+ state_1_3: contract_10_0 = 7.99361e-15
+ state_2_0: contract_13_0 = 1.892776537212153
+ state_2_1: contract_14_0 = -5.198994440776934
+ state_2_2: contract_15_0 = -0.1072234627878466
+ state_2_3: contract_16_0 = 0.5
 Bounds
+ contract_13_0 free
+ contract_13_1 free
  contract_14_0 free
+ contract_14_1 free
+ contract_7_0 free
+ contract_7_1 free
+ contract_8_0 free
+ contract_8_1 free
+ -3 <= contract_9_0 <= 3
+ contract_10_0 free
+ contract_15_0 free
+ contract_16_0 free
 Binaries
- node_23_0 node_24_0 node_25_0 node_26_0 node_27_0 node_28_0 node_59_0
- node_60_0 node_61_0 node_62_0 node_63_0 node_64_0 node_95_0 node_96_0
- node_97_0 node_98_0 node_99_0 node_100_0 node_131_0 node_132_0 node_133_0
- node_134_0 node_135_0 node_136_0 regions_0
+ node_10_0 node_11_0 node_17_0 node_18_0 node_18_1 node_18_2 node_18_3
+ node_18_4 node_18_5 node_18_6 node_18_7 node_18_8 node_18_9 node_18_10
+ node_19_1 node_20_1 node_21_1 node_22_1
 General Constraints
- GC25: node_24_0 = AND ( node_25_0 , node_26_0 , node_27_0 , node_28_0 )
- GC26: node_23_0 = AND ( node_24_0 )
- GC37: node_60_0 = AND ( node_61_0 , node_62_0 , node_63_0 , node_64_0 )
- GC38: node_59_0 = AND ( node_60_0 )
- GC49: node_96_0 = AND ( node_97_0 , node_98_0 , node_99_0 , node_100_0 )
- GC50: node_95_0 = AND ( node_96_0 )
- GC61: node_132_0 = AND ( node_133_0 , node_134_0 , node_135_0 , node_136_0 )
- GC62: node_131_0 = AND ( node_132_0 )
- GC73: regions_0 = OR ( node_23_0 , node_59_0 , node_95_0 , node_131_0 )
+ GC25: node_18_1 = OR ( node_19_1 , node_20_1 , node_21_1 , node_22_1 )
+ GC35: node_17_0 = AND ( node_18_0 , node_18_1 , node_18_2 , node_18_3 ,
+   node_18_4 , node_18_5 , node_18_6 , node_18_7 , node_18_8 , node_18_9 ,
+   node_18_10 )
+ GC36: node_10_0 = AND ( node_11_0 , node_17_0 )
 End
