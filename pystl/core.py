@@ -671,7 +671,7 @@ class MILPSolver:
             self.model = gp.Model() # Convex solver for solving the MILP convex problem
             if not self.verbose:
                 self.model.setParam("OutputFlag", 0)
-            # self.model.setParam("NonConvex", 2)
+            self.model.setParam("NonConvex", 2)
         elif self.solver == "Cplex":
             self.model = cplex.Cplex()
         else: assert(False)
@@ -699,7 +699,7 @@ class MILPSolver:
 
         self.hard_constraints.append(deepcopy(constraint))
 
-    def add_soft_constraint(self, constraint, region_num=None, time=None):
+    def add_soft_constraint(self, constraint, vehicle_num=None, region_num=None, time=None):
         """
         Adds a soft constrint to the MILP solver.
         """
@@ -711,7 +711,7 @@ class MILPSolver:
         else: assert(False)
 
         self.soft_constraints.append(deepcopy(constraint))
-        self.soft_constraints_info.append([region_num, time])
+        self.soft_constraints_info.append([vehicle_num, region_num, time])
 
     def add_dynamic(self, dynamic):
         """
@@ -822,7 +822,7 @@ class MILPSolver:
                 if hard:
                     self.model.addConstr(self.node_variable[constraint.idx, 0] == 1)
                 else:
-                    self.soft_constraints_var.append([self.node_variable[constraint.idx, 0], self.soft_constraints_info[soft_idx][0], self.soft_constraints_info[soft_idx][1]])
+                    self.soft_constraints_var.append([self.node_variable[constraint.idx, 0], self.soft_constraints_info[soft_idx][0], self.soft_constraints_info[soft_idx][1], self.soft_constraints_info[soft_idx][2]])
                     
             #  elif self.solver == "Cplex":
             #      self.model.linear_constraints.add(lin_expr = [[[self.node_variable[constraint.idx, 0]], [1]]], senses = "E", rhs = [1])

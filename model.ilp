@@ -1,47 +1,139 @@
 \ Model _copy
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
-  0 node_11_0 + 0 node_17_0 + 0 node_18_0 + 0 node_18_1 + 0 node_18_2
-   + 0 node_18_3 + 0 node_18_4 + 0 node_18_5 + 0 node_18_6 + 0 node_18_7
-   + 0 node_18_8 + 0 node_18_9 + 0 node_18_10
+  0 node_1_0 + 0 node_1_1 + 0 node_1_2 + 0 node_1_3 + 0 node_1_4
+   + 0 node_1_5 + 0 node_1_6 + 0 node_1_7 + 0 node_1_8 + 0 node_1_9
+   + 0 node_1_10 + 0 node_1_11 + 0 node_1_12 + 0 node_1_13 + 0 node_1_14
+   + 0 node_1_15 + 0 node_1_16 + 0 node_1_17 + 0 node_1_18 + 0 node_1_19
+   + 0 node_1_20 + 0 node_2_0 + 0 node_3_0 + 0 node_5_0 + 0 node_6_0
+   + 0 node_7_0 + 0 node_8_0 + 0 node_9_0 + 0 node_11_0 + 0 node_12_0
+   + 0 node_12_1 + 0 node_12_2 + 0 node_12_3 + 0 node_12_4 + 0 node_12_5
+   + 0 node_12_6 + 0 node_12_7 + 0 node_12_8 + 0 node_12_9 + 0 node_12_10
+   + 0 node_12_11 + 0 node_12_12 + 0 node_12_13 + 0 node_12_14
+   + 0 node_12_15 + 0 node_12_16 + 0 node_12_17 + 0 node_12_18
+   + 0 node_12_19 + 0 node_12_20 + 0 node_17_0 + 0 node_41_0 + 0 node_42_3
+   + 0 node_43_3 + 0 node_44_3 + 0 node_45_3 + 0 node_161_0 + 0 node_162_3
+   + 0 node_163_3 + 0 node_165_3 + 0 node_166_3 + 0 node_281_0
+   + 0 node_282_3 + 0 node_283_3 + 0 node_285_3 + 0 node_286_3
+   + 0 node_401_0 + 0 node_402_3 + 0 node_403_3 + 0 node_405_3
+   + 0 node_406_3 + 0 node_521_0 + 0 node_522_3 + 0 node_523_3
+   + 0 node_525_3 + 0 node_526_3 + 0 node_641_0 + 0 node_642_3
+   + 0 node_643_3 + 0 node_644_3 + 0 node_646_3 + 0 node_761_0
+   + 0 node_762_3 + 0 node_763_3 + 0 node_764_3 + 0 node_766_3
 Subject To
- R267: - contract_13_1 + 10000 node_19_1 + contract_7_1 <= 9997
- R289: contract_13_1 - contract_7_1 + 10000 node_20_1 <= 9997
- R311: - contract_14_1 + 10000 node_21_1 + contract_8_1 <= 9997
- R333: contract_14_1 - contract_8_1 + 10000 node_22_1 <= 9997
- R353: node_10_0 = 1
- R634: - contract_7_0 + contract_7_1 - 0.5 contract_9_0 = 0
- R644: - contract_8_0 + contract_8_1 - 0.5 contract_10_0 = 0
- R674: - contract_13_0 + contract_13_1 - 0.5 contract_15_0 = 0
- R684: - contract_14_0 + contract_14_1 - 0.5 contract_16_0 = 0
- state_1_0: contract_7_0 = 1.785553074424307
- state_1_1: contract_8_0 = -2
- state_1_3: contract_10_0 = 7.99361e-15
- state_2_0: contract_13_0 = 1.892776537212153
- state_2_1: contract_14_0 = -5.198994440776934
- state_2_2: contract_15_0 = -0.1072234627878466
- state_2_3: contract_16_0 = 0.5
+ R84: 10000 node_4_0 + contract_6_0 <= 10000
+ R336: node_0_0 = 1
+ R341: 10000 node_13_2 - contract_1_2 + contract_7_2 <= 9990
+ R383: contract_1_2 - contract_7_2 + 10000 node_14_2 <= 9990
+ R425: 10000 node_15_2 - contract_2_2 + contract_8_2 <= 9996
+ R467: contract_2_2 - contract_8_2 + 10000 node_16_2 <= 9996
+ R673: node_10_0 = 1
+ R704: contract_7_3 + 10000 node_46_3 <= 10150
+ R860: 0.0809831321077376 contract_7_3 - 0.9967154720952318 contract_8_3
+   + 10000 node_164_3 <= 10023.61298227316
+ R1020: - contract_8_3 + 10000 node_284_3 <= 10002
+ R1180: - contract_8_3 + 10000 node_404_3 <= 9998
+ R1340: - contract_8_3 + 10000 node_524_3 <= 10005
+ R1502: - 0.9967154720952318 contract_7_3 + 0.0809831321077376 contract_8_3
+   + 10000 node_645_3 <= 9690.694271122047
+ R1662: - contract_7_3 + 10000 node_765_3 <= 9610
+ R1794: - contract_1_0 + contract_1_1 - 0.2 contract_3_0 = 0
+ R1795: - contract_1_1 + contract_1_2 - 0.2 contract_3_1 = 0
+ R1814: - contract_2_0 + contract_2_1 - 0.2 contract_4_0 = 0
+ R1815: - contract_2_1 + contract_2_2 - 0.2 contract_4_1 = 0
+ R1854: - 0.2 contract_6_0 - contract_4_0 + contract_4_1 = 0
+ R1874: - contract_7_0 + contract_7_1 - 0.2 contract_9_0 = 0
+ R1875: - contract_7_1 + contract_7_2 - 0.2 contract_9_1 = 0
+ R1876: - contract_7_2 + contract_7_3 - 0.2 contract_9_2 = 0
+ R1894: - contract_8_0 + contract_8_1 - 0.2 contract_10_0 = 0
+ R1895: - contract_8_1 + contract_8_2 - 0.2 contract_10_1 = 0
+ R1896: - contract_8_2 + contract_8_3 - 0.2 contract_10_2 = 0
+ R1935: - contract_10_1 + contract_10_2 - 0.2 contract_18_1 = 0
+ R2037: regions_1_3 = 1
+ state_0_0: contract_1_0 = 266.4911197346285
+ state_0_1: contract_2_0 = -0.8
+ state_0_3: contract_4_0 = -1
+ state_1_0: contract_7_0 = 266.8198347602967
+ state_1_1: contract_8_0 = -5
+ state_1_3: contract_10_0 = 1.84797e-13
 Bounds
- contract_13_0 free
- contract_13_1 free
- contract_14_0 free
- contract_14_1 free
+ contract_6_0 free
+ contract_1_0 free
  contract_7_0 free
+ contract_1_1 free
  contract_7_1 free
+ contract_1_2 free
+ contract_7_2 free
+ contract_7_3 free
+ contract_2_0 free
  contract_8_0 free
+ contract_2_1 free
  contract_8_1 free
- -3 <= contract_9_0 <= 3
+ contract_2_2 free
+ contract_8_2 free
+ contract_8_3 free
+ -10 <= contract_3_0 <= 10
+ -10 <= contract_3_1 <= 10
+ contract_4_0 free
+ contract_4_1 >= -10
+ -10 <= contract_9_0 <= 10
+ -10 <= contract_9_1 <= 10
+ -10 <= contract_9_2 <= 10
  contract_10_0 free
- contract_15_0 free
- contract_16_0 free
+ contract_10_1 free
+ -10 <= contract_10_2 <= 10
+ -5 <= contract_18_1 <= 5
 Binaries
- node_10_0 node_11_0 node_17_0 node_18_0 node_18_1 node_18_2 node_18_3
- node_18_4 node_18_5 node_18_6 node_18_7 node_18_8 node_18_9 node_18_10
- node_19_1 node_20_1 node_21_1 node_22_1
+ node_0_0 node_1_0 node_1_1 node_1_2 node_1_3 node_1_4 node_1_5 node_1_6
+ node_1_7 node_1_8 node_1_9 node_1_10 node_1_11 node_1_12 node_1_13
+ node_1_14 node_1_15 node_1_16 node_1_17 node_1_18 node_1_19 node_1_20
+ node_2_0 node_3_0 node_4_0 node_5_0 node_6_0 node_7_0 node_8_0 node_9_0
+ node_10_0 node_11_0 node_12_0 node_12_1 node_12_2 node_12_3 node_12_4
+ node_12_5 node_12_6 node_12_7 node_12_8 node_12_9 node_12_10 node_12_11
+ node_12_12 node_12_13 node_12_14 node_12_15 node_12_16 node_12_17
+ node_12_18 node_12_19 node_12_20 node_13_2 node_14_2 node_15_2 node_16_2
+ node_17_0 node_41_0 node_42_3 node_43_3 node_44_3 node_45_3 node_46_3
+ node_161_0 node_162_3 node_163_3 node_164_3 node_165_3 node_166_3
+ node_281_0 node_282_3 node_283_3 node_284_3 node_285_3 node_286_3
+ node_401_0 node_402_3 node_403_3 node_404_3 node_405_3 node_406_3
+ node_521_0 node_522_3 node_523_3 node_524_3 node_525_3 node_526_3
+ node_641_0 node_642_3 node_643_3 node_644_3 node_645_3 node_646_3
+ node_761_0 node_762_3 node_763_3 node_764_3 node_765_3 node_766_3
+ regions_1_3
 General Constraints
- GC25: node_18_1 = OR ( node_19_1 , node_20_1 , node_21_1 , node_22_1 )
- GC35: node_17_0 = AND ( node_18_0 , node_18_1 , node_18_2 , node_18_3 ,
-   node_18_4 , node_18_5 , node_18_6 , node_18_7 , node_18_8 , node_18_9 ,
-   node_18_10 )
- GC36: node_10_0 = AND ( node_11_0 , node_17_0 )
+ GC0: node_1_0 = AND ( node_2_0 , node_3_0 , node_4_0 , node_5_0 ,
+   node_6_0 , node_7_0 , node_8_0 , node_9_0 )
+ GC21: node_0_0 = AND ( node_1_0 , node_1_1 , node_1_2 , node_1_3 ,
+   node_1_4 , node_1_5 , node_1_6 , node_1_7 , node_1_8 , node_1_9 ,
+   node_1_10 , node_1_11 , node_1_12 , node_1_13 , node_1_14 , node_1_15 ,
+   node_1_16 , node_1_17 , node_1_18 , node_1_19 , node_1_20 )
+ GC24: node_12_2 = OR ( node_13_2 , node_14_2 , node_15_2 , node_16_2 )
+ GC43: node_11_0 = AND ( node_12_0 , node_12_1 , node_12_2 , node_12_3 ,
+   node_12_4 , node_12_5 , node_12_6 , node_12_7 , node_12_8 , node_12_9 ,
+   node_12_10 , node_12_11 , node_12_12 , node_12_13 , node_12_14 ,
+   node_12_15 , node_12_16 , node_12_17 , node_12_18 , node_12_19 ,
+   node_12_20 )
+ GC66: node_10_0 = AND ( node_11_0 , node_17_0 )
+ GC73: node_42_3 = AND ( node_43_3 , node_44_3 , node_45_3 , node_46_3 )
+ GC74: node_41_0 = AND ( node_42_3 )
+ GC113: node_162_3 = AND ( node_163_3 , node_164_3 , node_165_3 ,
+   node_166_3 )
+ GC114: node_161_0 = AND ( node_162_3 )
+ GC153: node_282_3 = AND ( node_283_3 , node_284_3 , node_285_3 ,
+   node_286_3 )
+ GC154: node_281_0 = AND ( node_282_3 )
+ GC193: node_402_3 = AND ( node_403_3 , node_404_3 , node_405_3 ,
+   node_406_3 )
+ GC194: node_401_0 = AND ( node_402_3 )
+ GC233: node_522_3 = AND ( node_523_3 , node_524_3 , node_525_3 ,
+   node_526_3 )
+ GC234: node_521_0 = AND ( node_522_3 )
+ GC273: node_642_3 = AND ( node_643_3 , node_644_3 , node_645_3 ,
+   node_646_3 )
+ GC274: node_641_0 = AND ( node_642_3 )
+ GC313: node_762_3 = AND ( node_763_3 , node_764_3 , node_765_3 ,
+   node_766_3 )
+ GC314: node_761_0 = AND ( node_762_3 )
+ GC350: regions_1_3 = OR ( node_41_0 , node_161_0 , node_281_0 ,
+   node_401_0 , node_521_0 , node_641_0 , node_761_0 )
 End
