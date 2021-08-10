@@ -118,17 +118,17 @@ class highway_env_controller:
                 for (vehicle_num_1, vehicle_num_2) in combinations(group, 2):
                     if self.environment == "intersection":
                         guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(self.horizon, 
-                                                "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_1), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_2), vehicle_length, 
-                                                "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_2), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_1), vehicle_length, 
-                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), vehicle_length, 
-                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), vehicle_length)
+                                                "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_1), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_2), 1.5*vehicle_width, 
+                                                "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_2), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_1), 1.5*vehicle_width, 
+                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), 1.5*vehicle_width, 
+                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), 1.5*vehicle_width)
             
                     else:
                         guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(self.horizon, 
                                                 "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_1), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_2), 2*vehicle_length, 
                                                 "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_2), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_1), 2*vehicle_length, 
-                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), 1.5*vehicle_width, 
-                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), 1.5*vehicle_width)
+                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), 2*vehicle_width, 
+                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), 2*vehicle_width)
 
                 # No collision between non-cooperating vehicles
                 for vehicle_num in data["vehicle"]["id"]:
@@ -247,7 +247,7 @@ class highway_env_controller:
                     tmp_model.model.update()
 
                     # Add goal objective in x and y axis
-                    objective_func += (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_x_{}_{}".format(vehicle_num, t)) + 20*(len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_y_{}_{}".format(vehicle_num, t))
+                    objective_func += (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_x_{}_{}".format(vehicle_num, t)) + (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_y_{}_{}".format(vehicle_num, t))
 
             # Fuel objectives (Sum of absolute values of u)
             for vehicle_num in group:
