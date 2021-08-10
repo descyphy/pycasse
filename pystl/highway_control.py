@@ -73,7 +73,10 @@ class highway_env_controller:
                 x_tmp = [s + "_{}".format(tmp_vehicle_num) for s in data["dynamics"]["x"]]
                 u_tmp = [s + "_{}".format(tmp_vehicle_num) for s in data["dynamics"]["u"]]
                 uncontrolled_vars = uncontrolled_vars + x_tmp
-                uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[-M, M], [-M, M], [-velocity_bound, velocity_bound], [-velocity_bound, velocity_bound]]), axis=0)
+                if self.environment in ("highway", "merge"):
+                    uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[-500, 500], [-500, 500], [0, velocity_bound], [0, velocity_bound]]), axis=0)
+                else:
+                    uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[-100, 100], [-100, 100], [-velocity_bound, velocity_bound], [-velocity_bound, velocity_bound]]), axis=0)
                 if tmp_vehicle_num in group:
                     controlled_vars = controlled_vars + u_tmp
                     controlled_bounds = np.append(controlled_bounds, np.array([[-acceleration_bound, acceleration_bound], [-acceleration_bound, acceleration_bound]]), axis=0)
@@ -244,7 +247,7 @@ class highway_env_controller:
                     tmp_model.model.update()
 
                     # Add goal objective in x and y axis
-                    objective_func += (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_x_{}_{}".format(vehicle_num, t)) + (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_y_{}_{}".format(vehicle_num, t))
+                    objective_func += (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_x_{}_{}".format(vehicle_num, t)) + 20*(len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_y_{}_{}".format(vehicle_num, t))
 
             # Fuel objectives (Sum of absolute values of u)
             for vehicle_num in group:

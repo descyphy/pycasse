@@ -181,7 +181,7 @@ class contract:
 
         # Add the contract and assumption constraints to the solver
         solver.add_contract(self)
-        solver.add_constraint(self.assumption)
+        solver.add_hard_constraint(self.assumption)
 
         # Solve the problem
         solver.preprocess()
@@ -191,6 +191,7 @@ class contract:
         if verbose and solved:
             print("Contract {} is compatible.\n".format(self.id))
             if print_sol:
+                print("Printing a behavior that satisfies the assumptions of the contract {}...".format(self.id))
                 solver.print_solution()
         elif verbose and not solved:
             print("Contract {} is not compatible.\n".format(self.id))
@@ -208,7 +209,7 @@ class contract:
         # Add the contract and assumption constraints to the solver
         self.checkSat()
         solver.add_contract(self)
-        solver.add_constraint(self.sat_guarantee)
+        solver.add_hard_constraint(self.sat_guarantee)
 
         # Solve the problem
         solver.preprocess()
@@ -218,6 +219,7 @@ class contract:
         if verbose and solved:
             print("Contract {} is consistent.\n".format(self.id))
             if print_sol:
+                print("Printing a behavior that satisfies the saturated guarantee of the contract {}...".format(self.id))
                 solver.print_solution()
         elif verbose and not solved:
             print("Contract {} is not consistent.\n".format(self.id))
@@ -235,7 +237,7 @@ class contract:
         # Add the contract and assumption constraints to the solver
         self.checkSat()
         solver.add_contract(self)
-        solver.add_constraint(self.assumption & self.guarantee)
+        solver.add_hard_constraint(self.assumption & self.guarantee)
 
         # Solve the problem
         solver.preprocess()
@@ -263,22 +265,24 @@ class contract:
         solver = MILPSolver()
         #  solver = SMCSolver()
 
-        # Add constraints for refinement condition 1
-        print("Checking condition 1 for refinement...")
+        # Add constraints for refinement condition for assumptions
+        print("Checking assumptions condition for refinement...")
         solver.add_contract(c1)
         assumption1 = deepcopy(c1.assumption)
         assumption2 = deepcopy(contract2refine.assumption)
         assumption2.transform(deter_id_map, nondeter_id_map)
-        solver.add_constraint(~(assumption2.implies(assumption1)))
+        print(~(assumption2.implies(assumption1)))
+        solver.add_hard_constraint(~(assumption2.implies(assumption1)))
         
-        # Check refinement condition 1
+        # Check refinement condition for assumptions
         solver.preprocess()
         solved = solver.solve()
 
         # Print the counterexample
         if solved:
-            print("Condition 1 for refinement violated. Contract {} does not refine contract {}.\n".format(self.id, contract2refine.id))
+            print("Assumptions condition for refinement violated. Contract {} does not refine contract {}.\n".format(self.id, contract2refine.id))
             if print_sol:
+                print("Printing a counterexample which violates assumptions condition for refinement...")
                 solver.print_solution()
             return
 
@@ -286,22 +290,22 @@ class contract:
         solver.reset()
         solver.add_contract(c1)
 
-        # Add constraints for refinement condition 2
-        print("Checking condition 2 for refinement...")
-        guarantee1 = deepcopy(c1.guarantee)
-        guarantee2 = deepcopy(contract2refine.guarantee)
+        # Add constraints for refinement condition for guarantees
+        print("Checking guarantees condition for refinement...")
+        guarantee1 = deepcopy(c1.sat_guarantee)
+        guarantee2 = deepcopy(contract2refine.sat_guarantee)
         guarantee2.transform(deter_id_map, nondeter_id_map)
-        solver.add_constraint(~(guarantee1.implies(guarantee2)))
+        solver.add_hard_constraint(~(guarantee1.implies(guarantee2)))
 
-        # Check refinement condition 2
+        # Check refinement condition for guarantees
         solver.preprocess()
         solved = solver.solve()
 
         # Print the counterexample
         if solved:
-            print("Condition 2 for refinement violated. Contract {} does not refine contract {}.\n".format(self.id, contract2refine.id))
+            print("Guarantees condition for refinement violated. Contract {} does not refine contract {}.\n".format(self.id, contract2refine.id))
             if print_sol:
-                print("Printing a counterexample which violates condition 2 for refinement...")
+                print("Printing a counterexample which violates guarantees condition for refinement...")
                 solver.print_solution()
             return
 
@@ -430,14 +434,15 @@ class contract:
         res = ""
         res += "Contract ID: {}\n".format(self.id)
         for v in self.deter_var_list:
-            res += "\n  "
-            res += "\n    ".join(str(v).splitlines())
+            deter_var_info = str(v).splitlines()
+            res += "    {} (or deter_var_{})\n".format(deter_var_info[0], self.deter_var_name2id[str(v.name)])
+            res += "    {}\n".format(deter_var_info[1])
         for v in self.nondeter_var_list:
-            res += "\n  "
-            res += "\n    ".join(str(v).splitlines())
+            nondeter_var_info = str(v).splitlines()
+            res += "    {} (or deter_var_{})\n".format(nondeter_var_info[0], self.nondeter_var_name2id[str(v.name)])
+            res += "    {}\n".format(nondeter_var_info[1])
             res += "    mean: {}\n".format(self.nondeter_var_mean)
             res += "    cov: {}\n".format(self.nondeter_var_cov)
-        res += "\n"
         res += "  Assumption: {}\n".format(self.assumption)
         res += "  Guarantee: {}\n".format(self.guarantee)
         res += "  Saturated Guarantee: {}\n".format(self.sat_guarantee)
@@ -491,8 +496,8 @@ def conjunction(c1, c2):
     print(assumption2)
     conjoined.assumption = assumption1 | assumption2
 
-    guarantee1 = deepcopy(conjoined.guarantee)
-    guarantee2 = deepcopy(c2.guarantee)
+    guarantee1 = deepcopy(conjoined.sat_guarantee)
+    guarantee2 = deepcopy(c2.sat_guarantee)
     print(guarantee2)
     guarantee2.transform(deter_id_map, nondeter_id_map)
 
