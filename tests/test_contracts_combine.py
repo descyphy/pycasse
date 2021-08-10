@@ -27,18 +27,18 @@ c2.printInfo()                        # Print c2
 #  c2.checkConsis(print_sol=True)        # Check consistency of c2
 #  c2.checkFeas(print_sol=True)          # Check feasiblity of c2
 
-c12_conj = conjunction(c1, c2)        # Conjunction of c1 and c2
-c12_conj.checkSat()                   # Saturate c12_conj
-c12_conj.printInfo()                  # Print c12_conj
+#  c12_conj = conjunction(c1, c2)        # Conjunction of c1 and c2
+#  c12_conj.checkSat()                   # Saturate c12_conj
+#  c12_conj.printInfo()                  # Print c12_conj
+#
+#  c12_conj.checkCompat(print_sol=True)  # Check compatibility of c12_conj
+#  c12_conj.checkConsis(print_sol=True)  # Check consistency of c12_conj
+#  c12_conj.checkFeas(print_sol=True)    # Check feasiblity of c12_conj
 
-c12_conj.checkCompat(print_sol=True)  # Check compatibility of c12_conj
-c12_conj.checkConsis(print_sol=True)  # Check consistency of c12_conj
-c12_conj.checkFeas(print_sol=True)    # Check feasiblity of c12_conj
+c12_comp = composition(c1, c2)        # Composition of c1 and c2
+c12_comp.checkSat()                   # Saturate c12_comp
+c12_comp.printInfo()                  # Print c12_comp
 
-# c12_comp = composition(c1, c2)        # Composition of c1 and c2
-# c12_comp.saturate()                   # Saturate c12_comp
-# c12_comp.printInfo()                  # Print c12_comp
-
-# c12_comp.checkCompat(print_sol=True)  # Check compatibility of c12_comp
-# c12_comp.checkConsis(print_sol=True)  # Check consistency of c12_comp
-# c12_comp.checkFeas(print_sol=True)    # Check feasiblity of c12_comp
+#  c12_comp.checkCompat(print_sol=True)  # Check compatibility of c12_comp
+#  c12_comp.checkConsis(print_sol=True)  # Check consistency of c12_comp
+#  c12_comp.checkFeas(print_sol=True)    # Check feasiblity of c12_comp
