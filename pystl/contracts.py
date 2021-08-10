@@ -53,9 +53,9 @@ class contract:
 
         # For all variables, construct a variable class
         for i, name in enumerate(var_names):
-            data = DeterVar(name, len(self.deter_var_list)+1, "controlled", data_type = dtypes[i] if dtypes is not None else 'CONTINUOUS', bound = bounds[i] if bounds is not None else None)
+            data = DeterVar(name, len(self.deter_var_list), "controlled", data_type = dtypes[i] if dtypes is not None else 'CONTINUOUS', bound = bounds[i] if bounds is not None else None)
             self.deter_var_list.append(data)
-            self.deter_var_name2id[name] = len(self.deter_var_name2id)+1
+            self.deter_var_name2id[name] = len(self.deter_var_name2id)
             res.append(data)
         return res
 
@@ -75,9 +75,9 @@ class contract:
 
         # For all variables, construct a variable class
         for i, name in enumerate(var_names):
-            data = DeterVar(name, len(self.deter_var_list)+1, "uncontrolled", data_type = dtypes[i] if dtypes is not None else 'CONTINUOUS', bound = bounds[i] if bounds is not None else None)
+            data = DeterVar(name, len(self.deter_var_list), "uncontrolled", data_type = dtypes[i] if dtypes is not None else 'CONTINUOUS', bound = bounds[i] if bounds is not None else None)
             self.deter_var_list.append(data)
-            self.deter_var_name2id[name] = len(self.deter_var_name2id)+1
+            self.deter_var_name2id[name] = len(self.deter_var_name2id)
             res.append(data)
         return res
 
@@ -107,9 +107,9 @@ class contract:
 
         # For all variables, construct a variable class
         for i, name in enumerate(var_names):
-            data = NondeterVar(name, len(self.nondeter_var_list)+1, data_type = dtypes[i] if dtypes != None else 'GAUSSIAN')
+            data = NondeterVar(name, len(self.nondeter_var_list), data_type = dtypes[i] if dtypes != None else 'GAUSSIAN')
             self.nondeter_var_list.append(data)
-            self.nondeter_var_name2id[name] = len(self.nondeter_var_name2id)+1
+            self.nondeter_var_name2id[name] = len(self.nondeter_var_name2id)
             res.append(data)
         return res
 
@@ -129,9 +129,9 @@ class contract:
 
         # For all variables, construct a variable class
         for i, name in enumerate(param_names):
-            data = DeterVar(name, len(self.deter_var_list)+1, "parameter", data_type = dtypes[i] if dtypes is not None else 'CONTINUOUS', bound = bounds[i] if bounds is not None else None)
+            data = DeterVar(name, len(self.deter_var_list), "parameter", data_type = dtypes[i] if dtypes is not None else 'CONTINUOUS', bound = bounds[i] if bounds is not None else None)
             self.deter_var_list.append(data)
-            self.deter_var_name2id[name] = len(self.deter_var_name2id)+1
+            self.deter_var_name2id[name] = len(self.deter_var_name2id)
             res.append(data)
         return res
 
@@ -237,7 +237,7 @@ class contract:
         # Add the contract and assumption constraints to the solver
         self.checkSat()
         solver.add_contract(self)
-        solver.add_hard_constraint(self.assumption & self.guarantee)
+        solver.add_hard_constraint(deepcopy(self.assumption & self.guarantee))
 
         # Solve the problem
         solver.preprocess()
@@ -271,7 +271,6 @@ class contract:
         assumption1 = deepcopy(c1.assumption)
         assumption2 = deepcopy(contract2refine.assumption)
         assumption2.transform(deter_id_map, nondeter_id_map)
-        print(~(assumption2.implies(assumption1)))
         solver.add_hard_constraint(~(assumption2.implies(assumption1)))
         
         # Check refinement condition for assumptions
@@ -486,19 +485,15 @@ def conjunction(c1, c2):
 
     # Merge controlled and uncontrolled variables
     (deter_id_map, nondeter_id_map) = conjoined.merge_contract_variables(c2)
-    print(deter_id_map)
-    print(nondeter_id_map)
 
     # Find conjoined guarantee, G': G1 and G2
     assumption1 = deepcopy(conjoined.assumption)
     assumption2 = deepcopy(c2.assumption)
     assumption2.transform(deter_id_map, nondeter_id_map)
-    print(assumption2)
     conjoined.assumption = assumption1 | assumption2
 
     guarantee1 = deepcopy(conjoined.sat_guarantee)
     guarantee2 = deepcopy(c2.sat_guarantee)
-    print(guarantee2)
     guarantee2.transform(deter_id_map, nondeter_id_map)
 
     conjoined.guarantee = guarantee1 & guarantee2
@@ -526,18 +521,25 @@ def composition(c1, c2):
     composed.id = (c1.id + '*' + c2.id)
 
     # Merge controlled and uncontrolled variables
-    composed.merge_contract(c2)
+    (deter_id_map, nondeter_id_map) = composed.merge_contract_variables(c2)
 
     # Find conjoined guarantee, G': G1 and G2
-    composed.assumption = (composed.assumption & deepcopy(c2.assumption)) | ~deepcopy(composed.sat_guarantee) | ~deepcopy(c2.sat_guarantee)
-    composed.guarantee = composed.sat_guarantee & deepcopy(c2.sat_guarantee)
+    assumption1 = composed.assumption
+    assumption2 = deepcopy(c2.assumption)
+    assumption2.transform(deter_id_map, nondeter_id_map)
+
+    guarantee1 = composed.sat_guarantee
+    guarantee2 = deepcopy(c2.sat_guarantee)
+    guarantee2.transform(deter_id_map, nondeter_id_map)
+
+    composed.assumption = deepcopy((assumption1 & assumption2) | ~guarantee1 | ~guarantee2)
+    composed.guarantee = deepcopy(guarantee1 & guarantee2)
     composed.sat_guarantee = deepcopy(composed.guarantee)
     composed.isSat = True
 
     return composed
 
 def quotient(c, c2):
-    pass
     """ Returns the quotient c/c2
 
     :param c: A contract c
@@ -556,11 +558,19 @@ def quotient(c, c2):
     quotient.id = (c.id + '/' + c2.id)
 
     # Merge controlled and uncontrolled variables
-    quotient.merge_contract(c2)
+    (deter_id_map, nondeter_id_map) = quotient.merge_contract_variables(c2)
 
     # Find conjoined guarantee, G': G1 and G2
-    quotient.assumption = (quotient.assumption & deepcopy(c2.sat_guarantee))
-    quotient.guarantee = ~(quotient.sat_guarantee & deepcopy(c2.assumption)) | deepcopy(quotient.assumption)
+    assumption1 = quotient.assumption
+    assumption2 = deepcopy(c2.assumption)
+    assumption2.transform(deter_id_map, nondeter_id_map)
+
+    guarantee1 = quotient.sat_guarantee
+    guarantee2 = deepcopy(c2.sat_guarantee)
+    guarantee2.transform(deter_id_map, nondeter_id_map)
+
+    quotient.assumption = deepcopy(assumption1 & guarantee2)
+    quotient.guarantee = ~deepcopy((guarantee1 & assumption2) | assumption1)
     quotient.sat_guarantee = deepcopy(quotient.guarantee)
     quotient.isSat = True
 
@@ -585,11 +595,19 @@ def separation(c, c2):
     separation.id = (c.id + '%' + c2.id)
 
     # Merge controlled and uncontrolled variables
-    separation.merge_contract(c2)
+    (deter_id_map, nondeter_id_map) = separation.merge_contract_variables(c2)
 
     # Find conjoined guarantee, G': G1 and G2
-    separation.assumption = (separation.assumption & deepcopy(c2.sat_guarantee))
-    separation.guarantee = (separation.sat_guarantee & deepcopy(c2.assumption)) | ~deepcopy(separation.assumption)
+    assumption1 = separation.assumption
+    assumption2 = deepcopy(c2.assumption)
+    assumption2.transform(deter_id_map, nondeter_id_map)
+
+    guarantee1 = separation.sat_guarantee
+    guarantee2 = deepcopy(c2.sat_guarantee)
+    guarantee2.transform(deter_id_map, nondeter_id_map)
+
+    separation.assumption = deepcopy(assumption1 & guarantee2)
+    separation.guarantee = deepcopy((guarantee1 & assumption2) | ~assumption1)
     separation.sat_guarantee = deepcopy(separation.guarantee)
     separation.isSat = True
 

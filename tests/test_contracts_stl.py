@@ -14,9 +14,9 @@ c1.set_guaran('(2 <= y)')
 c1.checkSat()                               # Saturate c1
 c1.printInfo()
 
-c1.checkCompat(print_sol=True)              # Check compatibility of c1
-c1.checkConsis(print_sol=True)              # Check consistency of c1
-c1.checkFeas(print_sol=True)                # Check feasiblity of c1
+#  c1.checkCompat(print_sol=True)              # Check compatibility of c1
+#  c1.checkConsis(print_sol=True)              # Check consistency of c1
+#  c1.checkFeas(print_sol=True)                # Check feasiblity of c1
 
 c2 = contract('c2')                         # Create a contract c2
 [x] = c2.set_deter_uncontrolled_vars(['x']) # Set a deterministic uncontrolled variable
@@ -27,9 +27,9 @@ c2.set_guaran('(3 <= y)')
 c2.checkSat()                               # Saturate c2
 c2.printInfo()
 
-c2.checkCompat(print_sol=True)              # Check compatibility of c2
-c2.checkConsis(print_sol=True)              # Check consistency of c2
-c2.checkFeas(print_sol=True)                # Check feasiblity of c2
+#  c2.checkCompat(print_sol=True)              # Check compatibility of c2
+#  c2.checkConsis(print_sol=True)              # Check consistency of c2
+#  c2.checkFeas(print_sol=True)                # Check feasiblity of c2
 
 # c3 = contract('c3')                         # Create a contract c3
 # [x] = c3.set_deter_uncontrolled_vars(['x']) # Set a deterministic uncontrolled variable
