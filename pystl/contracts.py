@@ -294,6 +294,7 @@ class contract:
         guarantee1 = deepcopy(c1.sat_guarantee)
         guarantee2 = deepcopy(contract2refine.sat_guarantee)
         guarantee2.transform(deter_id_map, nondeter_id_map)
+        print(~(guarantee1.implies(guarantee2)))
         solver.add_hard_constraint(~(guarantee1.implies(guarantee2)))
 
         # Check refinement condition for guarantees
