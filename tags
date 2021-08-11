@@ -82,6 +82,7 @@ __init__	pystl/vector.py	/^    def __init__(self, vector):$/;"	m	class:Equation
 __init__	tests/OpenAIGym/test.py	/^    def __init__(self, action_space, state_space):$/;"	m	class:DQN
 __le__	pystl/parser.py	/^    def __le__(self, other):$/;"	m	class:Expression	file:
 __le__	pystl/variable.py	/^    def __le__(self, other):$/;"	m	class:Var	file:
+__len__	pystl/vector.py	/^    def __len__(self):$/;"	m	class:Vector	file:
 __lt__	pystl/parser.py	/^    def __lt__(self, other):$/;"	m	class:Expression	file:
 __lt__	pystl/variable.py	/^    def __lt__(self, other):$/;"	m	class:Var	file:
 __mul__	pystl/parser.py	/^    def __mul__(self, other):$/;"	m	class:Expression	file:
@@ -110,7 +111,7 @@ __rsub__	pystl/variable.py	/^    def __rsub__(self, other):$/;"	m	class:Var	file
 __rsub__	pystl/vector.py	/^    def __rsub__(self, other):$/;"	m	class:Vector	file:
 __slots__	pystl/contracts.py	/^    __slots__ = ('id', 'deter_var_list', 'deter_var_name2id', 'nondeter_var_list', 'nondeter_var_name2id', 'nondeter_var_mean', 'nondeter_var_cov', 'assumption', 'guarantee', 'sat_guarantee', 'isSat', 'objectives')$/;"	v	class:contract
 __slots__	pystl/core.py	/^    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'hard_constraints', 'soft_constraints', 'soft_constraints_info', 'soft_constraints_var', 'dynamics', 'switching_dynamics', 'switching_time',$/;"	v	class:MILPSolver
-__slots__	pystl/highway_control.py	/^    __slots__ = ('environment', 'model_dict', 'vehicles', 'state_names', 'control_names', 'current_states', 'horizon')$/;"	v	class:highway_env_controller
+__slots__	pystl/highway_control.py	/^    __slots__ = ('environment', 'model_dict', 'vehicles', 'state_names', 'control_names', 'horizon')$/;"	v	class:highway_env_controller
 __slots__	pystl/parser.py	/^    __slots__ = ('constant', 'deter_data', 'nondeter_data')$/;"	v	class:Expression
 __slots__	pystl/parser.py	/^    __slots__ = ('expr')$/;"	v	class:AtomicPredicate
 __slots__	pystl/parser.py	/^    __slots__ = ('expr', 'prob')$/;"	v	class:StochasticAtomicPredicate
@@ -135,10 +136,10 @@ __sub__	pystl/vector.py	/^    def __sub__(self, other):$/;"	m	class:Vector	file:
 __truediv__	pystl/parser.py	/^    def __truediv__(self, other):$/;"	m	class:Expression	file:
 __truediv__	pystl/variable.py	/^    def __truediv__(self, other):$/;"	m	class:Var	file:
 __truediv__	pystl/vector.py	/^    def __truediv__(self, other):$/;"	m	class:Vector	file:
+_add	pystl/vector.py	/^    def _add(self, multiplier):$/;"	m	class:Vector
 _merge	pystl/vector.py	/^    def _merge(self, other, multiplier):$/;"	m	class:Vector
 act	tests/OpenAIGym/test.py	/^    def act(self, state):$/;"	m	class:DQN
 add	pystl/parser.py	/^        def add(x, y):$/;"	f	function:Expression.__add__
-add	pystl/vector.py	/^    def add(self, multiplier):$/;"	m	class:Vector
 add_Bool_constraints	pystl/core.py	/^    def add_Bool_constraints(self):$/;"	m	class:SMCSolver
 add_SAT_constraints	pystl/core.py	/^    def add_SAT_constraints(self, conflict_assignments):$/;"	m	class:SMCSolver
 add_constraints	pystl/core.py	/^    def add_constraints(self):$/;"	m	class:SMCSolver
@@ -172,6 +173,7 @@ c1	tests/test_contracts_stl.py	/^c1 = contract('c1')                         # C
 c1	tests/test_contracts_ststl.py	/^c1 = contract('c1')                                                      # Create a contract c1$/;"	v
 c1	tests/test_parser.py	/^c1 = contract('c1')                   # Create a contract c1$/;"	v
 c12_comp	tests/test_contracts_combine.py	/^c12_comp = composition(c1, c2)        # Composition of c1 and c2$/;"	v
+c12_conj	tests/test_contracts_combine.py	/^c12_conj = conjunction(c1, c2)        # Conjunction of c1 and c2$/;"	v
 c2	tests/test.py	/^c2 = contract('c2')                         # Create a contract c2$/;"	v
 c2	tests/test_contracts_combine.py	/^c2 = contract('c2')                   # Create a contract c2$/;"	v
 c2	tests/test_contracts_quotient.py	/^c2 = contract('c2')                   # Create a contract c2$/;"	v
@@ -180,6 +182,7 @@ c2	tests/test_contracts_ststl.py	/^c2 = contract('c2')                          
 c2_comp	tests/test_contracts_quotient.py	/^c2_comp = composition(c2_quo, c2)     # Composition of c2_quo and c2$/;"	v
 c2_quo	tests/test_contracts_quotient.py	/^c2_quo = quotient(c, c2)              # Quotient c\/c2$/;"	v
 c3	tests/test.py	/^c3 = contract('c3')                         # Create a contract c3$/;"	v
+c3	tests/test_contracts_stl.py	/^c3 = contract('c3')                         # Create a contract c3$/;"	v
 c3	tests/test_contracts_ststl.py	/^c3 = contract('c3')                                  # Create a contract c3$/;"	v
 checkCompat	pystl/contracts.py	/^    def checkCompat(self, print_sol=False, verbose = True):$/;"	m	class:contract
 checkConsis	pystl/contracts.py	/^    def checkConsis(self, print_sol=False, verbose = True):$/;"	m	class:contract
@@ -228,7 +231,7 @@ nontemporal_formula_construction	pystl/parser.py	/^def nontemporal_formula_const
 nontemporal_op_inner	pystl/parser.py	/^    def nontemporal_op_inner(self, _, children):$/;"	m	class:Parser
 p	tests/test_parser.py	/^p = Parser(c1)$/;"	v
 packages	setup.py	/^      packages=find_packages(),$/;"	v
-plot_path	pystl/highway_control.py	/^    def plot_path(self, data):$/;"	m	class:highway_env_controller
+plot_path	pystl/highway_control.py	/^    def plot_path(self, param):$/;"	m	class:highway_env_controller
 preprocess	pystl/core.py	/^    def preprocess(self):$/;"	m	class:MILPSolver
 preprocess	pystl/core.py	/^    def preprocess(self, node, end_time):$/;"	m	class:Preprocess
 printInfo	pystl/contracts.py	/^    def printInfo(self):$/;"	m	class:contract

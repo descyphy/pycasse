@@ -1,4 +1,5 @@
-import sys
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__) ) ) )
 from pystl import *
 from pystl.parser import *
 import numpy as np
@@ -26,7 +27,6 @@ B = np.array([[0], [1]])
 
 solver = MILPSolver()
 solver.add_contract(c)
-#  solver.add_dynamic(x * A + u * B == (Next(x) - x)/0.5)
 solver.add_dynamic(Next(x) == A * x + B * u)
 solver.add_hard_constraint(x1 == 0)
 solver.add_hard_constraint(x2 == 0)
@@ -34,6 +34,7 @@ solver.add_hard_constraint(c.guarantee)
 
 # Solve the problem using MILP solver
 start = time.time()
+solver.preprocess()
 solved = solver.solve()
 end = time.time()
 print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))

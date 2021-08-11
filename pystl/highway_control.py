@@ -1,8 +1,6 @@
 import numpy as np
 import gurobipy as gp
 import matplotlib.pyplot as plt
-from numpy.lib.npyio import save
-from six import iterkeys
 from itertools import combinations
 
 from pystl.variable import M, EPS
@@ -11,7 +9,7 @@ from pystl.core import MILPSolver
 from pystl.contracts import contract
 
 class highway_env_controller:
-    __slots__ = ('environment', 'model_dict', 'vehicles', 'state_names', 'control_names', 'current_states', 'horizon')
+    __slots__ = ('environment', 'model_dict', 'vehicles', 'state_names', 'control_names', 'horizon')
 
     def __init__(self, highway_setup_data, horizon, debug = False):
         self.environment = ''
@@ -19,7 +17,6 @@ class highway_env_controller:
         self.vehicles = []
         self.state_names = []
         self.control_names = []
-        self.current_states = []
         self.horizon = 0
 
         self.load_setup(highway_setup_data, horizon)
@@ -32,11 +29,11 @@ class highway_env_controller:
         """
         
         # Fetch information on the environment
-        self.vehicles = data["vehicle"]["id"]
         self.environment = data["scenario"]
-        self.horizon = horizon
+        self.vehicles = data["vehicle"]["id"]
         self.state_names = data["dynamics"]["x"]
         self.control_names = data["dynamics"]["u"]
+        self.horizon = horizon
 
         # Find dynamics
         dt = float(data["dynamics"]["dt"])
@@ -47,7 +44,7 @@ class highway_env_controller:
 
         # Plot and save the pre-determined paths of the vehicles in the environment
         if savepath:
-            self.plot_path(data)
+            self.plot_path(data["vehicle"]["region"]["equation"])
 
         # Add a model for each group of cooperating vehicles (or a vehicle)
         for group in data["vehicle"]["group"]:
@@ -69,9 +66,9 @@ class highway_env_controller:
             uncontrolled_bounds = np.empty((0,2))
             controlled_bounds = np.empty((0,2))
 
-            for tmp_vehicle_num in data["vehicle"]["id"]:
-                x_tmp = [s + "_{}".format(tmp_vehicle_num) for s in data["dynamics"]["x"]]
-                u_tmp = [s + "_{}".format(tmp_vehicle_num) for s in data["dynamics"]["u"]]
+            for tmp_vehicle_num in self.vehicles:
+                x_tmp = [s + "_{}".format(tmp_vehicle_num) for s in self.state_names]
+                u_tmp = [s + "_{}".format(tmp_vehicle_num) for s in self.control_names]
                 uncontrolled_vars = uncontrolled_vars + x_tmp
                 if self.environment in ("highway", "merge"):
                     uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[-500, 500], [-500, 500], [0, velocity_bound], [0, velocity_bound]]), axis=0)
@@ -95,15 +92,15 @@ class highway_env_controller:
             guarantees_formula = "("
             
             # Find assumptions
-            noncooperating_vehicle_num = len(data["vehicle"]["id"]) - len(group)
+            noncooperating_vehicle_num = len(self.vehicles) - len(group)
             count = 0
             
-            if len(group) == len(data["vehicle"]["id"]):
+            if noncooperating_vehicle_num == 0:
                 assumptions_formula = 'True'
             else:
-                for tmp_vehicle_num in data["vehicle"]["id"]:
+                for tmp_vehicle_num in self.vehicles:
                     if tmp_vehicle_num not in group:
-                        assumptions_formula += "({}_{} == 0) & ({}_{} == 0)".format(data["dynamics"]["u"][0], tmp_vehicle_num, data["dynamics"]["u"][1], tmp_vehicle_num)
+                        assumptions_formula += "({}_{} == 0) & ({}_{} == 0)".format(self.control_names[0], tmp_vehicle_num, self.control_names[1], tmp_vehicle_num)
                         count += 1
                         if count == noncooperating_vehicle_num:
                             assumptions_formula += "))"
@@ -113,40 +110,40 @@ class highway_env_controller:
             # Find no collision guarantees
             vehicle_width = data["vehicle"]["width"]
             vehicle_length = data["vehicle"]["length"]
-            if len(data["vehicle"]["id"]) >= 2:
+            if len(self.vehicles) >= 2:
                 # No collision between cooperating vehicles
                 for (vehicle_num_1, vehicle_num_2) in combinations(group, 2):
                     if self.environment == "intersection":
                         guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(self.horizon, 
-                                                "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_1), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_2), 1.5*vehicle_width, 
-                                                "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_2), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_1), 1.5*vehicle_width, 
-                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), 1.5*vehicle_width, 
-                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), 1.5*vehicle_width)
+                                                "{}_{}".format(self.state_names[0], vehicle_num_1), "{}_{}".format(self.state_names[0], vehicle_num_2), 1.5*vehicle_width, 
+                                                "{}_{}".format(self.state_names[0], vehicle_num_2), "{}_{}".format(self.state_names[0], vehicle_num_1), 1.5*vehicle_width, 
+                                                "{}_{}".format(self.state_names[1], vehicle_num_1), "{}_{}".format(self.state_names[1], vehicle_num_2), 1.5*vehicle_width, 
+                                                "{}_{}".format(self.state_names[1], vehicle_num_2), "{}_{}".format(self.state_names[1], vehicle_num_1), 1.5*vehicle_width)
             
                     else:
                         guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(self.horizon, 
-                                                "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_1), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_2), 2*vehicle_length, 
-                                                "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_2), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num_1), 2*vehicle_length, 
-                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), 2*vehicle_width, 
-                                                "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_2), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num_1), 2*vehicle_width)
+                                                "{}_{}".format(self.state_names[0], vehicle_num_1), "{}_{}".format(self.state_names[0], vehicle_num_2), 2*vehicle_length, 
+                                                "{}_{}".format(self.state_names[0], vehicle_num_2), "{}_{}".format(self.state_names[0], vehicle_num_1), 2*vehicle_length, 
+                                                "{}_{}".format(self.state_names[1], vehicle_num_1), "{}_{}".format(self.state_names[1], vehicle_num_2), 2*vehicle_width, 
+                                                "{}_{}".format(self.state_names[1], vehicle_num_2), "{}_{}".format(self.state_names[1], vehicle_num_1), 2*vehicle_width)
 
                 # No collision between non-cooperating vehicles
-                for vehicle_num in data["vehicle"]["id"]:
+                for vehicle_num in self.vehicles:
                     if vehicle_num not in group:
                         for tmp_vehicle_num in group:
                             if self.environment == "intersection":
                                 guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(self.horizon, 
-                                                        "{}_{}".format(data["dynamics"]["x"][0], vehicle_num), "{}_{}".format(data["dynamics"]["x"][0], tmp_vehicle_num), 1.5*vehicle_width, 
-                                                        "{}_{}".format(data["dynamics"]["x"][0], tmp_vehicle_num), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num), 1.5*vehicle_width, 
-                                                        "{}_{}".format(data["dynamics"]["x"][1], vehicle_num), "{}_{}".format(data["dynamics"]["x"][1], tmp_vehicle_num), 1.5*vehicle_width, 
-                                                        "{}_{}".format(data["dynamics"]["x"][1], tmp_vehicle_num), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num), 1.5*vehicle_width)
+                                                        "{}_{}".format(self.state_names[0], vehicle_num), "{}_{}".format(self.state_names[0], tmp_vehicle_num), 1.5*vehicle_width, 
+                                                        "{}_{}".format(self.state_names[0], tmp_vehicle_num), "{}_{}".format(self.state_names[0], vehicle_num), 1.5*vehicle_width, 
+                                                        "{}_{}".format(self.state_names[1], vehicle_num), "{}_{}".format(self.state_names[1], tmp_vehicle_num), 1.5*vehicle_width, 
+                                                        "{}_{}".format(self.state_names[1], tmp_vehicle_num), "{}_{}".format(self.state_names[1], vehicle_num), 1.5*vehicle_width)
                     
                             else:
                                 guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(self.horizon, 
-                                                        "{}_{}".format(data["dynamics"]["x"][0], vehicle_num), "{}_{}".format(data["dynamics"]["x"][0], tmp_vehicle_num), 2*vehicle_length, 
-                                                        "{}_{}".format(data["dynamics"]["x"][0], tmp_vehicle_num), "{}_{}".format(data["dynamics"]["x"][0], vehicle_num), 2*vehicle_length, 
-                                                        "{}_{}".format(data["dynamics"]["x"][1], vehicle_num), "{}_{}".format(data["dynamics"]["x"][1], tmp_vehicle_num), 2*vehicle_width, 
-                                                        "{}_{}".format(data["dynamics"]["x"][1], tmp_vehicle_num), "{}_{}".format(data["dynamics"]["x"][1], vehicle_num), 2*vehicle_width)
+                                                        "{}_{}".format(self.state_names[0], vehicle_num), "{}_{}".format(self.state_names[0], tmp_vehicle_num), 2*vehicle_length, 
+                                                        "{}_{}".format(self.state_names[0], tmp_vehicle_num), "{}_{}".format(self.state_names[0], vehicle_num), 2*vehicle_length, 
+                                                        "{}_{}".format(self.state_names[1], vehicle_num), "{}_{}".format(self.state_names[1], tmp_vehicle_num), 2*vehicle_width, 
+                                                        "{}_{}".format(self.state_names[1], tmp_vehicle_num), "{}_{}".format(self.state_names[1], vehicle_num), 2*vehicle_width)
                 guarantees_formula = guarantees_formula[0:len(guarantees_formula)-3] + ')'
             else:
                 guarantees_formula = 'True'
@@ -184,14 +181,14 @@ class highway_env_controller:
                     count += 1
 
             # Set Dynamics
-            for tmp_vehicle_num in data["vehicle"]["id"]: 
+            for tmp_vehicle_num in self.vehicles: 
                 # Find the vector of states and controls
                 tmp_x = []
                 for x_name in self.state_names:
-                    tmp_x.append(tmp_model.contract.deter_var_list[tmp_model.contract.deter_var_name2id["{}_{}".format(x_name, tmp_vehicle_num)]-1])
+                    tmp_x.append(tmp_model.contract.deter_var_list[tmp_model.contract.deter_var_name2id["{}_{}".format(x_name, tmp_vehicle_num)]])
                 tmp_u = []
                 for u_name in self.control_names:
-                    tmp_u.append(tmp_model.contract.deter_var_list[tmp_model.contract.deter_var_name2id["{}_{}".format(u_name, tmp_vehicle_num)]-1])
+                    tmp_u.append(tmp_model.contract.deter_var_list[tmp_model.contract.deter_var_name2id["{}_{}".format(u_name, tmp_vehicle_num)]])
 
                 # Build a linear system dynamics
                 tmp_x = Vector(tmp_x)
@@ -399,11 +396,11 @@ class highway_env_controller:
 
         return control, synthesis_fail
     
-    def plot_path(self, data):
+    def plot_path(self, param):
         """ Plots the pre-determined paths of the vehicles.
         """
         # Find region parameters
-        param = np.array(data["vehicle"]["region"]["equation"])
+        param = np.array(param)
 
         # Initialize plots and settings
         if self.environment in ("highway", "merge"):
@@ -415,8 +412,7 @@ class highway_env_controller:
                 'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
 
         # For each region of a vehicle, find vertices and plot the region
-        for vehicle_num in data["vehicle"]["id"]:
-            region_count = 0
+        for vehicle_num in self.vehicles:
             
             im = None
             for region_param in param[vehicle_num]:
@@ -442,7 +438,6 @@ class highway_env_controller:
                     im += ((f1(x,y)<=0) & (f2(x,y)<=0) & (f3(x,y)<=0) & (f4(x,y)<=0)).astype(int) 
 
                 ax[vehicle_num].set_title("Vehicle {}".format(vehicle_num), fontsize=10)
-                region_count += 1
             ax[vehicle_num].imshow(im, extent=(x.min(),x.max(),y.min(),y.max()), origin="lower", cmap=cmaps[vehicle_num])
                 
         plt.savefig("test_{}.png".format(self.environment))

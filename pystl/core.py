@@ -903,11 +903,11 @@ class MILPSolver:
         #  2. add variables of contract in every concerned time period to model
         for t in range(start_time, end_time):
             for v in variables[0]:
-                if self.contract.deter_var_list[v-1].data_type == 'BINARY':
+                if self.contract.deter_var_list[v].data_type == 'BINARY':
                     self.model_add_binary_variable(v, t, var_type = 'contract')
-                elif self.contract.deter_var_list[v-1].data_type == 'CONTINUOUS':
-                    lb = self.contract.deter_var_list[v-1].bound[0]
-                    ub = self.contract.deter_var_list[v-1].bound[1]
+                elif self.contract.deter_var_list[v].data_type == 'CONTINUOUS':
+                    lb = self.contract.deter_var_list[v].bound[0]
+                    ub = self.contract.deter_var_list[v].bound[1]
                     self.model_add_continous_variable(v, t, var_type = 'contract', lb = lb, ub = ub)
                 else: assert(False)
 
@@ -1033,16 +1033,12 @@ class MILPSolver:
         for row in range(len(dynamic.data)):
             variable = [[],[]]
             multiplier = []
-            rhs = 0
+            rhs = dynamic.constant[row]
             for key, value in dynamic.var2id.items():
                 if dynamic.data[row, value] != 0:
-                    if key[0] != 0:
-                        variable[0].append(key[0])
-                        variable[1].append(key[1])
-                        multiplier.append(dynamic.data[row,value])
-                    else:
-                        assert(key[1] == 0)
-                        rhs += dynamic.data[row,value]
+                    variable[0].append(key[0])
+                    variable[1].append(key[1])
+                    multiplier.append(dynamic.data[row,value])
             variable = np.array(variable)
             multiplier = np.array(multiplier)
             if self.debug:
@@ -1052,14 +1048,14 @@ class MILPSolver:
 
             for _ in range(self.contract_variable.shape[1] - dynamic.max_time):
                 for i in range(variable.shape[1]):
-                    v = variable[0,i]-1
+                    v = variable[0,i]
                     t = variable[1,i]
                     if self.contract.deter_var_list[v].data_type == 'BINARY':
                         self.model_add_binary_variable(v, t, var_type = 'contract')
                     elif self.contract.deter_var_list[v].data_type == 'CONTINUOUS':
                         lb = self.contract.deter_var_list[v].bound[0]
                         ub = self.contract.deter_var_list[v].bound[1]
-                        self.model_add_continous_variable(v+1, t, var_type = 'contract', lb = lb, ub = ub)
+                        self.model_add_continous_variable(v, t, var_type = 'contract', lb = lb, ub = ub)
                     else: assert(False)
                 self.model_add_constraint(variable, multiplier, -rhs)
                 variable[1] +=1
