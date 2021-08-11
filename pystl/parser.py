@@ -460,9 +460,9 @@ class Parser(NodeVisitor):
     def visit_variable(self, node, _):
         var = node.text
         if var in self.contract.deter_var_name2id:
-            return self.contract.deter_var_list[self.contract.deter_var_name2id[var]-1]
+            return self.contract.deter_var_list[self.contract.deter_var_name2id[var]]
         elif var in self.contract.nondeter_var_name2id:
-            return self.contract.nondeter_var_list[self.contract.nondeter_var_name2id[var]-1]
+            return self.contract.nondeter_var_list[self.contract.nondeter_var_name2id[var]]
         else:
             raise ValueError("Undefined variable name {}.".format(var))
 

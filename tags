@@ -166,17 +166,20 @@ c	tests/test_dyn.py	/^c = contract('c')                                         
 c	tests/test_following.py	/^c = contract('c')$/;"	v
 c	tests/test_parameteric.py	/^c = contract('c')                                                # Create a contract c$/;"	v
 c	tests/test_switching.py	/^c = contract('c')$/;"	v
+c1	tests/test.py	/^c1 = contract('c1')                         # Create a contract c1$/;"	v
 c1	tests/test_contracts_combine.py	/^c1 = contract('c1')                   # Create a contract c1$/;"	v
 c1	tests/test_contracts_stl.py	/^c1 = contract('c1')                         # Create a contract c1$/;"	v
 c1	tests/test_contracts_ststl.py	/^c1 = contract('c1')                                                      # Create a contract c1$/;"	v
 c1	tests/test_parser.py	/^c1 = contract('c1')                   # Create a contract c1$/;"	v
 c12_comp	tests/test_contracts_combine.py	/^c12_comp = composition(c1, c2)        # Composition of c1 and c2$/;"	v
+c2	tests/test.py	/^c2 = contract('c2')                         # Create a contract c2$/;"	v
 c2	tests/test_contracts_combine.py	/^c2 = contract('c2')                   # Create a contract c2$/;"	v
 c2	tests/test_contracts_quotient.py	/^c2 = contract('c2')                   # Create a contract c2$/;"	v
 c2	tests/test_contracts_stl.py	/^c2 = contract('c2')                         # Create a contract c2$/;"	v
 c2	tests/test_contracts_ststl.py	/^c2 = contract('c2')                                  # Create a contract c2$/;"	v
 c2_comp	tests/test_contracts_quotient.py	/^c2_comp = composition(c2_quo, c2)     # Composition of c2_quo and c2$/;"	v
 c2_quo	tests/test_contracts_quotient.py	/^c2_quo = quotient(c, c2)              # Quotient c\/c2$/;"	v
+c3	tests/test.py	/^c3 = contract('c3')                         # Create a contract c3$/;"	v
 c3	tests/test_contracts_ststl.py	/^c3 = contract('c3')                                  # Create a contract c3$/;"	v
 checkCompat	pystl/contracts.py	/^    def checkCompat(self, print_sol=False, verbose = True):$/;"	m	class:contract
 checkConsis	pystl/contracts.py	/^    def checkConsis(self, print_sol=False, verbose = True):$/;"	m	class:contract
