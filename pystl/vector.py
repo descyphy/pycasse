@@ -10,42 +10,46 @@ class Vector:
     def __init__(self, var_list, time = 0):
         """ Constructor. """
         self.max_time = time
-        len_var = len(set([None] + [v.idx for v in var_list if isinstance(v, Var)]))
+        len_var = len([v.idx for v in var_list if isinstance(v, Var)])
+        self.constant = np.zeros(len(var_list))
         self.data = np.zeros((len(var_list), len_var))
-        self.var2id = {(0,0): 0}
+        self.var2id = {}
         for i, var in enumerate(var_list):
             assert(isinstance(var, (int, float, Var)))
             if isinstance(var, (int, float)):
-                key = (0, 0)
-                self.data[i, 0] += var
+                self.constant[i] += var
             elif isinstance(var, Var):
                 key = (var.idx, time)
                 if key not in self.var2id:
                     self.var2id[key] = len(self.var2id)
                 self.data[i, self.var2id[key]] += 1
             else: assert(False)
+    
+    def __len__(self):
+        assert(len(self.constant) == len(self.data))
+        return len(self.constant)
 
     def __add__(self, other):
         if isinstance(other, (int, float)):
-            return self.add(other)
+            return self._add(other)
         else:
             return self._merge(other, 1)
 
     def __radd__(self, other):
         if isinstance(other, (int, float)):
-            return self.add(other)
+            return self._add(other)
         else:
             return self._merge(other, 1)
 
     def __sub__(self, other):
         if isinstance(other, (int, float)):
-            return self.add(-1 * other)
+            return self._add(-1 * other)
         else:
             return self._merge(other, -1)
 
     def __rsub__(self, other):
         if isinstance(other, (int, float)):
-            return self.add(-1 * other)
+            return self._add(-1 * other)
         else:
             return self._merge(other, -1)
             
@@ -60,8 +64,10 @@ class Vector:
         # print(res.data)
         # print(other)
         if isinstance(other, (int, float)):
+            res.constant *= other
             res.data *= other
         else:
+            res.constant = res.constant @ other
             res.data = res.data @ other
         # print(res)
         return res
@@ -71,8 +77,10 @@ class Vector:
         # print(other)
         # print(res.data)
         if isinstance(other, (int, float)):
+            res.constant *= other
             res.data *= other
         else:
+            res.constant = other @ res.constant
             res.data = other @ res.data
         # print(res)
         return res
@@ -89,25 +97,26 @@ class Vector:
     def __repr__(self):
         data = []
         for row in range(len(self.data)):
-            expr = []
+            expr = ["{}".format(self.constant[row])]
             for key, idx in self.var2id.items():
-                if key[0] == 0:
-                    expr.append("{}".format(self.data[row, idx]))
-                else:
-                    if self.data[row, idx] != 0:
-                        expr.append("{} {}_{}".format(self.data[row, idx], key[0], key[1]))
+                if self.data[row, idx] != 0:
+                    expr.append("{} {}_{}".format(self.data[row, idx], key[0], key[1]))
             data.append(" + ".join(expr))
         res = "time max: {}\n".format(self.max_time)
         res += "[ " + "\n  ".join(data) + " ]\n"
         return res
 
-    def add(self, multiplier):
+    def _add(self, multiplier):
         res = copy.deepcopy(self)
-        res.data[:, res.var2id[(0, 0)]] += multiplier
+        res.constant += multiplier
         return res
 
     def _merge(self, other, multiplier):
+        assert(len(self) == len(other))
         res = copy.deepcopy(self)
+
+        res.constant += other.constant
+
         for var, value in other.var2id.items():
             if var in res.var2id:
                 res.data[:, res.var2id[var]] += multiplier * other.data[:, value]
@@ -125,12 +134,12 @@ class Equation:
 
 def Next(other):
     res = Vector([])
-    res.max_time = other.max_time
+    if other.data.shape[1] >= 1:
+        res.max_time = other.max_time + 1
+    else:
+        res.max_time = other.max_time
+    res.constant = other.constant.copy()
     res.data = other.data.copy()
     for key, value in other.var2id.items():
-        if key[0] == 0:
-            res.var2id[key] = value
-        else:
-            res.max_time = other.max_time + 1
-            res.var2id[(key[0], key[1] + 1)] = value
+        res.var2id[(key[0], key[1] + 1)] = value
     return res
