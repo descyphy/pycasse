@@ -28,9 +28,9 @@ solver = MILPSolver()
 solver.add_contract(c)
 #  solver.add_dynamic(x * A + u * B == (Next(x) - x)/0.5)
 solver.add_dynamic(Next(x) == A * x + B * u)
-solver.add_constraint(x1 == 0)
-solver.add_constraint(x2 == 0)
-solver.add_constraint(c.guarantee)
+solver.add_hard_constraint(x1 == 0)
+solver.add_hard_constraint(x2 == 0)
+solver.add_hard_constraint(c.guarantee)
 
 # Solve the problem using MILP solver
 start = time.time()

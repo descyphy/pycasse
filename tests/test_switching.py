@@ -36,7 +36,7 @@ solver.add_contract(c)
 solver.add_hard_constraint(c.guarantee)
 
 # Dynamics
-solver.add_switching_dynamic([[Next(e) == A_c * e + B_c * theta, theta == -K_c * e], [Next(e) == A_f * e + B_f * theta, theta == -K_f * e]], switching_time = 70)
+solver.add_switching_dynamic([[Next(e) == A_c * e + B_c * theta, theta == -K_c * e], [Next(e) == A_f * e + B_f * theta, theta == -K_f * e]], "(((vl => 20) & (e2 >= 0)) | (xr => 300))")
 
 # Conditions that has to always hold
 solver.add_dynamic(np.array([[1,0,0]]) * e == np.array([[1,0]]) * v - np.array([[0,1]]) * v) # e1 = vl - vf

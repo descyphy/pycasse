@@ -731,10 +731,10 @@ class MILPSolver:
         (num_node, end_time) = Preprocess(self)()
         if self.solver == "Gurobi":
             self.node_variable = -1 * np.ones((num_node, end_time), dtype = object)
-            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object) # -1 is to exclude constant variable
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list)+1, end_time), dtype = object) # -1 is to exclude constant variable
         elif self.solver == "Cplex":
             self.node_variable = -1 * np.ones((num_node, end_time), dtype = object)
-            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object)
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list)+1, end_time), dtype = object)
         else: assert(False)
 
         if self.debug:
@@ -1200,7 +1200,8 @@ class MILPSolver:
         if self.mode == 'Boolean':
             if self.solver == "Gurobi":
                 self.model.addConstr(constr <= M * (1 - self.node_variable[node_idx, time]))
-                self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
+                # self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
+                self.model.addConstr(constr >= - M * (self.node_variable[node_idx, time]))
             #  elif self.solver == "Cplex":
             #      lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
             #      self.model.linear_constraints.add(lin_expr = (lin_expr * 2), senses = "LG", rhs = [-rhs+M, -rhs+EPS])
@@ -1306,13 +1307,13 @@ class MILPSolver:
 
     def print_solution(self):
         (len_var, len_t) = self.contract_variable.shape
-        for v in range(len_var):
+        for v in range(1,len_var):
             for t in range(len_t):
                 if (isinstance(self.contract_variable[v,t], gp.Var) or (self.contract_variable[v,t] != -1)):
                     if self.solver == "Gurobi":
-                        print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.contract_variable[v,t].x))
+                        print("{}_{}: {}".format(self.contract.deter_var_list[v-1].name, t, self.contract_variable[v,t].x))
                     elif self.solver == "Cplex":
-                        print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
+                        print("{}_{}: {}".format(self.contract.deter_var_list[v-1].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
                     else: assert(False)
         
         # for t in range(t):

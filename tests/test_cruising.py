@@ -34,6 +34,7 @@ solver.add_contract(c)
 solver.add_hard_constraint(c.guarantee)
 
 # Dynamics
+print(Next(e) == A_c * e + B_c * theta)
 solver.add_dynamic(Next(e) == A_c * e + B_c * theta)
 
 # Conditions that has to always hold
