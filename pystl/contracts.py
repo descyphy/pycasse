@@ -266,24 +266,24 @@ class contract:
         #  solver = SMCSolver()
 
         # Add constraints for refinement condition for assumptions
-        #  print("Checking assumptions condition for refinement...")
-        #  solver.add_contract(c1)
-        #  assumption1 = deepcopy(c1.assumption)
-        #  assumption2 = deepcopy(contract2refine.assumption)
-        #  assumption2.transform(deter_id_map, nondeter_id_map)
-        #  solver.add_hard_constraint(~(assumption2.implies(assumption1)))
-        #
-        #  # Check refinement condition for assumptions
-        #  solver.preprocess()
-        #  solved = solver.solve()
-        #
-        #  # Print the counterexample
-        #  if solved:
-        #      print("Assumptions condition for refinement violated. Contract {} does not refine contract {}.\n".format(self.id, contract2refine.id))
-        #      if print_sol:
-        #          print("Printing a counterexample which violates assumptions condition for refinement...")
-        #          solver.print_solution()
-        #      return
+        print("Checking assumptions condition for refinement...")
+        solver.add_contract(c1)
+        assumption1 = deepcopy(c1.assumption)
+        assumption2 = deepcopy(contract2refine.assumption)
+        assumption2.transform(deter_id_map, nondeter_id_map)
+        solver.add_hard_constraint(~(assumption2.implies(assumption1)))
+    
+        # Check refinement condition for assumptions
+        solver.preprocess()
+        solved = solver.solve()
+    
+        # Print the counterexample
+        if solved:
+            print("Assumptions condition for refinement violated. Contract {} does not refine contract {}.\n".format(self.id, contract2refine.id))
+            if print_sol:
+                print("Printing a counterexample which violates assumptions condition for refinement...")
+                solver.print_solution()
+            return
 
         # Resets a MILP Solver
         solver.reset()
@@ -294,7 +294,6 @@ class contract:
         guarantee1 = deepcopy(c1.sat_guarantee)
         guarantee2 = deepcopy(contract2refine.sat_guarantee)
         guarantee2.transform(deter_id_map, nondeter_id_map)
-        print(~(guarantee1.implies(guarantee2)))
         solver.add_hard_constraint(~(guarantee1.implies(guarantee2)))
 
         # Check refinement condition for guarantees
