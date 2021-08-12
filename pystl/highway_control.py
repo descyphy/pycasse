@@ -48,7 +48,6 @@ class highway_env_controller:
 
         # Add a model for each group of cooperating vehicles (or a vehicle)
         for group in data["vehicle"]["group"]:
-            #  print(group)
             # Build a MILP solver
             tmp_model = MILPSolver()
 
@@ -71,7 +70,7 @@ class highway_env_controller:
                 u_tmp = [s + "_{}".format(tmp_vehicle_num) for s in self.control_names]
                 uncontrolled_vars = uncontrolled_vars + x_tmp
                 if self.environment in ("highway", "merge"):
-                    uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[-500, 500], [-500, 500], [0, velocity_bound], [0, velocity_bound]]), axis=0)
+                    uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[0, 250], [-20, 20], [0, velocity_bound], [-0.5*velocity_bound, 0.5*velocity_bound]]), axis=0)
                 else:
                     uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[-100, 100], [-100, 100], [-velocity_bound, velocity_bound], [-velocity_bound, velocity_bound]]), axis=0)
                 if tmp_vehicle_num in group:
@@ -83,9 +82,9 @@ class highway_env_controller:
 
             uncontrolled_vars = tmp_contract.set_deter_uncontrolled_vars(uncontrolled_vars, bounds = uncontrolled_bounds)
             controlled_vars = tmp_contract.set_controlled_vars(controlled_vars, bounds = controlled_bounds)
-            #  print(uncontrolled_vars)
+            # print(uncontrolled_vars)
             #  print(uncontrolled_bounds)
-            #  print(controlled_vars)
+            # print(controlled_vars)
             #  print(controlled_bounds)
 
             # Find the assumptions and guarantees formula of the contract
@@ -117,10 +116,10 @@ class highway_env_controller:
                 for (vehicle_num_1, vehicle_num_2) in combinations(group, 2):
                     if self.environment == "intersection":
                         guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(self.horizon, 
-                                                "{}_{}".format(self.state_names[0], vehicle_num_1), "{}_{}".format(self.state_names[0], vehicle_num_2), 1.5*vehicle_width, 
-                                                "{}_{}".format(self.state_names[0], vehicle_num_2), "{}_{}".format(self.state_names[0], vehicle_num_1), 1.5*vehicle_width, 
-                                                "{}_{}".format(self.state_names[1], vehicle_num_1), "{}_{}".format(self.state_names[1], vehicle_num_2), 1.5*vehicle_width, 
-                                                "{}_{}".format(self.state_names[1], vehicle_num_2), "{}_{}".format(self.state_names[1], vehicle_num_1), 1.5*vehicle_width)
+                                                "{}_{}".format(self.state_names[0], vehicle_num_1), "{}_{}".format(self.state_names[0], vehicle_num_2), 2*vehicle_width, 
+                                                "{}_{}".format(self.state_names[0], vehicle_num_2), "{}_{}".format(self.state_names[0], vehicle_num_1), 2*vehicle_width, 
+                                                "{}_{}".format(self.state_names[1], vehicle_num_1), "{}_{}".format(self.state_names[1], vehicle_num_2), 2*vehicle_width, 
+                                                "{}_{}".format(self.state_names[1], vehicle_num_2), "{}_{}".format(self.state_names[1], vehicle_num_1), 2*vehicle_width)
             
                     else:
                         guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(self.horizon, 
@@ -135,10 +134,10 @@ class highway_env_controller:
                         for tmp_vehicle_num in group:
                             if self.environment == "intersection":
                                 guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(self.horizon, 
-                                                        "{}_{}".format(self.state_names[0], vehicle_num), "{}_{}".format(self.state_names[0], tmp_vehicle_num), 1.5*vehicle_width, 
-                                                        "{}_{}".format(self.state_names[0], tmp_vehicle_num), "{}_{}".format(self.state_names[0], vehicle_num), 1.5*vehicle_width, 
-                                                        "{}_{}".format(self.state_names[1], vehicle_num), "{}_{}".format(self.state_names[1], tmp_vehicle_num), 1.5*vehicle_width, 
-                                                        "{}_{}".format(self.state_names[1], tmp_vehicle_num), "{}_{}".format(self.state_names[1], vehicle_num), 1.5*vehicle_width)
+                                                        "{}_{}".format(self.state_names[0], vehicle_num), "{}_{}".format(self.state_names[0], tmp_vehicle_num), 2*vehicle_width, 
+                                                        "{}_{}".format(self.state_names[0], tmp_vehicle_num), "{}_{}".format(self.state_names[0], vehicle_num), 2*vehicle_width, 
+                                                        "{}_{}".format(self.state_names[1], vehicle_num), "{}_{}".format(self.state_names[1], tmp_vehicle_num), 2*vehicle_width, 
+                                                        "{}_{}".format(self.state_names[1], tmp_vehicle_num), "{}_{}".format(self.state_names[1], vehicle_num), 2*vehicle_width)
                     
                             else:
                                 guarantees_formula += "(G[0,{}] (({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}) | ({} - {} >= {}))) & ".format(self.horizon, 
@@ -151,8 +150,6 @@ class highway_env_controller:
                 guarantees_formula = 'True'
 
             # Set the contracts
-            #  print(assumptions_formula)
-            #  print(guarantees_formula)
             tmp_contract.set_assume(assumptions_formula)
             tmp_contract.set_guaran(guarantees_formula)
 
@@ -202,11 +199,16 @@ class highway_env_controller:
             # Add variables and constraints to MILP solver
             tmp_model.preprocess()
             
+            # print(group)
+            # print(assumptions_formula)
+            # print(guarantees_formula)
             # print(tmp_contract.deter_var_name2id)
-            # print(tmp_solver.hard_constraints)
-            # print(tmp_solver.soft_constraints)
-            # print(tmp_solver.model.getVars())
+            # print(tmp_model.hard_constraints)
+            # print(tmp_model.soft_constraints)
+            # print(tmp_model.model.getVars())
             # print(tmp_model.soft_constraints_var)
+            # tmp_model.model.write("MILP.lp")
+            # input()
 
             # Add region constraints
             for vehicle_num in group:
@@ -225,7 +227,7 @@ class highway_env_controller:
                     tmp_model.model.update()
 
             # Add objective to MILP sovler
-            objective_func = M*tmp_model.model.getVarByName("node_0_0")
+            objective_func = 0
 
             # Goal objectives
             for vehicle_num in group:
@@ -246,7 +248,10 @@ class highway_env_controller:
                     tmp_model.model.update()
 
                     # Add goal objective in x and y axis
-                    objective_func += (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_x_{}_{}".format(vehicle_num, t)) + (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_y_{}_{}".format(vehicle_num, t))
+                    if self.environment == 'intersection':
+                        objective_func += (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_x_{}_{}".format(vehicle_num, t)) + (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_y_{}_{}".format(vehicle_num, t))
+                    else:
+                        objective_func += (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_x_{}_{}".format(vehicle_num, t)) + 10*(len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_y_{}_{}".format(vehicle_num, t))
 
             # Fuel objectives (Sum of absolute values of u)
             for vehicle_num in group:
@@ -302,6 +307,9 @@ class highway_env_controller:
 
             self.model_dict["{}".format(group_name)] = tmp_model
 
+            # tmp_model.model.write("MILP.lp")
+            # input()
+
     def find_control(self, current_states):
         """ Find control for all the groups of cooperating vehicles (or a vehicle if only one in the group).
 
@@ -313,6 +321,7 @@ class highway_env_controller:
         control = []
 
         for group_name, group_model in self.model_dict.items():
+            print(group_name)
             # Initialize 
             # adversarial_control = {}
             vehicles = group_name.split('_')
@@ -371,7 +380,7 @@ class highway_env_controller:
             # Solve and fetch the solution for the control   
             solved = group_model.solve()
             if solved:
-                group_model.print_solution()
+                group_model.print_solution(group=vehicles)
 
             # Fetch the control
             for vehicle_num in vehicles:
@@ -424,11 +433,11 @@ class highway_env_controller:
                 f4 = lambda x,y : region_param[3,0]*x**2 + region_param[3,1]*x + region_param[3,2]*y**2 + region_param[3,3]*y + region_param[3,4]
 
                 if self.environment == "highway":
-                    x = np.linspace(-10,300,1000)
+                    x = np.linspace(-10,200,1000)
                     y = np.linspace(-5,20,1000)
                 elif self.environment == "merge":
-                    x = np.linspace(0,550,1000)
-                    y = np.linspace(-20,20,1000)
+                    x = np.linspace(0,250,1000)
+                    y = np.linspace(-20,12,1000)
                 else:
                     x = np.linspace(-50,50,1000)
                     y = np.linspace(-50,50,1000)
