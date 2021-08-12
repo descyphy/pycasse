@@ -110,7 +110,7 @@ __rsub__	pystl/parser.py	/^    def __rsub__(self, other):$/;"	m	class:Expression
 __rsub__	pystl/variable.py	/^    def __rsub__(self, other):$/;"	m	class:Var	file:
 __rsub__	pystl/vector.py	/^    def __rsub__(self, other):$/;"	m	class:Vector	file:
 __slots__	pystl/contracts.py	/^    __slots__ = ('id', 'deter_var_list', 'deter_var_name2id', 'nondeter_var_list', 'nondeter_var_name2id', 'nondeter_var_mean', 'nondeter_var_cov', 'assumption', 'guarantee', 'sat_guarantee', 'isSat', 'objectives')$/;"	v	class:contract
-__slots__	pystl/core.py	/^    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'hard_constraints', 'soft_constraints', 'soft_constraints_info', 'soft_constraints_var', 'dynamics', 'switching_dynamics', 'switching_time',$/;"	v	class:MILPSolver
+__slots__	pystl/core.py	/^    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'hard_constraints', 'soft_constraints', 'soft_constraints_info', 'soft_constraints_var', 'dynamics', 'switching_dynamics', 'switching_condition',$/;"	v	class:MILPSolver
 __slots__	pystl/highway_control.py	/^    __slots__ = ('environment', 'model_dict', 'vehicles', 'state_names', 'control_names', 'horizon')$/;"	v	class:highway_env_controller
 __slots__	pystl/parser.py	/^    __slots__ = ('constant', 'deter_data', 'nondeter_data')$/;"	v	class:Expression
 __slots__	pystl/parser.py	/^    __slots__ = ('expr')$/;"	v	class:AtomicPredicate
@@ -151,7 +151,7 @@ add_dynamic	pystl/core.py	/^    def add_dynamic(self, dynamic):$/;"	m	class:MILP
 add_dynamics	pystl/core.py	/^    def add_dynamics(self, dynamics):$/;"	m	class:SMCSolver
 add_hard_constraint	pystl/core.py	/^    def add_hard_constraint(self, constraint):$/;"	m	class:MILPSolver
 add_soft_constraint	pystl/core.py	/^    def add_soft_constraint(self, constraint, vehicle_num=None, region_num=None, time=None):$/;"	m	class:MILPSolver
-add_switching_dynamic	pystl/core.py	/^    def add_switching_dynamic(self, switching_dynamic, switching_time=None):$/;"	m	class:MILPSolver
+add_switching_dynamic	pystl/core.py	/^    def add_switching_dynamic(self, switching_dynamic, switching_condition):$/;"	m	class:MILPSolver
 add_switching_dynamics	pystl/core.py	/^    def add_switching_dynamics(self, dynamics):$/;"	m	class:SMCSolver
 author	setup.py	/^      author='Chanwook Oh',$/;"	v
 author_email	setup.py	/^      author_email='chanwooo@usc.edu',$/;"	v
@@ -226,7 +226,7 @@ model_add_constraint_or	pystl/core.py	/^    def model_add_constraint_or(self, va
 model_add_continous_variable	pystl/core.py	/^    def model_add_continous_variable(self, idx, time, lb = -M, ub = M, var_type = 'node'):$/;"	m	class:MILPSolver
 model_add_continuous_variable_by_name	pystl/core.py	/^    def model_add_continuous_variable_by_name(self, name, lb = -M, ub = M):$/;"	m	class:MILPSolver
 model_add_inequality_constraint	pystl/core.py	/^    def model_add_inequality_constraint(self, node_idx, time, expr, constant):$/;"	m	class:MILPSolver
-model_add_switching_constraint	pystl/core.py	/^    def model_add_switching_constraint(self, bool, bool_value, variable, multiplier, rhs, var_type = 'contract', value = None):$/;"	m	class:MILPSolver
+model_add_switching_constraint	pystl/core.py	/^    def model_add_switching_constraint(self, bool, bool_value, variable, multiplier, rhs, var_type = 'contract'):$/;"	m	class:MILPSolver
 nontemporal_formula_construction	pystl/parser.py	/^def nontemporal_formula_construction(operator, formula_list, ignore_ap, drop_ap):$/;"	f
 nontemporal_op_inner	pystl/parser.py	/^    def nontemporal_op_inner(self, _, children):$/;"	m	class:Parser
 p	tests/test_parser.py	/^p = Parser(c1)$/;"	v
@@ -284,7 +284,7 @@ train_dqn	tests/OpenAIGym/test.py	/^def train_dqn(episode):$/;"	f
 transform	pystl/parser.py	/^    def transform(self, deter_id_map, nondeter_id_map):$/;"	m	class:ASTObject
 transform	pystl/parser.py	/^    def transform(self, deter_id_map, nondeter_id_map):$/;"	m	class:Expression
 true	pystl/parser.py	/^true = ASTObject("True")$/;"	v
-u	tests/test_dyn.py	/^u = Vector([u1])$/;"	v
+u	tests/test_dyn.py	/^u = Vector([a])$/;"	v
 v	tests/test_cruising.py	/^v = Vector([vf, vd])$/;"	v
 v	tests/test_following.py	/^v = Vector([vl, vf])$/;"	v
 v	tests/test_switching.py	/^v = Vector([vl, vf])$/;"	v
@@ -317,7 +317,7 @@ visit_true	pystl/parser.py	/^    def visit_true(self, node, children):$/;"	m	cla
 visit_u	pystl/parser.py	/^    def visit_u(self, node, children):$/;"	m	class:Parser
 visit_variable	pystl/parser.py	/^    def visit_variable(self, node, _):$/;"	m	class:Parser
 visit_variable_power	pystl/parser.py	/^    def visit_variable_power(self, node, children):$/;"	m	class:Parser
-x	tests/test_dyn.py	/^x = Vector([x1, x2])$/;"	v
+x	tests/test_dyn.py	/^x = Vector([s, v])$/;"	v
 x	tests/test_following.py	/^x = Vector([xr])$/;"	v
 x	tests/test_switching.py	/^x = Vector([xr])$/;"	v
 x	tests/test_var.py	/^x = DeterVar('x', 1, 'controlled')$/;"	v
