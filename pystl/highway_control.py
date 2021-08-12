@@ -405,10 +405,14 @@ class highway_env_controller:
         param = np.array(param)
 
         # Initialize plots and settings
-        if self.environment in ("highway", "merge"):
+        if len(param) == 1:
+            ax = [plt.gca()]
+        elif self.environment in ("highway", "merge"):
             _, ax = plt.subplots(len(param), 1)
-        else:
+        elif self.environment == "intersection":
             _, ax = plt.subplots(1, len(param))
+        else: assert(False)
+
         cmaps = ['Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
                 'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
                 'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
