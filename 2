@@ -807,7 +807,7 @@ class MILPSolver:
         else: assert(False)
 
         # Print solution
-        if self.status():
+        if (self.solver == 'Gurobi' and self.model.getAttr("Status") == 2) or (self.solver == 'Cplex' and self.model.solution.get_status() in (1,101)): # If MILP is successfully solved,
             if self.verbose:
                 print("MILP solved.")
                 self.print_solution()
@@ -1347,13 +1347,11 @@ class MILPSolver:
         """
         # Initialize output
         output = []
+        failure = False
 
         # Find the output
-        print(controlled_vars)
-        print(self.contract_variable[controlled_vars[0].idx, 0])
-        input()
         for var in controlled_vars:
             output.append([v.x for v in self.contract_variable[var.idx, 0: length]])
                     
-        return output
+        return output, failure
 

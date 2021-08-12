@@ -110,7 +110,7 @@ __rsub__	pystl/parser.py	/^    def __rsub__(self, other):$/;"	m	class:Expression
 __rsub__	pystl/variable.py	/^    def __rsub__(self, other):$/;"	m	class:Var	file:
 __rsub__	pystl/vector.py	/^    def __rsub__(self, other):$/;"	m	class:Vector	file:
 __slots__	pystl/contracts.py	/^    __slots__ = ('id', 'deter_var_list', 'deter_var_name2id', 'nondeter_var_list', 'nondeter_var_name2id', 'nondeter_var_mean', 'nondeter_var_cov', 'assumption', 'guarantee', 'sat_guarantee', 'isSat', 'objectives')$/;"	v	class:contract
-__slots__	pystl/core.py	/^    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'hard_constraints', 'soft_constraints', 'soft_constraints_info', 'soft_constraints_var', 'dynamics', 'switching_dynamics', 'switching_condition',$/;"	v	class:MILPSolver
+__slots__	pystl/core.py	/^    __slots__ = ('verbose', 'mode', 'solver', 'objective', 'debug', 'contract', 'hard_constraints', 'soft_constraints', 'soft_constraints_var', 'dynamics', 'switching_dynamics', 'switching_condition',$/;"	v	class:MILPSolver
 __slots__	pystl/highway_control.py	/^    __slots__ = ('environment', 'model_dict', 'vehicles', 'state_names', 'control_names', 'horizon')$/;"	v	class:highway_env_controller
 __slots__	pystl/parser.py	/^    __slots__ = ('constant', 'deter_data', 'nondeter_data')$/;"	v	class:Expression
 __slots__	pystl/parser.py	/^    __slots__ = ('expr')$/;"	v	class:AtomicPredicate
@@ -150,7 +150,7 @@ add_dyn_constraints	pystl/core.py	/^    def add_dyn_constraints(self):$/;"	m	cla
 add_dynamic	pystl/core.py	/^    def add_dynamic(self, dynamic):$/;"	m	class:MILPSolver
 add_dynamics	pystl/core.py	/^    def add_dynamics(self, dynamics):$/;"	m	class:SMCSolver
 add_hard_constraint	pystl/core.py	/^    def add_hard_constraint(self, constraint):$/;"	m	class:MILPSolver
-add_soft_constraint	pystl/core.py	/^    def add_soft_constraint(self, constraint, vehicle_num=None, region_num=None, time=None):$/;"	m	class:MILPSolver
+add_soft_constraint	pystl/core.py	/^    def add_soft_constraint(self, constraint):$/;"	m	class:MILPSolver
 add_switching_dynamic	pystl/core.py	/^    def add_switching_dynamic(self, switching_dynamic, switching_condition):$/;"	m	class:MILPSolver
 add_switching_dynamics	pystl/core.py	/^    def add_switching_dynamics(self, dynamics):$/;"	m	class:SMCSolver
 author	setup.py	/^      author='Chanwook Oh',$/;"	v
@@ -207,7 +207,7 @@ env	tests/OpenAIGym/test_manual.py	/^env = gym.wrappers.Monitor(env, ".\/vid", v
 episodes	tests/OpenAIGym/test.py	/^    episodes = 5$/;"	v
 f	pystl/parser.py	/^    def f(_1, _2, _3):$/;"	f	function:U_R_wrapper
 false	pystl/parser.py	/^false = ASTObject("False")$/;"	v
-fetch_control	pystl/core.py	/^    def fetch_control(self, controlled_vars, length=1):$/;"	m	class:MILPSolver
+fetch_solution	pystl/core.py	/^    def fetch_solution(self, controlled_vars, length=1):$/;"	m	class:MILPSolver
 find_conflicts	pystl/core.py	/^    def find_conflicts(self, certificate):$/;"	m	class:SMCSolver
 find_control	pystl/highway_control.py	/^    def find_control(self, current_states):$/;"	m	class:highway_env_controller
 generic_visit	pystl/parser.py	/^    def generic_visit(self, _, children):$/;"	m	class:Parser
@@ -277,6 +277,7 @@ start	tests/test_dyn.py	/^start = time.time()$/;"	v
 start	tests/test_following.py	/^start = time.time()$/;"	v
 start	tests/test_switching.py	/^start = time.time()$/;"	v
 state	tests/OpenAIGym/test_manual.py	/^state = env.reset()$/;"	v
+status	pystl/core.py	/^    def status(self):$/;"	m	class:MILPSolver
 theta	tests/test_cruising.py	/^theta = Vector([theta])$/;"	v
 theta	tests/test_following.py	/^theta = Vector([theta])$/;"	v
 theta	tests/test_switching.py	/^theta = Vector([theta])$/;"	v
@@ -288,6 +289,8 @@ u	tests/test_dyn.py	/^u = Vector([a])$/;"	v
 v	tests/test_cruising.py	/^v = Vector([vf, vd])$/;"	v
 v	tests/test_following.py	/^v = Vector([vl, vf])$/;"	v
 v	tests/test_switching.py	/^v = Vector([vl, vf])$/;"	v
+var	pystl/contracts.py	/^    def var(self, name):$/;"	m	class:contract
+variable	pystl/core.py	/^    def variable(self, idx, time, var_type = 'contract'):$/;"	m	class:MILPSolver
 version	setup.py	/^      version='1.1.0',$/;"	v
 visit_AP	pystl/parser.py	/^    def visit_AP(self, node, children):$/;"	m	class:Parser
 visit_and_inner	pystl/parser.py	/^    visit_and_inner = nontemporal_op_inner$/;"	v	class:Parser

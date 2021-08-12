@@ -37,6 +37,13 @@ class contract:
         self.isSat                = False
         self.objectives           = []
 
+    def var(self, name):
+        if name in self.deter_var_name2id:
+            return self.deter_var_list[self.deter_var_name2id[name]]
+        elif name in self.nondeter_var_name2id:
+            return self.nondeter_var_list[self.nondeter_var_name2id[name]]
+        else: assert(False)
+
     def set_controlled_vars(self, var_names, dtypes = None, bounds = None):
         """ 
         Adds controlled variables and their information to the contract 
