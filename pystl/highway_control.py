@@ -48,7 +48,7 @@ class highway_env_controller:
 
         # Add a model for each group of cooperating vehicles (or a vehicle)
         for group in data["vehicle"]["group"]:
-            # print(group)
+            #  print(group)
             # Build a MILP solver
             tmp_model = MILPSolver()
 
@@ -83,8 +83,10 @@ class highway_env_controller:
 
             uncontrolled_vars = tmp_contract.set_deter_uncontrolled_vars(uncontrolled_vars, bounds = uncontrolled_bounds)
             controlled_vars = tmp_contract.set_controlled_vars(controlled_vars, bounds = controlled_bounds)
-            # print(uncontrolled_vars)
-            # print(controlled_vars)
+            #  print(uncontrolled_vars)
+            #  print(uncontrolled_bounds)
+            #  print(controlled_vars)
+            #  print(controlled_bounds)
 
             # Find the assumptions and guarantees formula of the contract
             # Initialize assumptions and guarantees
@@ -149,8 +151,8 @@ class highway_env_controller:
                 guarantees_formula = 'True'
 
             # Set the contracts
-            # print(assumptions_formula)
-            # print(guarantees_formula)
+            #  print(assumptions_formula)
+            #  print(guarantees_formula)
             tmp_contract.set_assume(assumptions_formula)
             tmp_contract.set_guaran(guarantees_formula)
 
