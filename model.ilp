@@ -1,29 +1,20 @@
 \ Model _copy
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
-  0 node_2_0
+  0 contract_3_0 + 0 contract_4_0 + 0 contract_4_1 + 0 switching[34]
+   + 0 switching[65] + 0 switching[93]
 Subject To
- R0: 10000 node_1_0 + contract_0_0 <= 10000
- R4: node_0_0 = 1
- R10: - contract_0_0 + 10000 node_7_0 <= 9998
- R12: 10000 node_7_1 - contract_0_1 <= 9998
- R14: 10000 node_7_2 - contract_0_2 <= 9998
- R16: 10000 node_7_3 - contract_0_3 <= 9998
- R18: node_6_0 = 1
- R19: - contract_0_0 - contract_1_0 + contract_0_1 = 0
- R20: - contract_0_1 + contract_0_2 = -1
- R21: - contract_0_2 + contract_0_3 = -1
- R22: - contract_1_0 - contract_-1_0 = 1
+ GC370: switching[34] = 0 -> - contract_4_0 + contract_4_1 = -0
+ GC432: switching[65] = 0 -> - contract_4_0 + contract_4_1 = -0
+ GC633: switching[65] = 1 -> - 0.09516 contract_3_0 = 0.009675
+ GC771: switching[34] = 1 -> - 0.5635 contract_3_0 = -1.2316
+ GC888: switching[93] = 0 -> - 0.5635 contract_3_0 = -1.2316
+ GC1234: switching[65] = 0 -> - contract_4_0 + contract_4_1 = 0.2
+ GC1291: switching[93] = 1 -> - contract_4_0 + contract_4_1 = 0.2
 Bounds
- contract_0_0 free
- contract_1_0 free
- contract_0_1 free
- contract_0_2 free
- contract_0_3 free
- contract_-1_0 >= -1
+ contract_3_0 free
+ contract_4_0 free
+ contract_4_1 free
 Binaries
- node_0_0 node_1_0 node_2_0 node_6_0 node_7_0 node_7_1 node_7_2 node_7_3
-General Constraints
- GC0: node_0_0 = AND ( node_1_0 , node_2_0 )
- GC2: node_6_0 = OR ( node_7_0 , node_7_1 , node_7_2 , node_7_3 )
+ switching[34] switching[65] switching[93]
 End
