@@ -13,8 +13,8 @@ c = contract('c')
 [theta] = c.set_controlled_vars(['theta'], 
         bounds = np.array([[-10**4, 10**4]])) # Set a controlled variable
 c.set_assume('True') # Set/define the assumptions
-# c.set_guaran('(F[0,100] (G[0,100] ((-0.01 <= e1) & (e1 <= 0.01))))') # Set/define the guarantees
-c.set_guaran('(!(F[0,100] (G[0,100] ((-0.01 <= e1) & (e1 <= 0.01)))))') # Set/define the guarantees
+c.set_guaran('(F[0,100] (G[0,50] ((-0.01 <= e1) & (e1 <= 0.01))))') # Set/define the guarantees
+# c.set_guaran('(!(F[0,100] (G[0,50] ((-0.01 <= e1) & (e1 <= 0.01)))))') # Set/define the guarantees
 c.checkSat()  # Saturate c
 c.printInfo() # Print c
 
@@ -34,7 +34,6 @@ solver.add_contract(c)
 solver.add_hard_constraint(c.guarantee)
 
 # Dynamics
-print(Next(e) == A_c * e + B_c * theta)
 solver.add_dynamic(Next(e) == A_c * e + B_c * theta)
 
 # Conditions that has to always hold

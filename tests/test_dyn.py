@@ -7,11 +7,11 @@ import time
 
 # Build a contract
 c = contract('c')                                                  # Create a contract c
-[x1, x2] = c.set_deter_uncontrolled_vars(['x1', 'x2'], \
+[s, v] = c.set_deter_uncontrolled_vars(['s', 'v'], \
         bounds = np.array([[-100, 2000], [-5, 10]]))               # Set a deterministic uncontrolled variable
-[u1] = c.set_controlled_vars(['u1'], bounds = np.array([[-1, 1]])) # Set a controlled variable
+[a] = c.set_controlled_vars(['a'], bounds = np.array([[-1, 1]])) # Set a controlled variable
 c.set_assume('True')                                               # Set/define the assumptions
-c.set_guaran('(F[0,30] (x1 >= 245))')                              # Set/define the guarantees
+c.set_guaran('(F[0,50] (s >= 445))')                              # Set/define the guarantees
 #  c.set_guaran('(F[0,100] (x[0] => 945))') # Set/define the guarantees
 #  c.set_guaran('(F[0,200] (x[0] => 1945))') # Set/define the guarantees
 #  c.set_guaran('(G[0,10] (F[0,30] (G[0,10] (x[0] => 245))))') # Set/define the guarantees
@@ -20,16 +20,16 @@ c.checkSat()  # Saturate c
 c.printInfo()                                       # Print c2
 
 # Build a linear system dynamics
-x = Vector([x1, x2])
-u = Vector([u1])
+x = Vector([s, v])
+u = Vector([a])
 A = np.array([[1, 1], [0, 1]])
 B = np.array([[0], [1]])
 
 solver = MILPSolver()
 solver.add_contract(c)
 solver.add_dynamic(Next(x) == A * x + B * u)
-solver.add_hard_constraint(x1 == 0)
-solver.add_hard_constraint(x2 == 0)
+solver.add_hard_constraint(s == 0)
+solver.add_hard_constraint(v == 0)
 solver.add_hard_constraint(c.guarantee)
 
 # Solve the problem using MILP solver
