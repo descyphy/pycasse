@@ -1,43 +1,1821 @@
 \ Model _copy
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
-  0 node_571_0 + 0 node_572_1 + 0 node_574_1 + 0 node_575_1 + 0 node_576_1
-   + 0 node_751_0 + 0 node_752_1 + 0 node_753_1 + 0 node_755_1
-   + 0 node_756_1 + 0 node_931_0 + 0 node_932_1 + 0 node_933_1
-   + 0 node_934_1 + 0 node_936_1
+  0 contract_3_1 + 0 node_56_6 + 0 node_57_6 + 0 node_62_7 + 0 node_63_7
+   + 0 node_68_8 + 0 node_69_8 + 0 node_72_8 + 0 switching[0]
+   + 0 switching[1] + 0 switching[2] + 0 switching[3] + 0 switching[4]
+   + 0 switching[5] + 0 contract_7_0 + 0 contract_7_1 + 0 contract_7_2
+   + 0 contract_7_3 + 0 contract_7_4 + 0 contract_7_5 + 0 contract_7_6
+   + 0 contract_7_7 + 0 contract_7_8 + 0 contract_5_1 + 0 contract_5_2
+   + 0 contract_5_3 + 0 contract_5_4 + 0 contract_5_5 + 0 contract_5_6
+   + 0 contract_5_7 + 0 contract_5_8
 Subject To
- R1722: contract_5_1 + 10000 node_573_1 <= 9999
- R2086: - contract_5_1 + 10000 node_935_1 <= 9986
- R2434: - contract_4_0 + contract_4_1 - 0.1 contract_6_0 = 0
- R2464: - contract_5_0 + contract_5_1 - 0.1 contract_7_0 = 0
- R2705: regions_1_1 = 1
- state_1_0: contract_4_0 = -5.999451152460872
- state_1_1: contract_5_0 = 1.311768499288861
- state_1_2: contract_6_0 = 0.000253826
- state_1_3: contract_7_0 = 1.6097671910664246e-04
- qc0: - 28 contract_4_1 + 28 contract_5_1 + 10000 node_754_1 + [
-   - contract_4_1 ^2 - contract_5_1 ^2 ] <= 10167
+ R0: 10000 node_3_0 - contract_3_0 <= 10000.01
+ R1: 10000 node_3_0 - contract_3_0 >= 0.0101
+ R9: 10000 node_3_4 - contract_3_4 >= 0.0101
+ R11: 10000 node_3_5 - contract_3_5 >= 0.0101
+ R13: 10000 node_3_6 - contract_3_6 >= 0.0101
+ R15: 10000 node_3_7 - contract_3_7 >= 0.0101
+ R16: 10000 node_3_8 - contract_3_8 <= 10000.01
+ R17: 10000 node_3_8 - contract_3_8 >= 0.0101
+ R22: 10000 node_3_11 - contract_3_11 <= 10000.01
+ R23: 10000 node_3_11 - contract_3_11 >= 0.0101
+ R26: 10000 node_3_13 - contract_3_13 <= 10000.01
+ R29: 10000 node_3_14 - contract_3_14 >= 0.0101
+ R30: 10000 node_3_15 - contract_3_15 <= 10000.01
+ R33: 10000 node_3_16 - contract_3_16 >= 0.0101
+ R41: 10000 node_3_20 - contract_3_20 >= 0.0101
+ R42: 10000 node_3_21 - contract_3_21 <= 10000.01
+ R46: 10000 node_3_23 - contract_3_23 <= 10000.01
+ R53: 10000 node_3_26 - contract_3_26 >= 0.0101
+ R57: 10000 node_3_28 - contract_3_28 >= 0.0101
+ R58: 10000 node_3_29 - contract_3_29 <= 10000.01
+ R61: 10000 node_3_30 - contract_3_30 >= 0.0101
+ R63: 10000 node_3_31 - contract_3_31 >= 0.0101
+ R71: 10000 node_3_35 - contract_3_35 >= 0.0101
+ R77: 10000 node_3_38 - contract_3_38 >= 0.0101
+ R83: 10000 node_3_41 - contract_3_41 >= 0.0101
+ R93: 10000 node_3_46 - contract_3_46 >= 0.0101
+ R96: 10000 node_3_48 - contract_3_48 <= 10000.01
+ R97: 10000 node_3_48 - contract_3_48 >= 0.0101
+ R99: 10000 node_3_49 - contract_3_49 >= 0.0101
+ R101: 10000 node_3_50 - contract_3_50 >= 0.0101
+ R110: 10000 node_3_55 - contract_3_55 <= 10000.01
+ R117: 10000 node_3_58 - contract_3_58 >= 0.0101
+ R118: 10000 node_3_59 - contract_3_59 <= 10000.01
+ R120: 10000 node_3_60 - contract_3_60 <= 10000.01
+ R122: 10000 node_3_61 - contract_3_61 <= 10000.01
+ R124: 10000 node_3_62 - contract_3_62 <= 10000.01
+ R127: 10000 node_3_63 - contract_3_63 >= 0.0101
+ R136: 10000 node_3_68 - contract_3_68 <= 10000.01
+ R141: 10000 node_3_70 - contract_3_70 >= 0.0101
+ R146: 10000 node_3_73 - contract_3_73 <= 10000.01
+ R149: 10000 node_3_74 - contract_3_74 >= 0.0101
+ R157: 10000 node_3_78 - contract_3_78 >= 0.0101
+ R159: 10000 node_3_79 - contract_3_79 >= 0.0101
+ R161: 10000 node_3_80 - contract_3_80 >= 0.0101
+ R162: 10000 node_3_81 - contract_3_81 <= 10000.01
+ R163: 10000 node_3_81 - contract_3_81 >= 0.0101
+ R166: 10000 node_3_83 - contract_3_83 <= 10000.01
+ R180: 10000 node_3_90 - contract_3_90 <= 10000.01
+ R183: 10000 node_3_91 - contract_3_91 >= 0.0101
+ R184: 10000 node_3_92 - contract_3_92 <= 10000.01
+ R186: 10000 node_3_93 - contract_3_93 <= 10000.01
+ R191: 10000 node_3_95 - contract_3_95 >= 0.0101
+ R192: 10000 node_3_96 - contract_3_96 <= 10000.01
+ R193: 10000 node_3_96 - contract_3_96 >= 0.0101
+ R194: 10000 node_3_97 - contract_3_97 <= 10000.01
+ R195: 10000 node_3_97 - contract_3_97 >= 0.0101
+ R199: 10000 node_3_99 - contract_3_99 >= 0.0101
+ R203: 10000 node_3_101 - contract_3_101 >= 0.0101
+ R206: 10000 node_3_103 - contract_3_103 <= 10000.01
+ R207: 10000 node_3_103 - contract_3_103 >= 0.0101
+ R209: 10000 node_3_104 - contract_3_104 >= 0.0101
+ R210: 10000 node_3_105 - contract_3_105 <= 10000.01
+ R220: 10000 node_3_110 - contract_3_110 <= 10000.01
+ R221: 10000 node_3_110 - contract_3_110 >= 0.0101
+ R226: 10000 node_3_113 - contract_3_113 <= 10000.01
+ R227: 10000 node_3_113 - contract_3_113 >= 0.0101
+ R240: 10000 node_3_120 - contract_3_120 <= 10000.01
+ R242: 10000 node_3_121 - contract_3_121 <= 10000.01
+ R244: 10000 node_3_122 - contract_3_122 <= 10000.01
+ R245: 10000 node_3_122 - contract_3_122 >= 0.0101
+ R254: 10000 node_3_127 - contract_3_127 <= 10000.01
+ R261: 10000 node_3_130 - contract_3_130 >= 0.0101
+ R266: 10000 node_3_133 - contract_3_133 <= 10000.01
+ R269: 10000 node_3_134 - contract_3_134 >= 0.0101
+ R273: 10000 node_3_136 - contract_3_136 >= 0.0101
+ R274: 10000 node_3_137 - contract_3_137 <= 10000.01
+ R276: 10000 node_3_138 - contract_3_138 <= 10000.01
+ R281: 10000 node_3_140 - contract_3_140 >= 0.0101
+ R284: 10000 node_3_142 - contract_3_142 <= 10000.01
+ R285: 10000 node_3_142 - contract_3_142 >= 0.0101
+ R288: 10000 node_3_144 - contract_3_144 <= 10000.01
+ R289: 10000 node_3_144 - contract_3_144 >= 0.0101
+ R290: 10000 node_3_145 - contract_3_145 <= 10000.01
+ R291: 10000 node_3_145 - contract_3_145 >= 0.0101
+ R293: 10000 node_3_146 - contract_3_146 >= 0.0101
+ R301: 10000 node_3_150 - contract_3_150 >= 0.0101
+ R303: contract_3_0 + 10000 node_4_0 >= 0.0101
+ R306: contract_3_2 + 10000 node_4_2 <= 10000.01
+ R307: contract_3_2 + 10000 node_4_2 >= 0.0101
+ R308: contract_3_3 + 10000 node_4_3 <= 10000.01
+ R314: contract_3_6 + 10000 node_4_6 <= 10000.01
+ R315: contract_3_6 + 10000 node_4_6 >= 0.0101
+ R316: contract_3_7 + 10000 node_4_7 <= 10000.01
+ R319: contract_3_8 + 10000 node_4_8 >= 0.0101
+ R320: contract_3_9 + 10000 node_4_9 <= 10000.01
+ R327: contract_3_12 + 10000 node_4_12 >= 0.0101
+ R329: contract_3_13 + 10000 node_4_13 >= 0.0101
+ R331: contract_3_14 + 10000 node_4_14 >= 0.0101
+ R336: contract_3_17 + 10000 node_4_17 <= 10000.01
+ R338: contract_3_18 + 10000 node_4_18 <= 10000.01
+ R342: contract_3_20 + 10000 node_4_20 <= 10000.01
+ R346: contract_3_22 + 10000 node_4_22 <= 10000.01
+ R347: contract_3_22 + 10000 node_4_22 >= 0.0101
+ R350: contract_3_24 + 10000 node_4_24 <= 10000.01
+ R351: contract_3_24 + 10000 node_4_24 >= 0.0101
+ R352: contract_3_25 + 10000 node_4_25 <= 10000.01
+ R355: contract_3_26 + 10000 node_4_26 >= 0.0101
+ R356: contract_3_27 + 10000 node_4_27 <= 10000.01
+ R362: contract_3_30 + 10000 node_4_30 <= 10000.01
+ R364: contract_3_31 + 10000 node_4_31 <= 10000.01
+ R366: contract_3_32 + 10000 node_4_32 <= 10000.01
+ R368: contract_3_33 + 10000 node_4_33 <= 10000.01
+ R371: contract_3_34 + 10000 node_4_34 >= 0.0101
+ R375: contract_3_36 + 10000 node_4_36 >= 0.0101
+ R376: contract_3_37 + 10000 node_4_37 <= 10000.01
+ R377: contract_3_37 + 10000 node_4_37 >= 0.0101
+ R380: contract_3_39 + 10000 node_4_39 <= 10000.01
+ R385: contract_3_41 + 10000 node_4_41 >= 0.0101
+ R386: contract_3_42 + 10000 node_4_42 <= 10000.01
+ R387: contract_3_42 + 10000 node_4_42 >= 0.0101
+ R390: contract_3_44 + 10000 node_4_44 <= 10000.01
+ R392: contract_3_45 + 10000 node_4_45 <= 10000.01
+ R393: contract_3_45 + 10000 node_4_45 >= 0.0101
+ R394: contract_3_46 + 10000 node_4_46 <= 10000.01
+ R395: contract_3_46 + 10000 node_4_46 >= 0.0101
+ R399: contract_3_48 + 10000 node_4_48 >= 0.0101
+ R403: contract_3_50 + 10000 node_4_50 >= 0.0101
+ R408: contract_3_53 + 10000 node_4_53 <= 10000.01
+ R411: contract_3_54 + 10000 node_4_54 >= 0.0101
+ R415: contract_3_56 + 10000 node_4_56 >= 0.0101
+ R417: contract_3_57 + 10000 node_4_57 >= 0.0101
+ R421: contract_3_59 + 10000 node_4_59 >= 0.0101
+ R424: contract_3_61 + 10000 node_4_61 <= 10000.01
+ R432: contract_3_65 + 10000 node_4_65 <= 10000.01
+ R433: contract_3_65 + 10000 node_4_65 >= 0.0101
+ R437: contract_3_67 + 10000 node_4_67 >= 0.0101
+ R454: contract_3_76 + 10000 node_4_76 <= 10000.01
+ R457: contract_3_77 + 10000 node_4_77 >= 0.0101
+ R458: contract_3_78 + 10000 node_4_78 <= 10000.01
+ R463: contract_3_80 + 10000 node_4_80 >= 0.0101
+ R467: contract_3_82 + 10000 node_4_82 >= 0.0101
+ R470: contract_3_84 + 10000 node_4_84 <= 10000.01
+ R472: contract_3_85 + 10000 node_4_85 <= 10000.01
+ R473: contract_3_85 + 10000 node_4_85 >= 0.0101
+ R474: contract_3_86 + 10000 node_4_86 <= 10000.01
+ R475: contract_3_86 + 10000 node_4_86 >= 0.0101
+ R476: contract_3_87 + 10000 node_4_87 <= 10000.01
+ R478: contract_3_88 + 10000 node_4_88 <= 10000.01
+ R479: contract_3_88 + 10000 node_4_88 >= 0.0101
+ R481: contract_3_89 + 10000 node_4_89 >= 0.0101
+ R482: contract_3_90 + 10000 node_4_90 <= 10000.01
+ R485: contract_3_91 + 10000 node_4_91 >= 0.0101
+ R492: contract_3_95 + 10000 node_4_95 <= 10000.01
+ R493: contract_3_95 + 10000 node_4_95 >= 0.0101
+ R494: contract_3_96 + 10000 node_4_96 <= 10000.01
+ R500: contract_3_99 + 10000 node_4_99 <= 10000.01
+ R501: contract_3_99 + 10000 node_4_99 >= 0.0101
+ R503: contract_3_100 + 10000 node_4_100 >= 0.0101
+ R508: contract_3_103 + 10000 node_4_103 <= 10000.01
+ R510: contract_3_104 + 10000 node_4_104 <= 10000.01
+ R512: contract_3_105 + 10000 node_4_105 <= 10000.01
+ R513: contract_3_105 + 10000 node_4_105 >= 0.0101
+ R517: contract_3_107 + 10000 node_4_107 >= 0.0101
+ R520: contract_3_109 + 10000 node_4_109 <= 10000.01
+ R526: contract_3_112 + 10000 node_4_112 <= 10000.01
+ R529: contract_3_113 + 10000 node_4_113 >= 0.0101
+ R530: contract_3_114 + 10000 node_4_114 <= 10000.01
+ R531: contract_3_114 + 10000 node_4_114 >= 0.0101
+ R535: contract_3_116 + 10000 node_4_116 >= 0.0101
+ R536: contract_3_117 + 10000 node_4_117 <= 10000.01
+ R539: contract_3_118 + 10000 node_4_118 >= 0.0101
+ R542: contract_3_120 + 10000 node_4_120 <= 10000.01
+ R545: contract_3_121 + 10000 node_4_121 >= 0.0101
+ R547: contract_3_122 + 10000 node_4_122 >= 0.0101
+ R549: contract_3_123 + 10000 node_4_123 >= 0.0101
+ R550: contract_3_124 + 10000 node_4_124 <= 10000.01
+ R552: contract_3_125 + 10000 node_4_125 <= 10000.01
+ R556: contract_3_127 + 10000 node_4_127 <= 10000.01
+ R559: contract_3_128 + 10000 node_4_128 >= 0.0101
+ R565: contract_3_131 + 10000 node_4_131 >= 0.0101
+ R569: contract_3_133 + 10000 node_4_133 >= 0.0101
+ R571: contract_3_134 + 10000 node_4_134 >= 0.0101
+ R572: contract_3_135 + 10000 node_4_135 <= 10000.01
+ R573: contract_3_135 + 10000 node_4_135 >= 0.0101
+ R575: contract_3_136 + 10000 node_4_136 >= 0.0101
+ R576: contract_3_137 + 10000 node_4_137 <= 10000.01
+ R577: contract_3_137 + 10000 node_4_137 >= 0.0101
+ R583: contract_3_140 + 10000 node_4_140 >= 0.0101
+ R585: contract_3_141 + 10000 node_4_141 >= 0.0101
+ R591: contract_3_144 + 10000 node_4_144 >= 0.0101
+ R592: contract_3_145 + 10000 node_4_145 <= 10000.01
+ R593: contract_3_145 + 10000 node_4_145 >= 0.0101
+ R598: contract_3_148 + 10000 node_4_148 <= 10000.01
+ R601: contract_3_149 + 10000 node_4_149 >= 0.0101
+ R604: 10000 node_5_0 - contract_4_0 <= 10000.01
+ R607: 10000 node_5_1 - contract_4_1 >= 0.0101
+ R612: 10000 node_5_4 - contract_4_4 <= 10000.01
+ R613: 10000 node_5_4 - contract_4_4 >= 0.0101
+ R614: 10000 node_5_5 - contract_4_5 <= 10000.01
+ R615: 10000 node_5_5 - contract_4_5 >= 0.0101
+ R621: 10000 node_5_8 - contract_4_8 >= 0.0101
+ R623: 10000 node_5_9 - contract_4_9 >= 0.0101
+ R624: 10000 node_5_10 - contract_4_10 <= 10000.01
+ R625: 10000 node_5_10 - contract_4_10 >= 0.0101
+ R627: 10000 node_5_11 - contract_4_11 >= 0.0101
+ R628: 10000 node_5_12 - contract_4_12 <= 10000.01
+ R635: 10000 node_5_15 - contract_4_15 >= 0.0101
+ R636: 10000 node_5_16 - contract_4_16 <= 10000.01
+ R637: 10000 node_5_16 - contract_4_16 >= 0.0101
+ R639: 10000 node_5_17 - contract_4_17 >= 0.0101
+ R640: 10000 node_5_18 - contract_4_18 <= 10000.01
+ R641: 10000 node_5_18 - contract_4_18 >= 0.0101
+ R642: 10000 node_5_19 - contract_4_19 <= 10000.01
+ R656: 10000 node_5_26 - contract_4_26 <= 10000.01
+ R657: 10000 node_5_26 - contract_4_26 >= 0.0101
+ R659: 10000 node_5_27 - contract_4_27 >= 0.0101
+ R665: 10000 node_5_30 - contract_4_30 >= 0.0101
+ R686: 10000 node_5_41 - contract_4_41 <= 10000.01
+ R687: 10000 node_5_41 - contract_4_41 >= 0.0101
+ R688: 10000 node_5_42 - contract_4_42 <= 10000.01
+ R689: 10000 node_5_42 - contract_4_42 >= 0.0101
+ R690: 10000 node_5_43 - contract_4_43 <= 10000.01
+ R691: 10000 node_5_43 - contract_4_43 >= 0.0101
+ R694: 10000 node_5_45 - contract_4_45 <= 10000.01
+ R712: 10000 node_5_54 - contract_4_54 <= 10000.01
+ R717: 10000 node_5_56 - contract_4_56 >= 0.0101
+ R725: 10000 node_5_60 - contract_4_60 >= 0.0101
+ R732: 10000 node_5_64 - contract_4_64 <= 10000.01
+ R733: 10000 node_5_64 - contract_4_64 >= 0.0101
+ R736: 10000 node_5_66 - contract_4_66 <= 10000.01
+ R738: 10000 node_5_67 - contract_4_67 <= 10000.01
+ R743: 10000 node_5_69 - contract_4_69 >= 0.0101
+ R752: 10000 node_5_74 - contract_4_74 <= 10000.01
+ R755: 10000 node_5_75 - contract_4_75 >= 0.0101
+ R758: 10000 node_5_77 - contract_4_77 <= 10000.01
+ R760: 10000 node_5_78 - contract_4_78 <= 10000.01
+ R763: 10000 node_5_79 - contract_4_79 >= 0.0101
+ R766: 10000 node_5_81 - contract_4_81 <= 10000.01
+ R767: 10000 node_5_81 - contract_4_81 >= 0.0101
+ R768: 10000 node_5_82 - contract_4_82 <= 10000.01
+ R771: 10000 node_5_83 - contract_4_83 >= 0.0101
+ R773: 10000 node_5_84 - contract_4_84 >= 0.0101
+ R779: 10000 node_5_87 - contract_4_87 >= 0.0101
+ R782: 10000 node_5_89 - contract_4_89 <= 10000.01
+ R793: 10000 node_5_94 - contract_4_94 >= 0.0101
+ R794: 10000 node_5_95 - contract_4_95 <= 10000.01
+ R795: 10000 node_5_95 - contract_4_95 >= 0.0101
+ R798: 10000 node_5_97 - contract_4_97 <= 10000.01
+ R801: 10000 node_5_98 - contract_4_98 >= 0.0101
+ R803: 10000 node_5_99 - contract_4_99 >= 0.0101
+ R804: 10000 node_5_100 - contract_4_100 <= 10000.01
+ R810: 10000 node_5_103 - contract_4_103 <= 10000.01
+ R816: 10000 node_5_106 - contract_4_106 <= 10000.01
+ R823: 10000 node_5_109 - contract_4_109 >= 0.0101
+ R825: 10000 node_5_110 - contract_4_110 >= 0.0101
+ R826: 10000 node_5_111 - contract_4_111 <= 10000.01
+ R827: 10000 node_5_111 - contract_4_111 >= 0.0101
+ R839: 10000 node_5_117 - contract_4_117 >= 0.0101
+ R841: 10000 node_5_118 - contract_4_118 >= 0.0101
+ R842: 10000 node_5_119 - contract_4_119 <= 10000.01
+ R849: 10000 node_5_122 - contract_4_122 >= 0.0101
+ R850: 10000 node_5_123 - contract_4_123 <= 10000.01
+ R853: 10000 node_5_124 - contract_4_124 >= 0.0101
+ R856: 10000 node_5_126 - contract_4_126 <= 10000.01
+ R861: 10000 node_5_128 - contract_4_128 >= 0.0101
+ R862: 10000 node_5_129 - contract_4_129 <= 10000.01
+ R867: 10000 node_5_131 - contract_4_131 >= 0.0101
+ R868: 10000 node_5_132 - contract_4_132 <= 10000.01
+ R872: 10000 node_5_134 - contract_4_134 <= 10000.01
+ R875: 10000 node_5_135 - contract_4_135 >= 0.0101
+ R877: 10000 node_5_136 - contract_4_136 >= 0.0101
+ R878: 10000 node_5_137 - contract_4_137 <= 10000.01
+ R884: 10000 node_5_140 - contract_4_140 <= 10000.01
+ R890: 10000 node_5_143 - contract_4_143 <= 10000.01
+ R894: 10000 node_5_145 - contract_4_145 <= 10000.01
+ R899: 10000 node_5_147 - contract_4_147 >= 0.0101
+ R902: 10000 node_5_149 - contract_4_149 <= 10000.01
+ R903: 10000 node_5_149 - contract_4_149 >= 0.0101
+ R905: 10000 node_5_150 - contract_4_150 >= 0.0101
+ R907: contract_4_0 + 10000 node_6_0 >= 0.0101
+ R908: contract_4_1 + 10000 node_6_1 <= 10000.01
+ R911: contract_4_2 + 10000 node_6_2 >= 0.0101
+ R916: contract_4_5 + 10000 node_6_5 <= 10000.01
+ R919: contract_4_6 + 10000 node_6_6 >= 0.0101
+ R923: contract_4_8 + 10000 node_6_8 >= 0.0101
+ R928: contract_4_11 + 10000 node_6_11 <= 10000.01
+ R929: contract_4_11 + 10000 node_6_11 >= 0.0101
+ R931: contract_4_12 + 10000 node_6_12 >= 0.0101
+ R933: contract_4_13 + 10000 node_6_13 >= 0.0101
+ R946: contract_4_20 + 10000 node_6_20 <= 10000.01
+ R952: contract_4_23 + 10000 node_6_23 <= 10000.01
+ R955: contract_4_24 + 10000 node_6_24 >= 0.0101
+ R963: contract_4_28 + 10000 node_6_28 >= 0.0101
+ R967: contract_4_30 + 10000 node_6_30 >= 0.0101
+ R969: contract_4_31 + 10000 node_6_31 >= 0.0101
+ R970: contract_4_32 + 10000 node_6_32 <= 10000.01
+ R972: contract_4_33 + 10000 node_6_33 <= 10000.01
+ R974: contract_4_34 + 10000 node_6_34 <= 10000.01
+ R975: contract_4_34 + 10000 node_6_34 >= 0.0101
+ R981: contract_4_37 + 10000 node_6_37 >= 0.0101
+ R982: contract_4_38 + 10000 node_6_38 <= 10000.01
+ R983: contract_4_38 + 10000 node_6_38 >= 0.0101
+ R984: contract_4_39 + 10000 node_6_39 <= 10000.01
+ R987: contract_4_40 + 10000 node_6_40 >= 0.0101
+ R988: contract_4_41 + 10000 node_6_41 <= 10000.01
+ R989: contract_4_41 + 10000 node_6_41 >= 0.0101
+ R991: contract_4_42 + 10000 node_6_42 >= 0.0101
+ R995: contract_4_44 + 10000 node_6_44 >= 0.0101
+ R996: contract_4_45 + 10000 node_6_45 <= 10000.01
+ R1002: contract_4_48 + 10000 node_6_48 <= 10000.01
+ R1004: contract_4_49 + 10000 node_6_49 <= 10000.01
+ R1008: contract_4_51 + 10000 node_6_51 <= 10000.01
+ R1010: contract_4_52 + 10000 node_6_52 <= 10000.01
+ R1012: contract_4_53 + 10000 node_6_53 <= 10000.01
+ R1017: contract_4_55 + 10000 node_6_55 >= 0.0101
+ R1018: contract_4_56 + 10000 node_6_56 <= 10000.01
+ R1022: contract_4_58 + 10000 node_6_58 <= 10000.01
+ R1023: contract_4_58 + 10000 node_6_58 >= 0.0101
+ R1027: contract_4_60 + 10000 node_6_60 >= 0.0101
+ R1035: contract_4_64 + 10000 node_6_64 >= 0.0101
+ R1039: contract_4_66 + 10000 node_6_66 >= 0.0101
+ R1040: contract_4_67 + 10000 node_6_67 <= 10000.01
+ R1042: contract_4_68 + 10000 node_6_68 <= 10000.01
+ R1045: contract_4_69 + 10000 node_6_69 >= 0.0101
+ R1048: contract_4_71 + 10000 node_6_71 <= 10000.01
+ R1051: contract_4_72 + 10000 node_6_72 >= 0.0101
+ R1052: contract_4_73 + 10000 node_6_73 <= 10000.01
+ R1058: contract_4_76 + 10000 node_6_76 <= 10000.01
+ R1060: contract_4_77 + 10000 node_6_77 <= 10000.01
+ R1061: contract_4_77 + 10000 node_6_77 >= 0.0101
+ R1068: contract_4_81 + 10000 node_6_81 <= 10000.01
+ R1069: contract_4_81 + 10000 node_6_81 >= 0.0101
+ R1075: contract_4_84 + 10000 node_6_84 >= 0.0101
+ R1080: contract_4_87 + 10000 node_6_87 <= 10000.01
+ R1084: contract_4_89 + 10000 node_6_89 <= 10000.01
+ R1086: contract_4_90 + 10000 node_6_90 <= 10000.01
+ R1089: contract_4_91 + 10000 node_6_91 >= 0.0101
+ R1094: contract_4_94 + 10000 node_6_94 <= 10000.01
+ R1112: contract_4_103 + 10000 node_6_103 <= 10000.01
+ R1113: contract_4_103 + 10000 node_6_103 >= 0.0101
+ R1114: contract_4_104 + 10000 node_6_104 <= 10000.01
+ R1115: contract_4_104 + 10000 node_6_104 >= 0.0101
+ R1123: contract_4_108 + 10000 node_6_108 >= 0.0101
+ R1125: contract_4_109 + 10000 node_6_109 >= 0.0101
+ R1127: contract_4_110 + 10000 node_6_110 >= 0.0101
+ R1133: contract_4_113 + 10000 node_6_113 >= 0.0101
+ R1137: contract_4_115 + 10000 node_6_115 >= 0.0101
+ R1138: contract_4_116 + 10000 node_6_116 <= 10000.01
+ R1139: contract_4_116 + 10000 node_6_116 >= 0.0101
+ R1142: contract_4_118 + 10000 node_6_118 <= 10000.01
+ R1147: contract_4_120 + 10000 node_6_120 >= 0.0101
+ R1148: contract_4_121 + 10000 node_6_121 <= 10000.01
+ R1150: contract_4_122 + 10000 node_6_122 <= 10000.01
+ R1154: contract_4_124 + 10000 node_6_124 <= 10000.01
+ R1156: contract_4_125 + 10000 node_6_125 <= 10000.01
+ R1157: contract_4_125 + 10000 node_6_125 >= 0.0101
+ R1158: contract_4_126 + 10000 node_6_126 <= 10000.01
+ R1162: contract_4_128 + 10000 node_6_128 <= 10000.01
+ R1169: contract_4_131 + 10000 node_6_131 >= 0.0101
+ R1171: contract_4_132 + 10000 node_6_132 >= 0.0101
+ R1177: contract_4_135 + 10000 node_6_135 >= 0.0101
+ R1179: contract_4_136 + 10000 node_6_136 >= 0.0101
+ R1183: contract_4_138 + 10000 node_6_138 >= 0.0101
+ R1185: contract_4_139 + 10000 node_6_139 >= 0.0101
+ R1187: contract_4_140 + 10000 node_6_140 >= 0.0101
+ R1189: contract_4_141 + 10000 node_6_141 >= 0.0101
+ R1190: contract_4_142 + 10000 node_6_142 <= 10000.01
+ R1196: contract_4_145 + 10000 node_6_145 <= 10000.01
+ R1201: contract_4_147 + 10000 node_6_147 >= 0.0101
+ R1202: contract_4_148 + 10000 node_6_148 <= 10000.01
+ R1209: 10000 node_8_0 + contract_6_0 <= 10200
+ R1212: - contract_6_0 + 10000 node_9_0 >= -199.9999
+ R1213: node_7_0 = 1
+ R1214: 10000 node_11_0 + contract_2_0 <= 10010
+ R1216: - contract_2_0 + 10000 node_12_0 <= 9990
+ R1218: node_10_0 = 1
+ R1219: contract_4_0 + 10000 node_14_0 <= 10000
+ R1220: contract_4_0 + 10000 node_14_0 >= 0.0001
+ R1222: - contract_4_0 + 10000 node_15_0 >= 0.0001
+ R1223: node_13_0 = 1
+ R1224: 10000 node_17_0 + contract_5_0 <= 10000
+ R1226: - contract_5_0 + 10000 node_18_0 <= 10000
+ R1227: - contract_5_0 + 10000 node_18_0 >= 0.0001
+ R1228: node_16_0 = 1
+ R1237: - contract_4_1 + 10000 node_29_1 <= 10000
+ R1238: - contract_4_1 + 10000 node_29_1 >= 0.0001
+ R1241: 10000 node_34_2 + contract_0_2 - contract_1_2 <= 10000
+ R1242: 10000 node_34_2 + contract_0_2 - contract_1_2 >= 0.0001
+ R1243: - contract_4_2 + 10000 node_35_2 <= 10000
+ R1248: 10000 node_40_3 + contract_0_3 - contract_1_3 >= 0.0001
+ R1249: - contract_4_3 + 10000 node_41_3 <= 10000
+ R1250: - contract_4_3 + 10000 node_41_3 >= 0.0001
+ R1251: 10000 node_42_3 - contract_6_3 <= 9700
+ R1252: 10000 node_42_3 - contract_6_3 >= -299.9999
+ R1254: 10000 node_46_4 + contract_0_4 - contract_1_4 >= 0.0001
+ R1256: - contract_4_4 + 10000 node_47_4 >= 0.0001
+ R1260: 10000 node_52_5 + contract_0_5 - contract_1_5 >= 0.0001
+ R1262: - contract_4_5 + 10000 node_53_5 >= 0.0001
+ R1263: 10000 node_54_5 - contract_6_5 <= 9700
+ R1264: 10000 node_54_5 - contract_6_5 >= -299.9999
+ R1265: 10000 node_58_6 + contract_0_6 - contract_1_6 <= 10000
+ R1266: 10000 node_58_6 + contract_0_6 - contract_1_6 >= 0.0001
+ R1267: - contract_4_6 + 10000 node_59_6 <= 10000
+ R1268: - contract_4_6 + 10000 node_59_6 >= 0.0001
+ R1269: 10000 node_60_6 - contract_6_6 <= 9700
+ R1271: 10000 node_64_7 + contract_0_7 - contract_1_7 <= 10000
+ R1272: 10000 node_64_7 + contract_0_7 - contract_1_7 >= 0.0001
+ R1273: - contract_4_7 + 10000 node_65_7 <= 10000
+ R1274: - contract_4_7 + 10000 node_65_7 >= 0.0001
+ R1275: 10000 node_66_7 - contract_6_7 <= 9700
+ R1278: 10000 node_70_8 + contract_0_8 - contract_1_8 >= 0.0001
+ R1280: - contract_4_8 + 10000 node_71_8 >= 0.0001
+ R1285: - contract_4_9 + 10000 node_77_9 <= 10000
+ R1294: 10000 node_84_10 - contract_6_10 >= -299.9999
+ R1298: - contract_4_11 + 10000 node_89_11 >= 0.0001
+ R1300: 10000 node_90_11 - contract_6_11 >= -299.9999
+ R1308: 10000 node_100_13 + contract_0_13 - contract_1_13 >= 0.0001
+ R1310: - contract_4_13 + 10000 node_101_13 >= 0.0001
+ R1311: 10000 node_102_13 - contract_6_13 <= 9700
+ R1312: 10000 node_102_13 - contract_6_13 >= -299.9999
+ R1314: 10000 node_106_14 + contract_0_14 - contract_1_14 >= 0.0001
+ R1320: 10000 node_112_15 + contract_0_15 - contract_1_15 >= 0.0001
+ R1327: - contract_4_16 + 10000 node_119_16 <= 10000
+ R1330: 10000 node_120_16 - contract_6_16 >= -299.9999
+ R1331: 10000 node_124_17 + contract_0_17 - contract_1_17 <= 10000
+ R1332: 10000 node_124_17 + contract_0_17 - contract_1_17 >= 0.0001
+ R1335: 10000 node_126_17 - contract_6_17 <= 9700
+ R1338: 10000 node_130_18 + contract_0_18 - contract_1_18 >= 0.0001
+ R1339: - contract_4_18 + 10000 node_131_18 <= 10000
+ R1340: - contract_4_18 + 10000 node_131_18 >= 0.0001
+ R1345: - contract_4_19 + 10000 node_137_19 <= 10000
+ R1354: 10000 node_144_20 - contract_6_20 >= -299.9999
+ R1361: 10000 node_154_22 + contract_0_22 - contract_1_22 <= 10000
+ R1362: 10000 node_154_22 + contract_0_22 - contract_1_22 >= 0.0001
+ R1364: - contract_4_22 + 10000 node_155_22 >= 0.0001
+ R1368: 10000 node_160_23 + contract_0_23 - contract_1_23 >= 0.0001
+ R1382: - contract_4_25 + 10000 node_173_25 >= 0.0001
+ R1393: - contract_4_27 + 10000 node_185_27 <= 10000
+ R1398: 10000 node_190_28 + contract_0_28 - contract_1_28 >= 0.0001
+ R1405: - contract_4_29 + 10000 node_197_29 <= 10000
+ R1411: - contract_4_30 + 10000 node_203_30 <= 10000
+ R1413: 10000 node_204_30 - contract_6_30 <= 9700
+ R1414: 10000 node_204_30 - contract_6_30 >= -299.9999
+ R1418: - contract_4_31 + 10000 node_209_31 >= 0.0001
+ R1423: - contract_4_32 + 10000 node_215_32 <= 10000
+ R1434: 10000 node_226_34 + contract_0_34 - contract_1_34 >= 0.0001
+ R1435: - contract_4_34 + 10000 node_227_34 <= 10000
+ R1439: 10000 node_232_35 + contract_0_35 - contract_1_35 <= 10000
+ R1441: - contract_4_35 + 10000 node_233_35 <= 10000
+ R1444: 10000 node_234_35 - contract_6_35 >= -299.9999
+ R1445: 10000 node_238_36 + contract_0_36 - contract_1_36 <= 10000
+ R1447: - contract_4_36 + 10000 node_239_36 <= 10000
+ R1450: 10000 node_240_36 - contract_6_36 >= -299.9999
+ R1452: 10000 node_244_37 + contract_0_37 - contract_1_37 >= 0.0001
+ R1454: - contract_4_37 + 10000 node_245_37 >= 0.0001
+ R1467: 10000 node_258_39 - contract_6_39 <= 9700
+ R1469: 10000 node_262_40 + contract_0_40 - contract_1_40 <= 10000
+ R1472: - contract_4_40 + 10000 node_263_40 >= 0.0001
+ R1475: 10000 node_268_41 + contract_0_41 - contract_1_41 <= 10000
+ R1477: - contract_4_41 + 10000 node_269_41 <= 10000
+ R1479: 10000 node_270_41 - contract_6_41 <= 9700
+ R1483: - contract_4_42 + 10000 node_275_42 <= 10000
+ R1486: 10000 node_276_42 - contract_6_42 >= -299.9999
+ R1487: 10000 node_280_43 + contract_0_43 - contract_1_43 <= 10000
+ R1491: 10000 node_282_43 - contract_6_43 <= 9700
+ R1494: 10000 node_286_44 + contract_0_44 - contract_1_44 >= 0.0001
+ R1498: 10000 node_288_44 - contract_6_44 >= -299.9999
+ R1500: 10000 node_292_45 + contract_0_45 - contract_1_45 >= 0.0001
+ R1503: 10000 node_294_45 - contract_6_45 <= 9700
+ R1508: - contract_4_46 + 10000 node_299_46 >= 0.0001
+ R1509: 10000 node_300_46 - contract_6_46 <= 9700
+ R1510: 10000 node_300_46 - contract_6_46 >= -299.9999
+ R1513: - contract_4_47 + 10000 node_305_47 <= 10000
+ R1515: 10000 node_306_47 - contract_6_47 <= 9700
+ R1517: 10000 node_310_48 + contract_0_48 - contract_1_48 <= 10000
+ R1518: 10000 node_310_48 + contract_0_48 - contract_1_48 >= 0.0001
+ R1519: - contract_4_48 + 10000 node_311_48 <= 10000
+ R1520: - contract_4_48 + 10000 node_311_48 >= 0.0001
+ R1525: - contract_4_49 + 10000 node_317_49 <= 10000
+ R1535: 10000 node_328_51 + contract_0_51 - contract_1_51 <= 10000
+ R1536: 10000 node_328_51 + contract_0_51 - contract_1_51 >= 0.0001
+ R1539: 10000 node_330_51 - contract_6_51 <= 9700
+ R1540: 10000 node_330_51 - contract_6_51 >= -299.9999
+ R1542: 10000 node_334_52 + contract_0_52 - contract_1_52 >= 0.0001
+ R1545: 10000 node_336_52 - contract_6_52 <= 9700
+ R1548: 10000 node_340_53 + contract_0_53 - contract_1_53 >= 0.0001
+ R1550: - contract_4_53 + 10000 node_341_53 >= 0.0001
+ R1556: - contract_4_54 + 10000 node_347_54 >= 0.0001
+ R1557: 10000 node_348_54 - contract_6_54 <= 9700
+ R1559: 10000 node_352_55 + contract_0_55 - contract_1_55 <= 10000
+ R1562: - contract_4_55 + 10000 node_353_55 >= 0.0001
+ R1563: 10000 node_354_55 - contract_6_55 <= 9700
+ R1564: 10000 node_354_55 - contract_6_55 >= -299.9999
+ R1570: 10000 node_360_56 - contract_6_56 >= -299.9999
+ R1571: 10000 node_364_57 + contract_0_57 - contract_1_57 <= 10000
+ R1575: 10000 node_366_57 - contract_6_57 <= 9700
+ R1578: 10000 node_370_58 + contract_0_58 - contract_1_58 >= 0.0001
+ R1602: 10000 node_394_62 + contract_0_62 - contract_1_62 >= 0.0001
+ R1605: 10000 node_396_62 - contract_6_62 <= 9700
+ R1608: 10000 node_400_63 + contract_0_63 - contract_1_63 >= 0.0001
+ R1609: - contract_4_63 + 10000 node_401_63 <= 10000
+ R1611: 10000 node_402_63 - contract_6_63 <= 9700
+ R1615: - contract_4_64 + 10000 node_407_64 <= 10000
+ R1618: 10000 node_408_64 - contract_6_64 >= -299.9999
+ R1621: - contract_4_65 + 10000 node_413_65 <= 10000
+ R1624: 10000 node_414_65 - contract_6_65 >= -299.9999
+ R1629: 10000 node_420_66 - contract_6_66 <= 9700
+ R1630: 10000 node_420_66 - contract_6_66 >= -299.9999
+ R1632: 10000 node_424_67 + contract_0_67 - contract_1_67 >= 0.0001
+ R1638: 10000 node_430_68 + contract_0_68 - contract_1_68 >= 0.0001
+ R1646: - contract_4_69 + 10000 node_437_69 >= 0.0001
+ R1656: 10000 node_448_71 + contract_0_71 - contract_1_71 >= 0.0001
+ R1658: - contract_4_71 + 10000 node_449_71 >= 0.0001
+ R1660: 10000 node_450_71 - contract_6_71 >= -299.9999
+ R1667: 10000 node_460_73 + contract_0_73 - contract_1_73 <= 10000
+ R1674: 10000 node_466_74 + contract_0_74 - contract_1_74 >= 0.0001
+ R1679: 10000 node_472_75 + contract_0_75 - contract_1_75 <= 10000
+ R1682: - contract_4_75 + 10000 node_473_75 >= 0.0001
+ R1684: 10000 node_474_75 - contract_6_75 >= -299.9999
+ R1686: 10000 node_478_76 + contract_0_76 - contract_1_76 >= 0.0001
+ R1687: - contract_4_76 + 10000 node_479_76 <= 10000
+ R1690: 10000 node_480_76 - contract_6_76 >= -299.9999
+ R1692: 10000 node_484_77 + contract_0_77 - contract_1_77 >= 0.0001
+ R1694: - contract_4_77 + 10000 node_485_77 >= 0.0001
+ R1696: 10000 node_486_77 - contract_6_77 >= -299.9999
+ R1701: 10000 node_492_78 - contract_6_78 <= 9700
+ R1708: 10000 node_498_79 - contract_6_79 >= -299.9999
+ R1716: 10000 node_508_81 + contract_0_81 - contract_1_81 >= 0.0001
+ R1717: - contract_4_81 + 10000 node_509_81 <= 10000
+ R1720: 10000 node_510_81 - contract_6_81 >= -299.9999
+ R1728: 10000 node_520_83 + contract_0_83 - contract_1_83 >= 0.0001
+ R1730: - contract_4_83 + 10000 node_521_83 >= 0.0001
+ R1731: 10000 node_522_83 - contract_6_83 <= 9700
+ R1733: 10000 node_526_84 + contract_0_84 - contract_1_84 <= 10000
+ R1734: 10000 node_526_84 + contract_0_84 - contract_1_84 >= 0.0001
+ R1737: 10000 node_528_84 - contract_6_84 <= 9700
+ R1739: 10000 node_532_85 + contract_0_85 - contract_1_85 <= 10000
+ R1740: 10000 node_532_85 + contract_0_85 - contract_1_85 >= 0.0001
+ R1741: - contract_4_85 + 10000 node_533_85 <= 10000
+ R1743: 10000 node_534_85 - contract_6_85 <= 9700
+ R1746: 10000 node_538_86 + contract_0_86 - contract_1_86 >= 0.0001
+ R1750: 10000 node_540_86 - contract_6_86 >= -299.9999
+ R1756: 10000 node_546_87 - contract_6_87 >= -299.9999
+ R1759: - contract_4_88 + 10000 node_551_88 <= 10000
+ R1762: 10000 node_552_88 - contract_6_88 >= -299.9999
+ R1764: 10000 node_556_89 + contract_0_89 - contract_1_89 >= 0.0001
+ R1766: - contract_4_89 + 10000 node_557_89 >= 0.0001
+ R1767: 10000 node_558_89 - contract_6_89 <= 9700
+ R1770: 10000 node_562_90 + contract_0_90 - contract_1_90 >= 0.0001
+ R1771: - contract_4_90 + 10000 node_563_90 <= 10000
+ R1772: - contract_4_90 + 10000 node_563_90 >= 0.0001
+ R1778: - contract_4_91 + 10000 node_569_91 >= 0.0001
+ R1779: 10000 node_570_91 - contract_6_91 <= 9700
+ R1780: 10000 node_570_91 - contract_6_91 >= -299.9999
+ R1784: - contract_4_92 + 10000 node_575_92 >= 0.0001
+ R1789: - contract_4_93 + 10000 node_581_93 <= 10000
+ R1793: 10000 node_586_94 + contract_0_94 - contract_1_94 <= 10000
+ R1799: 10000 node_592_95 + contract_0_95 - contract_1_95 <= 10000
+ R1801: - contract_4_95 + 10000 node_593_95 <= 10000
+ R1804: 10000 node_594_95 - contract_6_95 >= -299.9999
+ R1806: 10000 node_598_96 + contract_0_96 - contract_1_96 >= 0.0001
+ R1807: - contract_4_96 + 10000 node_599_96 <= 10000
+ R1813: - contract_4_97 + 10000 node_605_97 <= 10000
+ R1814: - contract_4_97 + 10000 node_605_97 >= 0.0001
+ R1815: 10000 node_606_97 - contract_6_97 <= 9700
+ R1816: 10000 node_606_97 - contract_6_97 >= -299.9999
+ R1818: 10000 node_610_98 + contract_0_98 - contract_1_98 >= 0.0001
+ R1822: 10000 node_612_98 - contract_6_98 >= -299.9999
+ R1823: 10000 node_616_99 + contract_0_99 - contract_1_99 <= 10000
+ R1834: 10000 node_624_100 - contract_6_100 >= -299.9999
+ R1845: 10000 node_636_102 - contract_6_102 <= 9700
+ R1847: 10000 node_640_103 + contract_0_103 - contract_1_103 <= 10000
+ R1853: 10000 node_646_104 + contract_0_104 - contract_1_104 <= 10000
+ R1854: 10000 node_646_104 + contract_0_104 - contract_1_104 >= 0.0001
+ R1855: - contract_4_104 + 10000 node_647_104 <= 10000
+ R1856: - contract_4_104 + 10000 node_647_104 >= 0.0001
+ R1858: 10000 node_648_104 - contract_6_104 >= -299.9999
+ R1862: - contract_4_105 + 10000 node_653_105 >= 0.0001
+ R1863: 10000 node_654_105 - contract_6_105 <= 9700
+ R1868: - contract_4_106 + 10000 node_659_106 >= 0.0001
+ R1869: 10000 node_660_106 - contract_6_106 <= 9700
+ R1871: 10000 node_664_107 + contract_0_107 - contract_1_107 <= 10000
+ R1875: 10000 node_666_107 - contract_6_107 <= 9700
+ R1877: 10000 node_670_108 + contract_0_108 - contract_1_108 <= 10000
+ R1879: - contract_4_108 + 10000 node_671_108 <= 10000
+ R1881: 10000 node_672_108 - contract_6_108 <= 9700
+ R1882: 10000 node_672_108 - contract_6_108 >= -299.9999
+ R1883: 10000 node_676_109 + contract_0_109 - contract_1_109 <= 10000
+ R1884: 10000 node_676_109 + contract_0_109 - contract_1_109 >= 0.0001
+ R1887: 10000 node_678_109 - contract_6_109 <= 9700
+ R1889: 10000 node_682_110 + contract_0_110 - contract_1_110 <= 10000
+ R1893: 10000 node_684_110 - contract_6_110 <= 9700
+ R1908: 10000 node_700_113 + contract_0_113 - contract_1_113 >= 0.0001
+ R1909: - contract_4_113 + 10000 node_701_113 <= 10000
+ R1914: 10000 node_706_114 + contract_0_114 - contract_1_114 >= 0.0001
+ R1916: - contract_4_114 + 10000 node_707_114 >= 0.0001
+ R1917: 10000 node_708_114 - contract_6_114 <= 9700
+ R1918: 10000 node_708_114 - contract_6_114 >= -299.9999
+ R1920: 10000 node_712_115 + contract_0_115 - contract_1_115 >= 0.0001
+ R1923: 10000 node_714_115 - contract_6_115 <= 9700
+ R1924: 10000 node_714_115 - contract_6_115 >= -299.9999
+ R1926: 10000 node_718_116 + contract_0_116 - contract_1_116 >= 0.0001
+ R1927: - contract_4_116 + 10000 node_719_116 <= 10000
+ R1930: 10000 node_720_116 - contract_6_116 >= -299.9999
+ R1933: - contract_4_117 + 10000 node_725_117 <= 10000
+ R1934: - contract_4_117 + 10000 node_725_117 >= 0.0001
+ R1950: 10000 node_742_120 + contract_0_120 - contract_1_120 >= 0.0001
+ R1955: 10000 node_748_121 + contract_0_121 - contract_1_121 <= 10000
+ R1956: 10000 node_748_121 + contract_0_121 - contract_1_121 >= 0.0001
+ R1960: 10000 node_750_121 - contract_6_121 >= -299.9999
+ R1968: 10000 node_760_123 + contract_0_123 - contract_1_123 >= 0.0001
+ R1969: - contract_4_123 + 10000 node_761_123 <= 10000
+ R1979: 10000 node_772_125 + contract_0_125 - contract_1_125 <= 10000
+ R1980: 10000 node_772_125 + contract_0_125 - contract_1_125 >= 0.0001
+ R1987: - contract_4_126 + 10000 node_779_126 <= 10000
+ R1994: - contract_4_127 + 10000 node_785_127 >= 0.0001
+ R1997: 10000 node_790_128 + contract_0_128 - contract_1_128 <= 10000
+ R1999: - contract_4_128 + 10000 node_791_128 <= 10000
+ R2007: 10000 node_798_129 - contract_6_129 <= 9700
+ R2008: 10000 node_798_129 - contract_6_129 >= -299.9999
+ R2012: - contract_4_130 + 10000 node_803_130 >= 0.0001
+ R2018: - contract_4_131 + 10000 node_809_131 >= 0.0001
+ R2021: 10000 node_814_132 + contract_0_132 - contract_1_132 <= 10000
+ R2022: 10000 node_814_132 + contract_0_132 - contract_1_132 >= 0.0001
+ R2023: - contract_4_132 + 10000 node_815_132 <= 10000
+ R2025: 10000 node_816_132 - contract_6_132 <= 9700
+ R2026: 10000 node_816_132 - contract_6_132 >= -299.9999
+ R2030: - contract_4_133 + 10000 node_821_133 >= 0.0001
+ R2037: 10000 node_828_134 - contract_6_134 <= 9700
+ R2038: 10000 node_828_134 - contract_6_134 >= -299.9999
+ R2039: 10000 node_832_135 + contract_0_135 - contract_1_135 <= 10000
+ R2046: 10000 node_838_136 + contract_0_136 - contract_1_136 >= 0.0001
+ R2050: 10000 node_840_136 - contract_6_136 >= -299.9999
+ R2058: 10000 node_850_138 + contract_0_138 - contract_1_138 >= 0.0001
+ R2060: - contract_4_138 + 10000 node_851_138 >= 0.0001
+ R2063: 10000 node_856_139 + contract_0_139 - contract_1_139 <= 10000
+ R2066: - contract_4_139 + 10000 node_857_139 >= 0.0001
+ R2067: 10000 node_858_139 - contract_6_139 <= 9700
+ R2068: 10000 node_858_139 - contract_6_139 >= -299.9999
+ R2069: 10000 node_862_140 + contract_0_140 - contract_1_140 <= 10000
+ R2072: - contract_4_140 + 10000 node_863_140 >= 0.0001
+ R2076: 10000 node_868_141 + contract_0_141 - contract_1_141 >= 0.0001
+ R2079: 10000 node_870_141 - contract_6_141 <= 9700
+ R2083: - contract_4_142 + 10000 node_875_142 <= 10000
+ R2086: 10000 node_876_142 - contract_6_142 >= -299.9999
+ R2088: 10000 node_880_143 + contract_0_143 - contract_1_143 >= 0.0001
+ R2090: - contract_4_143 + 10000 node_881_143 >= 0.0001
+ R2091: 10000 node_882_143 - contract_6_143 <= 9700
+ R2095: - contract_4_144 + 10000 node_887_144 <= 10000
+ R2098: 10000 node_888_144 - contract_6_144 >= -299.9999
+ R2100: 10000 node_892_145 + contract_0_145 - contract_1_145 >= 0.0001
+ R2101: - contract_4_145 + 10000 node_893_145 <= 10000
+ R2104: 10000 node_894_145 - contract_6_145 >= -299.9999
+ R2105: 10000 node_898_146 + contract_0_146 - contract_1_146 <= 10000
+ R2106: 10000 node_898_146 + contract_0_146 - contract_1_146 >= 0.0001
+ R2113: - contract_4_147 + 10000 node_905_147 <= 10000
+ R2118: 10000 node_910_148 + contract_0_148 - contract_1_148 >= 0.0001
+ R2126: - contract_4_149 + 10000 node_917_149 >= 0.0001
+ R2129: - contract_6_0 + 0.1 contract_2_0 - 0.1 contract_1_0 + contract_6_1
+   = 0
+ R2130: - 0.1 contract_1_1 - contract_6_1 + contract_6_2 + 0.1 contract_2_1
+   = 0
+ R2131: - 0.1 contract_1_2 - contract_6_2 + contract_6_3 + 0.1 contract_2_2
+   = 0
+ R2132: - 0.1 contract_1_3 - contract_6_3 + contract_6_4 + 0.1 contract_2_3
+   = 0
+ R2133: - 0.1 contract_1_4 - contract_6_4 + contract_6_5 + 0.1 contract_2_4
+   = 0
+ R2134: - 0.1 contract_1_5 - contract_6_5 + contract_6_6 + 0.1 contract_2_5
+   = 0
+ R2135: - 0.1 contract_1_6 - contract_6_6 + contract_6_7 + 0.1 contract_2_6
+   = 0
+ R2139: - 0.1 contract_1_10 - contract_6_10 + contract_6_11
+   + 0.1 contract_2_10 = 0
+ R2142: - 0.1 contract_1_13 - contract_6_13 + contract_6_14
+   + 0.1 contract_2_13 = 0
+ R2143: - 0.1 contract_1_14 - contract_6_14 + contract_6_15
+   + 0.1 contract_2_14 = 0
+ R2149: - 0.1 contract_1_20 - contract_6_20 + contract_6_21
+   + 0.1 contract_2_20 = 0
+ R2150: - 0.1 contract_1_21 - contract_6_21 + contract_6_22
+   + 0.1 contract_2_21 = 0
+ R2158: - 0.1 contract_1_29 - contract_6_29 + contract_6_30
+   + 0.1 contract_2_29 = 0
+ R2163: - 0.1 contract_1_34 - contract_6_34 + contract_6_35
+   + 0.1 contract_2_34 = 0
+ R2164: - 0.1 contract_1_35 - contract_6_35 + contract_6_36
+   + 0.1 contract_2_35 = 0
+ R2165: - 0.1 contract_1_36 - contract_6_36 + contract_6_37
+   + 0.1 contract_2_36 = 0
+ R2166: - 0.1 contract_1_37 - contract_6_37 + contract_6_38
+   + 0.1 contract_2_37 = 0
+ R2167: - 0.1 contract_1_38 - contract_6_38 + contract_6_39
+   + 0.1 contract_2_38 = 0
+ R2168: - 0.1 contract_1_39 - contract_6_39 + contract_6_40
+   + 0.1 contract_2_39 = 0
+ R2170: - 0.1 contract_1_41 - contract_6_41 + contract_6_42
+   + 0.1 contract_2_41 = 0
+ R2177: - 0.1 contract_1_48 - contract_6_48 + contract_6_49
+   + 0.1 contract_2_48 = 0
+ R2181: - 0.1 contract_1_52 - contract_6_52 + contract_6_53
+   + 0.1 contract_2_52 = 0
+ R2186: - 0.1 contract_1_57 - contract_6_57 + contract_6_58
+   + 0.1 contract_2_57 = 0
+ R2188: - 0.1 contract_1_59 - contract_6_59 + contract_6_60
+   + 0.1 contract_2_59 = 0
+ R2189: - 0.1 contract_1_60 - contract_6_60 + contract_6_61
+   + 0.1 contract_2_60 = 0
+ R2192: - 0.1 contract_1_63 - contract_6_63 + contract_6_64
+   + 0.1 contract_2_63 = 0
+ R2194: - 0.1 contract_1_65 - contract_6_65 + contract_6_66
+   + 0.1 contract_2_65 = 0
+ R2197: - 0.1 contract_1_68 - contract_6_68 + contract_6_69
+   + 0.1 contract_2_68 = 0
+ R2198: - 0.1 contract_1_69 - contract_6_69 + contract_6_70
+   + 0.1 contract_2_69 = 0
+ R2203: - 0.1 contract_1_74 - contract_6_74 + contract_6_75
+   + 0.1 contract_2_74 = 0
+ R2205: - 0.1 contract_1_76 - contract_6_76 + contract_6_77
+   + 0.1 contract_2_76 = 0
+ R2206: - 0.1 contract_1_77 - contract_6_77 + contract_6_78
+   + 0.1 contract_2_77 = 0
+ R2207: - 0.1 contract_1_78 - contract_6_78 + contract_6_79
+   + 0.1 contract_2_78 = 0
+ R2208: - 0.1 contract_1_79 - contract_6_79 + contract_6_80
+   + 0.1 contract_2_79 = 0
+ R2209: - 0.1 contract_1_80 - contract_6_80 + contract_6_81
+   + 0.1 contract_2_80 = 0
+ R2212: - 0.1 contract_1_83 - contract_6_83 + contract_6_84
+   + 0.1 contract_2_83 = 0
+ R2221: - 0.1 contract_1_92 - contract_6_92 + contract_6_93
+   + 0.1 contract_2_92 = 0
+ R2226: - 0.1 contract_1_97 - contract_6_97 + contract_6_98
+   + 0.1 contract_2_97 = 0
+ R2235: - 0.1 contract_1_106 - contract_6_106 + contract_6_107
+   + 0.1 contract_2_106 = 0
+ R2238: - 0.1 contract_1_109 - contract_6_109 + contract_6_110
+   + 0.1 contract_2_109 = 0
+ R2241: - 0.1 contract_1_112 - contract_6_112 + contract_6_113
+   + 0.1 contract_2_112 = 0
+ R2251: - 0.1 contract_1_122 - contract_6_122 + contract_6_123
+   + 0.1 contract_2_122 = 0
+ R2258: - 0.1 contract_1_129 - contract_6_129 + contract_6_130
+   + 0.1 contract_2_129 = 0
+ R2263: - 0.1 contract_1_134 - contract_6_134 + contract_6_135
+   + 0.1 contract_2_134 = 0
+ R2264: - 0.1 contract_1_135 - contract_6_135 + contract_6_136
+   + 0.1 contract_2_135 = 0
+ R2266: - 0.1 contract_1_137 - contract_6_137 + contract_6_138
+   + 0.1 contract_2_137 = 0
+ R2267: - 0.1 contract_1_138 - contract_6_138 + contract_6_139
+   + 0.1 contract_2_138 = 0
+ R2270: - 0.1 contract_1_141 - contract_6_141 + contract_6_142
+   + 0.1 contract_2_141 = 0
+ R2273: - 0.1 contract_1_144 - contract_6_144 + contract_6_145
+   + 0.1 contract_2_144 = 0
+ R2274: - 0.1 contract_1_145 - contract_6_145 + contract_6_146
+   + 0.1 contract_2_145 = 0
+ R2276: - 0.1 contract_1_147 - contract_6_147 + contract_6_148
+   + 0.1 contract_2_147 = 0
+ R2277: - 0.1 contract_1_148 - contract_6_148 + contract_6_149
+   + 0.1 contract_2_148 = 0
+ R2279: contract_3_0 + contract_2_0 - contract_1_0 = 0
+ R2281: contract_3_2 - contract_1_2 + contract_2_2 = 0
+ R2282: contract_3_3 - contract_1_3 + contract_2_3 = 0
+ R2285: contract_3_6 - contract_1_6 + contract_2_6 = 0
+ R2286: contract_3_7 - contract_1_7 + contract_2_7 = 0
+ R2287: contract_3_8 - contract_1_8 + contract_2_8 = 0
+ R2288: contract_3_9 - contract_1_9 + contract_2_9 = 0
+ R2292: contract_3_13 - contract_1_13 + contract_2_13 = 0
+ R2293: contract_3_14 - contract_1_14 + contract_2_14 = 0
+ R2295: contract_3_16 - contract_1_16 + contract_2_16 = 0
+ R2297: contract_3_18 - contract_1_18 + contract_2_18 = 0
+ R2299: contract_3_20 - contract_1_20 + contract_2_20 = 0
+ R2300: contract_3_21 - contract_1_21 + contract_2_21 = 0
+ R2301: contract_3_22 - contract_1_22 + contract_2_22 = 0
+ R2302: contract_3_23 - contract_1_23 + contract_2_23 = 0
+ R2303: contract_3_24 - contract_1_24 + contract_2_24 = 0
+ R2306: contract_3_27 - contract_1_27 + contract_2_27 = 0
+ R2308: contract_3_29 - contract_1_29 + contract_2_29 = 0
+ R2309: contract_3_30 - contract_1_30 + contract_2_30 = 0
+ R2321: contract_3_42 - contract_1_42 + contract_2_42 = 0
+ R2323: contract_3_44 - contract_1_44 + contract_2_44 = 0
+ R2330: contract_3_51 - contract_1_51 + contract_2_51 = 0
+ R2334: contract_3_55 - contract_1_55 + contract_2_55 = 0
+ R2345: contract_3_66 - contract_1_66 + contract_2_66 = 0
+ R2346: contract_3_67 - contract_1_67 + contract_2_67 = 0
+ R2352: contract_3_73 - contract_1_73 + contract_2_73 = 0
+ R2353: contract_3_74 - contract_1_74 + contract_2_74 = 0
+ R2354: contract_3_75 - contract_1_75 + contract_2_75 = 0
+ R2355: contract_3_76 - contract_1_76 + contract_2_76 = 0
+ R2358: contract_3_79 - contract_1_79 + contract_2_79 = 0
+ R2360: contract_3_81 - contract_1_81 + contract_2_81 = 0
+ R2363: contract_3_84 - contract_1_84 + contract_2_84 = 0
+ R2365: contract_3_86 - contract_1_86 + contract_2_86 = 0
+ R2366: contract_3_87 - contract_1_87 + contract_2_87 = 0
+ R2367: contract_3_88 - contract_1_88 + contract_2_88 = 0
+ R2372: contract_3_93 - contract_1_93 + contract_2_93 = 0
+ R2375: contract_3_96 - contract_1_96 + contract_2_96 = 0
+ R2376: contract_3_97 - contract_1_97 + contract_2_97 = 0
+ R2378: contract_3_99 - contract_1_99 + contract_2_99 = 0
+ R2381: contract_3_102 - contract_1_102 + contract_2_102 = 0
+ R2384: contract_3_105 - contract_1_105 + contract_2_105 = 0
+ R2391: contract_3_112 - contract_1_112 + contract_2_112 = 0
+ R2392: contract_3_113 - contract_1_113 + contract_2_113 = 0
+ R2394: contract_3_115 - contract_1_115 + contract_2_115 = 0
+ R2397: contract_3_118 - contract_1_118 + contract_2_118 = 0
+ R2401: contract_3_122 - contract_1_122 + contract_2_122 = 0
+ R2402: contract_3_123 - contract_1_123 + contract_2_123 = 0
+ R2405: contract_3_126 - contract_1_126 + contract_2_126 = 0
+ R2407: contract_3_128 - contract_1_128 + contract_2_128 = 0
+ R2408: contract_3_129 - contract_1_129 + contract_2_129 = 0
+ R2410: contract_3_131 - contract_1_131 + contract_2_131 = 0
+ R2411: contract_3_132 - contract_1_132 + contract_2_132 = 0
+ R2414: contract_3_135 - contract_1_135 + contract_2_135 = 0
+ R2417: contract_3_138 - contract_1_138 + contract_2_138 = 0
+ R2419: contract_3_140 - contract_1_140 + contract_2_140 = 0
+ R2422: contract_3_143 - contract_1_143 + contract_2_143 = 0
+ R2430: contract_0_0 = 20
+ R2436: contract_0_6 = 20
+ R2437: contract_0_7 = 20
+ R2438: contract_0_8 = 20
+ R2439: contract_0_9 = 20
+ R2442: contract_0_12 = 20
+ R2444: contract_0_14 = 20
+ R2452: contract_0_22 = 20
+ R2454: contract_0_24 = 20
+ R2455: contract_0_25 = 20
+ R2457: contract_0_27 = 20
+ R2459: contract_0_29 = 20
+ R2465: contract_0_35 = 20
+ R2474: contract_0_44 = 20
+ R2478: contract_0_48 = 20
+ R2484: contract_0_54 = 20
+ R2490: contract_0_60 = 20
+ R2497: contract_0_67 = 20
+ R2502: contract_0_72 = 20
+ R2504: contract_0_74 = 20
+ R2505: contract_0_75 = 20
+ R2515: contract_0_85 = 20
+ R2517: contract_0_87 = 20
+ R2518: contract_0_88 = 20
+ R2519: contract_0_89 = 20
+ R2520: contract_0_90 = 20
+ R2531: contract_0_101 = 20
+ R2533: contract_0_103 = 20
+ R2534: contract_0_104 = 20
+ R2536: contract_0_106 = 20
+ R2537: contract_0_107 = 20
+ R2543: contract_0_113 = 20
+ R2546: contract_0_116 = 20
+ R2547: contract_0_117 = 20
+ R2549: contract_0_119 = 20
+ R2551: contract_0_121 = 20
+ R2554: contract_0_124 = 20
+ R2565: contract_0_135 = 20
+ R2566: contract_0_136 = 20
+ R2574: contract_0_144 = 20
+ R2577: contract_0_147 = 20
+ R2580: contract_0_150 = 20
+ R2581: contract_1_0 = 30
+ R2586: contract_1_5 = 30
+ R2587: contract_1_6 = 30
+ R2588: contract_1_7 = 30
+ R2589: contract_1_8 = 30
+ R2590: contract_1_9 = 30
+ R2596: contract_1_15 = 30
+ R2597: contract_1_16 = 30
+ R2599: contract_1_18 = 30
+ R2601: contract_1_20 = 30
+ R2604: contract_1_23 = 30
+ R2611: contract_1_30 = 30
+ R2612: contract_1_31 = 30
+ R2615: contract_1_34 = 30
+ R2616: contract_1_35 = 30
+ R2617: contract_1_36 = 30
+ R2631: contract_1_50 = 30
+ R2633: contract_1_52 = 30
+ R2642: contract_1_61 = 30
+ R2644: contract_1_63 = 30
+ R2654: contract_1_73 = 30
+ R2656: contract_1_75 = 30
+ R2667: contract_1_86 = 30
+ R2672: contract_1_91 = 30
+ R2673: contract_1_92 = 30
+ R2674: contract_1_93 = 30
+ R2679: contract_1_98 = 30
+ R2680: contract_1_99 = 30
+ R2683: contract_1_102 = 30
+ R2684: contract_1_103 = 30
+ R2687: contract_1_106 = 30
+ R2689: contract_1_108 = 30
+ R2692: contract_1_111 = 30
+ R2699: contract_1_118 = 30
+ R2701: contract_1_120 = 30
+ R2705: contract_1_124 = 30
+ R2706: contract_1_125 = 30
+ R2707: contract_1_126 = 30
+ R2710: contract_1_129 = 30
+ R2714: contract_1_133 = 30
+ R2738: - node_55_0 + switching[6] = 0
+ R2739: - node_61_0 + switching[7] = 0
+ R2740: - node_67_0 + switching[8] = 0
+ GC707: switching[0] = 0 -> - 0.9048 contract_3_0 + contract_3_1
+   + 0.1903 contract_7_0 = -0
+ GC708: switching[1] = 0 -> - 0.9048 contract_3_1 + contract_3_2
+   + 0.1903 contract_7_1 = -0
+ GC709: switching[2] = 0 -> - 0.9048 contract_3_2 + contract_3_3
+   + 0.1903 contract_7_2 = -0
+ GC710: switching[3] = 0 -> - 0.9048 contract_3_3 + contract_3_4
+   + 0.1903 contract_7_3 = -0
+ GC711: switching[4] = 0 -> - 0.9048 contract_3_4 + contract_3_5
+   + 0.1903 contract_7_4 = -0
+ GC714: switching[7] = 0 -> - 0.9048 contract_3_7 + contract_3_8
+   + 0.1903 contract_7_7 = -0
+ GC857: switching[0] = 0 -> - contract_4_0 + contract_4_1
+   + 0.2 contract_7_0 = -0
+ GC860: switching[3] = 0 -> - contract_4_3 + contract_4_4
+   + 0.2 contract_7_3 = -0
+ GC861: switching[4] = 0 -> - contract_4_4 + contract_4_5
+   + 0.2 contract_7_4 = -0
+ GC862: switching[5] = 0 -> - contract_4_5 + contract_4_6
+   + 0.2 contract_7_5 = -0
+ GC863: switching[6] = 0 -> - contract_4_6 + contract_4_7
+   + 0.2 contract_7_6 = -0
+ GC1007: switching[0] = 0 -> - 0.09516 contract_3_0 - 0.1 contract_4_0
+   - contract_5_0 + 0.01967 contract_7_0 + contract_5_1 = -0
+ GC1010: switching[3] = 0 -> - 0.09516 contract_3_3 - 0.1 contract_4_3
+   + 0.01967 contract_7_3 - contract_5_3 + contract_5_4 = -0
+ GC1011: switching[4] = 0 -> - 0.09516 contract_3_4 - 0.1 contract_4_4
+   + 0.01967 contract_7_4 - contract_5_4 + contract_5_5 = -0
+ GC1012: switching[5] = 0 -> - 0.09516 contract_3_5 - 0.1 contract_4_5
+   + 0.01967 contract_7_5 - contract_5_5 + contract_5_6 = -0
+ GC1013: switching[6] = 0 -> - 0.09516 contract_3_6 - 0.1 contract_4_6
+   + 0.01967 contract_7_6 - contract_5_6 + contract_5_7 = -0
+ GC1014: switching[7] = 0 -> - 0.09516 contract_3_7 - 0.1 contract_4_7
+   + 0.01967 contract_7_7 - contract_5_7 + contract_5_8 = -0
+ GC1157: switching[0] = 0 -> - 18.2544 contract_3_0 + 15.3248 contract_4_0
+   - 11.158 contract_5_0 + contract_7_0 = -0
+ GC1158: switching[1] = 0 -> - 18.2544 contract_3_1 + 15.3248 contract_4_1
+   + contract_7_1 - 11.158 contract_5_1 = -0
+ GC1159: switching[2] = 0 -> - 18.2544 contract_3_2 + 15.3248 contract_4_2
+   + contract_7_2 - 11.158 contract_5_2 = -0
+ GC1160: switching[3] = 0 -> - 18.2544 contract_3_3 + 15.3248 contract_4_3
+   + contract_7_3 - 11.158 contract_5_3 = -0
+ GC1161: switching[4] = 0 -> - 18.2544 contract_3_4 + 15.3248 contract_4_4
+   + contract_7_4 - 11.158 contract_5_4 = -0
+ GC1162: switching[5] = 0 -> - 18.2544 contract_3_5 + 15.3248 contract_4_5
+   + contract_7_5 - 11.158 contract_5_5 = -0
+ GC1163: switching[6] = 0 -> - 18.2544 contract_3_6 + 15.3248 contract_4_6
+   + contract_7_6 - 11.158 contract_5_6 = -0
+ GC1164: switching[7] = 0 -> - 18.2544 contract_3_7 + 15.3248 contract_4_7
+   + contract_7_7 - 11.158 contract_5_7 = -0
+ GC1308: switching[0] = 1 -> - 0.9048 contract_3_0 + contract_3_1
+   + 0.1903 contract_7_0 = -0
+ GC1309: switching[1] = 1 -> - 0.9048 contract_3_1 + contract_3_2
+   + 0.1903 contract_7_1 = -0
+ GC1310: switching[2] = 1 -> - 0.9048 contract_3_2 + contract_3_3
+   + 0.1903 contract_7_2 = -0
+ GC1311: switching[3] = 1 -> - 0.9048 contract_3_3 + contract_3_4
+   + 0.1903 contract_7_3 = -0
+ GC1312: switching[4] = 1 -> - 0.9048 contract_3_4 + contract_3_5
+   + 0.1903 contract_7_4 = -0
+ GC1313: switching[5] = 1 -> - 0.9048 contract_3_5 + contract_3_6
+   + 0.1903 contract_7_5 = -0
+ GC1314: switching[6] = 1 -> - 0.9048 contract_3_6 + contract_3_7
+   + 0.1903 contract_7_6 = -0
+ GC1315: switching[7] = 1 -> - 0.9048 contract_3_7 + contract_3_8
+   + 0.1903 contract_7_7 = -0
+ GC1316: switching[8] = 1 -> - 0.9048 contract_3_8 + contract_3_9
+   + 0.1903 contract_7_8 = -0
+ GC1458: switching[0] = 1 -> - contract_4_0 + contract_4_1 = -0
+ GC1459: switching[1] = 1 -> - contract_4_1 + contract_4_2 = -0
+ GC1460: switching[2] = 1 -> - contract_4_2 + contract_4_3 = -0
+ GC1461: switching[3] = 1 -> - contract_4_3 + contract_4_4 = -0
+ GC1462: switching[4] = 1 -> - contract_4_4 + contract_4_5 = -0
+ GC1464: switching[6] = 1 -> - contract_4_6 + contract_4_7 = -0
+ GC1465: switching[7] = 1 -> - contract_4_7 + contract_4_8 = -0
+ GC1608: switching[0] = 1 -> - 0.09516 contract_3_0 - contract_5_0
+   + 0.009675 contract_7_0 + contract_5_1 = -0
+ GC1609: switching[1] = 1 -> - 0.09516 contract_3_1 + 0.009675 contract_7_1
+   - contract_5_1 + contract_5_2 = -0
+ GC1610: switching[2] = 1 -> - 0.09516 contract_3_2 + 0.009675 contract_7_2
+   - contract_5_2 + contract_5_3 = -0
+ GC1611: switching[3] = 1 -> - 0.09516 contract_3_3 + 0.009675 contract_7_3
+   - contract_5_3 + contract_5_4 = -0
+ GC1612: switching[4] = 1 -> - 0.09516 contract_3_4 + 0.009675 contract_7_4
+   - contract_5_4 + contract_5_5 = -0
+ GC1613: switching[5] = 1 -> - 0.09516 contract_3_5 + 0.009675 contract_7_5
+   - contract_5_5 + contract_5_6 = -0
+ GC1614: switching[6] = 1 -> - 0.09516 contract_3_6 + 0.009675 contract_7_6
+   - contract_5_6 + contract_5_7 = -0
+ GC1615: switching[7] = 1 -> - 0.09516 contract_3_7 + 0.009675 contract_7_7
+   - contract_5_7 + contract_5_8 = -0
+ GC1758: switching[0] = 1 -> - 0.5635 contract_3_0 - 2.2316 contract_5_0
+   + contract_7_0 = -0
+ GC1759: switching[1] = 1 -> - 0.5635 contract_3_1 + contract_7_1
+   - 2.2316 contract_5_1 = -0
+ GC1760: switching[2] = 1 -> - 0.5635 contract_3_2 + contract_7_2
+   - 2.2316 contract_5_2 = -0
+ GC1761: switching[3] = 1 -> - 0.5635 contract_3_3 + contract_7_3
+   - 2.2316 contract_5_3 = -0
+ GC1762: switching[4] = 1 -> - 0.5635 contract_3_4 + contract_7_4
+   - 2.2316 contract_5_4 = -0
+ GC1763: switching[5] = 1 -> - 0.5635 contract_3_5 + contract_7_5
+   - 2.2316 contract_5_5 = -0
+ GC1764: switching[6] = 1 -> - 0.5635 contract_3_6 + contract_7_6
+   - 2.2316 contract_5_6 = -0
+ GC1765: switching[7] = 1 -> - 0.5635 contract_3_7 + contract_7_7
+   - 2.2316 contract_5_7 = -0
+ GC1766: switching[8] = 1 -> - 0.5635 contract_3_8 + contract_7_8
+   - 2.2316 contract_5_8 = -0
 Bounds
- contract_4_0 free
- contract_4_1 free
- contract_5_0 free
- contract_5_1 free
- contract_6_0 free
- contract_7_0 free
+ -10000 <= contract_3_0 <= 10000
+ -10000 <= contract_3_1 <= 10000
+ -10000 <= contract_3_2 <= 10000
+ -10000 <= contract_3_3 <= 10000
+ -10000 <= contract_3_4 <= 10000
+ -10000 <= contract_3_5 <= 10000
+ -10000 <= contract_3_6 <= 10000
+ -10000 <= contract_3_7 <= 10000
+ -10000 <= contract_3_8 <= 10000
+ -10000 <= contract_3_9 <= 10000
+ -10000 <= contract_3_11 <= 10000
+ -infinity <= contract_3_12 <= 10000
+ -10000 <= contract_3_13 <= 10000
+ -10000 <= contract_3_14 <= 10000
+ -infinity <= contract_3_15 <= 10000
+ -10000 <= contract_3_16 <= 10000
+ contract_3_17 >= -10000
+ -10000 <= contract_3_18 <= 10000
+ -10000 <= contract_3_20 <= 10000
+ -10000 <= contract_3_21 <= 10000
+ -10000 <= contract_3_22 <= 10000
+ -10000 <= contract_3_23 <= 10000
+ -10000 <= contract_3_24 <= 10000
+ contract_3_25 >= -10000
+ -10000 <= contract_3_26 <= 10000
+ -10000 <= contract_3_27 <= 10000
+ contract_3_28 >= -10000
+ -10000 <= contract_3_29 <= 10000
+ -10000 <= contract_3_30 <= 10000
+ contract_3_31 >= -10000
+ contract_3_32 >= -10000
+ contract_3_33 >= -10000
+ -infinity <= contract_3_34 <= 10000
+ contract_3_35 >= -10000
+ -infinity <= contract_3_36 <= 10000
+ -10000 <= contract_3_37 <= 10000
+ contract_3_38 >= -10000
+ contract_3_39 >= -10000
+ -10000 <= contract_3_41 <= 10000
+ -10000 <= contract_3_42 <= 10000
+ -10000 <= contract_3_44 <= 10000
+ -10000 <= contract_3_45 <= 10000
+ -10000 <= contract_3_46 <= 10000
+ -10000 <= contract_3_48 <= 10000
+ contract_3_49 >= -10000
+ -10000 <= contract_3_50 <= 10000
+ -10000 <= contract_3_51 <= 10000
+ contract_3_53 >= -10000
+ -infinity <= contract_3_54 <= 10000
+ -10000 <= contract_3_55 <= 10000
+ -infinity <= contract_3_56 <= 10000
+ -infinity <= contract_3_57 <= 10000
+ contract_3_58 >= -10000
+ -infinity <= contract_3_59 <= 10000
+ -infinity <= contract_3_60 <= 10000
+ -10000 <= contract_3_61 <= 10000
+ -infinity <= contract_3_62 <= 10000
+ contract_3_63 >= -10000
+ -10000 <= contract_3_65 <= 10000
+ -10000 <= contract_3_66 <= 10000
+ -10000 <= contract_3_67 <= 10000
+ -infinity <= contract_3_68 <= 10000
+ contract_3_70 >= -10000
+ -10000 <= contract_3_73 <= 10000
+ -10000 <= contract_3_74 <= 10000
+ -10000 <= contract_3_75 <= 10000
+ -10000 <= contract_3_76 <= 10000
+ -infinity <= contract_3_77 <= 10000
+ contract_3_78 >= -10000
+ -10000 <= contract_3_79 <= 10000
+ -10000 <= contract_3_80 <= 10000
+ -10000 <= contract_3_81 <= 10000
+ -infinity <= contract_3_82 <= 10000
+ -infinity <= contract_3_83 <= 10000
+ -10000 <= contract_3_84 <= 10000
+ -10000 <= contract_3_85 <= 10000
+ -10000 <= contract_3_86 <= 10000
+ -10000 <= contract_3_87 <= 10000
+ -10000 <= contract_3_88 <= 10000
+ -infinity <= contract_3_89 <= 10000
+ -10000 <= contract_3_90 <= 10000
+ -10000 <= contract_3_91 <= 10000
+ -infinity <= contract_3_92 <= 10000
+ -10000 <= contract_3_93 <= 10000
+ -10000 <= contract_3_95 <= 10000
+ -10000 <= contract_3_96 <= 10000
+ -10000 <= contract_3_97 <= 10000
+ -10000 <= contract_3_99 <= 10000
+ -infinity <= contract_3_100 <= 10000
+ contract_3_101 >= -10000
+ -10000 <= contract_3_102 <= 10000
+ -10000 <= contract_3_103 <= 10000
+ contract_3_104 >= -10000
+ -10000 <= contract_3_105 <= 10000
+ -infinity <= contract_3_107 <= 10000
+ contract_3_109 >= -10000
+ -10000 <= contract_3_110 <= 10000
+ -10000 <= contract_3_112 <= 10000
+ -10000 <= contract_3_113 <= 10000
+ -10000 <= contract_3_114 <= 10000
+ -10000 <= contract_3_115 <= 10000
+ -infinity <= contract_3_116 <= 10000
+ contract_3_117 >= -10000
+ -10000 <= contract_3_118 <= 10000
+ -10000 <= contract_3_120 <= 10000
+ -infinity <= contract_3_121 <= 10000
+ -10000 <= contract_3_122 <= 10000
+ -10000 <= contract_3_123 <= 10000
+ contract_3_124 >= -10000
+ contract_3_125 >= -10000
+ -10000 <= contract_3_126 <= 10000
+ -10000 <= contract_3_127 <= 10000
+ -10000 <= contract_3_128 <= 10000
+ -10000 <= contract_3_129 <= 10000
+ contract_3_130 >= -10000
+ -10000 <= contract_3_131 <= 10000
+ -10000 <= contract_3_132 <= 10000
+ -infinity <= contract_3_133 <= 10000
+ -10000 <= contract_3_134 <= 10000
+ -10000 <= contract_3_135 <= 10000
+ -10000 <= contract_3_136 <= 10000
+ -10000 <= contract_3_137 <= 10000
+ -10000 <= contract_3_138 <= 10000
+ -10000 <= contract_3_140 <= 10000
+ -infinity <= contract_3_141 <= 10000
+ -10000 <= contract_3_142 <= 10000
+ -10000 <= contract_3_143 <= 10000
+ -10000 <= contract_3_144 <= 10000
+ -10000 <= contract_3_145 <= 10000
+ contract_3_146 >= -10000
+ contract_3_148 >= -10000
+ -infinity <= contract_3_149 <= 10000
+ contract_3_150 >= -10000
+ -10000 <= contract_4_0 <= 10000
+ -10000 <= contract_4_1 <= 10000
+ -10000 <= contract_4_2 <= 10000
+ -10000 <= contract_4_3 <= 10000
+ -10000 <= contract_4_4 <= 10000
+ -10000 <= contract_4_5 <= 10000
+ -10000 <= contract_4_6 <= 10000
+ -10000 <= contract_4_7 <= 10000
+ -10000 <= contract_4_8 <= 10000
+ -10000 <= contract_4_9 <= 10000
+ -10000 <= contract_4_10 <= 10000
+ -10000 <= contract_4_11 <= 10000
+ -infinity <= contract_4_12 <= 10000
+ -10000 <= contract_4_13 <= 10000
+ contract_4_15 >= -10000
+ -10000 <= contract_4_16 <= 10000
+ contract_4_17 >= -10000
+ -10000 <= contract_4_18 <= 10000
+ -infinity <= contract_4_19 <= 10000
+ contract_4_20 >= -10000
+ contract_4_22 >= -10000
+ contract_4_23 >= -10000
+ -infinity <= contract_4_24 <= 10000
+ contract_4_25 >= -10000
+ -10000 <= contract_4_26 <= 10000
+ -10000 <= contract_4_27 <= 10000
+ -infinity <= contract_4_28 <= 10000
+ -infinity <= contract_4_29 <= 10000
+ -10000 <= contract_4_30 <= 10000
+ -10000 <= contract_4_31 <= 10000
+ -10000 <= contract_4_32 <= 10000
+ contract_4_33 >= -10000
+ -10000 <= contract_4_34 <= 10000
+ -infinity <= contract_4_35 <= 10000
+ -infinity <= contract_4_36 <= 10000
+ -10000 <= contract_4_37 <= 10000
+ -10000 <= contract_4_38 <= 10000
+ contract_4_39 >= -10000
+ -10000 <= contract_4_40 <= 10000
+ -10000 <= contract_4_41 <= 10000
+ -10000 <= contract_4_42 <= 10000
+ -10000 <= contract_4_43 <= 10000
+ -infinity <= contract_4_44 <= 10000
+ -10000 <= contract_4_45 <= 10000
+ contract_4_46 >= -10000
+ -infinity <= contract_4_47 <= 10000
+ -10000 <= contract_4_48 <= 10000
+ -10000 <= contract_4_49 <= 10000
+ contract_4_51 >= -10000
+ contract_4_52 >= -10000
+ contract_4_53 >= -10000
+ -10000 <= contract_4_54 <= 10000
+ -10000 <= contract_4_55 <= 10000
+ contract_4_56 >= -10000
+ -10000 <= contract_4_58 <= 10000
+ -10000 <= contract_4_60 <= 10000
+ -infinity <= contract_4_63 <= 10000
+ -10000 <= contract_4_64 <= 10000
+ -infinity <= contract_4_65 <= 10000
+ -infinity <= contract_4_66 <= 10000
+ -10000 <= contract_4_67 <= 10000
+ contract_4_68 >= -10000
+ -10000 <= contract_4_69 <= 10000
+ contract_4_71 >= -10000
+ -infinity <= contract_4_72 <= 10000
+ contract_4_73 >= -10000
+ -infinity <= contract_4_74 <= 10000
+ contract_4_75 >= -10000
+ -10000 <= contract_4_76 <= 10000
+ -10000 <= contract_4_77 <= 10000
+ -infinity <= contract_4_78 <= 10000
+ contract_4_79 >= -10000
+ -10000 <= contract_4_81 <= 10000
+ -infinity <= contract_4_82 <= 10000
+ contract_4_83 >= -10000
+ -10000 <= contract_4_84 <= 10000
+ -infinity <= contract_4_85 <= 10000
+ contract_4_87 >= -10000
+ -infinity <= contract_4_88 <= 10000
+ -10000 <= contract_4_89 <= 10000
+ -10000 <= contract_4_90 <= 10000
+ -10000 <= contract_4_91 <= 10000
+ contract_4_92 >= -10000
+ -infinity <= contract_4_93 <= 10000
+ contract_4_94 >= -10000
+ -10000 <= contract_4_95 <= 10000
+ -infinity <= contract_4_96 <= 10000
+ -10000 <= contract_4_97 <= 10000
+ contract_4_98 >= -10000
+ contract_4_99 >= -10000
+ -infinity <= contract_4_100 <= 10000
+ -10000 <= contract_4_103 <= 10000
+ -10000 <= contract_4_104 <= 10000
+ contract_4_105 >= -10000
+ -10000 <= contract_4_106 <= 10000
+ -infinity <= contract_4_108 <= 10000
+ -10000 <= contract_4_109 <= 10000
+ -10000 <= contract_4_110 <= 10000
+ -10000 <= contract_4_111 <= 10000
+ -infinity <= contract_4_113 <= 10000
+ contract_4_114 >= -10000
+ -infinity <= contract_4_115 <= 10000
+ -10000 <= contract_4_116 <= 10000
+ -10000 <= contract_4_117 <= 10000
+ contract_4_118 >= -10000
+ -infinity <= contract_4_119 <= 10000
+ -infinity <= contract_4_120 <= 10000
+ contract_4_121 >= -10000
+ contract_4_122 >= -10000
+ -infinity <= contract_4_123 <= 10000
+ contract_4_124 >= -10000
+ -10000 <= contract_4_125 <= 10000
+ -10000 <= contract_4_126 <= 10000
+ contract_4_127 >= -10000
+ -10000 <= contract_4_128 <= 10000
+ -infinity <= contract_4_129 <= 10000
+ contract_4_130 >= -10000
+ -10000 <= contract_4_131 <= 10000
+ -infinity <= contract_4_132 <= 10000
+ contract_4_133 >= -10000
+ -infinity <= contract_4_134 <= 10000
+ -10000 <= contract_4_135 <= 10000
+ -10000 <= contract_4_136 <= 10000
+ -infinity <= contract_4_137 <= 10000
+ -10000 <= contract_4_138 <= 10000
+ -10000 <= contract_4_139 <= 10000
+ -10000 <= contract_4_140 <= 10000
+ -infinity <= contract_4_141 <= 10000
+ -10000 <= contract_4_142 <= 10000
+ -10000 <= contract_4_143 <= 10000
+ -infinity <= contract_4_144 <= 10000
+ -10000 <= contract_4_145 <= 10000
+ -10000 <= contract_4_147 <= 10000
+ contract_4_148 >= -10000
+ -10000 <= contract_4_149 <= 10000
+ contract_4_150 >= -10000
+ -10000 <= contract_6_0 <= 10000
+ contract_2_0 <= 35
+ -10000 <= contract_5_0 <= 10000
+ contract_0_0 <= 35
+ contract_1_0 <= 35
+ contract_1_1 <= 35
+ -10000 <= contract_6_1 <= 10000
+ contract_0_2 <= 35
+ contract_1_2 <= 35
+ -10000 <= contract_6_2 <= 10000
+ -infinity <= contract_0_3 <= 35
+ contract_1_3 <= 35
+ -10000 <= contract_6_3 <= 10000
+ -infinity <= contract_0_4 <= 35
+ contract_1_4 <= 35
+ -10000 <= contract_6_4 <= 10000
+ -infinity <= contract_0_5 <= 35
+ contract_1_5 <= 35
+ -10000 <= contract_6_5 <= 10000
+ contract_0_6 <= 35
+ contract_1_6 <= 35
+ -10000 <= contract_6_6 <= 10000
+ contract_0_7 <= 35
+ contract_1_7 <= 35
+ -10000 <= contract_6_7 <= 10000
+ contract_0_8 <= 35
+ contract_1_8 <= 35
+ contract_0_9 <= 35
+ contract_1_9 <= 35
+ contract_1_10 <= 35
+ -10000 <= contract_6_10 <= 10000
+ -10000 <= contract_6_11 <= 10000
+ contract_0_12 <= 35
+ -infinity <= contract_0_13 <= 35
+ contract_1_13 <= 35
+ -10000 <= contract_6_13 <= 10000
+ contract_0_14 <= 35
+ contract_1_14 <= 35
+ -10000 <= contract_6_14 <= 10000
+ -infinity <= contract_0_15 <= 35
+ contract_1_15 <= 35
+ -10000 <= contract_6_15 <= 10000
+ contract_1_16 <= 35
+ contract_6_16 >= -10000
+ contract_0_17 <= 35
+ contract_1_17 <= 35
+ -infinity <= contract_6_17 <= 10000
+ -infinity <= contract_0_18 <= 35
+ contract_1_18 <= 35
+ contract_1_20 <= 35
+ -10000 <= contract_6_20 <= 10000
+ contract_1_21 <= 35
+ -10000 <= contract_6_21 <= 10000
+ contract_0_22 <= 35
+ contract_1_22 <= 35
+ -10000 <= contract_6_22 <= 10000
+ -infinity <= contract_0_23 <= 35
+ contract_1_23 <= 35
+ contract_0_24 <= 35
+ contract_1_24 <= 35
+ contract_0_25 <= 35
+ contract_0_27 <= 35
+ contract_1_27 <= 35
+ -infinity <= contract_0_28 <= 35
+ contract_0_29 <= 35
+ contract_1_29 <= 35
+ -10000 <= contract_6_29 <= 10000
+ contract_1_30 <= 35
+ -10000 <= contract_6_30 <= 10000
+ contract_1_31 <= 35
+ -infinity <= contract_0_34 <= 35
+ contract_1_34 <= 35
+ -10000 <= contract_6_34 <= 10000
+ contract_0_35 <= 35
+ contract_1_35 <= 35
+ -10000 <= contract_6_35 <= 10000
+ contract_1_36 <= 35
+ -10000 <= contract_6_36 <= 10000
+ -infinity <= contract_0_37 <= 35
+ contract_1_37 <= 35
+ -10000 <= contract_6_37 <= 10000
+ contract_1_38 <= 35
+ -10000 <= contract_6_38 <= 10000
+ contract_1_39 <= 35
+ -10000 <= contract_6_39 <= 10000
+ -infinity <= contract_1_40 <= 35
+ -10000 <= contract_6_40 <= 10000
+ contract_1_41 <= 35
+ -10000 <= contract_6_41 <= 10000
+ contract_1_42 <= 35
+ -10000 <= contract_6_42 <= 10000
+ -infinity <= contract_1_43 <= 35
+ -infinity <= contract_6_43 <= 10000
+ contract_0_44 <= 35
+ contract_1_44 <= 35
+ contract_6_44 >= -10000
+ -infinity <= contract_0_45 <= 35
+ -infinity <= contract_6_45 <= 10000
+ -10000 <= contract_6_46 <= 10000
+ -infinity <= contract_6_47 <= 10000
+ contract_0_48 <= 35
+ contract_1_48 <= 35
+ -10000 <= contract_6_48 <= 10000
+ -10000 <= contract_6_49 <= 10000
+ contract_1_50 <= 35
+ contract_0_51 <= 35
+ contract_1_51 <= 35
+ -10000 <= contract_6_51 <= 10000
+ -infinity <= contract_0_52 <= 35
+ contract_1_52 <= 35
+ -10000 <= contract_6_52 <= 10000
+ -infinity <= contract_0_53 <= 35
+ -10000 <= contract_6_53 <= 10000
+ contract_0_54 <= 35
+ -infinity <= contract_6_54 <= 10000
+ contract_1_55 <= 35
+ -10000 <= contract_6_55 <= 10000
+ contract_6_56 >= -10000
+ contract_1_57 <= 35
+ -10000 <= contract_6_57 <= 10000
+ -infinity <= contract_0_58 <= 35
+ -10000 <= contract_6_58 <= 10000
+ contract_1_59 <= 35
+ -10000 <= contract_6_59 <= 10000
+ contract_0_60 <= 35
+ contract_1_60 <= 35
+ -10000 <= contract_6_60 <= 10000
+ contract_1_61 <= 35
+ -10000 <= contract_6_61 <= 10000
+ -infinity <= contract_0_62 <= 35
+ -infinity <= contract_6_62 <= 10000
+ -infinity <= contract_0_63 <= 35
+ contract_1_63 <= 35
+ -10000 <= contract_6_63 <= 10000
+ -10000 <= contract_6_64 <= 10000
+ contract_1_65 <= 35
+ -10000 <= contract_6_65 <= 10000
+ contract_1_66 <= 35
+ -10000 <= contract_6_66 <= 10000
+ contract_0_67 <= 35
+ contract_1_67 <= 35
+ -infinity <= contract_0_68 <= 35
+ contract_1_68 <= 35
+ -10000 <= contract_6_68 <= 10000
+ contract_1_69 <= 35
+ -10000 <= contract_6_69 <= 10000
+ -10000 <= contract_6_70 <= 10000
+ -infinity <= contract_0_71 <= 35
+ contract_6_71 >= -10000
+ contract_0_72 <= 35
+ contract_1_73 <= 35
+ contract_0_74 <= 35
+ contract_1_74 <= 35
+ -10000 <= contract_6_74 <= 10000
+ contract_0_75 <= 35
+ contract_1_75 <= 35
+ -10000 <= contract_6_75 <= 10000
+ -infinity <= contract_0_76 <= 35
+ contract_1_76 <= 35
+ -10000 <= contract_6_76 <= 10000
+ -infinity <= contract_0_77 <= 35
+ contract_1_77 <= 35
+ -10000 <= contract_6_77 <= 10000
+ contract_1_78 <= 35
+ -10000 <= contract_6_78 <= 10000
+ contract_1_79 <= 35
+ -10000 <= contract_6_79 <= 10000
+ contract_1_80 <= 35
+ -10000 <= contract_6_80 <= 10000
+ -infinity <= contract_0_81 <= 35
+ contract_1_81 <= 35
+ -10000 <= contract_6_81 <= 10000
+ -infinity <= contract_0_83 <= 35
+ contract_1_83 <= 35
+ -10000 <= contract_6_83 <= 10000
+ contract_0_84 <= 35
+ contract_1_84 <= 35
+ -10000 <= contract_6_84 <= 10000
+ contract_0_85 <= 35
+ contract_1_85 <= 35
+ -infinity <= contract_6_85 <= 10000
+ -infinity <= contract_0_86 <= 35
+ contract_1_86 <= 35
+ contract_6_86 >= -10000
+ contract_0_87 <= 35
+ contract_1_87 <= 35
+ contract_6_87 >= -10000
+ contract_0_88 <= 35
+ contract_1_88 <= 35
+ contract_6_88 >= -10000
+ contract_0_89 <= 35
+ -infinity <= contract_6_89 <= 10000
+ contract_0_90 <= 35
+ contract_1_91 <= 35
+ -10000 <= contract_6_91 <= 10000
+ contract_1_92 <= 35
+ -10000 <= contract_6_92 <= 10000
+ contract_1_93 <= 35
+ -10000 <= contract_6_93 <= 10000
+ -infinity <= contract_1_94 <= 35
+ -infinity <= contract_1_95 <= 35
+ contract_6_95 >= -10000
+ -infinity <= contract_0_96 <= 35
+ contract_1_96 <= 35
+ contract_1_97 <= 35
+ -10000 <= contract_6_97 <= 10000
+ -infinity <= contract_0_98 <= 35
+ contract_1_98 <= 35
+ -10000 <= contract_6_98 <= 10000
+ contract_1_99 <= 35
+ contract_6_100 >= -10000
+ contract_0_101 <= 35
+ contract_1_102 <= 35
+ -infinity <= contract_6_102 <= 10000
+ contract_0_103 <= 35
+ contract_1_103 <= 35
+ contract_0_104 <= 35
+ contract_1_104 <= 35
+ contract_6_104 >= -10000
+ contract_1_105 <= 35
+ -infinity <= contract_6_105 <= 10000
+ contract_0_106 <= 35
+ contract_1_106 <= 35
+ -10000 <= contract_6_106 <= 10000
+ contract_0_107 <= 35
+ -infinity <= contract_1_107 <= 35
+ -10000 <= contract_6_107 <= 10000
+ contract_1_108 <= 35
+ -10000 <= contract_6_108 <= 10000
+ contract_0_109 <= 35
+ contract_1_109 <= 35
+ -10000 <= contract_6_109 <= 10000
+ -infinity <= contract_1_110 <= 35
+ -10000 <= contract_6_110 <= 10000
+ contract_1_111 <= 35
+ contract_1_112 <= 35
+ -10000 <= contract_6_112 <= 10000
+ contract_0_113 <= 35
+ contract_1_113 <= 35
+ -10000 <= contract_6_113 <= 10000
+ -infinity <= contract_0_114 <= 35
+ -10000 <= contract_6_114 <= 10000
+ -infinity <= contract_0_115 <= 35
+ contract_1_115 <= 35
+ -10000 <= contract_6_115 <= 10000
+ contract_0_116 <= 35
+ contract_6_116 >= -10000
+ contract_0_117 <= 35
+ contract_1_118 <= 35
+ contract_0_119 <= 35
+ -infinity <= contract_0_120 <= 35
+ contract_1_120 <= 35
+ contract_0_121 <= 35
+ contract_1_121 <= 35
+ contract_6_121 >= -10000
+ contract_1_122 <= 35
+ -10000 <= contract_6_122 <= 10000
+ -infinity <= contract_0_123 <= 35
+ contract_1_123 <= 35
+ -10000 <= contract_6_123 <= 10000
+ contract_0_124 <= 35
+ contract_1_124 <= 35
+ contract_0_125 <= 35
+ contract_1_125 <= 35
+ contract_1_126 <= 35
+ contract_1_128 <= 35
+ contract_1_129 <= 35
+ -10000 <= contract_6_129 <= 10000
+ -10000 <= contract_6_130 <= 10000
+ contract_1_131 <= 35
+ contract_0_132 <= 35
+ contract_1_132 <= 35
+ -10000 <= contract_6_132 <= 10000
+ contract_1_133 <= 35
+ contract_1_134 <= 35
+ -10000 <= contract_6_134 <= 10000
+ contract_0_135 <= 35
+ contract_1_135 <= 35
+ -10000 <= contract_6_135 <= 10000
+ contract_0_136 <= 35
+ -10000 <= contract_6_136 <= 10000
+ contract_1_137 <= 35
+ -10000 <= contract_6_137 <= 10000
+ -infinity <= contract_0_138 <= 35
+ contract_1_138 <= 35
+ -10000 <= contract_6_138 <= 10000
+ -infinity <= contract_1_139 <= 35
+ -10000 <= contract_6_139 <= 10000
+ contract_1_140 <= 35
+ -infinity <= contract_0_141 <= 35
+ contract_1_141 <= 35
+ -10000 <= contract_6_141 <= 10000
+ -10000 <= contract_6_142 <= 10000
+ -infinity <= contract_0_143 <= 35
+ contract_1_143 <= 35
+ -infinity <= contract_6_143 <= 10000
+ contract_0_144 <= 35
+ contract_1_144 <= 35
+ -10000 <= contract_6_144 <= 10000
+ -infinity <= contract_0_145 <= 35
+ contract_1_145 <= 35
+ -10000 <= contract_6_145 <= 10000
+ contract_0_146 <= 35
+ contract_1_146 <= 35
+ -10000 <= contract_6_146 <= 10000
+ contract_0_147 <= 35
+ contract_1_147 <= 35
+ -10000 <= contract_6_147 <= 10000
+ -infinity <= contract_0_148 <= 35
+ contract_1_148 <= 35
+ -10000 <= contract_6_148 <= 10000
+ -10000 <= contract_6_149 <= 10000
+ contract_2_1 <= 35
+ contract_2_2 <= 35
+ contract_2_3 <= 35
+ contract_2_4 <= 35
+ contract_2_5 <= 35
+ contract_2_6 <= 35
+ contract_2_7 <= 35
+ contract_2_8 <= 35
+ contract_2_9 <= 35
+ contract_2_10 <= 35
+ contract_2_13 <= 35
+ contract_2_14 <= 35
+ contract_2_16 <= 35
+ contract_2_18 <= 35
+ contract_2_20 <= 35
+ contract_2_21 <= 35
+ contract_2_22 <= 35
+ contract_2_23 <= 35
+ contract_2_24 <= 35
+ contract_2_27 <= 35
+ contract_2_29 <= 35
+ contract_2_30 <= 35
+ contract_2_34 <= 35
+ contract_2_35 <= 35
+ contract_2_36 <= 35
+ contract_2_37 <= 35
+ contract_2_38 <= 35
+ contract_2_39 <= 35
+ contract_2_41 <= 35
+ contract_2_42 <= 35
+ contract_2_44 <= 35
+ contract_2_48 <= 35
+ contract_2_51 <= 35
+ contract_2_52 <= 35
+ contract_2_55 <= 35
+ contract_2_57 <= 35
+ contract_2_59 <= 35
+ contract_2_60 <= 35
+ contract_2_63 <= 35
+ contract_2_65 <= 35
+ contract_2_66 <= 35
+ contract_2_67 <= 35
+ contract_2_68 <= 35
+ contract_2_69 <= 35
+ contract_2_73 <= 35
+ contract_2_74 <= 35
+ contract_2_75 <= 35
+ contract_2_76 <= 35
+ contract_2_77 <= 35
+ contract_2_78 <= 35
+ contract_2_79 <= 35
+ contract_2_80 <= 35
+ contract_2_81 <= 35
+ contract_2_83 <= 35
+ contract_2_84 <= 35
+ contract_2_86 <= 35
+ contract_2_87 <= 35
+ contract_2_88 <= 35
+ contract_2_92 <= 35
+ contract_2_93 <= 35
+ contract_2_96 <= 35
+ contract_2_97 <= 35
+ contract_2_99 <= 35
+ contract_2_102 <= 35
+ contract_2_105 <= 35
+ contract_2_106 <= 35
+ contract_2_109 <= 35
+ contract_2_112 <= 35
+ contract_2_113 <= 35
+ contract_2_115 <= 35
+ contract_2_118 <= 35
+ contract_2_122 <= 35
+ contract_2_123 <= 35
+ contract_2_126 <= 35
+ contract_2_128 <= 35
+ contract_2_129 <= 35
+ contract_2_131 <= 35
+ contract_2_132 <= 35
+ contract_2_134 <= 35
+ contract_2_135 <= 35
+ contract_2_137 <= 35
+ contract_2_138 <= 35
+ contract_2_140 <= 35
+ contract_2_141 <= 35
+ contract_2_143 <= 35
+ contract_2_144 <= 35
+ contract_2_145 <= 35
+ contract_2_147 <= 35
+ contract_2_148 <= 35
+ contract_0_150 <= 35
+ -10000 <= contract_7_0 <= 10000
+ -10000 <= contract_7_1 <= 10000
+ -10000 <= contract_7_2 <= 10000
+ -10000 <= contract_7_3 <= 10000
+ -10000 <= contract_7_4 <= 10000
+ -10000 <= contract_7_5 <= 10000
+ -10000 <= contract_7_6 <= 10000
+ -10000 <= contract_7_7 <= 10000
+ -10000 <= contract_7_8 <= 10000
+ -10000 <= contract_5_1 <= 10000
+ -10000 <= contract_5_2 <= 10000
+ -10000 <= contract_5_3 <= 10000
+ -10000 <= contract_5_4 <= 10000
+ -10000 <= contract_5_5 <= 10000
+ -10000 <= contract_5_6 <= 10000
+ -10000 <= contract_5_7 <= 10000
+ -10000 <= contract_5_8 <= 10000
 Binaries
- node_571_0 node_572_1 node_573_1 node_574_1 node_575_1 node_576_1
- node_751_0 node_752_1 node_753_1 node_754_1 node_755_1 node_756_1
- node_931_0 node_932_1 node_933_1 node_934_1 node_935_1 node_936_1
- regions_1_1
+ node_3_0 node_3_4 node_3_5 node_3_6 node_3_7 node_3_8 node_3_11 node_3_13
+ node_3_14 node_3_15 node_3_16 node_3_20 node_3_21 node_3_23 node_3_26
+ node_3_28 node_3_29 node_3_30 node_3_31 node_3_35 node_3_38 node_3_41
+ node_3_46 node_3_48 node_3_49 node_3_50 node_3_55 node_3_58 node_3_59
+ node_3_60 node_3_61 node_3_62 node_3_63 node_3_68 node_3_70 node_3_73
+ node_3_74 node_3_78 node_3_79 node_3_80 node_3_81 node_3_83 node_3_90
+ node_3_91 node_3_92 node_3_93 node_3_95 node_3_96 node_3_97 node_3_99
+ node_3_101 node_3_103 node_3_104 node_3_105 node_3_110 node_3_113
+ node_3_120 node_3_121 node_3_122 node_3_127 node_3_130 node_3_133
+ node_3_134 node_3_136 node_3_137 node_3_138 node_3_140 node_3_142
+ node_3_144 node_3_145 node_3_146 node_3_150 node_4_0 node_4_2 node_4_3
+ node_4_6 node_4_7 node_4_8 node_4_9 node_4_12 node_4_13 node_4_14
+ node_4_17 node_4_18 node_4_20 node_4_22 node_4_24 node_4_25 node_4_26
+ node_4_27 node_4_30 node_4_31 node_4_32 node_4_33 node_4_34 node_4_36
+ node_4_37 node_4_39 node_4_41 node_4_42 node_4_44 node_4_45 node_4_46
+ node_4_48 node_4_50 node_4_53 node_4_54 node_4_56 node_4_57 node_4_59
+ node_4_61 node_4_65 node_4_67 node_4_76 node_4_77 node_4_78 node_4_80
+ node_4_82 node_4_84 node_4_85 node_4_86 node_4_87 node_4_88 node_4_89
+ node_4_90 node_4_91 node_4_95 node_4_96 node_4_99 node_4_100 node_4_103
+ node_4_104 node_4_105 node_4_107 node_4_109 node_4_112 node_4_113
+ node_4_114 node_4_116 node_4_117 node_4_118 node_4_120 node_4_121
+ node_4_122 node_4_123 node_4_124 node_4_125 node_4_127 node_4_128
+ node_4_131 node_4_133 node_4_134 node_4_135 node_4_136 node_4_137
+ node_4_140 node_4_141 node_4_144 node_4_145 node_4_148 node_4_149 node_5_0
+ node_5_1 node_5_4 node_5_5 node_5_8 node_5_9 node_5_10 node_5_11 node_5_12
+ node_5_15 node_5_16 node_5_17 node_5_18 node_5_19 node_5_26 node_5_27
+ node_5_30 node_5_41 node_5_42 node_5_43 node_5_45 node_5_54 node_5_56
+ node_5_60 node_5_64 node_5_66 node_5_67 node_5_69 node_5_74 node_5_75
+ node_5_77 node_5_78 node_5_79 node_5_81 node_5_82 node_5_83 node_5_84
+ node_5_87 node_5_89 node_5_94 node_5_95 node_5_97 node_5_98 node_5_99
+ node_5_100 node_5_103 node_5_106 node_5_109 node_5_110 node_5_111
+ node_5_117 node_5_118 node_5_119 node_5_122 node_5_123 node_5_124
+ node_5_126 node_5_128 node_5_129 node_5_131 node_5_132 node_5_134
+ node_5_135 node_5_136 node_5_137 node_5_140 node_5_143 node_5_145
+ node_5_147 node_5_149 node_5_150 node_6_0 node_6_1 node_6_2 node_6_5
+ node_6_6 node_6_8 node_6_11 node_6_12 node_6_13 node_6_20 node_6_23
+ node_6_24 node_6_28 node_6_30 node_6_31 node_6_32 node_6_33 node_6_34
+ node_6_37 node_6_38 node_6_39 node_6_40 node_6_41 node_6_42 node_6_44
+ node_6_45 node_6_48 node_6_49 node_6_51 node_6_52 node_6_53 node_6_55
+ node_6_56 node_6_58 node_6_60 node_6_64 node_6_66 node_6_67 node_6_68
+ node_6_69 node_6_71 node_6_72 node_6_73 node_6_76 node_6_77 node_6_81
+ node_6_84 node_6_87 node_6_89 node_6_90 node_6_91 node_6_94 node_6_103
+ node_6_104 node_6_108 node_6_109 node_6_110 node_6_113 node_6_115
+ node_6_116 node_6_118 node_6_120 node_6_121 node_6_122 node_6_124
+ node_6_125 node_6_126 node_6_128 node_6_131 node_6_132 node_6_135
+ node_6_136 node_6_138 node_6_139 node_6_140 node_6_141 node_6_142
+ node_6_145 node_6_147 node_6_148 node_7_0 node_8_0 node_9_0 node_10_0
+ node_11_0 node_12_0 node_13_0 node_14_0 node_15_0 node_16_0 node_17_0
+ node_18_0 node_29_1 node_34_2 node_35_2 node_40_3 node_41_3 node_42_3
+ node_46_4 node_47_4 node_52_5 node_53_5 node_54_5 node_55_0 node_56_6
+ node_57_6 node_58_6 node_59_6 node_60_6 node_61_0 node_62_7 node_63_7
+ node_64_7 node_65_7 node_66_7 node_67_0 node_68_8 node_69_8 node_70_8
+ node_71_8 node_72_8 node_77_9 node_84_10 node_89_11 node_90_11 node_100_13
+ node_101_13 node_102_13 node_106_14 node_112_15 node_119_16 node_120_16
+ node_124_17 node_126_17 node_130_18 node_131_18 node_137_19 node_144_20
+ node_154_22 node_155_22 node_160_23 node_173_25 node_185_27 node_190_28
+ node_197_29 node_203_30 node_204_30 node_209_31 node_215_32 node_226_34
+ node_227_34 node_232_35 node_233_35 node_234_35 node_238_36 node_239_36
+ node_240_36 node_244_37 node_245_37 node_258_39 node_262_40 node_263_40
+ node_268_41 node_269_41 node_270_41 node_275_42 node_276_42 node_280_43
+ node_282_43 node_286_44 node_288_44 node_292_45 node_294_45 node_299_46
+ node_300_46 node_305_47 node_306_47 node_310_48 node_311_48 node_317_49
+ node_328_51 node_330_51 node_334_52 node_336_52 node_340_53 node_341_53
+ node_347_54 node_348_54 node_352_55 node_353_55 node_354_55 node_360_56
+ node_364_57 node_366_57 node_370_58 node_394_62 node_396_62 node_400_63
+ node_401_63 node_402_63 node_407_64 node_408_64 node_413_65 node_414_65
+ node_420_66 node_424_67 node_430_68 node_437_69 node_448_71 node_449_71
+ node_450_71 node_460_73 node_466_74 node_472_75 node_473_75 node_474_75
+ node_478_76 node_479_76 node_480_76 node_484_77 node_485_77 node_486_77
+ node_492_78 node_498_79 node_508_81 node_509_81 node_510_81 node_520_83
+ node_521_83 node_522_83 node_526_84 node_528_84 node_532_85 node_533_85
+ node_534_85 node_538_86 node_540_86 node_546_87 node_551_88 node_552_88
+ node_556_89 node_557_89 node_558_89 node_562_90 node_563_90 node_569_91
+ node_570_91 node_575_92 node_581_93 node_586_94 node_592_95 node_593_95
+ node_594_95 node_598_96 node_599_96 node_605_97 node_606_97 node_610_98
+ node_612_98 node_616_99 node_624_100 node_636_102 node_640_103
+ node_646_104 node_647_104 node_648_104 node_653_105 node_654_105
+ node_659_106 node_660_106 node_664_107 node_666_107 node_670_108
+ node_671_108 node_672_108 node_676_109 node_678_109 node_682_110
+ node_684_110 node_700_113 node_701_113 node_706_114 node_707_114
+ node_708_114 node_712_115 node_714_115 node_718_116 node_719_116
+ node_720_116 node_725_117 node_742_120 node_748_121 node_750_121
+ node_760_123 node_761_123 node_772_125 node_779_126 node_785_127
+ node_790_128 node_791_128 node_798_129 node_803_130 node_809_131
+ node_814_132 node_815_132 node_816_132 node_821_133 node_828_134
+ node_832_135 node_838_136 node_840_136 node_850_138 node_851_138
+ node_856_139 node_857_139 node_858_139 node_862_140 node_863_140
+ node_868_141 node_870_141 node_875_142 node_876_142 node_880_143
+ node_881_143 node_882_143 node_887_144 node_888_144 node_892_145
+ node_893_145 node_894_145 node_898_146 node_905_147 node_910_148
+ node_917_149 switching[0] switching[1] switching[2] switching[3]
+ switching[4] switching[5] switching[6] switching[7] switching[8]
 General Constraints
- GC311: node_572_1 = AND ( node_573_1 , node_574_1 , node_575_1 ,
-   node_576_1 )
- GC312: node_571_0 = AND ( node_572_1 )
- GC371: node_752_1 = AND ( node_753_1 , node_754_1 , node_755_1 ,
-   node_756_1 )
- GC372: node_751_0 = AND ( node_752_1 )
- GC431: node_932_1 = AND ( node_933_1 , node_934_1 , node_935_1 ,
-   node_936_1 )
- GC432: node_931_0 = AND ( node_932_1 )
- GC520: regions_1_1 = OR ( node_571_0 , node_751_0 , node_931_0 )
+ GC253: node_7_0 = AND ( node_8_0 , node_9_0 )
+ GC254: node_10_0 = AND ( node_11_0 , node_12_0 )
+ GC255: node_13_0 = AND ( node_14_0 , node_15_0 )
+ GC256: node_16_0 = AND ( node_17_0 , node_18_0 )
+ GC275: node_57_6 = AND ( node_58_6 , node_59_6 )
+ GC276: node_56_6 = OR ( node_57_6 , node_60_6 )
+ GC277: node_55_0 = AND ( node_56_6 )
+ GC278: node_63_7 = AND ( node_64_7 , node_65_7 )
+ GC279: node_62_7 = OR ( node_63_7 , node_66_7 )
+ GC280: node_61_0 = AND ( node_62_7 )
+ GC281: node_69_8 = AND ( node_70_8 , node_71_8 )
+ GC282: node_68_8 = OR ( node_69_8 , node_72_8 )
+ GC283: node_67_0 = AND ( node_68_8 )
 End

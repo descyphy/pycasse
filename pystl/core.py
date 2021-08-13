@@ -719,15 +719,20 @@ class MILPSolver:
         """
         self.dynamics.append(dynamic)
 
-    def add_switching_dynamic(self, switching_dynamic, switching_condition):
+    def add_switching_dynamic(self, switching_dynamic, switching_condition, max_time):
         """
         Adds a dynamics to the SMC solver.
         """
         self.switching_dynamics = switching_dynamic
         self.switching_condition = switching_condition
+        
+        for j in range(max_time):
+            constraint = "(G[{},{}] {})".format(j,j, self.switching_condition)
+            self.add_soft_constraint(constraint, time=j)
 
     def preprocess(self):
         (num_node, end_time) = Preprocess(self)()
+        
         if self.solver == "Gurobi":
             self.node_variable = -1 * np.ones((num_node, end_time), dtype = object)
             self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list)+1, end_time), dtype = object) # -1 is to exclude constant variable
@@ -1069,6 +1074,11 @@ class MILPSolver:
         bool_vars = self.model.addVars(max_time, vtype=GRB.BINARY, name='switching')
         self.model.update()
         
+        for j in range(self.contract_variable.shape[1]):
+            for entry in self.soft_constraints_var:
+                if entry[3] == j:
+                    self.model.addConstr(bool_vars[j] == entry[0])
+
         count = 0
         for dynamics in self.switching_dynamics:
             for dynamic in dynamics:
@@ -1095,9 +1105,8 @@ class MILPSolver:
 
                     for j in range(self.contract_variable.shape[1] - dynamic.max_time):
                         for i in range(variable.shape[1]):
-                            v = variable[0,i]-1
+                            v = variable[0,i]
                             t = variable[1,i]
-                            #  print(v, t)
                             if self.contract.deter_var_list[v].data_type == 'BINARY':
                                 self.model_add_binary_variable(v, t, var_type = 'contract')
                             elif self.contract.deter_var_list[v].data_type == 'CONTINUOUS':
@@ -1108,6 +1117,7 @@ class MILPSolver:
                         #  print(self.contract_variable)
                         self.model.update()
                         self.model_add_switching_constraint(bool_vars[j], count, variable, multiplier, -rhs)
+                        variable[1] +=1
             count += 1
         
         if (self.debug):
@@ -1189,8 +1199,8 @@ class MILPSolver:
         if self.mode == 'Boolean':
             if self.solver == "Gurobi":
                 self.model.addConstr(constr <= M * (1 - self.node_variable[node_idx, time]))
-                # self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
-                self.model.addConstr(constr >= - M * (self.node_variable[node_idx, time]))
+                self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
+                # self.model.addConstr(constr >= - M * (self.node_variable[node_idx, time]))
             #  elif self.solver == "Cplex":
             #      lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
             #      self.model.linear_constraints.add(lin_expr = (lin_expr * 2), senses = "LG", rhs = [-rhs+M, -rhs+EPS])
@@ -1303,6 +1313,10 @@ class MILPSolver:
                         print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
                     else: assert(False)
         
+        for t in range(len_t-1):
+            var = self.model.getVarByName("switching[{}]".format(t))
+            print("switching[{}]: {}".format(t, var.x))
+
         # for vehicle_num in group:
         #     for t in range(len_t-1):
         #         # var = self.model.getVarByName("regions_{}".format(t))
