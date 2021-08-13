@@ -69,7 +69,7 @@ class highway_env_controller:
                 u_tmp = [s + "_{}".format(tmp_vehicle_num) for s in self.control_names]
                 uncontrolled_vars = uncontrolled_vars + x_tmp
                 if self.environment in ("highway", "merge"):
-                    uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[-500, 500], [-500, 500], [0, velocity_bound], [0, velocity_bound]]), axis=0)
+                    uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[-500, 500], [-500, 500], [-velocity_bound, velocity_bound], [-velocity_bound, velocity_bound]]), axis=0)
                 elif self.environment == "intersection":
                     uncontrolled_bounds = np.append(uncontrolled_bounds, np.array([[-100, 100], [-100, 100], [-velocity_bound, velocity_bound], [-velocity_bound, velocity_bound]]), axis=0)
                 else: assert(False)
@@ -149,7 +149,7 @@ class highway_env_controller:
 
             # Region constraints
             # 3-D constraint: [vehicle_num, time, region_num]
-            region_constraint = [[[] for t in range(self.horizon)] for v in range(len(group))]
+            region_constraint = [[[] for t in range(self.horizon + 1)] for v in range(len(group))]
             for vehicle_id, vehicle_num in enumerate(group):
                 region_params = np.array(data["vehicle"]["region"]["equation"][vehicle_num])
                 region_params[np.abs(region_params) < EPS] = 0
@@ -157,7 +157,7 @@ class highway_env_controller:
                 ego_x_var_name = "{}_{}".format(self.state_names[0], vehicle_num)
                 ego_y_var_name = "{}_{}".format(self.state_names[1], vehicle_num)
 
-                for t in range(self.horizon):
+                for t in range(self.horizon + 1):
                     for region_param in region_params:
                         region_formula = "(G[{},{}] (({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0) & ({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0) & ({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0) & ({} {}**2 + {} {} + {} {}**2 + {} {} + {} <= 0)))".format(t, t, 
                                     region_param[0][0], ego_x_var_name, region_param[0][1], ego_x_var_name, region_param[0][2], ego_y_var_name, region_param[0][3], ego_y_var_name, region_param[0][4],
@@ -196,7 +196,7 @@ class highway_env_controller:
 
             # Add region constraints
             for vehicle_id, vehicle_num in enumerate(group):
-                for t in range(self.horizon):
+                for t in range(self.horizon + 1):
                     # Add a binary variable for regions at time t
                     tmp_model.model_add_binary_variable_by_name("regions_{}_{}".format(vehicle_num, t))
                     tmp_model.model.update()
@@ -206,56 +206,52 @@ class highway_env_controller:
                     tmp_model.model.addConstr(tmp_model.model.getVarByName("regions_{}_{}".format(vehicle_num, t)) == 1)
                     tmp_model.model.update()
 
-            #  # Add objective to MILP sovler
-            #  objective_func = gp.LinExpr()
-            #
-            #  # Goal objectives
-            #  for vehicle_num in group:
-            #      for t in range(self.horizon):
-            #          # Find the gurobi variable
-            #          tmp_x_var_num = tmp_model.contract.deter_var_name2id["{}_{}".format(self.state_names[0], vehicle_num)]
-            #          tmp_y_var_num = tmp_model.contract.deter_var_name2id["{}_{}".format(self.state_names[1], vehicle_num)]
-            #          tmp_x_var_name = "contract_{}_{}".format(tmp_x_var_num, t)
-            #          tmp_y_var_name = "contract_{}_{}".format(tmp_y_var_num, t)
-            #
-            #          # Add goal objectives in x and y axis
-            #          tmp_model.model_add_continuous_variable_by_name("goal_x_{}_{}".format(vehicle_num, t), lb = -M, ub = M)
-            #          tmp_model.model_add_continuous_variable_by_name("goal_y_{}_{}".format(vehicle_num, t), lb = -M, ub = M)
-            #          tmp_model.model.addConstr(tmp_model.model.getVarByName(tmp_x_var_name) - data["vehicle"]["target"][vehicle_num][0] <= tmp_model.model.getVarByName("goal_x_{}_{}".format(vehicle_num, t)))
-            #          tmp_model.model.addConstr(data["vehicle"]["target"][vehicle_num][0] - tmp_model.model.getVarByName(tmp_x_var_name) <= tmp_model.model.getVarByName("goal_x_{}_{}".format(vehicle_num, t)))
-            #          tmp_model.model.addConstr(tmp_model.model.getVarByName(tmp_y_var_name) - data["vehicle"]["target"][vehicle_num][1] <= tmp_model.model.getVarByName("goal_y_{}_{}".format(vehicle_num, t)))
-            #          tmp_model.model.addConstr(data["vehicle"]["target"][vehicle_num][1] - tmp_model.model.getVarByName(tmp_y_var_name) <= tmp_model.model.getVarByName("goal_y_{}_{}".format(vehicle_num, t)))
-            #          tmp_model.model.update()
-            #
-            #          # Add goal objective in x and y axis
-            #          objective_func += (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_x_{}_{}".format(vehicle_num, t)) + (len(self.vehicles)-vehicle_num)*tmp_model.model.getVarByName("goal_y_{}_{}".format(vehicle_num, t))
-            #
-            #  # Fuel objectives (Sum of absolute values of u)
-            #  for vehicle_num in group:
-            #      for t in range(self.horizon):
-            #          # Find the gurobi variable
-            #          tmp_ux_var_num = tmp_model.contract.deter_var_name2id["{}_{}".format(self.control_names[0], vehicle_num)]
-            #          tmp_uy_var_num = tmp_model.contract.deter_var_name2id["{}_{}".format(self.control_names[1], vehicle_num)]
-            #          tmp_ux_var_name = "contract_{}_{}".format(tmp_ux_var_num, t)
-            #          tmp_uy_var_name = "contract_{}_{}".format(tmp_uy_var_num, t)
-            #
-            #          # Add fuel objectives in x and y axis
-            #          tmp_model.model_add_continuous_variable_by_name("fuel_x_{}_{}".format(vehicle_num, t), lb = 0, ub = acceleration_bound)
-            #          tmp_model.model_add_continuous_variable_by_name("fuel_y_{}_{}".format(vehicle_num, t), lb = 0, ub = acceleration_bound)
-            #          tmp_model.model.addConstr(tmp_model.model.getVarByName(tmp_ux_var_name) <= tmp_model.model.getVarByName("fuel_x_{}_{}".format(vehicle_num, t)))
-            #          tmp_model.model.addConstr(-tmp_model.model.getVarByName(tmp_ux_var_name) <= tmp_model.model.getVarByName("fuel_x_{}_{}".format(vehicle_num, t)))
-            #          tmp_model.model.addConstr(tmp_model.model.getVarByName(tmp_uy_var_name) <= tmp_model.model.getVarByName("fuel_y_{}_{}".format(vehicle_num, t)))
-            #          tmp_model.model.addConstr(-tmp_model.model.getVarByName(tmp_uy_var_name) <= tmp_model.model.getVarByName("fuel_y_{}_{}".format(vehicle_num, t)))
-            #          tmp_model.model.update()
-            #
-            #          # Add fuel objective in x and y axis
-            #          objective_func += tmp_model.model.getVarByName("fuel_x_{}_{}".format(vehicle_num, t)) + tmp_model.model.getVarByName("fuel_y_{}_{}".format(vehicle_num, t))
-                
-            # # Add region objectives
-            # for t in range(self.horizon):
+            # Add objective to MILP sovler
+            objective_func = gp.LinExpr()
+
+            # Goal objectives
+            for vehicle_num in group:
+                for t in range(self.horizon + 1):
+                    # Find the gurobi variable
+                    position_var = [tmp_model.variable(tmp_contract.var("{}_{}".format(name, vehicle_num)).idx, t) for name in self.state_names[:2]]
+                    #  print(position_var)
+                    #  input()
+
+                    # Add goal objectives in x and y axis
+                    goal_x = tmp_model.model_add_continuous_variable_by_name("goal_x_{}_{}".format(vehicle_num, t), lb = -M, ub = M)
+                    goal_y = tmp_model.model_add_continuous_variable_by_name("goal_y_{}_{}".format(vehicle_num, t), lb = -M, ub = M)
+                    tmp_model.model.addConstr(position_var[0] - data["vehicle"]["target"][vehicle_num][0] <= goal_x)
+                    tmp_model.model.addConstr(data["vehicle"]["target"][vehicle_num][0] - position_var[0] <= goal_x)
+                    tmp_model.model.addConstr(position_var[1] - data["vehicle"]["target"][vehicle_num][1] <= goal_y)
+                    tmp_model.model.addConstr(data["vehicle"]["target"][vehicle_num][1] - position_var[1] <= goal_y)
+                    tmp_model.model.update()
+
+                    # Add goal objective in x and y axis
+                    objective_func += (len(self.vehicles)-vehicle_num) * goal_x + (len(self.vehicles)-vehicle_num) * goal_y
+
+            # Fuel objectives (Sum of absolute values of u)
+            for vehicle_num in group:
+                for t in range(self.horizon + 1):
+                    # Find the gurobi variable
+                    control_var = [tmp_model.variable(tmp_contract.var("{}_{}".format(name, vehicle_num)).idx, t) for name in self.control_names]
+
+                    # Add fuel objectives in x and y axis
+                    fuel_x = tmp_model.model_add_continuous_variable_by_name("fuel_x_{}_{}".format(vehicle_num, t), lb = 0, ub = acceleration_bound)
+                    fuel_y = tmp_model.model_add_continuous_variable_by_name("fuel_y_{}_{}".format(vehicle_num, t), lb = 0, ub = acceleration_bound)
+                    tmp_model.model.addConstr(control_var[0] <= fuel_x)
+                    tmp_model.model.addConstr(-control_var[0] <= fuel_x)
+                    tmp_model.model.addConstr(control_var[1] <= fuel_y)
+                    tmp_model.model.addConstr(-control_var[1] <= fuel_y)
+                    tmp_model.model.update()
+
+                    # Add fuel objective in x and y axis
+                    objective_func += fuel_x + fuel_y
+
+            #  # Add region objectives
+            #  for t in range(self.horizon + 1):
             #     # Add a binary variable for regions at time t
             #     tmp_model.model_add_binary_variable_by_name("regions_{}".format(t))
-
+            #
             #     # Add a constraint
             #     region_exprs = []
             #     for i in range(len(region_params)):
@@ -264,7 +260,7 @@ class highway_env_controller:
             #                 region_exprs.append(soft_const[0])
             #     tmp_model.model.addConstr(tmp_model.model.getVarByName("regions_{}".format(t)) == gp.or_(region_exprs))
             #     tmp_model.model.update()
-                
+            #
             #     # Add region objective
             #     objective_func += 10*M*tmp_model.model.getVarByName("regions_{}".format(t))
 
@@ -272,7 +268,7 @@ class highway_env_controller:
             # input()
             
             # Set objectives
-            #  tmp_model.set_objective(objective_func)
+            tmp_model.set_objective(objective_func)
 
             # Add the model to the model dictionary
             self.model_dict[tuple(group)] = tmp_model
@@ -287,6 +283,7 @@ class highway_env_controller:
         """
 
         control = [[] for v in self.vehicles]
+        status = True
         # Initialize output
         for group_idx, group_model in self.model_dict.items():
 
@@ -344,18 +341,23 @@ class highway_env_controller:
 
             # Solve and fetch the solution for the control   
             solved = group_model.solve()
-            print("write")
-            print(solved)
-            input()
             if solved:
                 group_model.print_solution()
+                #  position_var = [group_model.variable(group_contract.var("{}_{}".format(name, 0)).idx, 30) for name in self.state_names[:2]]
+                #  print(position_var[0].x)
+                #  print(position_var[1].x)
+                #  print(group_model.model.getVarByName("goal_y_1_30").x)
 
             # Fetch the control
-            for vehicle_num in group_idx:
-                variables = [group_contract.var("{}_{}".format(var, vehicle_num)) for var in self.control_names]
-                tmp_output = group_model.fetch_solution(variables)
-                control[vehicle_num] = tmp_output
-            synthesis_fail = solved
+            if solved:
+                for vehicle_num in group_idx:
+                    variables = [group_contract.var("{}_{}".format(var, vehicle_num)) for var in self.control_names]
+                    tmp_output = group_model.fetch_solution(variables)
+                    control[vehicle_num] = tmp_output
+            else:
+                for vehicle_num in group_idx:
+                    control[vehicle_num] = [[0.0], [0.0]]
+            status &= solved
 
             # # Delete the constraints for the control
             # for adversarial_vehicle_num in adversarial_control.keys():
@@ -375,7 +377,12 @@ class highway_env_controller:
                     group_model.model.remove(group_model.model.getConstrByName('state_{}_{}'.format(vehicle_num, state_var_idx)))
             group_model.model.update()
 
-        return control, synthesis_fail
+        #  print(control)
+        #  print(status)
+        #  input()
+        #  input()
+
+        return control, not status
     
     def plot_path(self, param):
         """ Plots the pre-determined paths of the vehicles.

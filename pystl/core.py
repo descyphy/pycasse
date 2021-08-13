@@ -729,14 +729,16 @@ class MILPSolver:
         (num_node, end_time) = Preprocess(self)()
         if self.solver == "Gurobi":
             self.node_variable = -1 * np.ones((num_node, end_time), dtype = object)
-            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list)+1, end_time), dtype = object) # -1 is to exclude constant variable
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object) # -1 is to exclude constant variable
         elif self.solver == "Cplex":
             self.node_variable = -1 * np.ones((num_node, end_time), dtype = object)
-            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list)+1, end_time), dtype = object)
+            self.contract_variable = -1 * np.ones((len(self.contract.deter_var_list), end_time), dtype = object)
         else: assert(False)
 
         if self.debug:
             for c in self.hard_constraints:
+                print(repr(c))
+            for c in self.soft_constraints:
                 print(repr(c))
             print("node variable shape: {}".format(self.node_variable.shape))
             print("contract variable shape: {}".format(self.contract_variable.shape))
@@ -1349,9 +1351,9 @@ class MILPSolver:
         output = []
 
         # Find the output
-        print(controlled_vars)
-        print(self.contract_variable[controlled_vars[0].idx, 0])
-        input()
+        #  print(controlled_vars)
+        #  print(self.contract_variable[controlled_vars[0].idx, 0])
+        #  input()
         for var in controlled_vars:
             output.append([v.x for v in self.contract_variable[var.idx, 0: length]])
                     
