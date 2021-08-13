@@ -82,10 +82,12 @@ class highway_env_controller:
 
             uncontrolled_vars = tmp_contract.set_deter_uncontrolled_vars(uncontrolled_vars, bounds = uncontrolled_bounds)
             controlled_vars = tmp_contract.set_controlled_vars(controlled_vars, bounds = controlled_bounds)
-            # print(uncontrolled_vars)
+            #  print(uncontrolled_vars)
             #  print(uncontrolled_bounds)
-            # print(controlled_vars)
+            #  print(controlled_vars)
             #  print(controlled_bounds)
+            #  input()
+            #  print(tmp_contract.deter_var_list)
 
             # Find the assumptions and guarantees formula of the contract
             # Initialize assumptions and guarantees
@@ -296,11 +298,9 @@ class highway_env_controller:
         control = [[] for v in self.vehicles]
         status = True
         # Initialize output
-        for group_idx, group_model in self.model_dict.items():
-
-            group_contract = group_model.contract
         for vehicles, group_model in self.model_dict.items():
-            print(vehicles)
+            group_contract = group_model.contract
+            #  print(vehicles)
             # Initialize 
             # adversarial_control = {}
             
@@ -361,12 +361,12 @@ class highway_env_controller:
 
             # Fetch the control
             if solved:
-                for vehicle_num in group_idx:
+                for vehicle_num in vehicles:
                     variables = [group_contract.var("{}_{}".format(var, vehicle_num)) for var in self.control_names]
                     tmp_output = group_model.fetch_solution(variables)
                     control[vehicle_num] = tmp_output
             else:
-                for vehicle_num in group_idx:
+                for vehicle_num in vehicles:
                     control[vehicle_num] = [[0.0], [0.0]]
             status &= solved
 
