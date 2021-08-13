@@ -235,7 +235,7 @@ plot_path	pystl/highway_control.py	/^    def plot_path(self, param):$/;"	m	class
 preprocess	pystl/core.py	/^    def preprocess(self):$/;"	m	class:MILPSolver
 preprocess	pystl/core.py	/^    def preprocess(self, node, end_time):$/;"	m	class:Preprocess
 printInfo	pystl/contracts.py	/^    def printInfo(self):$/;"	m	class:contract
-print_solution	pystl/core.py	/^    def print_solution(self):$/;"	m	class:MILPSolver
+print_solution	pystl/core.py	/^    def print_solution(self, group=None):$/;"	m	class:MILPSolver
 probability	pystl/parser.py	/^    def probability(self):$/;"	m	class:StochasticAtomicPredicate
 quotient	pystl/contracts.py	/^def quotient(c, c2):$/;"	f
 randomAction	tests/OpenAIGym/test_manual.py	/^    randomAction = env.action_space.sample()$/;"	v

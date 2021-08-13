@@ -1308,7 +1308,7 @@ class MILPSolver:
     def status(self):
         return (self.solver == 'Gurobi' and self.model.getAttr("Status") == 2) or (self.solver == 'Cplex' and self.model.solution.get_status() in (1,101))
 
-    def print_solution(self):
+    def print_solution(self, group=None):
         (len_var, len_t) = self.contract_variable.shape
         for v in range(len_var):
             for t in range(len_t):
@@ -1319,11 +1319,14 @@ class MILPSolver:
                         print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
                     else: assert(False)
         
-        # for t in range(t):
-        #     var = self.model.getVarByName("regions_{}".format(t))
-        #     print("regions_{}: {}".format(t, var.x))
-        #     var = self.model.getVarByName("goal_y_{}".format(t))
-        #     print("goal_y_{}: {}".format(t, var.x))
+        # for vehicle_num in group:
+        #     for t in range(len_t-1):
+        #         # var = self.model.getVarByName("regions_{}".format(t))
+        #         # print("regions_{}: {}".format(t, var.x))
+        #         var = self.model.getVarByName("goal_x_{}_{}".format(vehicle_num, t))
+        #         print("goal_x_{}_{}: {}".format(vehicle_num, t, var.x))
+        #         var = self.model.getVarByName("goal_y_{}_{}".format(vehicle_num, t))
+        #         print("goal_y_{}_{}: {}".format(vehicle_num, t, var.x))
         # input()
                     
         

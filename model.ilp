@@ -1,20 +1,43 @@
 \ Model _copy
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
-  0 contract_3_0 + 0 contract_4_0 + 0 contract_4_1 + 0 switching[34]
-   + 0 switching[65] + 0 switching[93]
+  0 node_571_0 + 0 node_572_1 + 0 node_574_1 + 0 node_575_1 + 0 node_576_1
+   + 0 node_751_0 + 0 node_752_1 + 0 node_753_1 + 0 node_755_1
+   + 0 node_756_1 + 0 node_931_0 + 0 node_932_1 + 0 node_933_1
+   + 0 node_934_1 + 0 node_936_1
 Subject To
- GC370: switching[34] = 0 -> - contract_4_0 + contract_4_1 = -0
- GC432: switching[65] = 0 -> - contract_4_0 + contract_4_1 = -0
- GC633: switching[65] = 1 -> - 0.09516 contract_3_0 = 0.009675
- GC771: switching[34] = 1 -> - 0.5635 contract_3_0 = -1.2316
- GC888: switching[93] = 0 -> - 0.5635 contract_3_0 = -1.2316
- GC1234: switching[65] = 0 -> - contract_4_0 + contract_4_1 = 0.2
- GC1291: switching[93] = 1 -> - contract_4_0 + contract_4_1 = 0.2
+ R1722: contract_5_1 + 10000 node_573_1 <= 9999
+ R2086: - contract_5_1 + 10000 node_935_1 <= 9986
+ R2434: - contract_4_0 + contract_4_1 - 0.1 contract_6_0 = 0
+ R2464: - contract_5_0 + contract_5_1 - 0.1 contract_7_0 = 0
+ R2705: regions_1_1 = 1
+ state_1_0: contract_4_0 = -5.999451152460872
+ state_1_1: contract_5_0 = 1.311768499288861
+ state_1_2: contract_6_0 = 0.000253826
+ state_1_3: contract_7_0 = 1.6097671910664246e-04
+ qc0: - 28 contract_4_1 + 28 contract_5_1 + 10000 node_754_1 + [
+   - contract_4_1 ^2 - contract_5_1 ^2 ] <= 10167
 Bounds
- contract_3_0 free
  contract_4_0 free
  contract_4_1 free
+ contract_5_0 free
+ contract_5_1 free
+ contract_6_0 free
+ contract_7_0 free
 Binaries
- switching[34] switching[65] switching[93]
+ node_571_0 node_572_1 node_573_1 node_574_1 node_575_1 node_576_1
+ node_751_0 node_752_1 node_753_1 node_754_1 node_755_1 node_756_1
+ node_931_0 node_932_1 node_933_1 node_934_1 node_935_1 node_936_1
+ regions_1_1
+General Constraints
+ GC311: node_572_1 = AND ( node_573_1 , node_574_1 , node_575_1 ,
+   node_576_1 )
+ GC312: node_571_0 = AND ( node_572_1 )
+ GC371: node_752_1 = AND ( node_753_1 , node_754_1 , node_755_1 ,
+   node_756_1 )
+ GC372: node_751_0 = AND ( node_752_1 )
+ GC431: node_932_1 = AND ( node_933_1 , node_934_1 , node_935_1 ,
+   node_936_1 )
+ GC432: node_931_0 = AND ( node_932_1 )
+ GC520: regions_1_1 = OR ( node_571_0 , node_751_0 , node_931_0 )
 End

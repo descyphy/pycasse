@@ -48,7 +48,6 @@ class highway_env_controller:
 
         # Add a model for each group of cooperating vehicles (or a vehicle)
         for group in data["vehicle"]["group"]:
-            #  print(group)
             # Build a MILP solver
             tmp_model = MILPSolver()
 
@@ -83,9 +82,9 @@ class highway_env_controller:
 
             uncontrolled_vars = tmp_contract.set_deter_uncontrolled_vars(uncontrolled_vars, bounds = uncontrolled_bounds)
             controlled_vars = tmp_contract.set_controlled_vars(controlled_vars, bounds = controlled_bounds)
-            #  print(uncontrolled_vars)
+            # print(uncontrolled_vars)
             #  print(uncontrolled_bounds)
-            #  print(controlled_vars)
+            # print(controlled_vars)
             #  print(controlled_bounds)
 
             # Find the assumptions and guarantees formula of the contract
@@ -188,11 +187,16 @@ class highway_env_controller:
             # Add variables and constraints to MILP solver
             tmp_model.preprocess()
             
+            # print(group)
+            # print(assumptions_formula)
+            # print(guarantees_formula)
             # print(tmp_contract.deter_var_name2id)
-            # print(tmp_solver.hard_constraints)
-            # print(tmp_solver.soft_constraints)
-            # print(tmp_solver.model.getVars())
+            # print(tmp_model.hard_constraints)
+            # print(tmp_model.soft_constraints)
+            # print(tmp_model.model.getVars())
             # print(tmp_model.soft_constraints_var)
+            # tmp_model.model.write("MILP.lp")
+            # input()
 
             # Add region constraints
             for vehicle_id, vehicle_num in enumerate(group):
@@ -228,6 +232,10 @@ class highway_env_controller:
 
                     # Add goal objective in x and y axis
                     objective_func += (len(self.vehicles)-vehicle_num) * goal_x + (len(self.vehicles)-vehicle_num) * goal_y
+                    if self.environment == 'intersection':
+                        objective_func += (len(self.vehicles)-vehicle_num) * goal_x + (len(self.vehicles)-vehicle_num) * goal_y
+                    else:
+                        objective_func += (len(self.vehicles)-vehicle_num) * goal_x + 10*(len(self.vehicles)-vehicle_num) * goal_y
 
             # Fuel objectives (Sum of absolute values of u)
             for vehicle_num in group:
@@ -275,6 +283,9 @@ class highway_env_controller:
             #  print(self.model_dict)
             #  input()
 
+            # tmp_model.model.write("MILP.lp")
+            # input()
+
     def find_control(self, current_states):
         """ Find control for all the groups of cooperating vehicles (or a vehicle if only one in the group).
 
@@ -288,6 +299,10 @@ class highway_env_controller:
         for group_idx, group_model in self.model_dict.items():
 
             group_contract = group_model.contract
+        for vehicles, group_model in self.model_dict.items():
+            print(vehicles)
+            # Initialize 
+            # adversarial_control = {}
             
             # Add the constraints for the current states
             for vehicle_num in self.vehicles:
@@ -342,11 +357,7 @@ class highway_env_controller:
             # Solve and fetch the solution for the control   
             solved = group_model.solve()
             if solved:
-                group_model.print_solution()
-                #  position_var = [group_model.variable(group_contract.var("{}_{}".format(name, 0)).idx, 30) for name in self.state_names[:2]]
-                #  print(position_var[0].x)
-                #  print(position_var[1].x)
-                #  print(group_model.model.getVarByName("goal_y_1_30").x)
+                group_model.print_solution(group=vehicles)
 
             # Fetch the control
             if solved:
@@ -414,11 +425,11 @@ class highway_env_controller:
                 f4 = lambda x,y : region_param[3,0]*x**2 + region_param[3,1]*x + region_param[3,2]*y**2 + region_param[3,3]*y + region_param[3,4]
 
                 if self.environment == "highway":
-                    x = np.linspace(-10,300,1000)
+                    x = np.linspace(-10,200,1000)
                     y = np.linspace(-5,20,1000)
                 elif self.environment == "merge":
-                    x = np.linspace(0,550,1000)
-                    y = np.linspace(-20,20,1000)
+                    x = np.linspace(0,250,1000)
+                    y = np.linspace(-20,12,1000)
                 else:
                     x = np.linspace(-50,50,1000)
                     y = np.linspace(-50,50,1000)
