@@ -151,7 +151,7 @@ add_dynamic	pystl/core.py	/^    def add_dynamic(self, dynamic):$/;"	m	class:MILP
 add_dynamics	pystl/core.py	/^    def add_dynamics(self, dynamics):$/;"	m	class:SMCSolver
 add_hard_constraint	pystl/core.py	/^    def add_hard_constraint(self, constraint):$/;"	m	class:MILPSolver
 add_soft_constraint	pystl/core.py	/^    def add_soft_constraint(self, constraint):$/;"	m	class:MILPSolver
-add_switching_dynamic	pystl/core.py	/^    def add_switching_dynamic(self, switching_dynamic, switching_condition):$/;"	m	class:MILPSolver
+add_switching_dynamic	pystl/core.py	/^    def add_switching_dynamic(self, switching_dynamic, switching_condition, max_time):$/;"	m	class:MILPSolver
 add_switching_dynamics	pystl/core.py	/^    def add_switching_dynamics(self, dynamics):$/;"	m	class:SMCSolver
 author	setup.py	/^      author='Chanwook Oh',$/;"	v
 author_email	setup.py	/^      author_email='chanwooo@usc.edu',$/;"	v
@@ -159,7 +159,7 @@ bounds	tests/test_cruising.py	/^        bounds = np.array([[-10**4, 10**4]])) # 
 bounds	tests/test_following.py	/^        bounds = np.array([[-10**4, 10**4]])) # Set a controlled variable$/;"	v
 bounds	tests/test_following.py	/^        bounds = np.array([[0, 35], [0, 35], [-10**4, 10**4], [-10**4, 10**4], [-10**4, 10**4], [-10**4, 10**4]])) # Set a deterministic uncontrolled variable$/;"	v
 bounds	tests/test_switching.py	/^        bounds = np.array([[-10**4, 10**4]])) # Set a controlled variable$/;"	v
-bounds	tests/test_switching.py	/^        bounds = np.array([[0, 35], [0, 10**4], [-10**4, 10**4], [-10**4, 10**4], [-10**4, 10**4], [-10**4, 10**4], [-10**4, 10**4]])) # Set a deterministic uncontrolled variable$/;"	v
+bounds	tests/test_switching.py	/^        bounds = np.array([[0, 35], [0, 35], [0, 35], [-10**4, 10**4], [-10**4, 10**4], [-10**4, 10**4], [-10**4, 10**4]])) # Set a deterministic uncontrolled variable$/;"	v
 build_model	tests/OpenAIGym/test.py	/^    def build_model(self):$/;"	m	class:DQN
 c	tests/test_contracts_quotient.py	/^c = contract('c')                     # Create a contract c$/;"	v
 c	tests/test_cruising.py	/^c = contract('c')$/;"	v
@@ -288,7 +288,7 @@ true	pystl/parser.py	/^true = ASTObject("True")$/;"	v
 u	tests/test_dyn.py	/^u = Vector([a])$/;"	v
 v	tests/test_cruising.py	/^v = Vector([vf, vd])$/;"	v
 v	tests/test_following.py	/^v = Vector([vl, vf])$/;"	v
-v	tests/test_switching.py	/^v = Vector([vl, vf])$/;"	v
+v	tests/test_switching.py	/^v = Vector([vl, vf, vd])$/;"	v
 var	pystl/contracts.py	/^    def var(self, name):$/;"	m	class:contract
 variable	pystl/core.py	/^    def variable(self, idx, time, var_type = 'contract'):$/;"	m	class:MILPSolver
 version	setup.py	/^      version='1.1.0',$/;"	v
