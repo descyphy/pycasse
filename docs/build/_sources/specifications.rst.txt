@@ -29,23 +29,23 @@ An STL [Maler04]_ or an StSTL [Nuzzo19]_ formula can be written in PySTL using t
                   | <expression> "-" <expression>
 
    <inequality> ::= <expression> "<=" <expression>
-                  | <expression> ">=" <expression>
+                  | <expression> "=>" <expression>
                   | <expression> "==" <expression>
 
-   <predicate> ::= <boolean> | <inequality> | "P{" <inequality> "}>=0." <integer>
+   <predicate> ::= <boolean> | <inequality> | "P(" <inequality> ") => 0." <integer>
                  
-   <formula> ::= <predicate>
-               | "!(" <formula> ")"
-               | "(" <formula> ")&&(" <formula> ")"
-               | "(" <formula> ")||(" <formula> ")"
-               | "(" <formula> ")->(" <formula> ")"
+   <formula> ::= "(" <predicate> ")"
+               | "(!" <formula> ")"
+               | "(" <formula> " & " <formula> ")"
+               | "(" <formula> " | " <formula> ")"
+               | "(" <formula> " -> " <formula> ")"
 
-               | "G" <interval> "(" <formula> ")"
-               | "F" <interval> "(" <formula> ")"
-               | "(" <formula> ")U" <interval> "(" <formula> ")"
+               | "(G" <interval> " " <formula> ")"
+               | "(F" <interval> " " <formula> ")"
+               | "(" <formula> " U" <interval> " " <formula> ")"
 
 For example, 'Globally from time step :math:`0` to :math:`3`, :math:`x \geq 3` implies eventually from time step :math:`4` to :math:`5`, the probability of :math:`5 \leq y` larger than or equal to :math:`0.95`' can be written as an StSTL formula: :math:`\mathbf{G}_{[0,3]}(x \geq 3) \rightarrow \mathbf{F}_{[4,5]}(P\{ 5 \leq y \} \geq 0.95)` and can be written as a formula in PySTL: 
 
 .. code-block:: python
 
-   (G[0,3](x>=3))->(F[4,5](P{5<=y}>=0.95))
+   ((G[0,3] (x => 3)) -> (F[4,5] (P(5 <= y) => 0.95)))

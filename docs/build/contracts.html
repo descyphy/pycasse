@@ -115,7 +115,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#a-g-contracts-operations-in-pystl">3.4. A/G Contracts Operations in PySTL</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#combining-contracts">3.4.1. Combining Contracts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#decomposing-contracts">3.4.2. Decomposing Contracts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pystl-contract-operations">3.4.3. PySTL Contract Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pystl.contracts">3.4.3. PySTL Contract Operations</a></li>
 </ul>
 </li>
 </ul>
@@ -207,24 +207,26 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">c1</span> <span class="o">=</span> <span class="n">contract</span><span class="p">(</span><span class="s1">&#39;c1&#39;</span><span class="p">)</span>                   <span class="c1"># Create a contract c1</span>
-<span class="n">c1</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;G[0,3](x&gt;=5)&#39;</span><span class="p">)</span>         <span class="c1"># Set an assumption</span>
-<span class="n">c1</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;G[1,4](y&gt;=2)&#39;</span><span class="p">)</span>         <span class="c1"># Set a guarantee</span>
 <span class="n">c1</span><span class="o">.</span><span class="n">set_deter_uncontrolled_vars</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">])</span> <span class="c1"># Set a deterministic uncontrolled variable</span>
 <span class="n">c1</span><span class="o">.</span><span class="n">set_controlled_vars</span><span class="p">([</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>         <span class="c1"># Set a controlled variable</span>
+
+<span class="n">c1</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;(G[0,3] (x =&gt; 5))&#39;</span><span class="p">)</span>    <span class="c1"># Set assumptions of c1</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;(G[1,3] (y =&gt; 2))&#39;</span><span class="p">)</span>    <span class="c1"># Set guarantees of c1</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">checkSat</span><span class="p">()</span>                         <span class="c1"># Saturate c1</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                        <span class="c1"># Print information of c1</span>
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/system2.png"><img alt="_images/system2.png" class="align-center" src="_images/system2.png" style="width: 300px;" /></a>
 <p>Using StSTL specifications, a contract <span class="math">\(C_1' = (V_1', A_1', G_1')\)</span> where <span class="math">\(V_1' = U' \cup X_1'\)</span>, <span class="math">\(U_1' := \{ w_1, w_2 \}\)</span>, <span class="math">\(X_1' := \{ x, y \}\)</span>, <span class="math">\(A_1' := \mathbf{G}_{[0,3]}(5 \leq x)\)</span>, <span class="math">\(G_1' := \mathbf{G}_{[1,3]}(P\{ y-2w_1+3w_2 \leq 8 \} \geq 0.95)\)</span>, and <span class="math">\(\mathbf{w} = [w_1, w_2]^T \sim N([0,2]^T, [[1,0],[0,1]])\)</span> can be created as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">c1_prime</span> <span class="o">=</span> <span class="n">contract</span><span class="p">(</span><span class="s1">&#39;c1_prime&#39;</span><span class="p">)</span>                      <span class="c1"># Create a contract c1_prime</span>
-<span class="n">c1_prime</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;G[0,3](5&lt;=x)&#39;</span><span class="p">)</span>                  <span class="c1"># Set an assumption</span>
-<span class="n">c1_prime</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;G[1,3](P{y-2w1+3w2&lt;=8}=&gt;0.85)&#39;</span><span class="p">)</span> <span class="c1"># Set a guarantee</span>
-<span class="n">c1_prime</span><span class="o">.</span><span class="n">set_deter_uncontrolled_vars</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>          <span class="c1"># Set a deterministic uncontrolled variable</span>
-<span class="n">c1_prime</span><span class="o">.</span><span class="n">set_nondeter_uncontrolled_vars</span><span class="p">([</span><span class="s1">&#39;w1&#39;</span><span class="p">,</span> <span class="s1">&#39;w2&#39;</span><span class="p">],</span>  <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">]]),</span> \
-                            <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">**</span><span class="mi">2</span><span class="p">]]),</span> \
-                            <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;GAUSSIAN&#39;</span><span class="p">)</span>        <span class="c1"># Set nondeterministic uncontrolled variables</span>
-<span class="n">c1_prime</span><span class="o">.</span><span class="n">set_controlled_vars</span><span class="p">([</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>                  <span class="c1"># Set a controlled variable</span>
-<span class="n">c1_prime</span><span class="o">.</span><span class="n">saturate</span><span class="p">()</span>                                  <span class="c1"># Saturate c1_prime</span>
-<span class="n">c1_prime</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                                 <span class="c1"># Print c1_prime</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">c1_prime</span> <span class="o">=</span> <span class="n">contract</span><span class="p">(</span><span class="s1">&#39;c1&#39;</span><span class="p">)</span>                                      <span class="c1"># Create a contract c1_prime</span>
+<span class="n">c1_prime</span><span class="o">.</span><span class="n">set_deter_uncontrolled_vars</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>                    <span class="c1"># Set a deterministic uncontrolled variable</span>
+<span class="n">c1_prime</span><span class="o">.</span><span class="n">set_nondeter_uncontrolled_vars</span><span class="p">([</span><span class="s1">&#39;w1&#39;</span><span class="p">,</span> <span class="s1">&#39;w2&#39;</span><span class="p">],</span> \
+      <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">**</span><span class="mi">2</span><span class="p">]]))</span>
+                                                               <span class="c1"># Set nondeterministic uncontrolled variables</span>
+<span class="n">c1_prime</span><span class="o">.</span><span class="n">set_controlled_vars</span><span class="p">([</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>                            <span class="c1"># Set a controlled variable</span>
+<span class="n">c1_prime</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;(G[0,3] (5 &lt;= x))&#39;</span><span class="p">)</span>                       <span class="c1"># Set assumptions of c1_prime</span>
+<span class="n">c1_prime</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;(G[1,3] (P[0.85] (y - 2w1 + 3w2 &lt;= 8)))&#39;</span><span class="p">)</span> <span class="c1"># Set guarantees of c1_prime</span>
+<span class="n">c1_prime</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                                           <span class="c1"># Print c1_prime</span>
 </pre></div>
 </div>
 <p>Any contract in PySTL can be saturated and its information can be printed. For example, <span class="math">\(C_1\)</span> and <span class="math">\(C_1'\)</span> can be saturated and their information can be printed as follows:</p>
@@ -319,9 +321,175 @@ C_1 \otimes C_2 = &amp; \; (V_1 \cup V_2, (A_1 \cap A_2) \cup \overline{(G_1 \ca
 </pre></div>
 </div>
 <p>For an example where contracts are split using <cite>quotient</cite> operation, refer to <a class="reference download internal" href="_downloads/test_contracts_quotient.py" download=""><code class="xref download docutils literal"><span class="pre">test_contracts_quotient.py</span></code></a>.</p>
+<blockquote>
+<div>We can also split <span class="math">\(C\)</span> into <span class="math">\(C_2\)</span> and <span class="math">\(C%C_2\)</span> by using <cite>separation</cite> such that <span class="math">\(C \preceq (C/C_2) \cdot C_2\)</span>.</div></blockquote>
 </div>
-<div class="section" id="pystl-contract-operations">
-<h3>3.4.3. PySTL Contract Operations<a class="headerlink" href="#pystl-contract-operations" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-pystl.contracts">
+<span id="pystl-contract-operations"></span><h3>3.4.3. PySTL Contract Operations<a class="headerlink" href="#module-pystl.contracts" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="pystl.contracts.composition">
+<code class="descclassname">pystl.contracts.</code><code class="descname">composition</code><span class="sig-paren">(</span><em>c1</em>, <em>c2</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.composition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the composition of two contracts</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>c1</strong> (<code class="xref py py-class docutils literal"><span class="pre">pystl.contracts.contract.contract</span></code>) – A contract c1</li>
+<li><strong>c2</strong> (<code class="xref py py-class docutils literal"><span class="pre">pystl.contracts.contract.contract</span></code>) – A contract c2</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A composed contract c1*c2</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">pystl.contracts.contract.contract</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pystl.contracts.conjunction">
+<code class="descclassname">pystl.contracts.</code><code class="descname">conjunction</code><span class="sig-paren">(</span><em>c1</em>, <em>c2</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.conjunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the conjunction of two contracts</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>c1</strong> (<code class="xref py py-class docutils literal"><span class="pre">pystl.contracts.contract.contract</span></code>) – A contract c1</li>
+<li><strong>c2</strong> (<code class="xref py py-class docutils literal"><span class="pre">pystl.contracts.contract.contract</span></code>) – A contract c2</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A conjoined contract c1^c2</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">pystl.contracts.contract.contract</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="pystl.contracts.contract">
+<em class="property">class </em><code class="descclassname">pystl.contracts.</code><code class="descname">contract</code><span class="sig-paren">(</span><em>id=''</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract" title="Permalink to this definition">¶</a></dt>
+<dd><p>A contract class for defining a contract object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>str</em>) – An id of the contract</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pystl.contracts.contract.checkCompat">
+<code class="descname">checkCompat</code><span class="sig-paren">(</span><em>print_sol=False</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.checkCompat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks compatibility of the contract.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pystl.contracts.contract.checkConsis">
+<code class="descname">checkConsis</code><span class="sig-paren">(</span><em>print_sol=False</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.checkConsis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks consistency of the contract</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pystl.contracts.contract.checkFeas">
+<code class="descname">checkFeas</code><span class="sig-paren">(</span><em>print_sol=False</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.checkFeas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks feasibility of the contract</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pystl.contracts.contract.checkRefine">
+<code class="descname">checkRefine</code><span class="sig-paren">(</span><em>contract2refine</em>, <em>print_sol=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.checkRefine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether contract2refine refines the contract</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pystl.contracts.contract.checkSat">
+<code class="descname">checkSat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.checkSat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saturates the contract.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pystl.contracts.contract.set_assume">
+<code class="descname">set_assume</code><span class="sig-paren">(</span><em>assumption</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.set_assume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the assumption of the contract.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>assumption</strong> (<em>str</em>) – An STL or StSTL formula which characterizes the assumption set of the contract</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pystl.contracts.contract.set_controlled_vars">
+<code class="descname">set_controlled_vars</code><span class="sig-paren">(</span><em>var_names</em>, <em>dtypes=None</em>, <em>bounds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.set_controlled_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds controlled variables and their information to the contract</p>
+<p>:param  var_names   : A list of names for controlled variables
+:type   var_names   : list
+:param  dtypes      : A list of variable types for controlled variables, each entry can be either “BINARY”, “INTEGER”, or “CONTINUOUS”, defaults to “CONTINUOUS”
+:type   dtypes      : list, optional
+:param  bounds      : An numpy array of lower and upper bounds for controlled variables, defaults to <cite>[-10^4,10^4]</cite> for “CONTINUOUS” and “INTEGER” variable and <cite>[0,1]</cite> for “BINARY”
+:type   bounds      : <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>, optional</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pystl.contracts.contract.set_deter_uncontrolled_vars">
+<code class="descname">set_deter_uncontrolled_vars</code><span class="sig-paren">(</span><em>var_names</em>, <em>dtypes=None</em>, <em>bounds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.set_deter_uncontrolled_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds deterministic uncontrolled variables and their information to the contract</p>
+<p>:param  var_names   : A list of names for uncontrolled variables
+:type   var_names   : list
+:param  dtypes      : A list of variable types for controlled variables, each entry can be either “BINARY”, “INTEGER”, or “CONTINUOUS”, defaults to “CONTINUOUS”
+:type   dtypes      : list, optional
+:param  bounds      : An numpy array of lower and upper bounds for controlled variables, defaults to <cite>[-10^4,10^4]</cite> for “CONTINUOUS” and “INTEGER” variable and <cite>[0,1]</cite> for “BINARY”
+:type   bounds      : <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>, optional</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pystl.contracts.contract.set_guaran">
+<code class="descname">set_guaran</code><span class="sig-paren">(</span><em>guarantee</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.set_guaran" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the guarantee of the contract.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>guarantee</strong> (<em>str</em>) – An STL or StSTL formula which characterizes the guarantee set of the contract</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pystl.contracts.contract.set_nondeter_uncontrolled_vars">
+<code class="descname">set_nondeter_uncontrolled_vars</code><span class="sig-paren">(</span><em>var_names</em>, <em>mean</em>, <em>cov</em>, <em>dtypes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.set_nondeter_uncontrolled_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds uncontrolled variables and their information to the contract. We plan to add more distribution such as <cite>UNIFORM</cite>, <cite>TRUNCATED_GAUSSIAN</cite>, or even a distribution from <cite>DATA</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>var_names</strong> (<em>list</em>) – A list of names for uncontrolled variables</td>
+</tr>
+</tbody>
+</table>
+<p>:param  mean     : A mean vector of uncontrolled variables
+:type   mean     : <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>
+:param  cov      : A covariance matrix of uncontrolled variables
+:type   cov      : <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>
+:param  dtype    : A distribution type for uncontrolled variables, can only be <cite>GAUSSIAN</cite> for now, defaults to <cite>GAUSSIAN</cite>
+:type   dtype    : str, optional</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 </div>
