@@ -1,0 +1,11 @@
+Bibiliography
+=============
+.. [Maler04] \O. Maler and D. Nickovic, *Monitoring Temporal Properties of Continuous Signals*, proceedings of FORMATS-FTRTFT, in: LNCS, vol. 3253, 2004.
+
+.. [Nuzzo19] \P. Nuzzo, J. Li, A. L. Sangiovanni-Vincentelli, Y. Xi, D. Li, *Stochastic Assume-Guarantee Contracts for Cyber-Physical System Design*, ACM Transactions on Embedded Computing Systems, Vol. 18, No. 1, Article 2. Publication date: January 2019.
+
+.. [ContractMono] \A. Benveniste, B. Caillaud, D. Nickovic, R. Passerone, J. -B. Raclet, P. Reinkemeier, A. L. Sangiovanni-Vincentelli, W. Damm, T. A. Henzinger, and K. G. Larsen, *Contracts for system design*, vol. 12, no. 2-3, pp. 124-400, 2018.
+
+.. [Passerone19] \R. Passerone, I. n. Incer Romeo, and A. L. Sangiovanni-Vincentelli, *Coherent extension, composition, and merging operators in contract models for system design*, ACM Trans. Embed. Comput. Syst., vol. 18, no. 5s, Oct. 2019.
+
+.. [Gurobi] \Gurobi Optimization, LLC, *Gurobi Optimizer Reference Manual*, 2020. Available: http://www.gurobi.com.

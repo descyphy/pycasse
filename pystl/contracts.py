@@ -226,7 +226,7 @@ class contract:
         if verbose and solved:
             print("Contract {} is consistent.\n".format(self.id))
             if print_sol:
-                print("Printing a behavior that satisfies the saturated guarantee of the contract {}...".format(self.id))
+                print("Printing a behavior that satisfies the saturated guarantees of the contract {}...".format(self.id))
                 solver.print_solution()
         elif verbose and not solved:
             print("Contract {} is not consistent.\n".format(self.id))
@@ -254,7 +254,7 @@ class contract:
         if verbose and solved:
             print("Contract {} is feasible.\n".format(self.id))
             if print_sol:
-                print("Printing a behavior that satisfies both the assumption and guarantee of the contract {}...".format(self.id))
+                print("Printing a behavior that satisfies both the assumptions and guarantees of the contract {}...".format(self.id))
                 solver.print_solution()
         elif verbose and not solved:
             print("Contract {} is not feasible.\n".format(self.id))

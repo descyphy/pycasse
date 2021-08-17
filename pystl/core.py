@@ -1212,8 +1212,8 @@ class MILPSolver:
         if self.mode == 'Boolean':
             if self.solver == "Gurobi":
                 self.model.addConstr(constr <= M * (1 - self.node_variable[node_idx, time]))
-                self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
-                # self.model.addConstr(constr >= - M * (self.node_variable[node_idx, time]))
+                # self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
+                self.model.addConstr(constr >= - M * (self.node_variable[node_idx, time]))
             #  elif self.solver == "Cplex":
             #      lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
             #      self.model.linear_constraints.add(lin_expr = (lin_expr * 2), senses = "LG", rhs = [-rhs+M, -rhs+EPS])

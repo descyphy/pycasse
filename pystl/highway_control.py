@@ -134,9 +134,8 @@ class highway_env_controller:
 
 
             # Set the contracts
-            #  print(assumptions_formula)
-            #  print(guarantees_formula)
-            #  input()
+            # print(assumptions_formula)
+            # print(guarantees_formula)
             tmp_contract.set_assume(assumptions_formula)
             tmp_contract.set_guaran(guarantees_formula)
 
