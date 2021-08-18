@@ -1,19 +1,31 @@
 \ Model _copy
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
-  0 node_1_0 + 0 node_2_0 + 0 node_2_2 + 0 node_2_3 + 0 node_3_0
-   + 0 node_4_2
+  0 node_1_0 + 0 node_2_0 + 0 node_9_0 + 0 node_10_0 + 0 node_11_0
+   + 0 node_13_0
 Subject To
- R2: 10000 node_2_1 - contract_0_1 <= 9995
- R8: contract_0_1 + 10000 node_4_1 <= 10003.9999
- R12: node_0_0 = 1
+ R26: - contract_1_1 + 10000 node_10_1 <= 9995
+ R28: - contract_1_2 + 10000 node_10_2 <= 9995
+ R30: - contract_1_3 + 10000 node_10_3 <= 9995
+ R32: - contract_1_4 + 10000 node_10_4 <= 9995
+ R42: contract_1_1 + 10000 node_14_1 <= 10002.9999
+ R44: contract_1_2 + 10000 node_14_2 <= 10002.9999
+ R46: contract_1_3 + 10000 node_14_3 <= 10002.9999
+ R48: contract_1_4 + 10000 node_14_4 <= 10002.9999
+ R50: node_0_0 = 1
 Bounds
- contract_0_1 free
+ contract_1_1 free
+ contract_1_2 free
+ contract_1_3 free
+ contract_1_4 free
 Binaries
- node_0_0 node_1_0 node_2_0 node_2_1 node_2_2 node_2_3 node_3_0 node_4_1
- node_4_2
+ node_0_0 node_1_0 node_2_0 node_9_0 node_10_0 node_10_1 node_10_2
+ node_10_3 node_10_4 node_11_0 node_13_0 node_14_1 node_14_2 node_14_3
+ node_14_4
 General Constraints
- GC0: node_1_0 = AND ( node_2_0 , node_2_1 , node_2_2 , node_2_3 )
- GC1: node_3_0 = AND ( node_4_1 , node_4_2 )
- GC2: node_0_0 = AND ( node_1_0 , node_3_0 )
+ GC4: node_9_0 = AND ( node_10_0 , node_10_1 , node_10_2 , node_10_3 ,
+   node_10_4 )
+ GC5: node_1_0 = AND ( node_2_0 , node_9_0 )
+ GC7: node_13_0 = OR ( node_14_1 , node_14_2 , node_14_3 , node_14_4 )
+ GC8: node_0_0 = AND ( node_1_0 , node_11_0 , node_13_0 )
 End

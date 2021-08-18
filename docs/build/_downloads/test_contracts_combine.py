@@ -1,5 +1,3 @@
-import sys
-sys.path.append("/home/kevin/Github/pystl")
 from pystl import *
 import numpy as np
 

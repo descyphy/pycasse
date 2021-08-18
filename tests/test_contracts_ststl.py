@@ -36,7 +36,7 @@ c3.set_nondeter_uncontrolled_vars(['w1', 'w2'],  mean = np.array([0, 2]), \
                                cov = np.array([[1**2, 0], [0, 1**2]]))
 c3.set_controlled_vars(['y'])                            # Set a controlled variable
 c3.set_assume('(F[1,2] (4 <= x))')                       # Set/define the assumptions
-c3.set_guaran('(G[1,3] (P[0.85] (y - 2w1 + 3w2 <= 8)))') # Set/define the guarantees such that c3 does not refines c1
+c3.set_guaran('(G[1,3] (P[0.65] (y - 2w1 + 3w2 <= 8)))') # Set/define the guarantees such that c3 does not refines c1
 c3.checkSat()                                            # Saturate c3
 c3.printInfo()                                           # Print c3
 

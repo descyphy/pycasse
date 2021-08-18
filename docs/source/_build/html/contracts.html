@@ -108,7 +108,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#creating-an-a-g-contract">3.2.1. Creating an A/G Contract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#checking-compatibility-consistency-and-feasibility">3.2.2. Checking Compatibility, Consistency, and Feasibility</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#refinement">3.2.3. Refinement</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pystl-contract-class">3.2.4. PySTL Contract Class</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#a-g-contracts-operations">3.3. A/G Contracts Operations</a></li>
@@ -230,10 +229,10 @@
 </pre></div>
 </div>
 <p>Any contract in PySTL can be saturated and its information can be printed. For example, <span class="math">\(C_1\)</span> and <span class="math">\(C_1'\)</span> can be saturated and their information can be printed as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">c1</span><span class="o">.</span><span class="n">saturate</span><span class="p">()</span>                         <span class="c1"># Saturate c1</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">c1</span><span class="o">.</span><span class="n">checkSat</span><span class="p">()</span>                         <span class="c1"># Saturate c1</span>
 <span class="n">c1</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                        <span class="c1"># Print c1</span>
 
-<span class="n">c1_prime</span><span class="o">.</span><span class="n">saturate</span><span class="p">()</span>                   <span class="c1"># Saturate c1_prime</span>
+<span class="n">c1_prime</span><span class="o">.</span><span class="n">checkSat</span><span class="p">()</span>                   <span class="c1"># Saturate c1_prime</span>
 <span class="n">c1_prime</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                  <span class="c1"># Print c1_prime</span>
 </pre></div>
 </div>
@@ -242,9 +241,9 @@
 <div class="section" id="checking-compatibility-consistency-and-feasibility">
 <h3>3.2.2. Checking Compatibility, Consistency, and Feasibility<a class="headerlink" href="#checking-compatibility-consistency-and-feasibility" title="Permalink to this headline">¶</a></h3>
 <p>We can check <cite>compatibility</cite>, <cite>consistency</cite>, and <cite>feasiblity</cite> of the contract <span class="math">\(C_1\)</span>. This includes when PySTL checks for <cite>compatibility</cite>, <cite>consistency</cite>, and <cite>feasiblity</cite>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">c1</span><span class="o">.</span><span class="n">checkCompat</span><span class="p">(</span><span class="n">print_sol</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># Check compatibility of c1</span>
-<span class="n">c1</span><span class="o">.</span><span class="n">checkConsis</span><span class="p">(</span><span class="n">print_sol</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># Check consistency of c1</span>
-<span class="n">c1</span><span class="o">.</span><span class="n">checkFeas</span><span class="p">(</span><span class="n">print_sol</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>            <span class="c1"># Check feasiblity of c1</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">c1</span><span class="o">.</span><span class="n">checkCompat</span><span class="p">(</span><span class="n">print_sol</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>        <span class="c1"># Check compatibility of c1</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">checkConsis</span><span class="p">(</span><span class="n">print_sol</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>        <span class="c1"># Check consistency of c1</span>
+<span class="n">c1</span><span class="o">.</span><span class="n">checkFeas</span><span class="p">(</span><span class="n">print_sol</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># Check feasiblity of c1</span>
 </pre></div>
 </div>
 </div>
@@ -252,21 +251,23 @@
 <h3>3.2.3. Refinement<a class="headerlink" href="#refinement" title="Permalink to this headline">¶</a></h3>
 <p>Let’s create two more contracts <span class="math">\(C_2\)</span> and <span class="math">\(C_3\)</span> and check their <cite>compatibility</cite>, <cite>consistency</cite>, and <cite>feasiblity</cite>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">c2</span> <span class="o">=</span> <span class="n">contract</span><span class="p">(</span><span class="s1">&#39;c2&#39;</span><span class="p">)</span>                   <span class="c1"># Create a contract c2</span>
-<span class="n">c2</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;F[1,2](x&gt;=4)&#39;</span><span class="p">)</span>         <span class="c1"># Set an assumption</span>
-<span class="n">c2</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;G[0,4](y&gt;=3)&#39;</span><span class="p">)</span>         <span class="c1"># Set a guarantee such that c2 refines c1</span>
-<span class="n">c2</span><span class="o">.</span><span class="n">set_deter_uncontrolled_vars</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">])</span> <span class="c1"># Set a deterministic noncontrolled variable</span>
+<span class="n">c2</span><span class="o">.</span><span class="n">set_deter_uncontrolled_vars</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">])</span> <span class="c1"># Set a deterministic uncontrolled variable</span>
 <span class="n">c2</span><span class="o">.</span><span class="n">set_controlled_vars</span><span class="p">([</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>         <span class="c1"># Set a controlled variable</span>
-<span class="n">c2</span><span class="o">.</span><span class="n">saturate</span><span class="p">()</span>                         <span class="c1"># Saturate c2</span>
-<span class="n">c2</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                        <span class="c1"># Print c2</span>
+
+<span class="n">c2</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;(F[0,3] (x =&gt; 5))&#39;</span><span class="p">)</span>    <span class="c1"># Set assumptions of c2</span>
+<span class="n">c2</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;(G[0,3] (y =&gt; 3))&#39;</span><span class="p">)</span>    <span class="c1"># Set guarantees of c2</span>
+<span class="n">c2</span><span class="o">.</span><span class="n">checkSat</span><span class="p">()</span>                         <span class="c1"># Saturate c2</span>
+<span class="n">c2</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                        <span class="c1"># Print information of c2</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">c3</span> <span class="o">=</span> <span class="n">contract</span><span class="p">(</span><span class="s1">&#39;c3&#39;</span><span class="p">)</span>                   <span class="c1"># Create a contract c3</span>
-<span class="n">c3</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;F[1,2](x&gt;=4)&#39;</span><span class="p">)</span>         <span class="c1"># Set an assumption</span>
-<span class="n">c3</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;G[0,4](y&gt;=0)&#39;</span><span class="p">)</span>         <span class="c1"># Set a guarantee such that c3 does not refines c1</span>
-<span class="n">c3</span><span class="o">.</span><span class="n">set_deter_uncontrolled_vars</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">])</span> <span class="c1"># Set a deterministic noncontrolled variable</span>
+<span class="n">c3</span><span class="o">.</span><span class="n">set_deter_uncontrolled_vars</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">])</span> <span class="c1"># Set a deterministic uncontrolled variable</span>
 <span class="n">c3</span><span class="o">.</span><span class="n">set_controlled_vars</span><span class="p">([</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>         <span class="c1"># Set a controlled variable</span>
-<span class="n">c3</span><span class="o">.</span><span class="n">saturate</span><span class="p">()</span>                         <span class="c1"># Saturate c3</span>
-<span class="n">c3</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                        <span class="c1"># Print c3</span>
+
+<span class="n">c3</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;(F[0,3] (x =&gt; 5))&#39;</span><span class="p">)</span>    <span class="c1"># Set assumptions of c3</span>
+<span class="n">c3</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;(F[1,3] (y =&gt; 3))&#39;</span><span class="p">)</span>    <span class="c1"># Set guarantees of c3</span>
+<span class="n">c3</span><span class="o">.</span><span class="n">checkSat</span><span class="p">()</span>                         <span class="c1"># Saturate c3</span>
+<span class="n">c3</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                        <span class="c1"># Print information of c3</span>
 </pre></div>
 </div>
 <p>We can check whether <span class="math">\(C_2\)</span> and <span class="math">\(C_3\)</span> <cite>refines</cite> <span class="math">\(C_1\)</span> or not:</p>
@@ -274,10 +275,7 @@
 <span class="n">c1</span><span class="o">.</span><span class="n">checkRefine</span><span class="p">(</span><span class="n">c3</span><span class="p">)</span>                   <span class="c1"># Check whether c3 refines c1</span>
 </pre></div>
 </div>
-<p>Similarly, it is also possible to check refinement between probabilistic contracts. For an example with STL contracts refer to <a class="reference download internal" href="_downloads/test_contracts_stl.py" download=""><code class="xref download docutils literal"><span class="pre">test_contracts_stl.py</span></code></a>. For an example with StSTL contracts refer to <a class="reference download internal" href="_downloads/test_contracts_ststl.py" download=""><code class="xref download docutils literal"><span class="pre">test_contracts_ststl.py</span></code></a>.</p>
-</div>
-<div class="section" id="pystl-contract-class">
-<h3>3.2.4. PySTL Contract Class<a class="headerlink" href="#pystl-contract-class" title="Permalink to this headline">¶</a></h3>
+<p>Similarly, it is also possible to check refinement between probabilistic contracts. For an example with STL contracts refer to <a class="reference download internal" href="_downloads/test_contracts.py" download=""><code class="xref download docutils literal"><span class="pre">test_contracts.py</span></code></a> and <a class="reference download internal" href="_downloads/test_contracts_stl.py" download=""><code class="xref download docutils literal"><span class="pre">test_contracts_stl.py</span></code></a>. For an example with StSTL contracts refer to <a class="reference download internal" href="_downloads/test_contracts_ststl.py" download=""><code class="xref download docutils literal"><span class="pre">test_contracts_ststl.py</span></code></a>.</p>
 </div>
 </div>
 <div class="section" id="a-g-contracts-operations">
@@ -407,7 +405,7 @@ C_1 \otimes C_2 = &amp; \; (V_1 \cup V_2, (A_1 \cap A_2) \cup \overline{(G_1 \ca
 <dl class="method">
 <dt id="pystl.contracts.contract.checkRefine">
 <code class="descname">checkRefine</code><span class="sig-paren">(</span><em>contract2refine</em>, <em>print_sol=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.checkRefine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks whether contract2refine refines the contract</p>
+<dd><p>Checks whether the self contract refines the contract contract2refine</p>
 </dd></dl>
 
 <dl class="method">
@@ -434,24 +432,38 @@ C_1 \otimes C_2 = &amp; \; (V_1 \cup V_2, (A_1 \cap A_2) \cup \overline{(G_1 \ca
 <dt id="pystl.contracts.contract.set_controlled_vars">
 <code class="descname">set_controlled_vars</code><span class="sig-paren">(</span><em>var_names</em>, <em>dtypes=None</em>, <em>bounds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.set_controlled_vars" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds controlled variables and their information to the contract</p>
-<p>:param  var_names   : A list of names for controlled variables
-:type   var_names   : list
-:param  dtypes      : A list of variable types for controlled variables, each entry can be either “BINARY”, “INTEGER”, or “CONTINUOUS”, defaults to “CONTINUOUS”
-:type   dtypes      : list, optional
-:param  bounds      : An numpy array of lower and upper bounds for controlled variables, defaults to <cite>[-10^4,10^4]</cite> for “CONTINUOUS” and “INTEGER” variable and <cite>[0,1]</cite> for “BINARY”
-:type   bounds      : <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>, optional</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var_names</strong> (<em>list</em>) – A list of names for controlled variables</li>
+<li><strong>dtypes</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of variable types for controlled variables, each entry can be either “BINARY”, “INTEGER”, or “CONTINUOUS”, defaults to “CONTINUOUS”, defaults to None</li>
+<li><strong>bounds</strong> (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>, optional) – An numpy array of lower and upper bounds for controlled variables, defaults to <cite>[-10^4,10^4]</cite> for “CONTINUOUS” and “INTEGER” variable and <cite>[0,1]</cite> for “BINARY”, defaults to None</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pystl.contracts.contract.set_deter_uncontrolled_vars">
 <code class="descname">set_deter_uncontrolled_vars</code><span class="sig-paren">(</span><em>var_names</em>, <em>dtypes=None</em>, <em>bounds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pystl.contracts.contract.set_deter_uncontrolled_vars" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds deterministic uncontrolled variables and their information to the contract</p>
-<p>:param  var_names   : A list of names for uncontrolled variables
-:type   var_names   : list
-:param  dtypes      : A list of variable types for controlled variables, each entry can be either “BINARY”, “INTEGER”, or “CONTINUOUS”, defaults to “CONTINUOUS”
-:type   dtypes      : list, optional
-:param  bounds      : An numpy array of lower and upper bounds for controlled variables, defaults to <cite>[-10^4,10^4]</cite> for “CONTINUOUS” and “INTEGER” variable and <cite>[0,1]</cite> for “BINARY”
-:type   bounds      : <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>, optional</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var_names</strong> (<em>list</em>) – A list of names for uncontrolled variables</li>
+<li><strong>dtypes</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of variable types for controlled variables, each entry can be either “BINARY”, “INTEGER”, or “CONTINUOUS”, defaults to None</li>
+<li><strong>bounds</strong> (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>, optional) – An numpy array of lower and upper bounds for controlled variables, defaults to <cite>[-10^4,10^4]</cite> for “CONTINUOUS” and “INTEGER” variable and <cite>[0,1]</cite> for “BINARY”, defaults to None</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -476,16 +488,16 @@ C_1 \otimes C_2 = &amp; \; (V_1 \cup V_2, (A_1 \cap A_2) \cup \overline{(G_1 \ca
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>var_names</strong> (<em>list</em>) – A list of names for uncontrolled variables</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var_names</strong> (<em>list</em>) – A list of names for uncontrolled variables</li>
+<li><strong>mean</strong> (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>) – A mean vector of uncontrolled variables</li>
+<li><strong>cov</strong> (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>) – A covariance matrix of uncontrolled variables</li>
+<li><strong>dtype</strong> (<em>str</em><em>, </em><em>optional</em>) – A distribution type for uncontrolled variables, can only be <cite>GAUSSIAN</cite> for now, defaults to None</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
-<p>:param  mean     : A mean vector of uncontrolled variables
-:type   mean     : <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>
-:param  cov      : A covariance matrix of uncontrolled variables
-:type   cov      : <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>
-:param  dtype    : A distribution type for uncontrolled variables, can only be <cite>GAUSSIAN</cite> for now, defaults to <cite>GAUSSIAN</cite>
-:type   dtype    : str, optional</p>
 </dd></dl>
 
 </dd></dl>

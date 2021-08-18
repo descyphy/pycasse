@@ -19,7 +19,7 @@ c2 = contract('c2')                   # Create a contract c2
 c2.set_deter_uncontrolled_vars(['x']) # Set a deterministic uncontrolled variable
 c2.set_controlled_vars(['y'])         # Set a controlled variable
 c2.set_assume('True')                 # Set/define the assumptions
-c2.set_guaran('(G[0,4] (y <= 2))')    # Set/define the guarantees
+c2.set_guaran('(G[0,4] (5 <= y))')    # Set/define the guarantees
 c2.checkSat()                         # Saturate c2
 c2.printInfo()                        # Print c2
 
