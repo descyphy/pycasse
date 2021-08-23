@@ -679,6 +679,7 @@ class MILPSolver:
         self.node_variable     = np.empty(0)
         self.contract_variable = np.empty(0)
 
+
     def add_contract(self, contract):
         """
         Adds a contract to the SMC solver.
@@ -714,20 +715,20 @@ class MILPSolver:
 
     def add_dynamic(self, dynamic):
         """
-        Adds a dynamics to the SMC solver.
+        Adds a dynamics to the MILP solver.
         """
         self.dynamics.append(dynamic)
 
     def add_switching_dynamic(self, switching_dynamic, switching_condition, max_time):
         """
-        Adds a dynamics to the SMC solver.
+        Adds a dynamics to the MILP solver.
         """
         self.switching_dynamics = switching_dynamic
         self.switching_condition = switching_condition
         
         for j in range(max_time):
             constraint = "(G[{},{}] {})".format(j,j, self.switching_condition)
-            self.add_soft_constraint(constraint, time=j)
+            self.add_soft_constraint(constraint)
 
     def preprocess(self):
         (num_node, end_time) = Preprocess(self)()
@@ -1085,10 +1086,8 @@ class MILPSolver:
         bool_vars = self.model.addVars(max_time, vtype=GRB.BINARY, name='switching')
         self.model.update()
         
-        for j in range(self.contract_variable.shape[1]):
-            for entry in self.soft_constraints_var:
-                if entry[3] == j:
-                    self.model.addConstr(bool_vars[j] == entry[0])
+        for j in range(max_time-1):
+            self.model.addConstr(bool_vars[j] == self.soft_constraints_var[j])
 
         count = 0
         for dynamics in self.switching_dynamics:
@@ -1318,7 +1317,7 @@ class MILPSolver:
     def status(self):
         return (self.solver == 'Gurobi' and self.model.getAttr("Status") == 2) or (self.solver == 'Cplex' and self.model.solution.get_status() in (1,101))
 
-    def print_solution(self, group=None):
+    def print_solution(self, switching=False):
         (len_var, len_t) = self.contract_variable.shape
         for v in range(len_var):
             for t in range(len_t):
@@ -1329,9 +1328,10 @@ class MILPSolver:
                         print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
                     else: assert(False)
         
-        #  for t in range(len_t-1):
-        #      var = self.model.getVarByName("switching[{}]".format(t))
-        #      print("switching[{}]: {}".format(t, var.x))
+        if switching:
+            for t in range(len_t-1):
+                var = self.model.getVarByName("switching[{}]".format(t))
+                print("switching[{}]: {}".format(t, var.x))
 
         # for vehicle_num in group:
         #     for t in range(len_t-1):

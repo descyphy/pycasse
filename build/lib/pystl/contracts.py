@@ -45,15 +45,15 @@ class contract:
         else: assert(False)
 
     def set_controlled_vars(self, var_names, dtypes = None, bounds = None):
-        """ 
+        """
         Adds controlled variables and their information to the contract 
 
-        :param  var_names   : A list of names for controlled variables
-        :type   var_names   : list
-        :param  dtypes      : A list of variable types for controlled variables, each entry can be either "BINARY", "INTEGER", or "CONTINUOUS", defaults to "CONTINUOUS"
-        :type   dtypes      : list, optional
-        :param  bounds      : An numpy array of lower and upper bounds for controlled variables, defaults to `[-10^4,10^4]` for "CONTINUOUS" and "INTEGER" variable and `[0,1]` for "BINARY"
-        :type   bounds      : :class:`numpy.ndarray`, optional
+        :param var_names: A list of names for controlled variables
+        :type var_names: list
+        :param dtypes: A list of variable types for controlled variables, each entry can be either "BINARY", "INTEGER", or "CONTINUOUS", defaults to "CONTINUOUS", defaults to None
+        :type dtypes: list, optional
+        :param bounds: An numpy array of lower and upper bounds for controlled variables, defaults to `[-10^4,10^4]` for "CONTINUOUS" and "INTEGER" variable and `[0,1]` for "BINARY", defaults to None
+        :type bounds: :class:`numpy.ndarray`, optional
         """
         # Initialize the variable list
         res = []
@@ -70,12 +70,12 @@ class contract:
         """
         Adds deterministic uncontrolled variables and their information to the contract
 
-        :param  var_names   : A list of names for uncontrolled variables
-        :type   var_names   : list
-        :param  dtypes      : A list of variable types for controlled variables, each entry can be either "BINARY", "INTEGER", or "CONTINUOUS", defaults to "CONTINUOUS"
-        :type   dtypes      : list, optional
-        :param  bounds      : An numpy array of lower and upper bounds for controlled variables, defaults to `[-10^4,10^4]` for "CONTINUOUS" and "INTEGER" variable and `[0,1]` for "BINARY"
-        :type   bounds      : :class:`numpy.ndarray`, optional
+        :param var_names: A list of names for uncontrolled variables
+        :type var_names: list
+        :param dtypes: A list of variable types for controlled variables, each entry can be either "BINARY", "INTEGER", or "CONTINUOUS", defaults to None
+        :type dtypes: list, optional
+        :param bounds: An numpy array of lower and upper bounds for controlled variables, defaults to `[-10^4,10^4]` for "CONTINUOUS" and "INTEGER" variable and `[0,1]` for "BINARY", defaults to None
+        :type bounds: :class:`numpy.ndarray`, optional
         """
         # Initialize the variable list
         res = []
@@ -92,14 +92,14 @@ class contract:
         """
         Adds uncontrolled variables and their information to the contract. We plan to add more distribution such as `UNIFORM`, `TRUNCATED_GAUSSIAN`, or even a distribution from `DATA`
 
-        :param  var_names: A list of names for uncontrolled variables
-        :type   var_names: list
-        :param  mean     : A mean vector of uncontrolled variables
-        :type   mean     : :class:`numpy.ndarray`
-        :param  cov      : A covariance matrix of uncontrolled variables
-        :type   cov      : :class:`numpy.ndarray`
-        :param  dtype    : A distribution type for uncontrolled variables, can only be `GAUSSIAN` for now, defaults to `GAUSSIAN`
-        :type   dtype    : str, optional
+        :param var_names: A list of names for uncontrolled variables
+        :type var_names: list
+        :param mean: A mean vector of uncontrolled variables
+        :type mean: :class:`numpy.ndarray`
+        :param cov: A covariance matrix of uncontrolled variables
+        :type cov: :class:`numpy.ndarray`
+        :param dtype: A distribution type for uncontrolled variables, can only be `GAUSSIAN` for now, defaults to None
+        :type dtype: str, optional
         """
         # Check the dimensions of mean and covariance matrix
         assert(mean.shape == (len(var_names),))

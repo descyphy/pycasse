@@ -11,8 +11,8 @@ c = contract('c')
 [theta] = c.set_controlled_vars(['theta'], 
         bounds = np.array([[-10**4, 10**4]])) # Set a controlled variable
 c.set_assume('True') # Set/define the assumptions
-c.set_guaran('((F[0,100] (G[0,50] ((-0.1 <= e1) & (e1 <= 0.1) & (-0.1 <= e2) & (e2 <= 0.1)))) & (G[0,150] (xr > 0)))') # Set/define the guarantees
-# c.set_guaran('(!((F[0,100] (G[0,50] ((-0.1 <= e1) & (e1 <= 0.1) & (-0.1 <= e2) & (e2 <= 0.1)))) & (G[0,150] (xr > 0))))') # Set/define the guarantees
+# c.set_guaran('((F[0,100] (G[0,50] ((-0.1 <= e1) & (e1 <= 0.1) & (-0.1 <= e2) & (e2 <= 0.1)))) & (G[0,150] (xr > 0)))') # Set/define the guarantees
+c.set_guaran('(!((F[0,100] (G[0,50] ((-0.1 <= e1) & (e1 <= 0.1) & (-0.1 <= e2) & (e2 <= 0.1)))) & (G[0,150] (xr > 0))))') # Set/define the guarantees
 c.checkSat()  # Saturate c
 c.printInfo() # Print c
 
@@ -43,8 +43,8 @@ solver.add_dynamic(Next(np.array([[0,1]]) * v) == np.array([[0,1]]) * v) # vl is
 # solver.add_dynamic(np.array([[1,0]]) * v == 30) # vl = 30
 
 # Initial conditions
-solver.add_hard_constraint(xr == vf + 4.5)
-solver.add_hard_constraint(vf == 10)
+solver.add_hard_constraint(xr == 20)
+# solver.add_hard_constraint(vf == 10)
 # solver.add_hard_constraint(e1 == 20)
 solver.add_hard_constraint(e2 == 0)
 solver.add_hard_constraint(e3 == 0)

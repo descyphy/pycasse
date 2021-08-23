@@ -1329,9 +1329,9 @@ class MILPSolver:
                         print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
                     else: assert(False)
         
-        #  for t in range(len_t-1):
-        #      var = self.model.getVarByName("switching[{}]".format(t))
-        #      print("switching[{}]: {}".format(t, var.x))
+        # for t in range(len_t-1):
+        #     var = self.model.getVarByName("switching[{}]".format(t))
+        #     print("switching[{}]: {}".format(t, var.x))
 
         # for vehicle_num in group:
         #     for t in range(len_t-1):
