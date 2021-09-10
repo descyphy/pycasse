@@ -437,11 +437,6 @@ class SMCSolver:
         self.main_convex_solver.update()
         self.SSF_convex_solver.update()
 
-    # def add_NN_constraints(self):
-    #   """
-    #   Adds constraints for the NN to the main convex solver.
-    #   """
-
     def solve(self, certificate='SSF'):
         """ Solves the SMC problem """
         # Add constraints of the contract and dynamics to the SAT, main, and SSF convex solver
@@ -678,7 +673,6 @@ class MILPSolver:
         # Initialize dictionary of Gurobi variables
         self.node_variable     = np.empty(0)
         self.contract_variable = np.empty(0)
-
 
     def add_contract(self, contract):
         """
@@ -930,7 +924,6 @@ class MILPSolver:
 
             if (self.debug):
                 print(self.contract_variable)
-
 
             # 3. Add convex constraints
             self.model_add_inequality_constraint(node.idx, t, expr, constant)
@@ -1211,8 +1204,8 @@ class MILPSolver:
         if self.mode == 'Boolean':
             if self.solver == "Gurobi":
                 self.model.addConstr(constr <= M * (1 - self.node_variable[node_idx, time]))
-                # self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
-                self.model.addConstr(constr >= - M * (self.node_variable[node_idx, time]))
+                self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
+                # self.model.addConstr(constr >= - M * (self.node_variable[node_idx, time]))
             #  elif self.solver == "Cplex":
             #      lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
             #      self.model.linear_constraints.add(lin_expr = (lin_expr * 2), senses = "LG", rhs = [-rhs+M, -rhs+EPS])

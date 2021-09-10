@@ -362,75 +362,80 @@ class contract:
                 self.nondeter_var_cov = np.block([[self.nondeter_var_cov, np.zeros((self_len, contract_len))], [np.zeros((contract_len, self_len)), contract.nondeter_var_cov[extra_nondeter_id, extra_nondeter_id]]])
         return (np.array(deter_id_map), np.array(nondeter_id_map))
     
-    # def find_opt_param(self, objective, N=100):
-    #     """ Find an optimal set of parameters for a contract given an objective function. """
-    #     # Build a MILP Solver
-    #     print("Finding an optimal set of parameters for contract {}...".format(self.id))
+    def find_opt_param(self, objective, N=100):
+        """ Find an optimal set of parameters for a contract given an objective function. """
+        # Build a MILP Solver
+        print("Finding an optimal set of parameters for contract {}...".format(self.id))
 
+        variable = []
+        bounds = []
+        for v in self.deter_var_list:
+            if v.var_type == 'parameter':
+                variable.append(True)
+                bounds.append(v.bound)
+            else:
+                variable.append(False)
+        variable = np.array(variable)
+        bounds = np.array(bounds)
 
-    #     variable = [False]
-    #     bounds = []
-    #     for v in self.deter_var_list[1:]:
-    #         if v.var_type == 'parameter':
-    #             variable.append(True)
-    #             bounds.append(v.bound)
-    #         else:
-    #             variable.append(False)
-    #     variable = np.array(variable)
-    #     bounds = np.array(bounds)
-    #     # Sample the parameters N times
-    #     sampled_param = np.random.rand(N, len(bounds))
-    #     sampled_param *= (bounds[:,1] - bounds[:,0])
-    #     sampled_param += bounds[:,0]
-    #     #  print(variable)
-    #     #  print(bounds)
-    #     #  print(sampled_param)
-    #     #  input()
-    #     def change(data, variable, values):
-    #         #  print(data)
-    #         #  print(variable)
-    #         #  print(values)
-    #         parameter = data[variable[:len(data)]] 
-    #         data[0] += np.sum(parameter * values[:len(parameter)])
-    #         data[variable[:len(data)]] = 0
-    #     def traverse(node, variable, values):
-    #         if node.ast_type == 'AP':
-    #             change(node.expr.deter_data, variable, values)
-    #         elif node.ast_type == 'StAP':
-    #             #  print(node.prob)
-    #             change(node.expr.deter_data, variable, values)
-    #             change(node.prob.deter_data, variable, values)
-    #         else:
-    #             for f in node.formula_list:
-    #                 traverse(f, variable, values)
+        # Sample the parameters N times
+        sampled_param = np.random.rand(N, len(bounds))
+        sampled_param *= (bounds[:,1] - bounds[:,0])
+        sampled_param += bounds[:,0]
+        print(variable)
+        print(bounds)
+        # print(sampled_param)
+        # input()
 
-    #     # Build a deepcopy of the contract
-    #     c = deepcopy(self)
+        def change(data, variable, values):
+            #  print(data)
+            #  print(variable)
+            #  print(values)
+            parameter = data[variable[:len(data)]] 
+            data[0] += np.sum(parameter * values[:len(parameter)])
+            data[variable[:len(data)]] = 0
 
-    #     x_id = np.argmax(variable)
-    #     y_id = x_id + 1 + np.argmax(variable[x_id + 1:])
+        def traverse(node, variable, values):
+            if node.ast_type == 'AP':
+                change(node.expr.deter_data, variable, values)
+            elif node.ast_type == 'StAP':
+                #  print(node.prob)
+                change(node.expr.deter_data, variable, values)
+                change(node.prob.deter_data, variable, values)
+            else:
+                for f in node.formula_list:
+                    traverse(f, variable, values)
 
-    #     fig = plt.figure()
-    #     plt.xlabel(self.deter_var_list[x_id].name)
-    #     plt.ylabel(self.deter_var_list[y_id].name)
-    #     plt.xlim(self.deter_var_list[x_id].bound[0], self.deter_var_list[x_id].bound[1])
-    #     plt.ylim(self.deter_var_list[y_id].bound[0], self.deter_var_list[y_id].bound[1])
+        # Build a deepcopy of the contract
+        c = deepcopy(self)
 
-    #     for i in range(N):
-    #         #  print(sampled_param[i])
-    #         c.assumption = deepcopy(self.assumption)
-    #         traverse(c.assumption, variable, sampled_param[i])
-    #         c.guarantee = deepcopy(self.guarantee)
-    #         traverse(c.guarantee, variable, sampled_param[i])
-    #         #  print(c)
-    #         #  input()
-    #         if c.checkFeas(print_sol = False, verbose = False):
-    #             plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'go')
-    #         else:
-    #             plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'ro')
+        x_id = np.argmax(variable)
+        y_id = x_id + 1 + np.argmax(variable[x_id + 1:])
 
-    #     #  plt.show()
-    #     #  plt.savefig('test.jpg')
+        print(x_id)
+        print(y_id)
+
+        fig = plt.figure()
+        plt.xlabel(self.deter_var_list[x_id].name)
+        plt.ylabel(self.deter_var_list[y_id].name)
+        plt.xlim(self.deter_var_list[x_id].bound[0], self.deter_var_list[x_id].bound[1])
+        plt.ylim(self.deter_var_list[y_id].bound[0], self.deter_var_list[y_id].bound[1])
+
+        for i in range(N):
+            #  print(sampled_param[i])
+            c.assumption = deepcopy(self.assumption)
+            traverse(c.assumption, variable, sampled_param[i])
+            c.guarantee = deepcopy(self.guarantee)
+            traverse(c.guarantee, variable, sampled_param[i])
+            #  print(c)
+            #  input()
+            if c.checkFeas(print_sol = False, verbose = False):
+                plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'go')
+            else:
+                plt.plot(sampled_param[i, 0], sampled_param[i, 1], 'ro')
+
+        plt.show()
+        plt.savefig('test.jpg')
 
     def printInfo(self):
         print(str(self))
@@ -445,7 +450,7 @@ class contract:
             res += "    {}\n".format(deter_var_info[1])
         for v in self.nondeter_var_list:
             nondeter_var_info = str(v).splitlines()
-            res += "    {} (or deter_var_{})\n".format(nondeter_var_info[0], self.nondeter_var_name2id[str(v.name)])
+            res += "    {} (or nondeter_var_{})\n".format(nondeter_var_info[0], self.nondeter_var_name2id[str(v.name)])
             res += "    {}\n".format(nondeter_var_info[1])
             res += "    mean: {}\n".format(self.nondeter_var_mean)
             res += "    cov: {}\n".format(self.nondeter_var_cov)

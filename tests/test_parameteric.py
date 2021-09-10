@@ -9,14 +9,14 @@ c = contract('c')                                                # Create a cont
 c.set_nondeter_uncontrolled_vars(['w'],  mean = np.array([0]), \
             cov = np.array([[1**2]]), dtypes=['GAUSSIAN'])       # Set nondeterministic uncontrolled variables
 c.set_params(['p', 'c'], bounds = np.array([[0, 1], [-4, 4]]))
-c.set_controlled_vars(['u'], bounds = np.array([[0, 1]]))          # Set a controlled variable
+# c.set_controlled_vars(['u'], bounds = np.array([[0, 1]]))          # Set a controlled variable
 c.set_assume('True') # Set/define the assumptions
-c.set_guaran('(P[p] (w+u <= c))') # Set/define the guarantees
-# c.set_guaran('(P[p] (w <= c))') # Set/define the guarantees
-c.saturate()  # Saturate c
-#  c.printInfo() # Print c
+# c.set_guaran('(P[p] (w+u <= c))') # Set/define the guarantees
+c.set_guaran('(P[p] (w <= c))') # Set/define the guarantees
+c.checkSat()  # Saturate c
+c.printInfo() # Print c
 
-c.find_opt_param('ad', N=1000)
+c.find_opt_param('ad', N=100)
 # c.checkCompat(print_sol=True) # Check compatibility of c
 # c.checkConsis(print_sol=True) # Check consistency of c
 # c.checkFeas(print_sol=True)   # Check feasibility of c
