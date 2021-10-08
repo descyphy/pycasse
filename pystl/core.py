@@ -42,7 +42,7 @@ class Preprocess:
                 assert(len(res.formula_list) == 0)
             elif res.ast_type == "StAP":
                 res.expr = -1 * res.expr + EPS
-                res.prob = 1 - res.prob
+                # res.prob = 1 - res.prob
                 assert(len(res.formula_list) == 0)
             else:
                 for i, f in enumerate(res.formula_list):
@@ -749,6 +749,7 @@ class MILPSolver:
 
         count = 0
         for c in self.soft_constraints:
+            print(repr(c))
             self.set_constraint(c, False, soft_idx=count)
             count += 1
 
@@ -770,12 +771,23 @@ class MILPSolver:
         else: assert(False)
         return variable_array[idx, time]
 
-    def set_objective(self, objective, sense='minimize'):
+    def set_objective(self, sense='minimize'):
+        # print(self.soft_constraints)
+        # print(self.soft_constraints_var)
+        # input()
         if self.solver == "Gurobi":
             if sense == 'minimize':
-                self.model.setObjective(objective, GRB.MINIMIZE)
+                try:
+                    self.model.remove(self.model.getConstrByName('UNSAT'))
+                except:
+                    pass
+                self.model.addConstr(self.soft_constraints_var[0] <= -EPS, 'SAT')
             else:
-                self.model.setObjective(objective, GRB.MAXIMIZE)
+                try:
+                    self.model.remove(self.model.getConstrByName('SAT'))
+                except:
+                    pass
+                self.model.addConstr(self.soft_constraints_var[0] >= 0, 'UNSAT')
             self.model.update()
         #  elif self.solver == "Cplex":
         #      self.model.minimize(objective)
@@ -802,13 +814,13 @@ class MILPSolver:
         # Solve the optimization problem
         if self.solver == "Gurobi":
             self.model.write('MILP.lp')
+            # input()
             self.model.optimize()
         elif self.solver == "Cplex":
             self.model.write('MILP.lp')
             self.model.solve()
         else: assert(False)
 
-        # Print solution
         if self.status():
             if self.verbose:
                 print("MILP solved.")
@@ -896,20 +908,66 @@ class MILPSolver:
             assert(node.expr.nondeter_data.shape[1] == 1)
             data = node.expr.nondeter_data[:, 0]
             data_size = node.expr.nondeter_data.shape[0]
-            expectation = data @ self.contract.nondeter_var_mean[:data_size]
-            variance = data @ self.contract.nondeter_var_cov[:data_size, :data_size] @ data.T
-            #  print(data)
-            #  print(self.contract.nondeter_var_mean)
-            #  print(self.contract.nondeter_var_cov)
-            #  print(expectation)
-            #  print(variance)
 
-            constant += expectation + norm.ppf(node.probability()) * math.sqrt(variance)
+            # Find expectation
+            tmp_mean = self.contract.nondeter_var_mean[:data_size]
+            expectation = 0
+            for i in range(len(data)):
+                expectation += data[i]*tmp_mean[i]
 
+            # Find variance
+            tmp_cov = self.contract.nondeter_var_cov[:data_size]
+            tmp_cov = [tmp_cov[i][:data_size] for i in range(len(tmp_cov))]
+            intermediate_variance = [0]*len(tmp_cov[0])
+            variance = 0
+
+            for i in range(len(data)):
+                for j in range(len(tmp_cov[0])):
+                    for k in range(len(tmp_cov)):
+                        intermediate_variance[i] += data[i]*tmp_cov[k][j]
+            
+            print(node)
+            print(data)
+            # print(data_size)
+            print(intermediate_variance)
+
+            for i in range(len(intermediate_variance)):
+                variance += intermediate_variance[i]*data[i]
+            # variance = data @ self.contract.nondeter_var_cov[:data_size, :data_size] @ data.T
+            # print(intermediate_variance)
+            print(expectation)
+            print(variance)
+            print(node.probability())
+
+            if isinstance(node.probability(), float) or isinstance(variance, int):
+                constant += expectation + norm.ppf(node.probability())*math.sqrt(variance)
+            else:
+                # print(node.probability())
+                # print(self.contract.deter_var_list)
+                # print(self.contract.deter_var_name2id)
+                # Find lower and upper bounds for the probability threshold
+                p_low = []
+                p_high = []
+                for deter_var in self.contract.deter_var_list:
+                    p_low.append(deter_var.bound[0])
+                    p_high.append(deter_var.bound[1])
+                p_low = (p_low[0:len(node.probability().deter_data)]@node.probability().deter_data)[0]
+                if p_low <= 0:
+                    p_low = 10**-16
+                p_high = (p_high[0:len(node.probability().deter_data)]@node.probability().deter_data)[0]
+                if p_high >= 1:
+                    p_high = 1- 10**-16
+                # print((p_low, p_high))
+
+                # Find the LHS of the inequality
+                variance.sqrt = True
+                if p_low >= 0.5:
+                    constant += expectation + (norm.ppf(p_low)+(norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low)*(node.probability()-p_low))*variance
+                    # print(constant)
+                    # input()
+                else:
+                    constant += expectation + (norm.ppf((p_low+p_high)/2) + 1/norm.pdf(norm.ppf((p_low+p_high)/2))*(node.probability()-(p_low+p_high)/2))*variance
         variables = np.nonzero(expr)
-
-        if self.debug:
-            print(expr)
 
         #  2. add variables of contract in every concerned time period to model
         for t in range(start_time, end_time):
@@ -921,14 +979,18 @@ class MILPSolver:
                     ub = self.contract.deter_var_list[v].bound[1]
                     self.model_add_continous_variable(v, t, var_type = 'contract', lb = lb, ub = ub)
                 else: assert(False)
-
-            if (self.debug):
-                print(self.contract_variable)
+            if not isinstance(node.probability(), float):
+                for v in np.nonzero(node.probability().deter_data)[0]:
+                    if self.contract.deter_var_list[v].data_type == 'BINARY':
+                        self.model_add_binary_variable(v, t, var_type = 'contract')
+                    elif self.contract.deter_var_list[v].data_type == 'CONTINUOUS':
+                        lb = self.contract.deter_var_list[v].bound[0]
+                        ub = self.contract.deter_var_list[v].bound[1]
+                        self.model_add_continous_variable(v, t, var_type = 'contract', lb = lb, ub = ub)
+                    else: assert(False)
 
             # 3. Add convex constraints
             self.model_add_inequality_constraint(node.idx, t, expr, constant)
-            if (self.debug):
-                input()
 
     def set_G_F_constraint(self, node, start_time = 0, end_time = 1):
         if (self.debug):
@@ -1177,22 +1239,33 @@ class MILPSolver:
         else: assert(False)
 
     def model_add_inequality_constraint(self, node_idx, time, expr, constant):
-        if (self.debug):
-            print("adding inequality constraint: node id: {}, time: {}, expr: {}, constant: {}".format(node_idx, time, expr, constant))
-        constr = constant
+        # if (self.debug):
+        print("adding inequality constraint: node id: {}, time: {}, expr: {}, constant: {}".format(node_idx, time, expr, constant))
+        
+        # Instialize the constraint
+        constr = 0
+        if isinstance(constant, float) or isinstance(constant, int):
+            constr += constant
+        else:
+            constr += constant.constant
+            var_idx = 0
+            for num_list in constant.deter_data:
+                constr += num_list[0]*self.contract_variable[var_idx, time]
+                var_idx += 1
         
         #  1. handle linear term
-        mask = np.nonzero(expr[:,0])[0]
-        if mask.size > 0:
-            constr += np.sum(self.contract_variable[mask, time] * expr[mask, 0])
+        if len(expr) != 0:
+            mask = np.nonzero(expr[:,0])[0]
+            if mask.size > 0:
+                # print(np.sum(self.contract_variable[mask, time] * expr[mask, 0]))
+                constr += np.sum(self.contract_variable[mask, time] * expr[mask, 0])
 
-        #  2. handle quadratic term
-        if expr.shape[1] >= 2:
-            mask = np.nonzero(expr[:,1])[0]
-            for m in mask:
-                multiplier = expr[m, 1]
-                # constr += multiplier * (self.contract_variable[m, time] ** 2)
-                constr += multiplier * (self.contract_variable[m, time] * self.contract_variable[m, time])
+            #  2. handle quadratic term
+            if expr.shape[1] >= 2:
+                mask = np.nonzero(expr[:,1])[0]
+                for m in mask:
+                    multiplier = expr[m, 1]
+                    constr += multiplier * (self.contract_variable[m, time] * self.contract_variable[m, time])
 
         if self.debug:
             print("constraint: {}".format(constr <= 0))
@@ -1203,8 +1276,8 @@ class MILPSolver:
 
         if self.mode == 'Boolean':
             if self.solver == "Gurobi":
-                self.model.addConstr(constr <= M * (1 - self.node_variable[node_idx, time]))
-                self.model.addConstr(constr >= EPS - M * (self.node_variable[node_idx, time]))
+                self.model.addConstr(M * (1 - self.node_variable[node_idx, time]) >= constr)
+                self.model.addConstr(EPS - M * (self.node_variable[node_idx, time]) <= constr)
                 # self.model.addConstr(constr >= - M * (self.node_variable[node_idx, time]))
             #  elif self.solver == "Cplex":
             #      lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
@@ -1212,7 +1285,7 @@ class MILPSolver:
             else: assert(False)
         elif self.mode == 'Quantitative':
             if self.solver == "Gurobi":
-                self.model.addConstr(self.node_variable[node_idx, time] == constr)
+                self.model.addConstr(self.node_variable[node_idx, time] == -constr)
             #  elif self.solver == "Cplex":
             #      lin_expr = [[[self.node_variable[node_idx, time]] + variable.tolist(), [M] + multiplier.tolist()]]
             #      self.model.linear_constraints.add(lin_expr = lin_expr, senses = "E", rhs = [-rhs])
@@ -1311,6 +1384,7 @@ class MILPSolver:
         return (self.solver == 'Gurobi' and self.model.getAttr("Status") == 2) or (self.solver == 'Cplex' and self.model.solution.get_status() in (1,101))
 
     def print_solution(self, switching=False):
+        print(self.contract_variable)
         (len_var, len_t) = self.contract_variable.shape
         for v in range(len_var):
             for t in range(len_t):
@@ -1321,10 +1395,10 @@ class MILPSolver:
                         print("{}_{}: {}".format(self.contract.deter_var_list[v].name, t, self.model.solution.get_values()[self.contract_variable[v,t]]))
                     else: assert(False)
         
-        if switching:
-            for t in range(len_t-1):
-                var = self.model.getVarByName("switching[{}]".format(t))
-                print("switching[{}]: {}".format(t, var.x))
+        # if switching:
+        #     for t in range(len_t-1):
+        #         var = self.model.getVarByName("switching[{}]".format(t))
+        #         print("switching[{}]: {}".format(t, var.x))
 
         # for vehicle_num in group:
         #     for t in range(len_t-1):

@@ -16,9 +16,10 @@ class Expression():
     : param nondeter_data : An np array of non-deterministic variables.
     : type nondeter_data  : np.array
     """
-    __slots__ = ('constant', 'deter_data', 'nondeter_data')
+    __slots__ = ('constant', 'deter_data', 'nondeter_data', 'sqrt')
     def __init__(self, term = None):
         """ Constructor method """
+        self.sqrt = False
         if isinstance(term, (int, float)):                    # when input is integer or float
             self.constant = term
             self.deter_data = np.empty((0,0))
@@ -60,7 +61,8 @@ class Expression():
 
     def __repr__(self):
         """ Prints information of the contract """  
-        return "Expression: {}".format(str(self))
+        # return "Expression: {}".format(str(self))
+        return str(self)
 
     def __add__(self, other):
         def add(x, y):
@@ -237,8 +239,10 @@ class StochasticAtomicPredicate(ASTObject):
         self.prob = Expression(prob)
 
     def probability(self):
-        assert(not np.any(self.prob.deter_data[1:]) and not np.any(self.prob.nondeter_data))
-        return self.prob.constant
+        if np.any(self.prob.deter_data) or np.any(self.prob.nondeter_data):
+            return self.prob
+        else:
+            return self.prob.constant
 
     def __str__(self):
         return "P[{}] ({} <= 0)".format(str(self.prob), str(self.expr))
@@ -426,7 +430,7 @@ AP =  "(" __ expression_outer __ comparison __ expression_outer __ ")"
 expression_outer =  __ (expression_inner) __
 expression_inner = (term __ operator __ expression_inner) / term
 
-term = (const_variable/ const)
+term = (const_variable / const)
 const_variable = ((const __ variable_power) / variable_power / (const __ variable) / variable)
 
 comparison = "<=" / ">=" / "=>" / "=<" / "<" / ">" / "=="
@@ -446,7 +450,11 @@ class Parser(NodeVisitor):
         self.contract = contract
 
     def __call__(self, formula: str, rule: str = "phi"):
-        return self.visit(ststl_grammar[rule].parse(formula))
+        try:
+            return self.visit(ststl_grammar[rule].parse(formula))
+        except:
+            rule: str = "expression_inner"
+            return self.visit(ststl_grammar[rule].parse(formula))
 
     def generic_visit(self, _, children):
         return children
