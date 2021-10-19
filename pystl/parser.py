@@ -1,641 +1,639 @@
 from copy import deepcopy
-from functools import reduce
-import numpy as np
-import operator as op
 from parsimonious import Grammar, NodeVisitor
-import pystl.variable
 
-from pystl.variable import M, EPS
-
-class Expression():
-    """
-    A class for defining an expression objects.
-
-    : param deter_data    : An np array of deterministic variables.
-    : type deter_data     : np.array
-    : param nondeter_data : An np array of non-deterministic variables.
-    : type nondeter_data  : np.array
-    """
-    __slots__ = ('constant', 'deter_data', 'nondeter_data', 'sqrt')
-    def __init__(self, term = None):
-        """ Constructor method """
-        self.sqrt = False
-        if isinstance(term, (int, float)):                    # when input is integer or float
-            self.constant = term
-            self.deter_data = np.empty((0,0))
-            self.nondeter_data = np.empty((0,0))
-        elif isinstance(term, pystl.variable.DeterVar) or (isinstance(term, tuple) and isinstance(term[0], pystl.variable.DeterVar)):
-            var = term if isinstance(term, pystl.variable.DeterVar) else term[0]
-            multiplier = 1 if isinstance(term, pystl.variable.DeterVar) else term[1]
-
-            self.constant = 0
-            self.deter_data = np.zeros((var.idx + 1, multiplier))
-            self.deter_data[var.idx, multiplier - 1] = 1
-            self.nondeter_data = np.empty((0,0))
-        elif isinstance(term, pystl.variable.NondeterVar) or (isinstance(term, tuple) and isinstance(term[0], pystl.variable.NondeterVar)):
-            var = term if isinstance(term, pystl.variable.NondeterVar) else term[0]
-            multiplier = 1 if isinstance(term, pystl.variable.NondeterVar) else term[1]
-
-            self.constant = 0
-            self.deter_data = np.empty((0,0))
-            self.nondeter_data = np.zeros((var.idx + 1, multiplier))
-            self.nondeter_data[var.idx, multiplier - 1] = 1
-        elif isinstance(term, Expression):                    # when input is already an Expression
-            self.constant = term.constant
-            self.deter_data = term.deter_data
-            self.nondeter_data = term.nondeter_data
-        else:
-            self.constant = 0
-            self.deter_data = np.empty((0,0))
-            self.nondeter_data = np.empty((0,0))
-            assert(term is None)
-
-    def __str__(self):
-        """ Prints information of the contract """  
-        res = ["{}".format(self.constant)]
-        for p in range(self.deter_data.shape[1]):
-            res += ["{} deter_var_{}**{}".format(multiplier, i, p+1) for (i, multiplier) in enumerate(self.deter_data[:, p]) if multiplier != 0]
-        for p in range(self.nondeter_data.shape[1]):
-            res += ["{} nondeter_var_{}**{}".format(multiplier, i, p+1) for (i, multiplier) in enumerate(self.nondeter_data[:, p]) if multiplier != 0]
-        return " + ".join(res)
-
-    def __repr__(self):
-        """ Prints information of the contract """  
-        # return "Expression: {}".format(str(self))
-        return str(self)
-
-    def __add__(self, other):
-        def add(x, y):
-            assert(x.shape[0] >= y.shape[0])
-            assert(x.shape[1] >= y.shape[1])
-            x[:y.shape[0], :y.shape[1]] += y
-
-        other = Expression(other)
-        res = Expression()
-        #  print(other)
-        #  print(res)
-        #  1. add constant
-        res.constant = self.constant + other.constant
-
-        #  2. add determinant var
-        res.deter_data = np.zeros((max(self.deter_data.shape[0], other.deter_data.shape[0]), max(self.deter_data.shape[1], other.deter_data.shape[1]))) 
-        add(res.deter_data, self.deter_data)
-        add(res.deter_data, other.deter_data)
-
-        #  3. add determinant var
-        res.nondeter_data = np.zeros((max(self.nondeter_data.shape[0], other.nondeter_data.shape[0]), max(self.nondeter_data.shape[1], other.nondeter_data.shape[1]))) 
-        add(res.nondeter_data, self.nondeter_data)
-        add(res.nondeter_data, other.nondeter_data)
-        return res
-
-    def __radd__(self, other):
-        return self.__add__(other)
-
-    def __sub__(self, other):
-        return self + (other * -1)
-
-    def __rsub__(self, other):
-        return (-1 * self) + other
-
-    def __mul__(self, other):
-        assert(isinstance(other, (int, float)))
-        res = deepcopy(self)
-        res.constant *= other
-        res.deter_data *= other
-        res.nondeter_data *= other
-        return res
-
-    def __rmul__(self, other):
-        return self.__mul__(other)
-
-    def __truediv__(self, other):
-        assert(isinstance(other, (int, float)))
-        res = deepcopy(self)
-        res.constant /= other
-        res.deter_data /= other
-        res.nondeter_data /= other
-        return res
-
-    def __lt__(self, other):
-        return AtomicPredicate(self - other + EPS)
-
-    def __le__(self, other):
-        return AtomicPredicate(self - other)
-
-    def __gt__(self, other):
-        return AtomicPredicate(other - self + EPS)
-
-    def __ge__(self, other):
-        return AtomicPredicate(other - self)
-
-    def __eq__(self, other):
-        return AtomicPredicate(self - other) & AtomicPredicate(other - self)
-
-    def transform(self, deter_id_map, nondeter_id_map):
-        """ 
-        Transform the data according to the index map
-        """
-        if self.deter_data.size > 0:
-            mask = deter_id_map[:self.deter_data.shape[0]]
-            deter_data = np.zeros((np.max(mask) + 1, self.deter_data.shape[1]))
-            deter_data[mask] = self.deter_data
-            self.deter_data = deter_data
-
-        if self.nondeter_data.size > 0:
-            mask = nondeter_id_map[:self.nondeter_data.shape[0]]
-            nondeter_data = np.zeros((np.max(mask) + 1, self.nondeter_data.shape[1]))
-            nondeter_data[mask] = self.nondeter_data
-            self.nondeter_data = nondeter_data
+EPS = 10**-4
+M = 10**4
 
 class ASTObject():
     """
     An abstract syntax tree (AST) class from which all AST objects are derived.
 
-    :param  idx          : An unique index of an AST object.
-    :type   idx          : int
-    :param  ast_type     : Name of the object class which is shared by all objects of the same class.
-    :type   ast_type     : str
-    :param  formula_list : children of the object.
-    :type   formula_list : list of ASTObject
+    :param  formula          : The formula of an AST object
+    :type   formula          : str
     """
-    __slots__ = ('idx', 'ast_type', 'formula_list')
+    __slots__ = ('formula')
 
-    def __init__(self, ast_type, formula_list = []):
+    def __init__(self, formula):
         """ Constructor method """
-        self.idx          = -1
-        self.ast_type     = ast_type
-        self.formula_list = formula_list
+        self.formula = formula
 
-    def __str__(self):
-        if self.ast_type == "True":
-            return "TRUE"
-        elif self.ast_type == "False":
-            return "FALSE"
-        else: assert(False)
-
-    def __repr__(self):
-        if self.ast_type == "True":
-            return "{} -> TRUE".format(self.idx)
-        elif self.ast_type == "False":
-            return "{} -> FALSE".format(self.idx)
-        else: assert(False)
-
-    def invert_ast_type(self):
-        assert(self.ast_type in ("AP", "StAP", "G", "F", "U", "R", "And", "Or", "Not"))
-        if self.ast_type in ("AP", "StAP"):
-            pass
-        elif self.ast_type == "G": self.ast_type = "F"
-        elif self.ast_type == "F": self.ast_type = "G"
-        elif self.ast_type == "U": self.ast_type = "R"
-        elif self.ast_type == "R": self.ast_type = "U"
-        elif self.ast_type == "And": self.ast_type = "Or"
-        elif self.ast_type == "Or": self.ast_type = "And"
-        elif self.ast_type == "Not": assert(False)
-        else: assert(False)
-
-    def transform(self, deter_id_map, nondeter_id_map):
-        if self.ast_type in ('AP', 'StAP'):
-            self.expr.transform(deter_id_map, nondeter_id_map)
-        else:
-            for f in self.formula_list:
-                f.transform(deter_id_map, nondeter_id_map)
-
-class AtomicPredicate(ASTObject):
-    """
-    A class for defining an atomic predicate objects.
-    
-    : param expr : An inequality expression
-    : type expr  : Expression
-    """
-    __slots__ = ('expr')
-
-    def __init__(self, expr):
-        """ Constructor method """
-        super().__init__('AP')
-        self.expr = expr
-
-    def __str__(self):
-        return "({} <= 0)".format(str(self.expr))
-
-    def __repr__(self):
-        return "{} -> ({} <= 0)".format(self.idx, str(self.expr))
-
-class StochasticAtomicPredicate(ASTObject):
-    """
-    A class for defining a stochastic atomic predicate objects.
-    
-    : param expr : An inequality expression
-    : type expr  : Expression
-    : param prob : An minimum limit for the probability of the object
-    : type prob  : float
-    """
-
-    __slots__ = ('expr', 'prob')
-    def __init__(self, expr, prob):
-        """ Constructor method """
-        super().__init__('StAP')
-        assert(isinstance(expr, Expression))
-        self.expr = expr
-        self.prob = Expression(prob)
-
-    def probability(self):
-        if np.any(self.prob.deter_data) or np.any(self.prob.nondeter_data):
-            return self.prob
-        else:
-            return self.prob.constant
-
-    def __str__(self):
-        return "P[{}] ({} <= 0)".format(str(self.prob), str(self.expr))
-
-    def __repr__(self):
-        return "{} -> P[{}] ({} <= 0)".format(self.idx, str(self.prob), str(self.expr))
-
-class TemporalFormula(ASTObject):
-    """
-    A class for defining a formula objects.
-    
-    :param name: An unique name of a formula object.
-    :type name: str
-    """
-
-    __slots__ = ('interval')
-    def __init__(self, operator, formula_list, interval):
-        """ Constructor method """
-        assert(operator in ("G", "F", "U", "R"))
-        assert(operator not in ("G", "F") or len(formula_list) == 1)
-        assert(operator not in ("U", "R") or len(formula_list) == 2)
-        assert(isinstance(interval, list) and len(interval) ==2)
-        super().__init__(operator, formula_list)
-        self.interval = interval
-
-    def __str__(self):
-        if (self.ast_type in ("G", "F")):
-            return "({}[{}, {}] {})".format(self.ast_type, self.interval[0], self.interval[1], str(self.formula_list[0]))
-        elif (self.ast_type in ("U", "R")):
-            return "({} {}[{}, {}] {})".format(str(self.formula_list[0]), self.ast_type, self.interval[0], self.interval[1], str(self.formula_list[1]))
-        else:
-            assert(False)
-
-    def __repr__(self):
-        if (self.ast_type in ("G", "F")):
-            res = "{} -> ({}[{}, {}] {})".format(self.idx, self.ast_type, self.interval[0], self.interval[1], self.formula_list[0].idx)
-        elif (self.ast_type in ("U", "R")):
-            res = "{} -> ({} {}[{}, {}] {})".format(self.idx, self.formula_list[0].idx, self.ast_type, self.interval[0], self.interval[1], self.formula_list[1].idx)
-        else:
-            assert(False)
-
-        for f in self.formula_list:
-            res += '\n  '
-            res += '\n  '.join(repr(f).splitlines())
-        return res
-
-class NontemporalFormula(ASTObject):
-    """
-    A class for defining a formula objects.
-    
-    :param name: An unique name of a formula object.
-    :type name: str
-    """
-
-    def __init__(self, operator, formula_list):
-        """ Constructor method """
-        assert(operator in ("And", "Or", "Not"))
-        assert(operator != "Not" or len(formula_list) == 1)
-        assert(operator == "Not" or len(formula_list) >= 2)
-        super().__init__(operator, formula_list)
-
-    def __str__(self):
-        if self.ast_type == "And":
-            res = "(" + " & ".join([str(f) for f in self.formula_list]) + ")"
-        elif self.ast_type == "Or":
-            res = "(" + " | ".join([str(f) for f in self.formula_list]) + ")"
-        elif self.ast_type == "Not":
-            res = "(!{})".format(str(self.formula_list[0]))
-        else: assert(False)
-        return res
-
-    def __repr__(self):
-        res = "{} -> ".format(self.idx)
-        if self.ast_type == "And":
-            res += "(" + " & ".join([str(f.idx) for f in self.formula_list]) + ")"
-        elif self.ast_type == "Or":
-            res += "(" + " | ".join([str(f.idx) for f in self.formula_list]) + ")"
-        elif self.ast_type == "Not":
-            res += "(!{})".format(self.formula_list[0].idx)
-        else: assert(False)
-
-        for f in self.formula_list:
-            res += '\n  '
-            res += '\n  '.join(repr(f).splitlines())
-        return res
-
-true = ASTObject("True")
-false = ASTObject("False")
-
-def Neg(ap):
-    if ap.ast_type == "Not":
-        return ap.formula_list[0]
-    elif ap.ast_type == "True":
-        return false
-    elif ap.ast_type == "False":
-        return true
-    else:
-        return NontemporalFormula("Not", [ap])
-
-def nontemporal_formula_construction(operator, formula_list, ignore_ap, drop_ap):
-    formula_list = [f for f in formula_list if f.ast_type != ignore_ap.ast_type]
-    if any(f.ast_type == drop_ap.ast_type for f in formula_list):
-        return drop_ap
-    elif len(formula_list) == 0:
-        return ignore_ap
-    elif len(formula_list) == 1:
-        return formula_list[0]
-    else:
-        res = []
-        for f in formula_list:
-            if f.ast_type != operator:
-                res.append(f)
+    def find_horizon(self, start, end):
+        """ Find the horizon of the AST Object Node. """
+        if type(self) in (AP, stAP, boolean):
+            return [start, end]
+        elif type(self) == nontemporal_unary:
+            if self.operator == 'X':
+                return self.children_list[0].find_horizon(start, end+1)
             else:
-                res.extend(f.formula_list)
-        return NontemporalFormula(operator, res)
+                return self.children_list[0].find_horizon(start, end)
+        elif type(self) in (nontemporal_binary, nontemporal_multinary):
+            tmp_start = 0
+            tmp_end = 0
+            for children in self.children_list:
+                [tmp_tmp_start, tmp_tmp_end] = children.find_horizon(start, end)
+                if tmp_tmp_start < tmp_start:
+                    tmp_start = tmp_tmp_start
+                if tmp_tmp_end > tmp_end:
+                    tmp_end = tmp_tmp_end
+            return [start+tmp_start, end+tmp_end]
+        elif type(self) == temporal_unary:
+            [curr_start, curr_end] = self.interval
+            return self.children_list[0].find_horizon(start+curr_start, end+curr_end)
+        elif type(self) == temporal_binary:
+            [_, curr_end] = self.interval
+            [tmp_tmp_start1, tmp_tmp_end1] = self.children_list[0].find_horizon(start, end+curr_end)
+            [tmp_tmp_start2, tmp_tmp_end2] = self.children_list[1].find_horizon(start, end+curr_end)
+            return [min(tmp_tmp_start1, tmp_tmp_start2), max(tmp_tmp_end1, tmp_tmp_end2)]
 
-def And(*argv):
-    assert(len(argv) >= 2)
-    return nontemporal_formula_construction("And", argv, true, false)
+    def push_negation(self, neg=False):
+        """ Remove all the negation nodes and push all the negations to the leaf node. """
+        def invert_sign(formula):
+            """ Invert the sign of the inequalities. """
+            if ">=" in formula:
+                formula = formula.replace(">=", "<")
+            elif "=>" in formula:
+                formula = formula.replace("=>", "<")
+            elif "<=" in formula:
+                formula = formula.replace("<=", ">")
+            elif "=<" in formula:
+                formula = formula.replace("=<", ">")
+            elif ">" in formula:
+                formula = formula.replace(">", "<=")
+            elif "<" in formula:
+                formula = formula.replace("<", "=>")
+            return formula
 
-def Or(*argv):
-    assert(len(argv) >= 2)
-    return nontemporal_formula_construction("Or", argv, false, true)
+        if type(self) == boolean:
+            if neg:
+                if self.formula == 'True':
+                    self.formula = 'False'
+                else:
+                    self.formula = 'True'
+            return self
 
-def Implies(ap, other):
-    return ~ap | other
+        elif type(self) in (AP, stAP):
+            self.formula = invert_sign(self.formula)
+            if neg:
+                self.multipliers = [-x for x in self.multipliers]
+                const_index = self.var_list_list.index([1])
+                self.multipliers[const_index] += EPS
+            return self
 
-def P(prob, ap):
-    return StochasticAtomicPredicate(ap.expr, prob)
+        elif type(self) == nontemporal_unary:
+            if self.operator == '!':
+                self.children_list[0] = self.children_list[0].push_negation(neg=not neg)
+                return self.children_list[0]
+            else:
+                return self
 
-def Globally(interval, ap):
-    return TemporalFormula("G", [ap], interval)
+        elif type(self) == nontemporal_binary:
+            new_self = nontemporal_multinary(None)
+            new_self.formula = self.formula
+            new_self.variables = self.variables
 
-def Eventually(interval, ap):
-    return TemporalFormula("F", [ap], interval)
+            if neg:
+                new_self.operator = "&"
+                new_self.children_list.append(self.children_list[0].push_negation(neg=neg))
+                new_self.children_list.append(self.children_list[1].push_negation(neg=not neg))
+                new_self.formula = "({}) & ({})".format(self.children_list[0].formula, self.children_list[1].formula)
+            else:
+                new_self.operator = "|"
+                new_self.children_list.append(self.children_list[0].push_negation(neg=not neg))
+                new_self.children_list.append(self.children_list[1].push_negation(neg=neg))
+                new_self.formula = "({}) | ({})".format(self.children_list[0].formula, self.children_list[1].formula)
+            return new_self
+        
+        elif type(self) == nontemporal_multinary:
+            new_self = nontemporal_multinary(None)
+            new_self.formula = self.formula
+            new_self.variables = self.variables
+            if neg:
+                new_self.formula = ""
+                if self.operator == "|":
+                    new_self.operator = "&"
+                    for children in self.children_list:
+                        new_self.children_list.append(children.push_negation(neg=neg))
+                        new_self.formula += "({}) & ".format(children.formula)
+                    new_self.formula = new_self.formula[0:len(self.formula)-3]
+                elif self.operator == "&":
+                    new_self.operator = "|"
+                    for children in self.children_list:
+                        new_self.children_list.append(children.push_negation(neg=neg))
+                        new_self.formula += "({}) | ".format(children.formula)
+                    new_self.formula = new_self.formula[0:len(new_self.formula)-3]
+            return new_self
 
-def Until(interval, ap, other):
-    return TemporalFormula("U", [ap, other], interval)
+        elif type(self) == temporal_unary:
+            if neg:
+                self.children_list[0] = self.children_list[0].push_negation(neg=neg)
+                if self.operator == "G":
+                    self.operator = "F"
+                    self.formula = "F[{},{}] ({})".format(int(self.interval[0]), int(self.interval[1]), self.children_list[0].formula)
+                elif self.operator == 'F':
+                    self.operator = "G"
+                    self.formula = "G[{},{}] ({})".format(int(self.interval[0]), int(self.interval[1]), self.children_list[0].formula)
+            return self
+        
+        elif type(self) == temporal_binary:
+            if neg:
+                self.children_list[0] = self.children_list[0].push_negation(neg=neg)
+                self.children_list[1] = self.children_list[1].push_negation(neg=neg)
+                if self.operator == "U":
+                    self.operator = "R"
+                    self.formula = "({}) F[{},{}] ({})".format(self.children_list[0].formula, int(self.interval[0]), int(self.interval[1]), self.children_list[1].formula)
+                    self.formula = self.formula.replace("U[", "R[")
+                elif self.operator == "R":
+                    self.operator = "U"
+                    self.formula = "({}) U[{},{}] ({})".format(self.children_list[0].formula, int(self.interval[0]), int(self.interval[1]), self.children_list[1].formula)
+                    self.formula = self.formula.replace("R[", "U[")
+            return self
+    
+    def printInfo(self, layer=0):
+        """ Print the AST. """
+        print("    "*layer+ "{}".format(self.formula))
+        if type(self) in (nontemporal_unary, temporal_unary):
+            self.children_list[0].printInfo(layer=layer+1)
+        elif type(self) in (nontemporal_binary, temporal_binary):
+            self.children_list[0].printInfo(layer=layer+1)
+            self.children_list[1].printInfo(layer=layer+1)
+        elif type(self) == nontemporal_multinary:
+            for children in self.children_list:
+                children.printInfo(layer=layer+1)
 
-def Release(interval, ap, other):
-    return TemporalFormula("R", [ap, other], interval)
+class term():
+    __slots__ = ('multiplier', 'var', 'power')
 
-def U_R_wrapper(op):
-    def f(_1, _2, _3):
-        return op(_2, _1, _3)
-    return f
+    def __init__(self, data):
+        """ Constructor method """
+        if isinstance(data[0], float):
+            self.multiplier = data[0]
+            self.var = 1
+        else:
+            self.multiplier = 1
+            self.var = data[0]
 
-ASTObject.__invert__ = Neg
-ASTObject.__and__ = And
-ASTObject.__or__ = Or
-ASTObject.implies = Implies
-ASTObject.Until = U_R_wrapper(Until)
-ASTObject.Release = U_R_wrapper(Release)
+        if len(data) == 3:
+            self.power = data[2]
+        else:
+            self.power = 1
 
-# Define Parser
+    def __str__(self):
+        res = ""
+        res += "Multiplier: {}\n".format(self.multiplier)
+        res += "Variable: {}\n".format(self.var)
+        res += "Power: {}".format(self.power)
+        return res
+
+class multiterm():
+    __slots__ = ('multiplier', 'var_list', 'power_list')
+
+    def __init__(self, data):
+        """ Constructor method """
+        if len(data) == 3:
+            self.multiplier = data[0].multiplier*data[2].multiplier
+            self.var_list = deepcopy(data[2].var_list)
+            self.power_list= deepcopy(data[2].power_list)
+            if data[0].var != 1:
+                self.var_list.append(data[0].var)
+                self.power_list.append(data[0].power)
+        else:
+            self.multiplier = data[0].multiplier
+            self.var_list = [data[0].var]
+            self.power_list = [data[0].power]
+
+    def __str__(self):
+        res = ""
+        res += "Multiplier: {}\n".format(self.multiplier)
+        res += "Variables: {}\n".format(self.var_list)
+        res += "Powers: {}".format(self.power_list)
+        return res
+        
+class expression():
+    __slots__ = ('variables', 'multipliers', 'var_list_list', 'power_list_list')
+
+    def __init__(self, data):
+        """ Constructor method """
+        if len(data) == 5:
+            self.multipliers = deepcopy(data[4].multipliers)
+            if data[2] == '-':
+                self.multipliers[-1] = -self.multipliers[-1]
+            self.var_list_list = deepcopy(data[4].var_list_list)
+            self.power_list_list = deepcopy(data[4].power_list_list)
+            
+            if data[0].var_list != ['']:
+                self.multipliers.append(data[0].multiplier)
+                self.var_list_list.append(data[0].var_list)
+                self.power_list_list.append(data[0].power_list)
+        else:
+            self.multipliers = [data[0].multiplier]
+            self.var_list_list = [data[0].var_list]
+            self.power_list_list = [data[0].power_list]
+        
+        self.variables = set()
+        for var_list in self.var_list_list:
+            self.variables = self.variables.union(set(var_list))
+
+        self.variables = list(self.variables)
+
+    def __str__(self):
+        res = ""
+        res += "Variables: {}\n".format(self.variables)
+        res += "Multiplier list: {}\n".format(self.multipliers)
+        res += "Variables lists: {}\n".format(self.var_list_list)
+        res += "Powers lists: {}".format(self.power_list_list)
+        return res
+
+class AP(ASTObject):
+    __slots__ = ('variables', 'multipliers', 'var_list_list', 'power_list_list', 'equal')
+
+    def __init__(self, data):
+        """ Constructor method """
+        super().__init__(data[1])
+        data = data[0]
+        self.multipliers = data[0].multipliers
+        self.var_list_list = data[0].var_list_list
+        self.power_list_list = data[0].power_list_list
+        self.equal = False
+
+        if data[2] in ("<=", "=<"):
+            self.multipliers = self.multipliers + [-elem for elem in data[4].multipliers]
+            self.var_list_list += data[4].var_list_list
+            self.power_list_list += data[4].power_list_list
+        elif data[2] == "<":
+            self.multipliers = self.multipliers + [-elem for elem in data[4].multipliers]
+            self.var_list_list += data[4].var_list_list
+            self.power_list_list += data[4].power_list_list
+            if [1] in self.var_list_list:
+                idx = self.var_list_list.index([1])
+                self.multipliers[idx] += EPS
+            else:
+                self.multipliers.append(EPS)
+                self.var_list_list.append([1])
+                self.power_list_list.append([1])
+        elif data[2] in (">=", "=>"):
+            self.multipliers = [-elem for elem in self.multipliers] + data[4].multipliers
+            self.var_list_list += data[4].var_list_list
+            self.power_list_list += data[4].power_list_list
+        elif data[2] == ">":
+            self.multipliers = [-elem for elem in self.multipliers] + data[4].multipliers
+            self.var_list_list += data[4].var_list_list
+            self.power_list_list += data[4].power_list_list
+            if [1] in self.var_list_list:
+                idx = self.var_list_list.index([1])
+                self.multipliers[idx] += EPS
+            else:
+                self.multipliers.append(EPS)
+                self.var_list_list.append([1])
+                self.power_list_list.append([1])
+        else:
+            self.multipliers = self.multipliers + [-elem for elem in data[4].multipliers]
+            self.var_list_list += data[4].var_list_list
+            self.power_list_list += data[4].power_list_list
+            self.equal = True
+        
+        self.variables = set()
+        for var_list in self.var_list_list:
+            self.variables = self.variables.union(set(var_list))
+
+        self.variables = list(self.variables)
+
+    def __str__(self):
+        res = ""
+        res += "Formula: {}\n".format(self.formula)
+        res += "ID: {}\n".format(hex(id(self)))
+        res += "Variables: {}\n".format(self.variables)
+        res += "Multiplier list: {}\n".format(self.multipliers)
+        res += "Variables lists: {}\n".format(self.var_list_list)
+        res += "Powers lists: {}\n".format(self.power_list_list)
+        res += "Equal?: {}\n".format(self.equal)
+        return res
+
+class stAP(ASTObject):
+    __slots__ = ('variables', 'prob_multipliers', 'prob_var_list_list', 'prob_power_list_list', 'multipliers', 'var_list_list', 'power_list_list', 'equal')
+
+    def __init__(self, data):
+        """ Constructor method """
+        super().__init__(data[1])
+        data = data[0]
+        self.prob_multipliers = data[2].multipliers
+        self.prob_var_list_list = data[2].var_list_list
+        self.prob_power_list_list = data[2].power_list_list
+        self.multipliers = data[8].multipliers
+        self.var_list_list = data[8].var_list_list
+        self.power_list_list = data[8].power_list_list
+        self.equal = data[8].equal
+
+        self.variables = set()
+        for var_list in self.var_list_list:
+            self.variables = self.variables.union(set(var_list))
+
+        self.variables = list(self.variables)
+
+    def __str__(self):
+        res = ""
+        res += "Formula: {}\n".format(self.formula)
+        res += "ID: {}\n".format(hex(id(self)))
+        res += "Variables: {}\n".format(self.variables)
+        res += "Prob multiplier list: {}\n".format(self.prob_multipliers)
+        res += "Prob variables lists: {}\n".format(self.prob_var_list_list)
+        res += "Prob powers lists: {}\n".format(self.prob_power_list_list)
+        res += "Multiplier list: {}\n".format(self.multipliers)
+        res += "Variables lists: {}\n".format(self.var_list_list)
+        res += "Powers lists: {}\n".format(self.power_list_list)
+        res += "Equal?: {}\n".format(self.equal)
+        return res
+
+class temporal_unary(ASTObject):
+    __slots__ = ('operator', 'interval', 'variables', 'children_list')
+
+    def __init__(self, data):
+        super().__init__(data[1])
+        data = data[0]
+        """ Constructor method """
+        self.operator = data[0]
+        self.interval = data[2]
+        self.interval = [int(entry) for entry in self.interval]
+        self.children_list = data[6][0]
+        
+        self.variables = set()
+        for children in self.children_list:
+            self.variables = self.variables.union(set(children.variables))
+
+        self.variables = list(self.variables)
+
+    def __str__(self):
+        res = ""
+        res += "Formula: {}\n".format(self.formula)
+        res += "ID: {}\n".format(hex(id(self)))
+        res += "Variables: {}\n".format(self.variables)
+        res += "Operator: {}\n".format(self.operator)
+        res += "Interval: {}\n".format(self.interval)
+        res += "Children: {}\n".format(self.children_list)
+        return res
+
+class temporal_binary(ASTObject):
+    __slots__ = ('operator', 'interval', 'variables', 'children_list')
+
+    def __init__(self, data):
+        """ Constructor method """
+        super().__init__(data[1])
+        data = data[0]
+        self.operator = data[6]
+        self.interval = data[7]
+        self.interval = [int(entry) for entry in self.interval]
+        self.children_list = data[2][0] + data[11][0]
+        
+        self.variables = set()
+        for children in self.children_list:
+            self.variables = self.variables.union(set(children.variables))
+
+        self.variables = list(self.variables)
+
+    def __str__(self):
+        res = ""
+        res += "Formula: {}\n".format(self.formula)
+        res += "ID: {}\n".format(hex(id(self)))
+        res += "Variables: {}\n".format(self.variables)
+        res += "Operator: {}\n".format(self.operator)
+        res += "Interval: {}\n".format(self.interval)
+        res += "Children: {}\n".format(self.children_list)
+        return res
+
+class nontemporal_unary(ASTObject):
+    __slots__ = ('operator', 'variables', 'children_list')
+
+    def __init__(self, data):
+        """ Constructor method """
+        super().__init__(data[1])
+        data = data[0]
+        self.operator = data[0]
+        self.children_list = data[4][0]
+        # for children in self.children_list:
+
+        self.variables = set()
+        for children in self.children_list:
+            self.variables = self.variables.union(set(children.variables))
+
+        self.variables = list(self.variables)
+
+    def __str__(self):
+        res = ""
+        res += "Formula: {}\n".format(self.formula)
+        res += "ID: {}\n".format(hex(id(self)))
+        res += "Operator: {}\n".format(self.operator)
+        res += "Children: {}\n".format(self.children_list)
+        return res
+
+class nontemporal_binary(ASTObject):
+    __slots__ = ('operator', 'variables', 'children_list')
+
+    def __init__(self, data):
+        """ Constructor method """
+        super().__init__(data[1])
+        data = data[0]
+        self.operator = data[6]
+        self.children_list = data[2][0] + data[10][0]
+        self.variables = set()
+        for children in self.children_list:
+            self.variables = self.variables.union(set(children.variables))
+
+        self.variables = list(self.variables)
+
+    def __str__(self):
+        res = ""
+        res += "Formula: {}\n".format(self.formula)
+        res += "ID: {}\n".format(hex(id(self)))
+        res += "Variables: {}\n".format(self.variables)
+        res += "Operator: {}\n".format(self.operator)
+        res += "Children: {}\n".format(self.children_list)
+        return res
+
+class nontemporal_multinary(ASTObject):
+    __slots__ = ('operator', 'variables', 'children_list')
+
+    def __init__(self, data):
+        """ Constructor method """
+        print(data)
+        if data is None:
+            self.operator = ""
+            self.variables = []
+            self.children_list = []
+        else:
+            super().__init__(data[1])
+            data = data[0]
+            self.operator = data[6]
+            if isinstance(data[8], nontemporal_multinary):
+                if self.operator == data[8].operator:
+                    self.children_list = data[2][0] + data[8].children_list
+                else:
+                    raise ValueError("Cannot have a list of predicates connected via both AND and OR.")
+            else:
+                data[6] == data[10][0][0].operator
+                self.children_list = data[2][0] + data[10][0]
+            self.variables = set()
+            for children in self.children_list:
+                self.variables = self.variables.union(set(children.variables))
+
+            self.variables = list(self.variables)
+
+    def __str__(self):
+        res = ""
+        res += "Formula: {}\n".format(self.formula)
+        res += "ID: {}\n".format(hex(id(self)))
+        res += "Variables: {}\n".format(self.variables)
+        res += "Operator: {}\n".format(self.operator)
+        res += "Children: {}\n".format(self.children_list)
+        return res
+
+class boolean(ASTObject):
+    __slots__ = ('formula', 'variables')
+    def __init__(self, data):
+        """ Constructor method """
+        super().__init__(data[1])
+        self.variables = []
+
+    def __str__(self):
+        res = ""
+        res += "Formula: {}\n".format(self.formula)
+        res += "ID: {}\n".format(hex(id(self)))
+        return res
+
+# StSTL Grammar
 ststl_grammar = Grammar('''
-phi = (neg / true / false
-     / and_outer / or_outer / implies_outer
-     / u / r / g / f / AP / stAP)
+phi = true / false / nontemporal_unary / nontemporal_binary / nontemporal_multinary / temporal_unary / temporal_binary / AP / stAP
 
-neg = ("~" / "!" / "¬") __ phi
+true = "True"
+false = "False"
 
-true = "TRUE"/ "True"
-false = "FALSE"/ "False"
+nontemporal_unary = nontemporal_unary_operator __ "(" __ phi __ ")"
+nontemporal_binary = ("(" __ phi __ ")" __ nontemporal_binary_operator __ "(" __ phi __ ")")
+nontemporal_multinary = ("(" __ phi __ ")" __ nontemporal_multinary_operator __ nontemporal_multinary) / ("(" __ phi __ ")" __ nontemporal_multinary_operator __ "(" __ phi __ ")")
 
-and_outer = "(" __ and_inner __ ")"
-and_inner = (phi __ ("∧" / "and" / "&") __ and_inner) / phi
+nontemporal_unary_operator = "!" / "X"
+nontemporal_binary_operator = "->"
+nontemporal_multinary_operator = "and" / "&" / "or" / "|"
 
-or_outer = "(" __ or_inner __ ")"
-or_inner = (phi __ ("∨" / "or" / "|") __ or_inner) / phi
+temporal_unary = temporal_unary_operator __ interval __ "(" __ phi __ ")"
+temporal_binary = "(" __ phi __ ")" __ temporal_binary_operator interval __ "(" __ phi __ ")"
 
-implies_outer = "(" __ implies_inner __ ")"
-implies_inner = (phi __ ("→" / "->") __ implies_inner) / phi
+temporal_unary_operator = "G" / "F"
+temporal_binary_operator = "U" / "R"
 
-u = "(" __ phi _ "U" interval _ phi __ ")"
-r = "(" __ phi _ "R" interval _ phi __ ")"
-g = "(" __ "G" interval __ phi __ ")"
-f = "(" __ "F" interval __ phi __ ")"
+interval = "[" __ number __ "," __ number __ "]"
 
-interval = "[" __ const __ "," __ const __ "]"
+AP =  (expression __ comparison __ expression)
+stAP =  "P[" __ expression __ "]" __ "(" __ AP __ ")" 
 
-stAP =  "(" __ "P[" __ expression_outer __ "]" __ AP __ ")"
-AP =  "(" __ expression_outer __ comparison __ expression_outer __ ")"
-
-expression_outer =  __ (expression_inner) __
-expression_inner = (term __ operator __ expression_inner) / term
-
-term = (const_variable / const)
-const_variable = ((const __ variable_power) / variable_power / (const __ variable) / variable)
+expression = (multiterm __ operator __ expression) / multiterm
+multiterm = (term product multiterm) / term
+term = number / variable_power / variable
+variable_power = variable power number
+variable = ~r"[a-z_\\d]"*
+number = ~"[0-9.]+"
 
 comparison = "<=" / ">=" / "=>" / "=<" / "<" / ">" / "=="
 operator = "+" / "-"
-variable_power = variable __ "**" __ int
-variable = ~r"[a-z_][a-z_\\d]*"
-int = ~r"(\\d+)"
-const = ~r"[-+]?(\\d*\\.\\d+|\\d+)"
-
-_ = ~r"\\s"+
+product = "*"
+power = "^"
 __ = ~r"\\s"*
 ''')
 
 class Parser(NodeVisitor):
-    def __init__(self, contract):
+    def __init__(self):
         super().__init__()
-        self.contract = contract
 
     def __call__(self, formula: str, rule: str = "phi"):
-        try:
-            return self.visit(ststl_grammar[rule].parse(formula))
-        except:
-            rule: str = "expression_inner"
-            return self.visit(ststl_grammar[rule].parse(formula))
-
-    def generic_visit(self, _, children):
-        return children
-
-    def visit_const(self, node, _):
-        return float(node.text)
-
-    def visit_int(self, node, _):
-        return int(node.text)
-
-    def visit_variable(self, node, _):
-        var = node.text
-        if var in self.contract.deter_var_name2id:
-            return self.contract.deter_var_list[self.contract.deter_var_name2id[var]]
-        elif var in self.contract.nondeter_var_name2id:
-            return self.contract.nondeter_var_list[self.contract.nondeter_var_name2id[var]]
-        else:
-            raise ValueError("Undefined variable name {}.".format(var))
-
-    def visit_variable_power(self, node, children):
-        return children[0]**children[4]
-
-    def visit_operator(self, node, children):
-        #  value returned is "+" or "-"
-        return node.text
-
-    def visit_comparison(self, node, _):
-        #  value returned is "<=" or ">=" or "=>" or "=<" or "<" or ">" or "=" or "=="
-        return node.text
-
-    def visit_const_variable(self, node, children):
-        #  children is either [[value, [], Expression]] or [Expression] or [[value, [], Var]] or [Var]
-        if (isinstance(children[0], list) and len(children[0]) == 3):
-            return (children[0][0] * children[0][2])
-        elif (isinstance(children[0], Expression)):
-            return children[0]
-        elif (isinstance(children[0], pystl.variable.Var)):
-            return Expression(children[0])
-        else: assert(False)
-
-    def visit_term(self, node, children):
-        #  children is either [Var] or [Expression]
-        return Expression(children[0])
-
-    def visit_expression_inner(self, node, children):
-        #  children is either [Expression] or [[Expression, [[]], '+' or '-', [[]], [Expression]]]
-        #  print("expression_inner")
-        #  print(children)
-        #  input()
-        if isinstance(children[0], (Expression)):
-            return children
-        elif len(children[0]) == 5:
-            ((left, _, op, _, right),) = children
-            if op == '-':
-                right[0] *= -1
-            else: assert(op == '+')
-            return [left] + right
-        else: assert(False)
-
-    def visit_expression_outer(self, node, children):
-        #  children is [[], [Expression, ..., Expression]]
-        #  print("expression_outer")
-        #  print(children)
-        #  input()
-        return reduce(op.add, children[1])
-
-    def visit_AP(self, node, children):
-        #  children is [[], [], Expression, [], '>' or '<' or '>=' or '<=', [[]], Expression, [], []]
-        #  print(children)
-        #  input()
-        (_, _, left, _, operator, _, right, _, _) = children
-        #  print(left, right)
-        #  input()
-        if operator == '<=' or operator == '=<':
-            return left <= right
-        elif operator == '>=' or operator == '=>':
-            return left >= right
-        elif operator == '>':
-            return left > right
-        elif operator == '<':
-            return left < right
-        elif operator == '=' or operator == '==':
-            return left == right
-        else: assert(False)
-
-    def visit_stAP(self, node, children):
-        #  children is [[], [], [], [], Expression, [], [], [[]], Ap, [], []]
-        #  print(children)
-        #  input()
-        (_, _, _, _, prob, _, _, _, ap, _, _) = children
-        return P(prob, ap)
-
-    def visit_interval(self, node, children):
-        #  children is [[], [], float, [], [], [], float, [], []]
-        #  print(children)
-        #  input()
-        (_, _, left, _, _, _, right, _, _) = children
-        return [int(left), int(right)]
-
-    def visit_f(self, node, children):
-        #  children is [[], [], [], [float, float], [[]], ASTObject, [], []]
-        #  print(children)
-        #  input()
-        (_, _, _, interval, _, phi, _, _) = children
-        return Eventually(interval, phi)
-
-    def visit_g(self, node, children):
-        #  children is [[], [], [], [float, float], [[]], ASTObject, [], []]
-        #  print(children)
-        #  input()
-        (_, _, _, interval, _, phi, _, _) = children
-        return Globally(interval, phi)
-
-    def visit_u(self, node, children):
-        #  children is [[], [], [], [float, float], [[]], ASTObject, [], []]
-        #  print(children)
-        #  input()
-        (_, _, phi1, _, _, interval, _, phi2, _, _) = children
-        return Until(interval, phi1, phi2)
-
-    def visit_r(self, node, children):
-        #  children is [[], [], [], [float, float], [[]], ASTObject, [], []]
-        #  print(children)
-        #  input()
-        (_, _, phi1, _, _, interval, _, phi2, _, _) = children
-        return Release(interval, phi1, phi2)
+        return self.visit(ststl_grammar[rule].parse(formula))
 
     def visit_phi(self, node, children):
-        #  print("phi:{}".format(children))
-        #  input()
-        return children[0]
-
-    def nontemporal_op_inner(self, _, children):
-        #  children is either [ASTObject] or [[ASTObject, [[]], [[]], [[]], [ASTObject]]]
-        #  print("inner:{}".format(children))
-        #  input()
-        if isinstance(children[0], ASTObject):
-            return children
-        elif (len(children[0]) == 5):
-            ((left, _, _, _, right),) = children
-            return [left] + right
-        else: assert(False)
-
-    visit_or_inner = nontemporal_op_inner
-    visit_and_inner = nontemporal_op_inner
-    visit_implies_inner = nontemporal_op_inner
-
-    def visit_or_outer(self, node, children):
-        #  children is [[], [], [ASTObject, ..., ASTObject]]
-        #  print("or outer:{}".format(children))
-        #  input()
-        return reduce(op.or_, children[2])
-
-    def visit_and_outer(self, node, children):
-        #  children is [[], [], [ASTObject, ..., ASTObject]]
-        #  print("or outer:{}".format(children))
-        #  input()
-        return reduce(op.and_, children[2])
-
-    def visit_implies_outer(self, node, children):
-        #  children is [[], [], [ASTObject, ..., ASTObject]]
-        #  print("or outer:{}".format(children))
-        #  input()
-        def implies(x, y):
-            return x.implies(y)
-
-        return reduce(implies, children[2])
+        # print(children[0])
+        # input()
+        return [children, node.text]
 
     def visit_true(self, node, children):
-        return true
+        return boolean([True, 'True'])
 
     def visit_false(self, node, children):
-        return false
+        return boolean([False, 'False'])
 
-    def visit_phi(self, node, children):
-        return children[0]
+    def visit_nontemporal_unary(self, node, children):
+        return nontemporal_unary([children, node.text])
 
-    def visit_neg(self, _, children):
-        # print("neg:{}".format(children))
-        # input()
-        return ~children[2]
+    def visit_nontemporal_binary(self, node, children):
+        return nontemporal_binary([children, node.text])
 
-    def visit_paren_phi(self, node, children):
-        return children[2]
+    def visit_nontemporal_multinary(self, node, children):
+        return nontemporal_multinary([children[0], node.text])
+
+    def visit_nontemporal_unary_operator(self, node, children):
+        return node.text
+
+    def visit_nontemporal_binary_operator(self, node, children):
+        return node.text
+
+    def visit_nontemporal_multinary_operator(self, node, children):
+        return node.text
+
+    def visit_temporal_unary(self, node, children):
+        return temporal_unary([children, node.text])
+
+    def visit_temporal_binary(self, node, children):
+        return temporal_binary([children, node.text])
+
+    def visit_temporal_unary_operator(self, node, children):
+        return node.text
+
+    def visit_temporal_binary_operator(self, node, children):
+        return node.text
+
+    def visit_interval(self, node, children):
+        (_, _, left, _, _, _, right, _, _) = children
+        return [left, right]
+
+    def visit_AP(self, node, children):
+        return AP([children, node.text])
+
+    def visit_stAP(self, node, children):
+        return stAP([children, node.text])
+
+    def visit_expression(self, node, children):
+        if isinstance(children[0], list):
+            return expression(children[0])
+        else:
+            return expression(children)
+
+    def visit_multiterm(self, node, children):
+        if isinstance(children[0], list):
+            return multiterm(children[0])
+        else:
+            return multiterm(children)
+
+    def visit_term(self, node, children):
+        if isinstance(children[0], list):
+            return term(children[0])
+        else:
+            return term(children)
+
+    def visit_variable(self, node, children):
+        return node.text
+
+    def visit_variable_power(self, node, children):
+        return children
+
+    def visit_number(self, node, children):
+        return float(node.text)
+
+    def visit_power(self, node, children):
+        return node.text
+
+    def visit_product(self, node, children):
+        return node.text
+
+    def visit_operator(self, node, children):
+        return node.text
+
+    def visit_comparison(self, node, children):
+        return node.text
+
+    def generic_visit(self, node, children):
+        return children

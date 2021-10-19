@@ -7,9 +7,12 @@ from copy import deepcopy
 from gurobipy import GRB
 from pystl.variable import DeterVar, NondeterVar, M, EPS
 from pystl.vector import Vector, Next
-from pystl.parser import P, true, false, And, Or, Globally, Eventually, Until, Release, Parser, ASTObject
-from pystl.core import SMCSolver, MILPSolver
+from pystl.core import MILPSolver
+from pystl.parser import Parser, ASTObject
 
+M = 10**4
+EPS = 10**-4
+parser = Parser()
 
 class contract:
     """
@@ -19,31 +22,50 @@ class contract:
     :type id: str
     """
 
-    __slots__ = ('id', 'deter_var_list', 'deter_var_name2id', 'nondeter_var_list', 'nondeter_var_name2id', 'nondeter_var_mean', 'nondeter_var_cov', 'assumption', 'guarantee', 'sat_guarantee', 'isSat', 'objectives')
+    __slots__ = ('id', 'deter_var_list', 'deter_var_types', 'deter_var_bounds', 'nondeter_var_list', 'nondeter_var_mean', 'nondeter_var_cov', 'param_var_list', 'param_var_types', 'param_var_bounds', 'assumption_str', 'assumption', 'guarantee_str', 'guarantee', 'sat_guarantee_str', 'sat_guarantee', 'isSat', 'objectives')
 
     def __init__(self, id = ''):
         """ Constructor method """
         self.id = id
         self.deter_var_list       = []
-        self.deter_var_name2id    = {}
+        self.deter_var_types      = []
+        self.deter_var_bounds     = []
+        self.param_var_list       = []
+        self.param_var_types      = []
+        self.param_var_bounds     = []
         self.nondeter_var_list    = []
-        self.nondeter_var_name2id = {}
-        self.nondeter_var_mean    = np.empty(0)
-        self.nondeter_var_cov     = np.empty(0)
-        self.assumption           = true
-        self.guarantee            = false
-        self.sat_guarantee        = false
+        self.nondeter_var_mean    = []
+        self.nondeter_var_cov     = [[]]
+        self.assumption_str       = 'True'
+        self.assumption           = parser('True')
+        self.guarantee_str        = 'False'
+        self.guarantee            = parser('False')
+        self.sat_guarantee_str    = 'False'
+        self.sat_guarantee        = parser('False')
         self.isSat                = False
         self.objectives           = []
 
-    def var(self, name):
-        if name in self.deter_var_name2id:
-            return self.deter_var_list[self.deter_var_name2id[name]]
-        elif name in self.nondeter_var_name2id:
-            return self.nondeter_var_list[self.nondeter_var_name2id[name]]
-        else: assert(False)
+    def reset(self):
+        """ Resets the contract """
+        self.deter_var_list       = []
+        self.deter_var_types      = []
+        self.deter_var_bounds     = []
+        self.param_var_list       = []
+        self.param_var_types      = []
+        self.param_var_bounds     = []
+        self.nondeter_var_list    = []
+        self.nondeter_var_mean    = []
+        self.nondeter_var_cov     = [[]]
+        self.assumption_str       = 'True'
+        self.assumption           = parser('True')
+        self.guarantee_str        = 'False'
+        self.guarantee            = parser('False')
+        self.sat_guarantee_str    = 'False'
+        self.sat_guarantee        = parser('False')
+        self.isSat                = False
+        self.objectives           = []
 
-    def set_controlled_vars(self, var_names, dtypes = None, bounds = None):
+    def add_deter_vars(self, var_names, dtypes = None, bounds = None):
         """
         Adds controlled variables and their information to the contract 
 
@@ -54,40 +76,13 @@ class contract:
         :param bounds: An numpy array of lower and upper bounds for controlled variables, defaults to `[-10^4,10^4]` for "CONTINUOUS" and "INTEGER" variable and `[0,1]` for "BINARY", defaults to None
         :type bounds: :class:`numpy.ndarray`, optional
         """
-        # Initialize the variable list
-        res = []
-
         # For all variables, construct a variable class
         for i, name in enumerate(var_names):
-            data = DeterVar(name, len(self.deter_var_list), "controlled", data_type = dtypes[i] if dtypes is not None else 'CONTINUOUS', bound = bounds[i] if bounds is not None else None)
-            self.deter_var_list.append(data)
-            self.deter_var_name2id[name] = len(self.deter_var_name2id)
-            res.append(data)
-        return res
+            self.deter_var_list.append(name)
+            self.deter_var_types.append(dtypes[i] if dtypes is not None else 'CONTINUOUS')
+            self.deter_var_bounds.append(bounds[i] if bounds is not None else [-M, M])
 
-    def set_deter_uncontrolled_vars(self, var_names, dtypes = None, bounds = None):
-        """
-        Adds deterministic uncontrolled variables and their information to the contract
-
-        :param var_names: A list of names for uncontrolled variables
-        :type var_names: list
-        :param dtypes: A list of variable types for controlled variables, each entry can be either "BINARY", "INTEGER", or "CONTINUOUS", defaults to None
-        :type dtypes: list, optional
-        :param bounds: An numpy array of lower and upper bounds for controlled variables, defaults to `[-10^4,10^4]` for "CONTINUOUS" and "INTEGER" variable and `[0,1]` for "BINARY", defaults to None
-        :type bounds: :class:`numpy.ndarray`, optional
-        """
-        # Initialize the variable list
-        res = []
-
-        # For all variables, construct a variable class
-        for i, name in enumerate(var_names):
-            data = DeterVar(name, len(self.deter_var_list), "uncontrolled", data_type = dtypes[i] if dtypes is not None else 'CONTINUOUS', bound = bounds[i] if bounds is not None else None)
-            self.deter_var_list.append(data)
-            self.deter_var_name2id[name] = len(self.deter_var_name2id)
-            res.append(data)
-        return res
-
-    def set_nondeter_uncontrolled_vars(self, var_names, mean, cov, dtypes = None):
+    def add_nondeter_vars(self, var_names, mean, cov, dtypes = None):
         """
         Adds uncontrolled variables and their information to the contract. We plan to add more distribution such as `UNIFORM`, `TRUNCATED_GAUSSIAN`, or even a distribution from `DATA`
 
@@ -142,7 +137,7 @@ class contract:
             res.append(data)
         return res
 
-    def set_params(self, param_names, dtypes = None, bounds = None):
+    def add_param_vars(self, param_names, dtypes = None, bounds = None):
         """
         Adds parameterss and their information to the contract.
 
@@ -171,12 +166,11 @@ class contract:
         :param assumption: An STL or StSTL formula which characterizes the assumption set of the contract
         :type assumption: str
         """
-        if (isinstance(assumption, str)): # If the assumption is given as a string
-            parser = Parser(self) # Parse the string into an AST
-            self.assumption = parser(assumption)
-        elif (isinstance(assumption, ASTObject)): # If the assumption is given as an AST
-            self.assumption = assumption
-        else: assert(False)
+        self.assumption_str = assumption
+        self.assumption = parser(assumption)[0][0]
+        for variable in self.assumption.variables:
+            if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list):
+                raise ValueError("Variable {} not in the contract variables or the dynamics".format(variable))
 
     def set_guaran(self, guarantee):
         """
@@ -185,20 +179,22 @@ class contract:
         :param guarantee: An STL or StSTL formula which characterizes the guarantee set of the contract
         :type guarantee: str
         """
-        if (isinstance(guarantee, str)): # If the guarantee is given as a string
-            parser = Parser(self) # Parse the string into an AST
-            self.guarantee = parser(guarantee)
-        elif (isinstance(guarantee, ASTObject)): # If the guarantee is given as an AST
-            self.guarantee = guarantee
-        else: assert(False)
+        self.guarantee_str = guarantee
+        self.guarantee = parser(guarantee)[0][0]
+        for variable in self.guarantee.variables:
+            if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list):
+                raise ValueError("Variable {} not in the contract variables or the dynamics".format(variable))
 
     def checkSat(self):
         """ Saturates the contract. """
-        if not self.isSat:
-            self.isSat = True
-            assumption = deepcopy(self.assumption)
-            guarantee = deepcopy(self.guarantee)
-            self.sat_guarantee = assumption.implies(guarantee)
+        if self.assumption_str == 'True':
+            self.sat_guarantee_str = self.guarantee_str
+        elif self.assumption_str == 'False':
+            self.sat_guarantee_str = 'True'
+        else:
+            self.sat_guarantee_str = '({}) -> ({})'.format(self.assumption_str, self.guarantee_str)
+        self.sat_guarantee = parser(self.sat_guarantee_str)[0]
+        self.isSat = True
     
     def checkCompat(self, print_sol=False, verbose = True):
         """ Checks compatibility of the contract. """
@@ -206,26 +202,24 @@ class contract:
         if verbose:
             print("Checking compatibility of the contract {}...".format(self.id))
         solver = MILPSolver()
-        #  solver = SMCSolver()
 
         # Add the contract and assumption constraints to the solver
-        solver.add_contract(self)
-        solver.add_hard_constraint(self.assumption)
+        solver.add_contract_variables(self)
+        solver.add_constraint(self.assumption)
 
         # Solve the problem
-        solver.preprocess()
         solved = solver.solve()
 
-        # Print the solution
-        if verbose and solved:
-            print("Contract {} is compatible.\n".format(self.id))
-            if print_sol:
-                print("Printing a behavior that satisfies the assumptions of the contract {}...".format(self.id))
-                solver.print_solution()
-        elif verbose and not solved:
-            print("Contract {} is not compatible.\n".format(self.id))
+        # # Print the solution
+        # if verbose and solved:
+        #     print("Contract {} is compatible.\n".format(self.id))
+        #     if print_sol:
+        #         print("Printing a behavior that satisfies the assumptions of the contract {}...".format(self.id))
+        #         solver.print_solution()
+        # elif verbose and not solved:
+        #     print("Contract {} is not compatible.\n".format(self.id))
 
-        return solved
+        # return solved
     
     def checkConsis(self, print_sol=False, verbose = True):
         """ Checks consistency of the contract """
@@ -641,19 +635,19 @@ class contract:
         """ Prints information of the contract """
         res = ""
         res += "Contract ID: {}\n".format(self.id)
-        for v in self.deter_var_list:
-            deter_var_info = str(v).splitlines()
-            res += "    {} (or deter_var_{})\n".format(deter_var_info[0], self.deter_var_name2id[str(v.name)])
-            res += "    {}\n".format(deter_var_info[1])
-        for v in self.nondeter_var_list:
-            nondeter_var_info = str(v).splitlines()
-            res += "    {} (or nondeter_var_{})\n".format(nondeter_var_info[0], self.nondeter_var_name2id[str(v.name)])
-            res += "    {}\n".format(nondeter_var_info[1])
+        if len(self.deter_var_list):
+            res += "  Deterministic Variables: \n"
+            for i, v in enumerate(self.deter_var_list):
+                res += "    {}, {}, {}\n".format(v, self.deter_var_types[i], self.deter_var_bounds[i])
+        if len(self.nondeter_var_list):
+            res += "  Non-Deterministic Variables: \n"
+            for i, v in enumerate(self.nondeter_var_list):
+                res += "    {}, {}, {}\n".format(v, self.nondeter_var_types[i], self.nondeter_var_bounds[i])
             res += "    mean: {}\n".format(self.nondeter_var_mean)
             res += "    cov: {}\n".format(self.nondeter_var_cov)
-        res += "  Assumption: {}\n".format(self.assumption)
-        res += "  Guarantee: {}\n".format(self.guarantee)
-        res += "  Saturated Guarantee: {}\n".format(self.sat_guarantee)
+        res += "  Assumption: {}\n".format(self.assumption_str)
+        res += "  Guarantee: {}\n".format(self.guarantee_str)
+        res += "  Saturated Guarantee: {}\n".format(self.sat_guarantee_str)
         res += "  isSat: {}\n".format(self.isSat)
         return res
 

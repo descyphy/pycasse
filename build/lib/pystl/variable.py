@@ -79,14 +79,14 @@ class DeterVar(Var):
         # Set bounds
         if bound is None:
             if data_type in ('INTEGER', 'CONTINUOUS'):
-                self.bound = np.array([-M, M])
+                self.bound = [-M, M]
             elif self.data_type == 'BINARY':
-                self.bound = np.array([0,1])
+                self.bound = [0,1]
             else: assert(False)
         else:
-            assert(bound.shape == (2,))
+            assert(len(bound) == 2)
             self.bound = bound
-        self.bound = self.bound.astype(float)
+        # self.bound = self.bound.astype(float)
 
     def __str__(self):
         """ Prints information of the contract """  
