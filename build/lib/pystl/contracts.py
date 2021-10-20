@@ -22,28 +22,12 @@ class contract:
     :type id: str
     """
 
-    __slots__ = ('id', 'deter_var_list', 'deter_var_types', 'deter_var_bounds', 'nondeter_var_list', 'nondeter_var_mean', 'nondeter_var_cov', 'param_var_list', 'param_var_types', 'param_var_bounds', 'assumption_str', 'assumption', 'guarantee_str', 'guarantee', 'sat_guarantee_str', 'sat_guarantee', 'isSat', 'objectives')
+    __slots__ = ('id', 'deter_var_list', 'deter_var_types', 'deter_var_bounds', 'nondeter_var_list', 'nondeter_var_types', 'nondeter_var_mean', 'nondeter_var_cov', 'param_var_list', 'param_var_types', 'param_var_bounds', 'assumption_str', 'assumption', 'guarantee_str', 'guarantee', 'sat_guarantee_str', 'sat_guarantee', 'isSat', 'objectives')
 
     def __init__(self, id = ''):
         """ Constructor method """
         self.id = id
-        self.deter_var_list       = []
-        self.deter_var_types      = []
-        self.deter_var_bounds     = []
-        self.param_var_list       = []
-        self.param_var_types      = []
-        self.param_var_bounds     = []
-        self.nondeter_var_list    = []
-        self.nondeter_var_mean    = []
-        self.nondeter_var_cov     = [[]]
-        self.assumption_str       = 'True'
-        self.assumption           = parser('True')
-        self.guarantee_str        = 'False'
-        self.guarantee            = parser('False')
-        self.sat_guarantee_str    = 'False'
-        self.sat_guarantee        = parser('False')
-        self.isSat                = False
-        self.objectives           = []
+        self.reset()
 
     def reset(self):
         """ Resets the contract """
@@ -54,6 +38,7 @@ class contract:
         self.param_var_types      = []
         self.param_var_bounds     = []
         self.nondeter_var_list    = []
+        self.nondeter_var_types   = []
         self.nondeter_var_mean    = []
         self.nondeter_var_cov     = [[]]
         self.assumption_str       = 'True'
@@ -100,42 +85,13 @@ class contract:
         assert(len(cov) == len(var_names))
         assert(len(cov[0]) == len(var_names))
 
-        # Set the mean and covariance matrix
-        def convert2var(mat, cov=False):
-            parser = Parser(self)
-            if cov:
-                col = len(mat[0])
-                row = len(mat)
-                tmp_mat = [[0]*col for i in range(row)]
-                for i in range(col):
-                    for j in range(row):
-                        if isinstance(mat[i][j], str):
-                            tmp_mat[i][j] = parser(mat[i][j])[0]
-                        else:
-                            tmp_mat[i][j] = mat[i][j]
-            else:
-                col = len(mat)
-                tmp_mat = [0]*col
-                for i in range(col):
-                    if isinstance(mat[i], str):
-                        tmp_mat[i] = parser(mat[i])[0]
-                    else:
-                        tmp_mat[i] = mat[i]
-            return tmp_mat
-
-        self.nondeter_var_mean = convert2var(mean)
-        self.nondeter_var_cov = convert2var(cov, cov=True)
-
-        # Initialize the variable list
-        res = []
+        self.nondeter_var_mean = mean
+        self.nondeter_var_cov = cov
 
         # For all variables, construct a variable class
         for i, name in enumerate(var_names):
-            data = NondeterVar(name, len(self.nondeter_var_list), data_type = dtypes[i] if dtypes != None else 'GAUSSIAN')
-            self.nondeter_var_list.append(data)
-            self.nondeter_var_name2id[name] = len(self.nondeter_var_name2id)
-            res.append(data)
-        return res
+            self.nondeter_var_list.append(name)
+            self.nondeter_var_types.append(dtypes[i] if dtypes is not None else 'CONTINUOUS')
 
     def add_param_vars(self, param_names, dtypes = None, bounds = None):
         """
@@ -148,16 +104,11 @@ class contract:
         :param bounds       : An numpy array of lower and upper bounds for controlled variables, defaults to `[-10^4,10^4]` for "CONTINUOUS" and "INTEGER" variable and `[0,1]` for "BINARY"
         :type  bounds       : :class:`numpy.ndarray`, optional
         """
-        # Initialize the variable list
-        res = []
-
         # For all variables, construct a variable class
         for i, name in enumerate(param_names):
-            data = DeterVar(name, len(self.deter_var_list), "parameter", data_type = dtypes[i] if dtypes is not None else 'CONTINUOUS', bound = bounds[i] if bounds is not None else None)
-            self.deter_var_list.append(data)
-            self.deter_var_name2id[name] = len(self.deter_var_name2id)
-            res.append(data)
-        return res
+            self.param_var_list.append(name)
+            self.param_var_types.append(dtypes[i] if dtypes is not None else 'CONTINUOUS')
+            self.param_var_bounds.append(bounds[i] if bounds is not None else [-M, M])
 
     def set_assume(self, assumption):
         """
@@ -182,7 +133,7 @@ class contract:
         self.guarantee_str = guarantee
         self.guarantee = parser(guarantee)[0][0]
         for variable in self.guarantee.variables:
-            if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list):
+            if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
                 raise ValueError("Variable {} not in the contract variables or the dynamics".format(variable))
 
     def checkSat(self):
@@ -193,49 +144,49 @@ class contract:
             self.sat_guarantee_str = 'True'
         else:
             self.sat_guarantee_str = '({}) -> ({})'.format(self.assumption_str, self.guarantee_str)
-        self.sat_guarantee = parser(self.sat_guarantee_str)[0]
+        self.sat_guarantee = parser(self.sat_guarantee_str)[0][0]
         self.isSat = True
     
     def checkCompat(self, print_sol=False, verbose = True):
         """ Checks compatibility of the contract. """
         # Build a MILP Solver
-        if verbose:
-            print("Checking compatibility of the contract {}...".format(self.id))
+        print("====================================================================================")
+        print("Checking compatibility of the contract {}...".format(self.id))
         solver = MILPSolver()
 
         # Add the contract and assumption constraints to the solver
-        solver.add_contract_variables(self)
+        self.checkSat()
+        solver.add_contract(self)
         solver.add_constraint(self.assumption)
 
         # Solve the problem
         solved = solver.solve()
 
-        # # Print the solution
-        # if verbose and solved:
-        #     print("Contract {} is compatible.\n".format(self.id))
-        #     if print_sol:
-        #         print("Printing a behavior that satisfies the assumptions of the contract {}...".format(self.id))
-        #         solver.print_solution()
-        # elif verbose and not solved:
-        #     print("Contract {} is not compatible.\n".format(self.id))
+        # Print the solution
+        if verbose and solved:
+            print("Contract {} is compatible.\n".format(self.id))
+            if print_sol:
+                print("Printing a behavior that satisfies the assumptions of the contract {}...".format(self.id))
+                solver.print_solution()
+        elif verbose and not solved:
+            print("Contract {} is not compatible.\n".format(self.id))
 
-        # return solved
+        return solved
     
     def checkConsis(self, print_sol=False, verbose = True):
         """ Checks consistency of the contract """
         # Build a MILP Solver
-        if verbose:
-            print("Checking consistency of the contract {}...".format(self.id))
-        solver = MILPSolver(mode='Quantitative')
+        print("====================================================================================")
+        print("Checking consistency of the contract {}...".format(self.id))
+        solver = MILPSolver()
         #  solver = SMCSolver()
 
-        # Add the contract and assumption constraints to the solver
+        # Add the contract and guarantee constraints to the solver
         self.checkSat()
         solver.add_contract(self)
-        solver.add_hard_constraint(self.sat_guarantee)
+        solver.add_constraint(self.sat_guarantee)
 
         # Solve the problem
-        solver.preprocess()
         solved = solver.solve()
 
         # Print the solution
@@ -252,18 +203,17 @@ class contract:
     def checkFeas(self, print_sol=False, verbose = True):
         """ Checks feasibility of the contract """
         # Build a MILP Solver
-        if verbose:
-            print("Checking feasibility of the contract {}...".format(self.id))
+        print("====================================================================================")
+        print("Checking feasibility of the contract {}...".format(self.id))
         solver = MILPSolver()
         #  solver = SMCSolver()
 
         # Add the contract and assumption constraints to the solver
         self.checkSat()
         solver.add_contract(self)
-        solver.add_hard_constraint(deepcopy(self.assumption & self.guarantee))
+        solver.add_constraint(parser("({}) & ({})".format(self.assumption_str, self.guarantee_str))[0][0])
 
         # Solve the problem
-        solver.preprocess()
         solved = solver.solve()
 
         # Print the solution
@@ -279,25 +229,63 @@ class contract:
     
     def checkRefine(self, contract2refine, print_sol=False):
         """ Checks whether the self contract refines the contract contract2refine"""
-        # Merge Contracts
-        c1 = deepcopy(self)
-        (deter_id_map, nondeter_id_map) = c1.merge_contract_variables(contract2refine)
+        print("====================================================================================")
+        print("Checking whether contract {} refines contract {}...".format(self.id, contract2refine.id))
+        
+        # Check saturation of the contracts
+        self.checkSat()
+        contract2refine.checkSat()
+
+        # Build a contract for checking refinement
+        refinement_contract = deepcopy(self)
+        refinement_contract.id = 'refinement_check'
+        # refinement_contract.printInfo()
+        # contract2refine.printInfo()
+
+        # Merge deterministic variables
+        for var in refinement_contract.deter_var_list:
+            if var in contract2refine.deter_var_list:
+                # Find index of the variable in different contracts
+                idx1 = refinement_contract.deter_var_list.index(var)
+                idx2 = contract2refine.deter_var_list.index(var)
+
+                # Assert that the variable type is the same
+                assert(refinement_contract.deter_var_types[idx1] == contract2refine.deter_var_types[idx2])
+                
+                # Find new bound
+                lower_b = max(refinement_contract.deter_var_bounds[idx1][0], contract2refine.deter_var_bounds[idx2][0])
+                upper_b = min(refinement_contract.deter_var_bounds[idx1][1], contract2refine.deter_var_bounds[idx2][1])
+                assert(lower_b <= upper_b)
+                refinement_contract.deter_var_bounds[idx1] = [lower_b, upper_b]
+
+        for var in set(contract2refine.deter_var_list) - set(refinement_contract.deter_var_list):
+            # Find index of the variable
+            idx = contract2refine.deter_var_list.index(var)
+
+            # Append the information of the variable
+            refinement_contract.deter_var_list.append(var)
+            refinement_contract.deter_var_types.append(contract2refine.deter_var_types[idx])
+            refinement_contract.deter_var_bounds.append(contract2refine.deter_var_bounds[idx])
+
+        # TODO: Merge non-deterministic variables
+        
+        # Find assumption and guarantee
+        refinement_contract.set_assume("(!({})) & ({})".format(self.assumption_str, contract2refine.assumption_str))
+        refinement_contract.set_guaran("(!({})) & ({})".format(contract2refine.sat_guarantee_str, self.sat_guarantee_str))
+        # refinement_contract.set_guaran("(!({})) & ({})".format(contract2refine.guarantee_str, self.guarantee_str))
+        # refinement_contract.printInfo()
 
         # Build a MILP Solver
-        print("Checking whether contract {} refines contract {}...".format(self.id, contract2refine.id))
         solver = MILPSolver()
         #  solver = SMCSolver()
 
         # Add constraints for refinement condition for assumptions
         print("Checking assumptions condition for refinement...")
-        solver.add_contract(c1)
-        assumption1 = deepcopy(c1.assumption)
-        assumption2 = deepcopy(contract2refine.assumption)
-        assumption2.transform(deter_id_map, nondeter_id_map)
-        solver.add_hard_constraint(~(assumption2.implies(assumption1)))
+        self.checkSat()
+        solver.add_contract(self)
+        solver.add_constraint(refinement_contract.assumption)
     
         # Check refinement condition for assumptions
-        solver.preprocess()
         solved = solver.solve()
     
         # Print the counterexample
@@ -310,17 +298,14 @@ class contract:
 
         # Resets a MILP Solver
         solver.reset()
-        solver.add_contract(c1)
 
         # Add constraints for refinement condition for guarantees
         print("Checking guarantees condition for refinement...")
-        guarantee1 = deepcopy(c1.sat_guarantee)
-        guarantee2 = deepcopy(contract2refine.sat_guarantee)
-        guarantee2.transform(deter_id_map, nondeter_id_map)
-        solver.add_hard_constraint(~(guarantee1.implies(guarantee2)))
+        self.checkSat()
+        solver.add_contract(contract2refine)
+        solver.add_constraint(refinement_contract.guarantee)
 
         # Check refinement condition for guarantees
-        solver.preprocess()
         solved = solver.solve()
 
         # Print the counterexample
@@ -332,60 +317,6 @@ class contract:
             return
 
         print("Contract {} refines {}.\n".format(self.id, contract2refine.id))
-    
-    def merge_contract_variables(self, contract):
-        """ Merges contract variables. """
-        # Determinate variables
-        deter_id_map = []
-        for var in contract.deter_var_list:
-            if var.name in self.deter_var_name2id:
-                deter_id_map.append(self.deter_var_name2id[var.name])
-            else:
-                self.deter_var_list.append(var)
-                var_len = len(self.deter_var_name2id)
-                self.deter_var_name2id[var.name] = var_len
-                deter_id_map.append(var_len)
-        #  print(deter_id_map)
-
-        # Nondeterminate variables
-        nondeter_id_map = []
-        extra_nondeter_id = []
-        for i, var in enumerate(contract.nondeter_var_list):
-            if var.name in self.nondeter_var_name2id:
-                nondeter_id_map.append(self.nondeter_var_name2id[var.name])
-            else:
-                self.nondeter_var_list.append(var)
-                var_len = len(self.nondeter_var_name2id)
-                self.nondeter_var_name2id[var.name] = var_len
-                nondeter_id_map.append(var_len)
-                extra_nondeter_id.append(i)
-        #  print(nondeter_id_map)
-
-        # print(extra_nondeter_id)
-        # extra_nondeter_id = np.array(extra_nondeter_id)
-        self_len = len(self.nondeter_var_cov)
-        contract_len = len(extra_nondeter_id)
-        if contract_len > 0:
-            if self_len == 0:
-                self.nondeter_var_mean = contract.nondeter_var_mean[extra_nondeter_id]
-                self.nondeter_var_cov = contract.nondeter_var_cov[extra_nondeter_id, extra_nondeter_id]
-            else:
-                # print(self.nondeter_var_mean)
-                # print(contract.nondeter_var_mean)
-                # print(extra_nondeter_id)
-                for id in extra_nondeter_id:
-                    self.nondeter_var_mean += [contract.nondeter_var_mean[id]]
-
-                for row in self.nondeter_var_cov:
-                    row += [0]*contract_len
-                for id in extra_nondeter_id:
-                    print([0]*self_len + contract.nondeter_var_cov[id])
-                    self.nondeter_var_cov.append([0]*self_len + contract.nondeter_var_cov[id])
-                
-                # print(self.nondeter_var_mean)
-                # print(self.nondeter_var_cov)
-
-        return (np.array(deter_id_map), np.array(nondeter_id_map))
     
     def find_opt_refine_param(self, contract2refine, weights, N=100):
         # Merge Contracts
@@ -642,9 +573,13 @@ class contract:
         if len(self.nondeter_var_list):
             res += "  Non-Deterministic Variables: \n"
             for i, v in enumerate(self.nondeter_var_list):
-                res += "    {}, {}, {}\n".format(v, self.nondeter_var_types[i], self.nondeter_var_bounds[i])
+                res += "    {}, {}\n".format(v, self.nondeter_var_types[i])
             res += "    mean: {}\n".format(self.nondeter_var_mean)
             res += "    cov: {}\n".format(self.nondeter_var_cov)
+        if len(self.param_var_list):
+            res += "  Parameteric Variables: \n"
+            for i, v in enumerate(self.param_var_list):
+                res += "    {}, {}, {}\n".format(v, self.param_var_types[i], self.param_var_bounds[i])
         res += "  Assumption: {}\n".format(self.assumption_str)
         res += "  Guarantee: {}\n".format(self.guarantee_str)
         res += "  Saturated Guarantee: {}\n".format(self.sat_guarantee_str)

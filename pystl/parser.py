@@ -72,8 +72,45 @@ class ASTObject():
             return self
 
         elif type(self) in (AP, stAP):
-            self.formula = invert_sign(self.formula)
             if neg:
+                if type(self) == stAP:
+                    # Find the original prob formula
+                    tmp_prob_orig_formula = ""
+                    count = 0
+                    for char in self.formula:
+                        if char == "]":
+                            break
+                        elif count == 1:
+                            tmp_prob_orig_formula += char
+                        
+                        if char == "[":
+                            count += 1
+
+                    # Find the negated prob formula
+                    tmp_prob_neg_formula = ""
+                    for i, multiplier in enumerate(self.prob_multipliers):
+                        self.prob_multipliers[i] = -multiplier
+
+                        if self.prob_var_list_list[i] == [1]:
+                            self.prob_multipliers[i] += 1
+
+                        if self.prob_multipliers[i] < 0:
+                            tmp_prob_neg_formula += "{}".format(self.prob_multipliers[i])
+                        else:
+                            if tmp_prob_neg_formula == "":
+                                tmp_prob_neg_formula += "{}".format(self.prob_multipliers[i])
+                            else:
+                                tmp_prob_neg_formula += "+{}".format(self.prob_multipliers[i])
+
+                        for var, power in zip(self.prob_var_list_list[i], self.prob_power_list_list[i]):
+                            if var != 1:
+                                if power == 1:
+                                    tmp_prob_neg_formula += "*{}".format(var)
+                                else:
+                                    tmp_prob_neg_formula += "*{}^{}".format(var, power)
+                    self.formula = self.formula.replace("P[{}]".format(tmp_prob_orig_formula), "P[{}]".format(tmp_prob_neg_formula))
+                            
+                self.formula = invert_sign(self.formula)
                 self.multipliers = [-x for x in self.multipliers]
                 const_index = self.var_list_list.index([1])
                 self.multipliers[const_index] += EPS
@@ -84,6 +121,7 @@ class ASTObject():
                 self.children_list[0] = self.children_list[0].push_negation(neg=not neg)
                 return self.children_list[0]
             else:
+                self.children_list[0] = self.children_list[0].push_negation(neg=neg)
                 return self
 
         elif type(self) == nontemporal_binary:
@@ -93,8 +131,8 @@ class ASTObject():
 
             if neg:
                 new_self.operator = "&"
-                new_self.children_list.append(self.children_list[0].push_negation(neg=neg))
-                new_self.children_list.append(self.children_list[1].push_negation(neg=not neg))
+                new_self.children_list.append(self.children_list[0].push_negation(neg=not neg))
+                new_self.children_list.append(self.children_list[1].push_negation(neg=neg))
                 new_self.formula = "({}) & ({})".format(self.children_list[0].formula, self.children_list[1].formula)
             else:
                 new_self.operator = "|"
@@ -105,39 +143,47 @@ class ASTObject():
         
         elif type(self) == nontemporal_multinary:
             new_self = nontemporal_multinary(None)
-            new_self.formula = self.formula
+            new_self.operator = self.operator
             new_self.variables = self.variables
+            for children in self.children_list:
+                new_self.children_list.append(children.push_negation(neg=neg))
             if neg:
                 new_self.formula = ""
                 if self.operator == "|":
                     new_self.operator = "&"
-                    for children in self.children_list:
-                        new_self.children_list.append(children.push_negation(neg=neg))
+                    for children in new_self.children_list:
                         new_self.formula += "({}) & ".format(children.formula)
-                    new_self.formula = new_self.formula[0:len(self.formula)-3]
+                    new_self.formula = new_self.formula[0:len(new_self.formula)-3]
                 elif self.operator == "&":
                     new_self.operator = "|"
-                    for children in self.children_list:
-                        new_self.children_list.append(children.push_negation(neg=neg))
+                    for children in new_self.children_list:
                         new_self.formula += "({}) | ".format(children.formula)
                     new_self.formula = new_self.formula[0:len(new_self.formula)-3]
+            else:
+                new_self.formula = ""
+                for children in new_self.children_list:
+                    new_self.formula += "({}) {} ".format(children.formula, new_self.operator)
+                new_self.formula = new_self.formula[0:len(new_self.formula)-3]
+
             return new_self
 
         elif type(self) == temporal_unary:
+            self.children_list[0] = self.children_list[0].push_negation(neg=neg)
             if neg:
-                self.children_list[0] = self.children_list[0].push_negation(neg=neg)
                 if self.operator == "G":
                     self.operator = "F"
                     self.formula = "F[{},{}] ({})".format(int(self.interval[0]), int(self.interval[1]), self.children_list[0].formula)
                 elif self.operator == 'F':
                     self.operator = "G"
                     self.formula = "G[{},{}] ({})".format(int(self.interval[0]), int(self.interval[1]), self.children_list[0].formula)
+            else:
+                self.formula = "{}[{},{}] ({})".format(self.operator, int(self.interval[0]), int(self.interval[1]), self.children_list[0].formula)
             return self
         
         elif type(self) == temporal_binary:
+            self.children_list[0] = self.children_list[0].push_negation(neg=neg)
+            self.children_list[1] = self.children_list[1].push_negation(neg=neg)
             if neg:
-                self.children_list[0] = self.children_list[0].push_negation(neg=neg)
-                self.children_list[1] = self.children_list[1].push_negation(neg=neg)
                 if self.operator == "U":
                     self.operator = "R"
                     self.formula = "({}) F[{},{}] ({})".format(self.children_list[0].formula, int(self.interval[0]), int(self.interval[1]), self.children_list[1].formula)
@@ -159,6 +205,8 @@ class ASTObject():
         elif type(self) == nontemporal_multinary:
             for children in self.children_list:
                 children.printInfo(layer=layer+1)
+        if layer == 0:
+            print()
 
 class term():
     __slots__ = ('multiplier', 'var', 'power')
@@ -453,7 +501,6 @@ class nontemporal_multinary(ASTObject):
 
     def __init__(self, data):
         """ Constructor method """
-        print(data)
         if data is None:
             self.operator = ""
             self.variables = []
@@ -468,7 +515,6 @@ class nontemporal_multinary(ASTObject):
                 else:
                     raise ValueError("Cannot have a list of predicates connected via both AND and OR.")
             else:
-                data[6] == data[10][0][0].operator
                 self.children_list = data[2][0] + data[10][0]
             self.variables = set()
             for children in self.children_list:
@@ -500,7 +546,7 @@ class boolean(ASTObject):
 
 # StSTL Grammar
 ststl_grammar = Grammar('''
-phi = true / false / nontemporal_unary / nontemporal_binary / nontemporal_multinary / temporal_unary / temporal_binary / AP / stAP
+phi = true / false / nontemporal_unary / nontemporal_binary / nontemporal_multinary / temporal_unary / temporal_binary / stAP / AP
 
 true = "True"
 false = "False"

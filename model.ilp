@@ -1,13 +1,18 @@
 \ Model _copy
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
- 
+  0 b_1[0,0] + 0 b_2[0,2] + 0 b_3[0,0] + 0 b_4[0,0] + 0 b_4[0,2]
+   + 0 b_4[0,3]
 Subject To
- R2: node_1_0 - contract_1_0 + 2.530611841988826 contract_0_0
-   = 1.266158476508544
- SAT: node_1_0 <= -0.0001
+ R0: b = 1
+ R1: - x[0,1] - 10000 b_2[0,1] >= -10003.9999
+ R7: x[0,1] - 10000 b_4[0,1] >= -9995
 Bounds
- node_1_0 free
- contract_1_0 >= 0.25
- -infinity <= contract_0_0 <= 0.5625
+ x[0,1] free
+Binaries
+ b b_1[0,0] b_2[0,1] b_2[0,2] b_3[0,0] b_4[0,0] b_4[0,1] b_4[0,2] b_4[0,3]
+General Constraints
+ GC0: b_1[0,0] = AND ( b_2[0,1] , b_2[0,2] )
+ GC1: b_3[0,0] = AND ( b_4[0,0] , b_4[0,1] , b_4[0,2] , b_4[0,3] )
+ GC2: b = AND ( b_1[0,0] , b_3[0,0] )
 End
