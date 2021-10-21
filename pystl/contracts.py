@@ -2,6 +2,7 @@ import numpy as np
 import gurobipy as gp
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import random
 
 from copy import deepcopy
 from gurobipy import GRB
@@ -242,32 +243,8 @@ class contract:
         # refinement_contract.printInfo()
         # contract2refine.printInfo()
 
-        # Merge deterministic variables
-        for var in refinement_contract.deter_var_list:
-            if var in contract2refine.deter_var_list:
-                # Find index of the variable in different contracts
-                idx1 = refinement_contract.deter_var_list.index(var)
-                idx2 = contract2refine.deter_var_list.index(var)
-
-                # Assert that the variable type is the same
-                assert(refinement_contract.deter_var_types[idx1] == contract2refine.deter_var_types[idx2])
-                
-                # Find new bound
-                lower_b = max(refinement_contract.deter_var_bounds[idx1][0], contract2refine.deter_var_bounds[idx2][0])
-                upper_b = min(refinement_contract.deter_var_bounds[idx1][1], contract2refine.deter_var_bounds[idx2][1])
-                assert(lower_b <= upper_b)
-                refinement_contract.deter_var_bounds[idx1] = [lower_b, upper_b]
-
-        for var in set(contract2refine.deter_var_list) - set(refinement_contract.deter_var_list):
-            # Find index of the variable
-            idx = contract2refine.deter_var_list.index(var)
-
-            # Append the information of the variable
-            refinement_contract.deter_var_list.append(var)
-            refinement_contract.deter_var_types.append(contract2refine.deter_var_types[idx])
-            refinement_contract.deter_var_bounds.append(contract2refine.deter_var_bounds[idx])
-
-        # TODO: Merge non-deterministic variables
+        # Merge variables
+        merge_variables(refinement_contract, contract2refine)
         
         # Find assumption and guarantee
         refinement_contract.set_assume("(!({})) & ({})".format(self.assumption_str, contract2refine.assumption_str))
@@ -341,24 +318,24 @@ class contract:
         guarantee2.transform(deter_id_map, nondeter_id_map)
         c1.set_guaran(guarantee1.implies(guarantee2))
         c1.checkSat()
-        c1.printInfo()
+        # c1.printInfo()
 
         # Find an optimal set of parameters
         c1.find_opt_param(weights, N=N)
         
     def find_opt_param(self, weights, N=100):
         """ Find an optimal set of parameters for a contract given an objective function. """
-        
         print("Finding an optimal set of parameters for contract {}...".format(self.id))
 
-        # Initialize the SAT, UNSAT, and UNDETERMINED sets
+        # Initialize the initial bounds, SAT, UNSAT, and UNDETERMINED sets
+        bounds = deepcopy(self.param_var_bounds)
         param_SAT = []
         param_UNSAT = []
-        param_UNDET = [self.param_vars_bounds]
+        param_UNDET = [deepcopy(self.param_var_bounds)]
 
         # Pre-partition the parameter space for probability thresholds
         count = 0
-        for i, var_name in enumerate(self.param_var_list):
+        for var_name in self.param_var_list:
             if 'p' in var_name:
                 for tmp_partition in param_UNDET:
                     if tmp_partition[count][0] < 0.5:
@@ -371,172 +348,168 @@ class contract:
                         tmp_partition[count][1] = 0.5
             count += 1
 
-        # def findPartitionType(var_info, partition):
-        #     print(partition)
+        def findPartitionType(partition):
+            print(partition)
+            # Update the bounds 
+            self.param_var_bounds = partition
+            # self.printInfo()
 
-        #     for var in self.deter_var_list:
-        #         if var.name in list(var_info.keys()):
-        #             var.bound = np.array(partition[var_info[var.name][1]])
-        #     # print(self.deter_var_list)
+            # Build a Solver
+            MILPsolver = MILPSolver(mode="Quantitative")
+            MILPsolver.add_contract(self)
+            MILPsolver.add_constraint(self.assumption, name='b_a')
+            MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
+            # MILPsolver.add_dynamics(sys_dyn)
 
-        #     # Build a Solver
-        #     MILPsolver = MILPSolver(mode="Quantitative")
-        #     MILPsolver.add_contract(self)
-        #     MILPsolver.add_hard_constraint(self.assumption)
-        #     MILPsolver.add_soft_constraint(self.guarantee)
-        #     # MILPsolver.add_dynamics(sys_dyn)
-
-        #     # Solve the problem
-        #     MILPsolver.preprocess()
-        #     MILPsolver.set_objective(sense='minimize')
-        #     if not MILPsolver.solve():
-        #         print("SAT partition!")
-        #         return 0
-        #     else:
-        #         for v in MILPsolver.model.getVars():
-        #             print('%s %g' % (v.varName, v.x))
+            # Solve the problem
+            MILPsolver.set_objective(sense='minimize')
+            if not MILPsolver.solve():
+                print("SAT partition!")
+                return 0
+            else:
+                # for v in MILPsolver.model.getVars():
+                #     print('%s %g' % (v.varName, v.x))
                     
-        #         MILPsolver.set_objective(sense='maximize')
-        #         if not MILPsolver.solve():
-        #             print("UNSAT partition!")
-        #             return 1
-        #         else: 
-        #             print("UNDET partition!")
-        #             for v in MILPsolver.model.getVars():
-        #                 print('%s %g' % (v.varName, v.x))
-        #             return 2
+                MILPsolver.set_objective(sense='maximize')
+                if not MILPsolver.solve():
+                    print("UNSAT partition!")
+                    return 1
+                else: 
+                    print("UNDET partition!")
+                    # for v in MILPsolver.model.getVars():
+                    #     print('%s %g' % (v.varName, v.x))
+                    return 2
 
-        # def paramSpacePartition(partition):
-        #     """
-        #     Partitions the given partition.
+        def paramSpacePartition(partition):
+            """
+            Partitions the given partition.
 
-        #     :param partition: [description]
-        #     :type partition: [type]
-        #     """
-        #     # Initialize the partition list
-        #     prev_partition_list = [partition]
+            :param partition: [description]
+            :type partition: [type]
+            """
+            # Initialize the partition list
+            prev_partition_list = [partition]
 
-        #     # TODO: Add more partition methods
-        #     # Binary partition
-        #     for i in range(len(partition)):
-        #         curr_partition_list = []
-        #         for tmp_partition in prev_partition_list:
-        #             # Add another partition
-        #             additional_partition = deepcopy(tmp_partition)
-        #             binary_partition_num = (additional_partition[i][0]+additional_partition[i][1])/2
-        #             additional_partition[i][1] = binary_partition_num
-        #             curr_partition_list.append(additional_partition)
+            # TODO: Add more partition methods
+            # Binary partition
+            for i in range(len(partition)):
+                curr_partition_list = []
+                for tmp_partition in prev_partition_list:
+                    # Add another partition
+                    additional_partition = deepcopy(tmp_partition)
+                    binary_partition_num = (additional_partition[i][0]+additional_partition[i][1])/2
+                    additional_partition[i][1] = binary_partition_num
+                    curr_partition_list.append(additional_partition)
 
-        #             # Modify the current partition
-        #             tmp_partition[i][0] = binary_partition_num
-        #             curr_partition_list.append(tmp_partition)
+                    # Modify the current partition
+                    tmp_partition[i][0] = binary_partition_num
+                    curr_partition_list.append(tmp_partition)
                 
-        #         prev_partition_list = curr_partition_list
+                prev_partition_list = curr_partition_list
             
-        #     return prev_partition_list
+            return prev_partition_list
 
-        # # Find SAT and UNSAT partitions
-        # while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(param_UNDET) <= N:
-        #     tmp_partition = param_UNDET.pop(0)
-        #     partition_type = findPartitionType(var_info, tmp_partition)
-        #     if partition_type == 0: # SAT partition
-        #         param_SAT.append(tmp_partition)
-        #     elif partition_type == 1: # UNSAT partition
-        #         param_UNSAT.append(tmp_partition)
-        #     elif partition_type == 2: # UNDET partition
-        #         for partitioned_partition in paramSpacePartition(tmp_partition):
-        #             param_UNDET.append(partitioned_partition)
+        # Find SAT and UNSAT partitions
+        while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(param_UNDET) <= N:
+            tmp_partition = param_UNDET.pop(0)
+            partition_type = findPartitionType(tmp_partition)
+            if partition_type == 0: # SAT partition
+                param_SAT.append(tmp_partition)
+            elif partition_type == 1: # UNSAT partition
+                param_UNSAT.append(tmp_partition)
+            elif partition_type == 2: # UNDET partition
+                for partitioned_partition in paramSpacePartition(tmp_partition):
+                    param_UNDET.append(partitioned_partition)
 
-        # # Double-check UNDET partitions
-        # tmp_param_UNDET = deepcopy(param_UNDET)
-        # param_UNDET = []
-        # for tmp_partition in tmp_param_UNDET:      
-        #     partition_type = findPartitionType(var_info, tmp_partition)
-        #     if partition_type == 0: # SAT partition
-        #         param_SAT.append(tmp_partition)
-        #     elif partition_type == 1: # UNSAT partition
-        #         param_UNSAT.append(tmp_partition)
-        #     elif partition_type == 2: # UNDET partition
-        #         param_UNDET.append(tmp_partition)
+        # Double-check UNDET partitions
+        tmp_param_UNDET = deepcopy(param_UNDET)
+        param_UNDET = []
+        for tmp_partition in tmp_param_UNDET:      
+            partition_type = findPartitionType(tmp_partition)
+            if partition_type == 0: # SAT partition
+                param_SAT.append(tmp_partition)
+            elif partition_type == 1: # UNSAT partition
+                param_UNSAT.append(tmp_partition)
+            elif partition_type == 2: # UNDET partition
+                param_UNDET.append(tmp_partition)
 
-        # # print(param_SAT)
-        # # print(param_UNSAT)
-        # # print(param_UNDET)
+        # print(param_SAT)
+        # print(param_UNSAT)
+        # print(param_UNDET)
 
-        # def findMinCost(var_info, weights, partition):
-        #     # Initialize Gurobi model
-        #     model = gp.Model()
-        #     model.setParam("OutputFlag", 0)
+        def findMinCost(weights, partition):
+            # Initialize Gurobi model
+            model = gp.Model()
+            model.setParam("OutputFlag", 0)
             
-        #     # Add variables
-        #     variables = []
-        #     for var_name, var_idx in var_info.items():
-        #         variables.append(model.addVar(lb=partition[var_idx[1]][0], ub=partition[var_idx[1]][1], vtype=GRB.CONTINUOUS, name=var_name))
-        #     model.update()
+            # Add variables
+            variables = []
+            for i, var_name in enumerate(self.param_var_list):
+                variables.append(model.addVar(lb=partition[i][0], ub=partition[i][1], vtype=GRB.CONTINUOUS, name=var_name))
+            model.update()
 
-        #     # Add objective
-        #     obj = 0
-        #     for weight, variable in zip(weights, variables):
-        #         obj += weight*variable
-        #     model.setObjective(obj, GRB.MINIMIZE)
+            # Add objective
+            obj = 0
+            for weight, variable in zip(weights, variables):
+                obj += weight*variable
+            model.setObjective(obj, GRB.MINIMIZE)
 
-        #     # Solve the optimization problem
-        #     model.optimize()
+            # Solve the optimization problem
+            model.optimize()
 
-        #     # Fetch cost and optimal set of parameters
-        #     obj = model.getObjective()
-        #     optimal_params = {}
-        #     for var_name in var_info.keys():
-        #         optimal_params[var_name] = model.getVarByName(var_name).x
+            # Fetch cost and optimal set of parameters
+            obj = model.getObjective()
+            optimal_params = {}
+            for var_name in self.param_var_list:
+                optimal_params[var_name] = model.getVarByName(var_name).x
 
-        #     # print(obj.getValue())
-        #     # print(optimal_params)
+            # print(obj.getValue())
+            # print(optimal_params)
             
-        #     return obj.getValue(), optimal_params
+            return obj.getValue(), optimal_params
 
-
-        # # Find the optimal set of parameters
-        # minCost = 10**4
-        # optimal_params = {}
-        # for partition in param_SAT:
-        #     tmp_minCost, tmp_optimal_params = findMinCost(var_info, weights, partition)
-        #     if tmp_minCost < minCost:
-        #         minCost = tmp_minCost
-        #         optimal_params = tmp_optimal_params
+        # Find the optimal set of parameters
+        minCost = 10**4
+        optimal_params = {}
+        for partition in param_SAT:
+            tmp_minCost, tmp_optimal_params = findMinCost(weights, partition)
+            if tmp_minCost < minCost:
+                minCost = tmp_minCost
+                optimal_params = tmp_optimal_params
         
-        # print(optimal_params)
+        print(optimal_params)
 
-        # # Plot SAT, UNSAT, and UNDET regions, if the parameter space is 2D
-        # if len(bounds) == 2:
-        #     _, ax = plt.subplots()
-        #     plt.xlabel(list(var_info.keys())[0])
-        #     plt.ylabel(list(var_info.keys())[1])
-        #     plt.xlim(bounds[0][0], bounds[0][1])
-        #     plt.ylim(bounds[1][0], bounds[1][1])
+        # Plot SAT, UNSAT, and UNDET regions, if the parameter space is 2D
+        # if len(self.param_var_list) == 2:
+        _, ax = plt.subplots()
+        plt.xlabel(self.param_var_list[0])
+        plt.ylabel(self.param_var_list[1])
+        plt.xlim(bounds[0][0], bounds[0][1])
+        plt.ylim(bounds[1][0], bounds[1][1])
 
-        #     # Color SAT regions
-        #     for partition in param_SAT:
-        #         ax.add_patch(patches.Rectangle(
-        #                 (partition[0][0], partition[1][0]),
-        #                 partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
-        #                 edgecolor = 'black', facecolor = 'lime', fill=True))
+        # Color SAT regions
+        for partition in param_SAT:
+            ax.add_patch(patches.Rectangle(
+                    (partition[0][0], partition[1][0]),
+                    partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
+                    edgecolor = 'black', facecolor = 'lime', fill=True))
 
-        #     # Color UNSAT regions
-        #     for partition in param_UNSAT:
-        #         ax.add_patch(patches.Rectangle(
-        #                 (partition[0][0], partition[1][0]),
-        #                 partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
-        #                 edgecolor = 'black', facecolor = 'red', fill=True))
+        # Color UNSAT regions
+        for partition in param_UNSAT:
+            ax.add_patch(patches.Rectangle(
+                    (partition[0][0], partition[1][0]),
+                    partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
+                    edgecolor = 'black', facecolor = 'red', fill=True))
 
-        #     # Color UNDET regions
-        #     for partition in param_UNDET:
-        #         ax.add_patch(patches.Rectangle(
-        #                 (partition[0][0], partition[1][0]),
-        #                 partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
-        #                 edgecolor = 'black', facecolor = 'grey', fill=True))
+        # Color UNDET regions
+        for partition in param_UNDET:
+            ax.add_patch(patches.Rectangle(
+                    (partition[0][0], partition[1][0]),
+                    partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
+                    edgecolor = 'black', facecolor = 'grey', fill=True))
 
-        #     # Save the figure
-        #     plt.savefig('{}_param_opt.jpg'.format(self.id))
+        # Save the figure
+        plt.savefig('{}_param_opt.jpg'.format(self.id))
         
         # return optimal_params
         return True
@@ -603,22 +576,13 @@ def conjunction(c1, c2):
     conjoined = deepcopy(c1)
     conjoined.id = (c1.id + '^' + c2.id)
 
-    # Merge controlled and uncontrolled variables
-    (deter_id_map, nondeter_id_map) = conjoined.merge_contract_variables(c2)
+    # Merge variables
+    merge_variables(conjoined, c2)
 
-    # Find conjoined guarantee, G': G1 and G2
-    assumption1 = deepcopy(conjoined.assumption)
-    assumption2 = deepcopy(c2.assumption)
-    assumption2.transform(deter_id_map, nondeter_id_map)
-    conjoined.assumption = assumption1 | assumption2
-
-    guarantee1 = deepcopy(conjoined.sat_guarantee)
-    guarantee2 = deepcopy(c2.sat_guarantee)
-    guarantee2.transform(deter_id_map, nondeter_id_map)
-
-    conjoined.guarantee = guarantee1 & guarantee2
-    conjoined.sat_guarantee = deepcopy(conjoined.guarantee)
-    conjoined.isSat = True
+    # Find conjoined assumption and guarantee
+    conjoined.set_assume("({}) | ({})".format(conjoined.assumption_str, c2.assumption_str))
+    conjoined.set_guaran("({}) & ({})".format(conjoined.sat_guarantee_str, c2.sat_guarantee_str))
+    conjoined.checkSat()
 
     return conjoined
 
@@ -640,25 +604,17 @@ def composition(c1, c2):
     composed = deepcopy(c1)
     composed.id = (c1.id + '*' + c2.id)
 
-    # Merge controlled and uncontrolled variables
-    (deter_id_map, nondeter_id_map) = composed.merge_contract_variables(c2)
+    # Merge variables
+    merge_variables(composed, c2)
 
-    # Find conjoined guarantee, G': G1 and G2
-    assumption1 = composed.assumption
-    assumption2 = deepcopy(c2.assumption)
-    assumption2.transform(deter_id_map, nondeter_id_map)
-
-    guarantee1 = composed.sat_guarantee
-    guarantee2 = deepcopy(c2.sat_guarantee)
-    guarantee2.transform(deter_id_map, nondeter_id_map)
-
-    composed.assumption = deepcopy((assumption1 & assumption2) | ~guarantee1 | ~guarantee2)
-    composed.guarantee = deepcopy(guarantee1 & guarantee2)
-    composed.sat_guarantee = deepcopy(composed.guarantee)
-    composed.isSat = True
+    # Find composed assumption and guarantee
+    composed.set_assume("(({}) & ({})) | (!({})) | (!({}))".format(composed.assumption_str, c2.assumption_str, composed.sat_guarantee_str, c2.sat_guarantee_str))
+    composed.set_guaran("({}) & ({})".format(composed.sat_guarantee_str, c2.sat_guarantee_str))
+    composed.checkSat()
 
     return composed
 
+# TODO: quotient not implemented correctly
 def quotient(c, c2):
     """ Returns the quotient c/c2
 
@@ -696,6 +652,7 @@ def quotient(c, c2):
 
     return quotient
 
+# TODO: separation not implemented correctly
 def separation(c, c2):
     """ Returns the separation c%c2
 
@@ -732,3 +689,68 @@ def separation(c, c2):
     separation.isSat = True
 
     return separation
+
+def merge_variables(c1, c2):
+    # Merge deterministic variables
+    for var in c1.deter_var_list:
+        if var in c2.deter_var_list:
+            # Find index of the variable in different contracts
+            idx1 = c1.deter_var_list.index(var)
+            idx2 = c2.deter_var_list.index(var)
+
+            # Assert that the variable type is the same
+            assert(c1.deter_var_types[idx1] == c2.deter_var_types[idx2])
+            
+            # Find new bound
+            lower_b = max(c1.deter_var_bounds[idx1][0], c2.deter_var_bounds[idx2][0])
+            upper_b = min(c1.deter_var_bounds[idx1][1], c2.deter_var_bounds[idx2][1])
+            assert(lower_b <= upper_b)
+            c1.deter_var_bounds[idx1] = [lower_b, upper_b]
+
+    for var in set(c2.deter_var_list) - set(c1.deter_var_list):
+        # Find index of the variable
+        idx = c2.deter_var_list.index(var)
+
+        # Append the information of the variable
+        c1.deter_var_list.append(var)
+        c1.deter_var_types.append(c2.deter_var_types[idx])
+        c1.deter_var_bounds.append(c2.deter_var_bounds[idx])
+
+    # Merge parametric variables
+    for var in c1.param_var_list:
+        if var in c2.param_var_list:
+            # Find index of the variable in different contracts
+            idx1 = c1.param_var_list.index(var)
+            idx2 = c2.param_var_list.index(var)
+
+            # Assert that the variable type is the same
+            assert(c1.param_var_types[idx1] == c2.param_var_types[idx2])
+            
+            # Find new bound
+            lower_b = max(c1.param_var_bounds[idx1][0], c2.param_var_bounds[idx2][0])
+            upper_b = min(c1.param_var_bounds[idx1][1], c2.param_var_bounds[idx2][1])
+            assert(lower_b <= upper_b)
+            c1.param_var_bounds[idx1] = [lower_b, upper_b]
+
+    for var in set(c2.param_var_list) - set(c1.param_var_list):
+        # Find index of the variable
+        idx = c2.param_var_list.index(var)
+
+        # Append the information of the variable
+        c1.param_var_list.append(var)
+        c1.param_var_types.append(c2.param_var_types[idx])
+        c1.param_var_bounds.append(c2.param_var_bounds[idx])
+
+    # Merge non-deterministic variables
+    curr_nondeter_num = len(c1.nondeter_var_list)
+    new_nondeter_num = len(list(set(c2.nondeter_var_list) - set(c1.nondeter_var_list)))
+    for var in set(c2.nondeter_var_list) - set(c1.nondeter_var_list):
+        # Find index of the variable
+        idx = c2.nondeter_var_list.index(var)
+
+        # Append the information of the variable
+        c1.nondeter_var_list.append(var)
+        c1.nondeter_var_types.append(c2.nondeter_var_types[idx])
+        c1.nondeter_var_mean.append(c2.nondeter_var_mean[idx])
+        c1.nondeter_var_cov = [row + [0]*new_nondeter_num for row in c1.nondeter_var_cov]
+        c1.nondeter_var_cov += [[0]*curr_nondeter_num  + row for row in c2.nondeter_var_cov]

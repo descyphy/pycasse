@@ -1,5 +1,5 @@
-from copy import deepcopy
-import cplex
+# from copy import deepcopy
+# import cplex
 from gurobipy import GRB
 import gurobipy as gp
 import numpy as np
@@ -14,13 +14,12 @@ EPS = 10**-4
 
 class MILPSolver:
     """
-
     Attributes
         MILP_convex_solver
         b_vars
         b_var_num
     """
-    __slots__ = ('model', 'contract', 'interval', 'node_vars', 'contract_vars', 'mode', 'objective', 'verbose')
+    __slots__ = ('model', 'contract', 'interval', 'node_vars', 'contract_vars', 'mode', 'objective', 'verbose', 'soft_constraint_vars')
 
     def __init__(self, mode = "Boolean", verbose=False):
         assert(mode in ("Boolean", "Quantitative"))
@@ -38,6 +37,7 @@ class MILPSolver:
         self.node_vars = {}
         self.contract_vars = {}
         self.interval = []
+        self.soft_constraint_vars = []
 
         # Initialize convex solver
         self.model = gp.Model() # Convex solver for solving the MILP convex problem
@@ -61,36 +61,31 @@ class MILPSolver:
 
         # Add parametric variables
         for i, variable in enumerate(contract.param_var_list):
-            self.contract_vars[variable] = self.model.addVar(lb=contract.param_var_bounds[i][0], ub=contract.param_var_bounds[i][1], vtype=GRB.CONTINUOUS, name=variable)
+            self.model.addVar(lb=contract.param_var_bounds[i][0], ub=contract.param_var_bounds[i][1], vtype=GRB.CONTINUOUS, name=variable)
         self.model.update()
 
     def set_objective(self, sense='minimize'):
-        # print(self.soft_constraints)
-        # print(self.soft_constraints_var)
         # input()
-        if self.solver == "Gurobi":
-            if sense == 'minimize':
-                try:
-                    self.model.remove(self.model.getConstrByName('UNSAT'))
-                except:
-                    pass
-                self.model.addConstr(self.soft_constraints_var[0] <= -EPS, 'SAT')
-            else:
-                try:
-                    self.model.remove(self.model.getConstrByName('SAT'))
-                except:
-                    pass
-                self.model.addConstr(self.soft_constraints_var[0] >= 0, 'UNSAT')
-            self.model.update()
-        #  elif self.solver == "Cplex":
-        #      self.model.minimize(objective)
-        else: assert(False)
+        if sense == 'minimize':
+            try:
+                self.model.remove(self.model.getConstrByName('UNSAT'))
+            except:
+                pass
+            self.model.addConstr(self.soft_constraint_vars[0] <= -EPS, 'SAT')
+        else:
+            try:
+                self.model.remove(self.model.getConstrByName('SAT'))
+            except:
+                pass
+            self.model.addConstr(self.soft_constraint_vars[0] >= 0, 'UNSAT')
+        self.model.update()
 
     def solve(self):
         """ Solves the MILP problem """
         # Solve the optimization problem
         self.model.write('MILP.lp')
         self.model.optimize()
+        # input()
 
         if self.status():
             if self.verbose:
@@ -104,41 +99,41 @@ class MILPSolver:
                 print('There exists no solution.')
             return False
 
-    def add_constraint(self, node, hard=True):
+    def add_constraint(self, node, hard=True, name='b'):
         """
         Adds contraints of a StSTL formula to the solvers.
         """
         # Build the parse tree
-        node.printInfo()
+        # node.printInfo()
         processed_node = node.push_negation()
-        processed_node.printInfo()
+        # processed_node.printInfo()
 
         # Add the constraints
         if self.mode == 'Boolean':
-            self.node_vars['b'] = self.model.addVar(name='b', vtype=GRB.BINARY)
+            self.node_vars[name] = self.model.addVar(name=name, vtype=GRB.BINARY)
             if hard:
-                self.model.addConstr(self.node_vars['b'] == 1)
+                self.model.addConstr(self.node_vars[name] == 1)
             else:
-                self.soft_constraints_var.append(self.node_vars['b'])
+                self.soft_constraint_vars.append(self.node_vars[name])
         elif self.mode == 'Quantitative':
-            self.node_vars['b'] = self.model.addVar(name='b', lb=-M, ub=M, vtype=GRB.CONTINUOUS)
+            self.node_vars[name] = self.model.addVar(name=name, lb=-M, ub=M, vtype=GRB.CONTINUOUS)
             if hard:
-                self.model.addConstr(self.node_vars['b'] >= 0)
+                self.model.addConstr(self.node_vars[name] >= 0)
             else:
-                self.soft_constraints_var.append(self.node_vars['b'])
+                self.soft_constraint_vars.append(self.node_vars[name])
         self.model.update()
 
         # Add node constraints
-        self.add_node_constraint(processed_node, top_node=True)
+        self.add_node_constraint(processed_node, top_node=True, name=name)
 
-    def add_node_constraint(self, node, start_time = 0, end_time = 0, top_node=False):
+    def add_node_constraint(self, node, start_time = 0, end_time = 0, top_node=False, name='b'):
         """
         Adds convex constraints from a contract to a convex solver.
         """
         if top_node:
-            b_name = "b"
+            b_name = name
         else:
-            b_name = "b_{}".format(len(self.node_vars))
+            b_name = "{}_{}".format(name, len(self.node_vars))
             # 1. Add Boolean variables to the MILP convex solver
             if self.mode == 'Boolean':
                 self.node_vars[b_name] = self.model.addVars(1, end_time+1, vtype=GRB.BINARY, name=b_name)
@@ -163,7 +158,7 @@ class MILPSolver:
         
         return self.node_vars[b_name]
 
-    def add_ap_stap_constraint(self, node, parent_vars, start_time = 0, end_time = 0):
+    def add_ap_stap_constraint(self, node, parent_vars, start_time = 0, end_time = 0, name='b'):
         if type(node) == AP: # Add constraints for an atomic predicate
             if type(parent_vars) == gp.Var:
                 constr = 0
@@ -213,27 +208,43 @@ class MILPSolver:
                     if var != 1:
                         term *= self.model.getVarByName(var)
                     prob += term
-            if isinstance(prob, float):
+
+            if isinstance(prob, float): 
+                # Handle extreme cases
                 if prob == 0:
                     prob = 10**-16
                 elif prob == 1:
                     prob = 1 - 10**-16
-            # else:
-            #     # Find lower and upper bounds for the probability threshold
-            #     p_low = []
-            #     p_high = []
-            #     for param_var in self.contract.param_var_list:
-            #         p_low.append(deter_var.bound[0])
-            #         p_high.append(deter_var.bound[1])
-            #     p_low = (p_low[0:len(node.probability().deter_data)]@node.probability().deter_data)[0]
-            #     if p_low <= 0:
-            #         p_low = 10**-16
-            #     p_high = (p_high[0:len(node.probability().deter_data)]@node.probability().deter_data)[0]
-            #     if p_high >= 1:
-            #         p_high = 1- 10**-16
-                # print((p_low, p_high))
+            else:
+                # Find lower and upper bounds for the probability threshold
+                p_low_mat = []
+                p_high_mat = []
+                p_multipliers = []
+                for i, param_var in enumerate(self.contract.param_var_list):
+                    p_low_mat.append(self.contract.param_var_bounds[i][0])
+                    p_high_mat.append(self.contract.param_var_bounds[i][1])
+                    for j, var_list in enumerate(node.prob_var_list_list):
+                        if var_list == [param_var]:
+                            p_multipliers.append(node.prob_multipliers[j])
+                        else:
+                            p_multipliers.append(0)
+                
+                p_low = 0
+                p_high = 0
+                for i in range(len(p_low_mat)):
+                    p_low += p_low_mat[i]*p_multipliers[i]
+                    p_high += p_high_mat[i]*p_multipliers[i]
 
-            # print("Prob: {}".format(str(prob)))
+                if [1] in node.prob_var_list_list:
+                    idx = node.prob_var_list_list.index([1])
+                    p_low += node.prob_multipliers[idx]
+                    p_high += node.prob_multipliers[idx]
+
+                # Handle extreme cases
+                if p_low <= 0:
+                    p_low = 10**-16
+                if p_high >= 1:
+                    p_high = 1- 10**-16
 
             # Fetch mean and variance of stAP
             a = [0]*len(self.contract.nondeter_var_list)
@@ -255,7 +266,12 @@ class MILPSolver:
             intermediate_variance = [0]*len(a)
             for i in range(len(self.contract.nondeter_var_cov[0])):
                 for j in range(len(a)):
-                    intermediate_variance[i] += a[j]*self.contract.nondeter_var_cov[j][i]
+                    if isinstance(self.contract.nondeter_var_cov[j][i], (float, int)):
+                        intermediate_variance[i] += a[j]*self.contract.nondeter_var_cov[j][i]
+                    else: # str
+                        idx = self.contract.nondeter_var_cov[j][i].index('^')
+                        intermediate_variance[i] += a[j]*self.model.getVarByName(self.contract.nondeter_var_cov[j][i][0:idx])
+
             # print(intermediate_variance)
 
             variance = 0
@@ -267,25 +283,45 @@ class MILPSolver:
                 mean2 = 0
                 for i in range(len(node.multipliers)):
                     term = node.multipliers[i]
-                    for var_list in node.var_list_list[i]:
-                        for var in var_list:
+                    for var in node.var_list_list[i]:
+                        if var in self.contract.deter_var_list:
                             if var != 1 and 'w' not in var:
                                 term *= self.model.getVarByName("{}[0,0]".format(var))
-                    if var == 1 or 'w' not in var:
+                        elif var in self.contract.param_var_list:
+                            term *= self.model.getVarByName("{}".format(var))
+                    if node.var_list_list[i] == [1] or any('w' not in var for var in node.var_list_list[i]):
                         mean2 += term
-                # print(mean2)
+
+                print(prob)
+                print(mean1+mean2)
+                print(variance)
+                # input()
                 
+                # Find chance constraint
                 if isinstance(prob, float) and isinstance(variance, float):
-                    if node.equal:
-                        self.model.addConstr(parent_vars == mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance))
-                        self.model.addConstr(mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance) == 0)
+                    constr = mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance)
+                else:
+                # elif isinstance(prob, (gp.LinExpr, gp.Var)) and isinstance(variance, float):
+                    if p_low >= 0.5:
+                        constr = mean1 + mean2 + (norm.ppf(p_low)+(norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low)*(prob-p_low))*math.sqrt(variance)
                     else:
-                        if self.mode == 'Boolean':
-                            self.model.addConstr(M * (1 - parent_vars) >= mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance))
-                            self.model.addConstr(EPS - M * parent_vars <= mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance))
-                        else:
-                            self.model.addConstr(parent_vars == -(mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance)))
-                # elif 
+                        constr = mean1 + mean2 + (norm.ppf((p_low+p_high)/2) + 1/norm.pdf(norm.ppf((p_low+p_high)/2))*(prob-(p_low+p_high)/2))*math.sqrt(variance)
+                # elif isinstance(prob, float) and isinstance(variance, (gp.LinExpr, gp.Var)):
+                # elif isinstance(prob, (gp.LinExpr, gp.Var)) and isinstance(variance, (gp.LinExpr, gp.Var)):
+                
+                # print(constr)
+
+                # Add constraints
+                if node.equal:
+                    self.model.addConstr(parent_vars == constr)
+                    self.model.addConstr(constr == 0)
+                else:
+                    if self.mode == 'Boolean':
+                        self.model.addConstr(M * (1 - parent_vars) >= constr)
+                        self.model.addConstr(EPS - M * parent_vars <= constr)
+                    else:
+                        self.model.addConstr(parent_vars == -constr)
+                self.model.update()
 
             else:
                 for t in range(start_time, end_time+1):
@@ -300,7 +336,6 @@ class MILPSolver:
                     # print(mean2)
 
                     if isinstance(prob, float) and isinstance(variance, float):
-                        print(mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance))
                         if node.equal:
                             self.model.addConstr(parent_vars[0,t] == mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance))
                             self.model.addConstr(mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance) == 0)
@@ -313,39 +348,9 @@ class MILPSolver:
 
         self.model.update()
 
-        #     if isinstance(node.probability(), float) or isinstance(variance, int):
-        #         constant += expectation + norm.ppf(node.probability())*math.sqrt(variance)
-        #     else:
-        #         # print(node.probability())
-        #         # print(self.contract.deter_var_list)
-        #         # print(self.contract.deter_var_name2id)
-        #         # Find lower and upper bounds for the probability threshold
-        #         p_low = []
-        #         p_high = []
-        #         for deter_var in self.contract.deter_var_list:
-        #             p_low.append(deter_var.bound[0])
-        #             p_high.append(deter_var.bound[1])
-        #         p_low = (p_low[0:len(node.probability().deter_data)]@node.probability().deter_data)[0]
-        #         if p_low <= 0:
-        #             p_low = 10**-16
-        #         p_high = (p_high[0:len(node.probability().deter_data)]@node.probability().deter_data)[0]
-        #         if p_high >= 1:
-        #             p_high = 1- 10**-16
-        #         # print((p_low, p_high))
-
-        #         # Find the LHS of the inequality
-        #         variance.sqrt = True
-        #         if p_low >= 0.5:
-        #             constant += expectation + (norm.ppf(p_low)+(norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low)*(node.probability()-p_low))*variance
-        #             # print(constant)
-        #             # input()
-        #         else:
-        #             constant += expectation + (norm.ppf((p_low+p_high)/2) + 1/norm.pdf(norm.ppf((p_low+p_high)/2))*(node.probability()-(p_low+p_high)/2))*variance
-        # variables = np.nonzero(expr)
-
-    def add_temporal_unary_constraint(self, node, parent_vars, start_time = 0, end_time = 0):
+    def add_temporal_unary_constraint(self, node, parent_vars, start_time = 0, end_time = 0, name='b'):
         # Fetch node variables from the child node
-        child_vars = self.add_node_constraint(node.children_list[0], start_time=start_time+node.interval[0], end_time=end_time+node.interval[1])
+        child_vars = self.add_node_constraint(node.children_list[0], start_time=start_time+node.interval[0], end_time=end_time+node.interval[1], name=name)
 
 		# Encode the logic
         if node.operator == 'G': # Globally
@@ -377,10 +382,10 @@ class MILPSolver:
         self.model.update()
 
     # TODO: Not implemented
-    def add_temporal_binary_constraint(self, node, parent_vars, start_time = 0, end_time = 0):
+    def add_temporal_binary_constraint(self, node, parent_vars, start_time = 0, end_time = 0, name='b'):
         # Fetch node variables from the child node
-        child_vars1 = self.add_node_constraint(node.children_list[0], start_time=start_time, end_time=end_time+node.interval[1]-1)
-        child_vars2 = self.add_node_constraint(node.children_list[1], start_time=start_time+node.interval[0], end_time=end_time+node.interval[1])
+        child_vars1 = self.add_node_constraint(node.children_list[0], start_time=start_time, end_time=end_time+node.interval[1]-1, name=name)
+        child_vars2 = self.add_node_constraint(node.children_list[1], start_time=start_time+node.interval[0], end_time=end_time+node.interval[1], name=name)
 
         # Encode the logic
         # for t in range(start_time, end_time):
@@ -406,9 +411,9 @@ class MILPSolver:
         #     elif node.ast_type == 'R': # Globally
         #         self.model_add_constraint_and(self.node_variable[node.idx, t], aux_variables)
 
-    def add_nontemporal_unary_constraint(self, node, parent_vars, start_time = 0, end_time = 0):
+    def add_nontemporal_unary_constraint(self, node, parent_vars, start_time = 0, end_time = 0, name='b'):
         # Fetch node variables from the child node
-        child_vars = self.add_node_constraint(node.children_list[0], start_time=start_time, end_time=end_time+1)
+        child_vars = self.add_node_constraint(node.children_list[0], start_time=start_time, end_time=end_time+1, name=name)
 
         # Encode the logic 
         if type(parent_vars) == gp.Var:
@@ -418,11 +423,11 @@ class MILPSolver:
                 self.model.addConstr(parent_vars[0, t] == child_vars[0, t+1])
         self.model.update()
 
-    def add_nontemporal_multinary_constraint(self, node, parent_vars, start_time = 0, end_time = 0):
+    def add_nontemporal_multinary_constraint(self, node, parent_vars, start_time = 0, end_time = 0, name='b'):
         # Fetch node variables from the child node
         child_vars_list = []
         for children in node.children_list:
-            child_vars_list.append(self.add_node_constraint(children, start_time=start_time, end_time=end_time))
+            child_vars_list.append(self.add_node_constraint(children, start_time=start_time, end_time=end_time, name=name))
 
         # Encode the logic 
         if type(parent_vars) == gp.Var:

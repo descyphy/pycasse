@@ -74,6 +74,13 @@ class ASTObject():
         elif type(self) in (AP, stAP):
             if neg:
                 if type(self) == stAP:
+                    # Add [1] to prob_list_list
+                    if [1] not in self.prob_var_list_list:
+                        self.prob_multipliers.append(0)
+                        self.prob_var_list_list.append([1])
+                        self.prob_power_list_list.append([1])
+                        print(self)
+
                     # Find the original prob formula
                     tmp_prob_orig_formula = ""
                     count = 0
