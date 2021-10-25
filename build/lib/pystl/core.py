@@ -71,13 +71,19 @@ class MILPSolver:
                 self.model.remove(self.model.getConstrByName('UNSAT'))
             except:
                 pass
-            self.model.addConstr(self.soft_constraint_vars[0] <= -EPS, 'SAT')
+            if self.mode == 'Quantitative':
+                self.model.addConstr(self.soft_constraint_vars[0] <= -EPS, 'SAT')
+            else:
+                self.model.addConstr(self.soft_constraint_vars[0] == 0, 'SAT')
         else:
             try:
                 self.model.remove(self.model.getConstrByName('SAT'))
             except:
                 pass
-            self.model.addConstr(self.soft_constraint_vars[0] >= 0, 'UNSAT')
+            if self.mode == 'Quantitative':
+                self.model.addConstr(self.soft_constraint_vars[0] >= 0, 'UNSAT')
+            else:
+                self.model.addConstr(self.soft_constraint_vars[0] == 1, 'UNSAT')
         self.model.update()
 
     def solve(self):
@@ -93,8 +99,8 @@ class MILPSolver:
                 self.print_solution()
             return True
         else:
-            self.model.computeIIS()
-            self.model.write("model.ilp")
+            # self.model.computeIIS()
+            # self.model.write("model.ilp")
             if self.verbose:
                 print('There exists no solution.')
             return False
@@ -104,9 +110,9 @@ class MILPSolver:
         Adds contraints of a StSTL formula to the solvers.
         """
         # Build the parse tree
-        # node.printInfo()
+        node.printInfo()
         processed_node = node.push_negation()
-        # processed_node.printInfo()
+        processed_node.printInfo()
 
         # Add the constraints
         if self.mode == 'Boolean':
@@ -133,7 +139,7 @@ class MILPSolver:
         if top_node:
             b_name = name
         else:
-            b_name = "{}_{}".format(name, len(self.node_vars))
+            b_name = "{}_{}".format(name[0:3], len(self.node_vars))
             # 1. Add Boolean variables to the MILP convex solver
             if self.mode == 'Boolean':
                 self.node_vars[b_name] = self.model.addVars(1, end_time+1, vtype=GRB.BINARY, name=b_name)
@@ -144,15 +150,15 @@ class MILPSolver:
 
         #  2. construct constraints according to the operation type
         if type(node) in (AP, stAP):
-            self.add_ap_stap_constraint(node, self.node_vars[b_name], start_time, end_time)
+            self.add_ap_stap_constraint(node, self.node_vars[b_name], start_time, end_time, name=b_name)
         elif type(node) == temporal_unary: # Temporal unary operators
-            self.add_temporal_unary_constraint(node, self.node_vars[b_name], start_time, end_time)
+            self.add_temporal_unary_constraint(node, self.node_vars[b_name], start_time, end_time, name=b_name)
         elif type(node) == temporal_binary: # Temporal binary operator
-            self.add_temporal_binary_constraint(node, self.node_vars[b_name], start_time, end_time)
+            self.add_temporal_binary_constraint(node, self.node_vars[b_name], start_time, end_time, name=b_name)
         elif type(node) == nontemporal_unary: # Non-temporal unary operator
-            self.add_nontemporal_unary_constraint(node, self.node_vars[b_name], start_time, end_time)
+            self.add_nontemporal_unary_constraint(node, self.node_vars[b_name], start_time, end_time, name=b_name)
         elif type(node) == nontemporal_multinary: # Non-temporal multinary operator
-            self.add_nontemporal_multinary_constraint(node, self.node_vars[b_name], start_time, end_time)
+            self.add_nontemporal_multinary_constraint(node, self.node_vars[b_name], start_time, end_time, name=b_name)
         elif type(node) == boolean:
             self.add_boolean_constraint(node, self.node_vars[b_name], start_time, end_time)
         
@@ -209,13 +215,15 @@ class MILPSolver:
                         term *= self.model.getVarByName(var)
                     prob += term
 
-            if isinstance(prob, float): 
+            if isinstance(prob, (float, int)): 
                 # Handle extreme cases
                 if prob == 0:
                     prob = 10**-16
                 elif prob == 1:
                     prob = 1 - 10**-16
             else:
+                # print(self.contract)
+                # print(node)
                 # Find lower and upper bounds for the probability threshold
                 p_low_mat = []
                 p_high_mat = []
@@ -245,6 +253,8 @@ class MILPSolver:
                     p_low = 10**-16
                 if p_high >= 1:
                     p_high = 1- 10**-16
+            
+                print((p_low, p_high))
 
             # Fetch mean and variance of stAP
             a = [0]*len(self.contract.nondeter_var_list)
@@ -258,7 +268,10 @@ class MILPSolver:
             # Find mean
             mean1 = 0
             for i in range(len(a)):
-                mean1 += a[i]*self.contract.nondeter_var_mean[i]
+                if isinstance(self.contract.nondeter_var_mean[i], (float, int)):
+                    mean1 += a[i]*self.contract.nondeter_var_mean[i]
+                else: # str
+                    mean1 += a[i]*self.model.getVarByName(self.contract.nondeter_var_mean[i])
             # print(mean1)
 
             # Find variance
@@ -270,7 +283,7 @@ class MILPSolver:
                         intermediate_variance[i] += a[j]*self.contract.nondeter_var_cov[j][i]
                     else: # str
                         idx = self.contract.nondeter_var_cov[j][i].index('^')
-                        intermediate_variance[i] += a[j]*self.model.getVarByName(self.contract.nondeter_var_cov[j][i][0:idx])
+                        intermediate_variance[i] += a[j]*self.model.getVarByName(self.contract.nondeter_var_cov[j][i][0:idx])*self.model.getVarByName(self.contract.nondeter_var_cov[j][i][0:idx])
 
             # print(intermediate_variance)
 
@@ -291,23 +304,45 @@ class MILPSolver:
                             term *= self.model.getVarByName("{}".format(var))
                     if node.var_list_list[i] == [1] or any('w' not in var for var in node.var_list_list[i]):
                         mean2 += term
-
+                
                 print(prob)
                 print(mean1+mean2)
                 print(variance)
                 # input()
-                
+
                 # Find chance constraint
-                if isinstance(prob, float) and isinstance(variance, float):
+                if isinstance(prob, (float, int)) and isinstance(variance, (float, int)):
+                    # Find LHS of the constraint 
                     constr = mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance)
-                else:
-                # elif isinstance(prob, (gp.LinExpr, gp.Var)) and isinstance(variance, float):
+                elif isinstance(prob, (gp.QuadExpr, gp.LinExpr, gp.Var)) and isinstance(variance, (float, int)):
+                    # Find LHS of the constraint 
                     if p_low >= 0.5:
                         constr = mean1 + mean2 + (norm.ppf(p_low)+(norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low)*(prob-p_low))*math.sqrt(variance)
                     else:
                         constr = mean1 + mean2 + (norm.ppf((p_low+p_high)/2) + 1/norm.pdf(norm.ppf((p_low+p_high)/2))*(prob-(p_low+p_high)/2))*math.sqrt(variance)
-                # elif isinstance(prob, float) and isinstance(variance, (gp.LinExpr, gp.Var)):
-                # elif isinstance(prob, (gp.LinExpr, gp.Var)) and isinstance(variance, (gp.LinExpr, gp.Var)):
+                elif isinstance(prob, (float, int)) and isinstance(variance, (gp.QuadExpr, gp.LinExpr, gp.Var)):
+                    # Add anxiliary variables and constraints
+                    tmp_variance = self.model.addVar(name='{}_variance'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                    tmp_sigma = self.model.addVar(name='{}_sigma'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                    self.model.addConstr(tmp_variance == variance)
+                    self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
+                    self.model.update()
+                    
+                    # Find LHS of the constraint 
+                    constr = mean1 + mean2 + norm.ppf(prob)*tmp_sigma
+                elif isinstance(prob, (gp.QuadExpr, gp.LinExpr, gp.Var)) and isinstance(variance, (gp.QuadExpr, gp.LinExpr, gp.Var)):
+                    # Add anxiliary variables and constraints
+                    tmp_variance = self.model.addVar(name='{}_variance'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                    tmp_sigma = self.model.addVar(name='{}_sigma'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                    self.model.addConstr(tmp_variance == variance)
+                    self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
+                    self.model.update()
+                    
+                    # Find LHS of the constraint 
+                    if p_low >= 0.5:
+                        constr = mean1 + mean2 + (norm.ppf(p_low)+(norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low)*(prob-p_low))*tmp_sigma
+                    else:
+                        constr = mean1 + mean2 + (norm.ppf((p_low+p_high)/2) + 1/norm.pdf(norm.ppf((p_low+p_high)/2))*(prob-(p_low+p_high)/2))*tmp_sigma
                 
                 # print(constr)
 
@@ -329,24 +364,66 @@ class MILPSolver:
                     for i in range(len(node.multipliers)):
                         term = node.multipliers[i]
                         for var in node.var_list_list[i]:
-                            if var != 1 and 'w' not in var:
-                                term *= self.model.getVarByName("{}[0,{}]".format(var, t))
-                        if var == 1 or 'w' not in var:
+                            if var in self.contract.deter_var_list:
+                                if var != 1 and 'w' not in var:
+                                    term *= self.model.getVarByName("{}[0,{}]".format(var, t))
+                            elif var in self.contract.param_var_list:
+                                term *= self.model.getVarByName("{}".format(var))
+                        if node.var_list_list[i] == [1] or any('w' not in var for var in node.var_list_list[i]):
                             mean2 += term
-                    # print(mean2)
-
-                    if isinstance(prob, float) and isinstance(variance, float):
-                        if node.equal:
-                            self.model.addConstr(parent_vars[0,t] == mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance))
-                            self.model.addConstr(mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance) == 0)
+                
+                    print(prob)
+                    print(mean1+mean2)
+                    print(variance)
+                    # input()
+                    
+                    # Find chance constraint
+                    if isinstance(prob, (float, int)) and isinstance(variance, (float, int)):
+                        # Find LHS of the constraint 
+                        constr = mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance)
+                    elif isinstance(prob, (gp.QuadExpr, gp.LinExpr, gp.Var)) and isinstance(variance, (float, int)):
+                        # Find LHS of the constraint 
+                        if p_low >= 0.5:
+                            constr = mean1 + mean2 + (norm.ppf(p_low)+(norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low)*(prob-p_low))*math.sqrt(variance)
                         else:
-                            if self.mode == 'Boolean':
-                                self.model.addConstr(M * (1 - parent_vars[0,t]) >= mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance))
-                                self.model.addConstr(EPS - M * parent_vars[0,t] <= mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance))
-                            else:
-                                self.model.addConstr(parent_vars[0,t] == -(mean1 + mean2 + norm.ppf(prob)*math.sqrt(variance)))
+                            constr = mean1 + mean2 + (norm.ppf((p_low+p_high)/2) + 1/norm.pdf(norm.ppf((p_low+p_high)/2))*(prob-(p_low+p_high)/2))*math.sqrt(variance)
+                    elif isinstance(prob, (float, int)) and isinstance(variance, (gp.QuadExpr, gp.LinExpr, gp.Var)):
+                        # Add anxiliary variables and constraints
+                        tmp_variance = self.model.addVar(name='{}_variance'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                        tmp_sigma = self.model.addVar(name='{}_sigma'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                        self.model.addConstr(tmp_variance == variance)
+                        self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
+                        self.model.update()
+                        
+                        # Find LHS of the constraint 
+                        constr = mean1 + mean2 + norm.ppf(prob)*tmp_sigma
+                    elif isinstance(prob, (gp.QuadExpr, gp.LinExpr, gp.Var)) and isinstance(variance, (gp.QuadExpr, gp.LinExpr, gp.Var)):
+                        # Add anxiliary variables and constraints
+                        tmp_variance = self.model.addVar(name='{}_variance'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                        tmp_sigma = self.model.addVar(name='{}_sigma'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                        self.model.addConstr(tmp_variance == variance)
+                        self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
+                        self.model.update()
+                        
+                        # Find LHS of the constraint 
+                        if p_low >= 0.5:
+                            constr = mean1 + mean2 + (norm.ppf(p_low)+(norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low)*(prob-p_low))*tmp_sigma
+                        else:
+                            constr = mean1 + mean2 + (norm.ppf((p_low+p_high)/2) + 1/norm.pdf(norm.ppf((p_low+p_high)/2))*(prob-(p_low+p_high)/2))*tmp_sigma
+                    
+                    # print(constr)
 
-        self.model.update()
+                    # Add constraints
+                    if node.equal:
+                        self.model.addConstr(parent_vars[0,t] == constr)
+                        self.model.addConstr(constr == 0)
+                    else:
+                        if self.mode == 'Boolean':
+                            self.model.addConstr(M * (1 - parent_vars[0,t]) >= constr)
+                            self.model.addConstr(EPS - M * parent_vars[0,t] <= constr)
+                        else:
+                            self.model.addConstr(parent_vars[0,t] == -constr)
+                    self.model.update()
 
     def add_temporal_unary_constraint(self, node, parent_vars, start_time = 0, end_time = 0, name='b'):
         # Fetch node variables from the child node

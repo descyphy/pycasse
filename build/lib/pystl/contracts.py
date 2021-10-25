@@ -296,32 +296,27 @@ class contract:
         print("Contract {} refines {}.\n".format(self.id, contract2refine.id))
     
     def find_opt_refine_param(self, contract2refine, weights, N=100):
-        # Merge Contracts
-        c1 = deepcopy(self)
-        c1.isSat = False
-        (deter_id_map, nondeter_id_map) = c1.merge_contract_variables(contract2refine)
+        # Check saturation of the contracts
+        self.checkSat()
+        contract2refine.checkSat()
 
-        # Build a MILP Solver
-        print("Finding parameters such that contract {} refines contract {}...".format(self.id, contract2refine.id))
-        solver = MILPSolver()
+        # Build a contract for checking refinement
+        refinement_contract = deepcopy(self)
+        refinement_contract.id = 'refinement_check'
+        # refinement_contract.printInfo()
+        # contract2refine.printInfo()
 
-        # Add constraints for refinement condition for assumptions
-        solver.add_contract(c1)
-        assumption1 = deepcopy(c1.assumption)
-        assumption2 = deepcopy(contract2refine.assumption)
-        assumption2.transform(deter_id_map, nondeter_id_map)
-        c1.set_assume(assumption2.implies(assumption1))
-
-        # Add constraints for refinement condition for guarantees
-        guarantee1 = deepcopy(c1.sat_guarantee)
-        guarantee2 = deepcopy(contract2refine.sat_guarantee)
-        guarantee2.transform(deter_id_map, nondeter_id_map)
-        c1.set_guaran(guarantee1.implies(guarantee2))
-        c1.checkSat()
-        # c1.printInfo()
+        # Merge variables
+        merge_variables(refinement_contract, contract2refine)
+        
+        # Find assumption and guarantee
+        refinement_contract.set_assume("(!({})) & ({})".format(self.assumption_str, contract2refine.assumption_str))
+        refinement_contract.set_guaran("(!({})) & ({})".format(contract2refine.sat_guarantee_str, self.sat_guarantee_str))
+        # refinement_contract.set_guaran("(!({})) & ({})".format(contract2refine.guarantee_str, self.guarantee_str))
+        # refinement_contract.printInfo()
 
         # Find an optimal set of parameters
-        c1.find_opt_param(weights, N=N)
+        refinement_contract.find_opt_param(weights, N=N)
         
     def find_opt_param(self, weights, N=100):
         """ Find an optimal set of parameters for a contract given an objective function. """
@@ -355,7 +350,8 @@ class contract:
             # self.printInfo()
 
             # Build a Solver
-            MILPsolver = MILPSolver(mode="Quantitative")
+            # MILPsolver = MILPSolver(mode="Quantitative")
+            MILPsolver = MILPSolver()
             MILPsolver.add_contract(self)
             MILPsolver.add_constraint(self.assumption, name='b_a')
             MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')

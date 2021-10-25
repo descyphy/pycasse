@@ -63,6 +63,8 @@ class ASTObject():
                 formula = formula.replace("<", "=>")
             return formula
 
+        print(self)
+
         if type(self) == boolean:
             if neg:
                 if self.formula == 'True':
@@ -79,7 +81,6 @@ class ASTObject():
                         self.prob_multipliers.append(0)
                         self.prob_var_list_list.append([1])
                         self.prob_power_list_list.append([1])
-                        print(self)
 
                     # Find the original prob formula
                     tmp_prob_orig_formula = ""
@@ -119,8 +120,14 @@ class ASTObject():
                             
                 self.formula = invert_sign(self.formula)
                 self.multipliers = [-x for x in self.multipliers]
-                const_index = self.var_list_list.index([1])
-                self.multipliers[const_index] += EPS
+                if [1] in self.var_list_list:
+                    const_index = self.var_list_list.index([1])
+                    self.multipliers[const_index] += EPS
+                else:
+                    self.multipliers.append(EPS)
+                    self.var_list_list.append([1])
+                    self.power_list_list.append([1])
+
             return self
 
         elif type(self) == nontemporal_unary:
@@ -140,37 +147,37 @@ class ASTObject():
                 new_self.operator = "&"
                 new_self.children_list.append(self.children_list[0].push_negation(neg=not neg))
                 new_self.children_list.append(self.children_list[1].push_negation(neg=neg))
-                new_self.formula = "({}) & ({})".format(self.children_list[0].formula, self.children_list[1].formula)
+                new_self.formula = "({}) & ({})".format(new_self.children_list[0].formula, new_self.children_list[1].formula)
             else:
                 new_self.operator = "|"
                 new_self.children_list.append(self.children_list[0].push_negation(neg=not neg))
                 new_self.children_list.append(self.children_list[1].push_negation(neg=neg))
-                new_self.formula = "({}) | ({})".format(self.children_list[0].formula, self.children_list[1].formula)
+                new_self.formula = "({}) | ({})".format(new_self.children_list[0].formula, new_self.children_list[1].formula)
             return new_self
         
         elif type(self) == nontemporal_multinary:
+            # Define a new node
             new_self = nontemporal_multinary(None)
             new_self.operator = self.operator
             new_self.variables = self.variables
+
+            # Push the negation
             for children in self.children_list:
-                new_self.children_list.append(children.push_negation(neg=neg))
+                tmp_children = children.push_negation(neg=neg)
+                new_self.children_list.append(tmp_children)
+
+            # Modify the current node if negated
+            new_self.formula = ""
             if neg:
-                new_self.formula = ""
                 if self.operator == "|":
                     new_self.operator = "&"
-                    for children in new_self.children_list:
-                        new_self.formula += "({}) & ".format(children.formula)
-                    new_self.formula = new_self.formula[0:len(new_self.formula)-3]
                 elif self.operator == "&":
                     new_self.operator = "|"
-                    for children in new_self.children_list:
-                        new_self.formula += "({}) | ".format(children.formula)
-                    new_self.formula = new_self.formula[0:len(new_self.formula)-3]
-            else:
-                new_self.formula = ""
-                for children in new_self.children_list:
-                    new_self.formula += "({}) {} ".format(children.formula, new_self.operator)
-                new_self.formula = new_self.formula[0:len(new_self.formula)-3]
+
+            # Find a new formula
+            for children in new_self.children_list:
+                new_self.formula += "({}) {} ".format(children.formula, new_self.operator)
+            new_self.formula = new_self.formula[0:len(new_self.formula)-3]
 
             return new_self
 

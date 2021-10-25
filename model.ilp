@@ -3,10 +3,17 @@
 Minimize
  
 Subject To
- R2: 2.530611841988826 p - c + b_g = 1.266158476508544
- SAT: b_g <= -0.0001
+ UNSAT: b_g >= 0
+ qc0: b_variance + [ - sigma2 ^2 ] = 0
+ qc1: - c + b_g - 1.257012166783826 b_sigma + [
+   2.514346141974856 p * b_sigma ] = 0
 Bounds
- -infinity <= p <= 0.5625
- c >= 0.25
+ p >= 0.4375
+ -infinity <= c <= -1
+ 0.35 <= sigma2 <= 0.4
  b_g free
+ b_variance free
+ b_sigma free
+General Constraints
+ GC0: b_sigma = POW ( b_variance ^ 0.5 )
 End
