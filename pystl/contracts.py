@@ -139,14 +139,15 @@ class contract:
 
     def checkSat(self):
         """ Saturates the contract. """
-        if self.assumption_str == 'True':
-            self.sat_guarantee_str = self.guarantee_str
-        elif self.assumption_str == 'False':
-            self.sat_guarantee_str = 'True'
-        else:
-            self.sat_guarantee_str = '({}) -> ({})'.format(self.assumption_str, self.guarantee_str)
-        self.sat_guarantee = parser(self.sat_guarantee_str)[0][0]
-        self.isSat = True
+        if not self.isSat:
+            if self.assumption_str == 'True':
+                self.sat_guarantee_str = self.guarantee_str
+            elif self.assumption_str == 'False':
+                self.sat_guarantee_str = 'True'
+            else:
+                self.sat_guarantee_str = '({}) -> ({})'.format(self.assumption_str, self.guarantee_str)
+            self.sat_guarantee = parser(self.sat_guarantee_str)[0][0]
+            self.isSat = True
     
     def checkCompat(self, print_sol=False, verbose = True):
         """ Checks compatibility of the contract. """
@@ -429,7 +430,7 @@ class contract:
             elif partition_type == 2: # UNDET partition
                 param_UNDET.append(tmp_partition)
 
-        # print(param_SAT)
+        print(param_SAT)
         # print(param_UNSAT)
         # print(param_UNDET)
 
@@ -476,36 +477,36 @@ class contract:
         print(optimal_params)
 
         # Plot SAT, UNSAT, and UNDET regions, if the parameter space is 2D
-        # if len(self.param_var_list) == 2:
-        _, ax = plt.subplots()
-        plt.xlabel(self.param_var_list[0])
-        plt.ylabel(self.param_var_list[1])
-        plt.xlim(bounds[0][0], bounds[0][1])
-        plt.ylim(bounds[1][0], bounds[1][1])
+        if len(self.param_var_list) == 2:
+            _, ax = plt.subplots()
+            plt.xlabel(self.param_var_list[0])
+            plt.ylabel(self.param_var_list[1])
+            plt.xlim(bounds[0][0], bounds[0][1])
+            plt.ylim(bounds[1][0], bounds[1][1])
 
-        # Color SAT regions
-        for partition in param_SAT:
-            ax.add_patch(patches.Rectangle(
-                    (partition[0][0], partition[1][0]),
-                    partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
-                    edgecolor = 'black', facecolor = 'lime', fill=True))
+            # Color SAT regions
+            for partition in param_SAT:
+                ax.add_patch(patches.Rectangle(
+                        (partition[0][0], partition[1][0]),
+                        partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
+                        edgecolor = 'black', facecolor = 'lime', fill=True))
 
-        # Color UNSAT regions
-        for partition in param_UNSAT:
-            ax.add_patch(patches.Rectangle(
-                    (partition[0][0], partition[1][0]),
-                    partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
-                    edgecolor = 'black', facecolor = 'red', fill=True))
+            # Color UNSAT regions
+            for partition in param_UNSAT:
+                ax.add_patch(patches.Rectangle(
+                        (partition[0][0], partition[1][0]),
+                        partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
+                        edgecolor = 'black', facecolor = 'red', fill=True))
 
-        # Color UNDET regions
-        for partition in param_UNDET:
-            ax.add_patch(patches.Rectangle(
-                    (partition[0][0], partition[1][0]),
-                    partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
-                    edgecolor = 'black', facecolor = 'grey', fill=True))
+            # Color UNDET regions
+            for partition in param_UNDET:
+                ax.add_patch(patches.Rectangle(
+                        (partition[0][0], partition[1][0]),
+                        partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
+                        edgecolor = 'black', facecolor = 'grey', fill=True))
 
-        # Save the figure
-        plt.savefig('{}_param_opt.jpg'.format(self.id))
+            # Save the figure
+            plt.savefig('{}_param_opt.jpg'.format(self.id))
         
         # return optimal_params
         return True
@@ -606,8 +607,9 @@ def composition(c1, c2):
     # Find composed assumption and guarantee
     composed.set_assume("(({}) & ({})) | (!({})) | (!({}))".format(composed.assumption_str, c2.assumption_str, composed.sat_guarantee_str, c2.sat_guarantee_str))
     composed.set_guaran("({}) & ({})".format(composed.sat_guarantee_str, c2.sat_guarantee_str))
-    composed.checkSat()
-
+    composed.sat_guarantee_str = "({}) & ({})".format(composed.sat_guarantee_str, c2.sat_guarantee_str)
+    composed.sat_guarantee = parser(composed.sat_guarantee_str)
+    composed.isSat = True
     return composed
 
 # TODO: quotient not implemented correctly

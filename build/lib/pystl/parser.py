@@ -63,8 +63,6 @@ class ASTObject():
                 formula = formula.replace("<", "=>")
             return formula
 
-        print(self)
-
         if type(self) == boolean:
             if neg:
                 if self.formula == 'True':

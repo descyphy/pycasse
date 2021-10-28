@@ -231,17 +231,24 @@ class MILPSolver:
                 for i, param_var in enumerate(self.contract.param_var_list):
                     p_low_mat.append(self.contract.param_var_bounds[i][0])
                     p_high_mat.append(self.contract.param_var_bounds[i][1])
-                    for j, var_list in enumerate(node.prob_var_list_list):
-                        if var_list == [param_var]:
-                            p_multipliers.append(node.prob_multipliers[j])
-                        else:
-                            p_multipliers.append(0)
+                    if [param_var] in node.prob_var_list_list:
+                        p_multipliers.append(node.prob_multipliers[node.prob_var_list_list.index([param_var])])
+                    else:
+                        p_multipliers.append(0)
+
+                # print(p_low_mat)
+                # print(p_high_mat)
+                # print(p_multipliers)
                 
                 p_low = 0
                 p_high = 0
                 for i in range(len(p_low_mat)):
-                    p_low += p_low_mat[i]*p_multipliers[i]
-                    p_high += p_high_mat[i]*p_multipliers[i]
+                    if p_multipliers[i] < 0:
+                        p_low += p_high_mat[i]*p_multipliers[i]
+                        p_high += p_low_mat[i]*p_multipliers[i]
+                    else:
+                        p_low += p_low_mat[i]*p_multipliers[i]
+                        p_high += p_high_mat[i]*p_multipliers[i]
 
                 if [1] in node.prob_var_list_list:
                     idx = node.prob_var_list_list.index([1])
@@ -254,7 +261,7 @@ class MILPSolver:
                 if p_high >= 1:
                     p_high = 1- 10**-16
             
-                print((p_low, p_high))
+                # print((p_low, p_high))
 
             # Fetch mean and variance of stAP
             a = [0]*len(self.contract.nondeter_var_list)
@@ -305,9 +312,9 @@ class MILPSolver:
                     if node.var_list_list[i] == [1] or any('w' not in var for var in node.var_list_list[i]):
                         mean2 += term
                 
-                print(prob)
-                print(mean1+mean2)
-                print(variance)
+                # print(prob)
+                # print(mean1+mean2)
+                # print(variance)
                 # input()
 
                 # Find chance constraint
@@ -372,9 +379,7 @@ class MILPSolver:
                         if node.var_list_list[i] == [1] or any('w' not in var for var in node.var_list_list[i]):
                             mean2 += term
                 
-                    print(prob)
-                    print(mean1+mean2)
-                    print(variance)
+                    # print(prob)
                     # input()
                     
                     # Find chance constraint
@@ -384,7 +389,9 @@ class MILPSolver:
                     elif isinstance(prob, (gp.QuadExpr, gp.LinExpr, gp.Var)) and isinstance(variance, (float, int)):
                         # Find LHS of the constraint 
                         if p_low >= 0.5:
-                            constr = mean1 + mean2 + (norm.ppf(p_low)+(norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low)*(prob-p_low))*math.sqrt(variance)
+                            con
+                    # print(mean1+mean2)
+                    # print(variance)str = mean1 + mean2 + (norm.ppf(p_low)+(norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low)*(prob-p_low))*math.sqrt(variance)
                         else:
                             constr = mean1 + mean2 + (norm.ppf((p_low+p_high)/2) + 1/norm.pdf(norm.ppf((p_low+p_high)/2))*(prob-(p_low+p_high)/2))*math.sqrt(variance)
                     elif isinstance(prob, (float, int)) and isinstance(variance, (gp.QuadExpr, gp.LinExpr, gp.Var)):
