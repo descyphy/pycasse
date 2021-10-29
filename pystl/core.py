@@ -110,9 +110,9 @@ class MILPSolver:
         Adds contraints of a StSTL formula to the solvers.
         """
         # Build the parse tree
-        node.printInfo()
+        # node.printInfo()
         processed_node = node.push_negation()
-        processed_node.printInfo()
+        # processed_node.printInfo()
 
         # Add the constraints
         if self.mode == 'Boolean':
@@ -170,7 +170,7 @@ class MILPSolver:
                 constr = 0
                 for i in range(len(node.multipliers)):
                     term = node.multipliers[i]
-                    for var_list in node.var_list_list[i]:
+                    for var_list in node.var_list_list:
                         for var in var_list:
                             if var != 1:
                                 term *= self.model.getVarByName("{}[0,0]".format(var))
