@@ -608,7 +608,7 @@ def composition(c1, c2):
     composed.set_assume("(({}) & ({})) | (!({})) | (!({}))".format(composed.assumption_str, c2.assumption_str, composed.sat_guarantee_str, c2.sat_guarantee_str))
     composed.set_guaran("({}) & ({})".format(composed.sat_guarantee_str, c2.sat_guarantee_str))
     composed.sat_guarantee_str = "({}) & ({})".format(composed.sat_guarantee_str, c2.sat_guarantee_str)
-    composed.sat_guarantee = parser(composed.sat_guarantee_str)
+    composed.sat_guarantee = parser(composed.sat_guarantee_str)[0][0]
     composed.isSat = True
     return composed
 

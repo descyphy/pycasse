@@ -111,6 +111,7 @@ class MILPSolver:
         """
         # Build the parse tree
         # node.printInfo()
+        # print(node)
         processed_node = node.push_negation()
         # processed_node.printInfo()
 
