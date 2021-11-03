@@ -16,10 +16,10 @@ c1.set_guaran('P[p] (w <= c)') # Set/define the guarantees
 c1.checkSat()  # Saturate c
 c1.printInfo() # Print c
 
-# start = time.time()
-# c1.find_opt_param([-10, 1], N=200)
-# end = time.time()
-# print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
+start = time.time()
+c1.find_opt_param({'p': -10, 'c': 1}, N=200)
+end = time.time()
+print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
 
 # Build a contract
 c2 = contract('c2')                                    # Create a contract c2
@@ -35,6 +35,6 @@ c2.checkSat()  # Saturate c
 c2.printInfo() # Print c
 
 start = time.time()
-c2.find_opt_param([1, -10], N=600)
+c2.find_opt_param({'mean': 1, 'sigma': -10}, N=600)
 end = time.time()
 print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))

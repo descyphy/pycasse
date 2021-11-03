@@ -369,7 +369,7 @@ class AP(ASTObject):
         return res
 
 class stAP(ASTObject):
-    __slots__ = ('variables', 'prob_multipliers', 'prob_var_list_list', 'prob_power_list_list', 'multipliers', 'var_list_list', 'power_list_list', 'equal')
+    __slots__ = ('variables', 'prob_multipliers', 'prob_var_list_list', 'prob_power_list_list', 'multipliers', 'var_list_list', 'power_list_list')
 
     def __init__(self, data):
         """ Constructor method """
@@ -381,7 +381,6 @@ class stAP(ASTObject):
         self.multipliers = data[8].multipliers
         self.var_list_list = data[8].var_list_list
         self.power_list_list = data[8].power_list_list
-        self.equal = data[8].equal
 
         self.variables = set()
         for var_list in self.var_list_list:
@@ -400,7 +399,6 @@ class stAP(ASTObject):
         res += "Multiplier list: {}\n".format(self.multipliers)
         res += "Variables lists: {}\n".format(self.var_list_list)
         res += "Powers lists: {}\n".format(self.power_list_list)
-        res += "Equal?: {}\n".format(self.equal)
         return res
 
 class temporal_unary(ASTObject):

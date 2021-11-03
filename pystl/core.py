@@ -11,6 +11,7 @@ from pystl.parser import *
 
 M = 10**4
 EPS = 10**-4
+parser = Parser()
 
 class MILPSolver:
     """
@@ -19,7 +20,7 @@ class MILPSolver:
         b_vars
         b_var_num
     """
-    __slots__ = ('model', 'contract', 'interval', 'node_vars', 'contract_vars', 'mode', 'objective', 'verbose', 'soft_constraint_vars')
+    __slots__ = ('model', 'contract', 'horizon', 'node_vars', 'contract_vars', 'mode', 'objective', 'verbose', 'soft_constraint_vars')
 
     def __init__(self, mode = "Boolean", verbose=False):
         assert(mode in ("Boolean", "Quantitative"))
@@ -36,7 +37,7 @@ class MILPSolver:
         self.objective = []
         self.node_vars = {}
         self.contract_vars = {}
-        self.interval = []
+        self.horizon = []
         self.soft_constraint_vars = []
 
         # Initialize convex solver
@@ -54,7 +55,7 @@ class MILPSolver:
         # Add deterministic variables
         [_, horizon_end_a] = contract.assumption.find_horizon(0, 0)
         [_, horizon_end_g] = contract.guarantee.find_horizon(0, 0)
-        self.interval = [0, max(horizon_end_a, horizon_end_g)]
+        self.horizon = max(horizon_end_a, horizon_end_g)
         for i, variable in enumerate(contract.deter_var_list):
             self.contract_vars[variable] = self.model.addVars(1, max(int(horizon_end_a), int(horizon_end_g))+1, lb=contract.deter_var_bounds[i][0], ub=contract.deter_var_bounds[i][1], vtype=GRB.BINARY if contract.deter_var_types == 'BINARY' else GRB.CONTINUOUS, name=variable)
         self.model.update()
@@ -63,6 +64,52 @@ class MILPSolver:
         for i, variable in enumerate(contract.param_var_list):
             self.model.addVar(lb=contract.param_var_bounds[i][0], ub=contract.param_var_bounds[i][1], vtype=GRB.CONTINUOUS, name=variable)
         self.model.update()
+
+    def add_dynamics(self, x = None, u = None, A = None, B = None):
+        """
+        Adds constraints for dynamics.
+
+        :param x: [description], defaults to None
+        :type x: [type], optional
+        :param u: [description], defaults to None
+        :type u: [type], optional
+        :param A: [description], defaults to None
+        :type A: [type], optional
+        :param B: [description], defaults to None
+        :type B: [type], optional
+        """
+        # Check the dimensions of the matrices A and B
+        assert(len(A) == len(x))
+        assert(len(A[0]) == len(x))
+        assert(len(B) == len(x))
+        assert(len(B[0]) == len(u))
+
+        # Add constraints for the dynamics
+        for k in range(self.horizon):
+            for i in range(len(x)):
+                expr = 0
+                for j in range(len(x)):
+                    expr += A[i][j]*self.model.getVarByName('{}[0,{}]'.format(x[j], k))
+                
+                for j in range(len(u)):
+                    expr += B[i][j]*self.model.getVarByName('{}[0,{}]'.format(u[j], k))
+                
+                self.model.addConstr(self.model.getVarByName('{}[0,{}]'.format(x[i], k+1)) == expr)
+            self.model.update()
+
+    def add_init_condition(self, formula):
+        """
+        Adds constraints for an initial condition.
+
+        :param formula: [description]
+        :type formula: [type]
+        """
+        # Parse the nontemporal formula
+        if isinstance(formula, str):
+            formula = parser(formula)[0][0]
+        
+        # Add constraints
+        self.add_constraint(formula, name='b_{}'.format(len(self.node_vars)))
 
     def set_objective(self, sense='minimize'):
         # input()
@@ -176,15 +223,17 @@ class MILPSolver:
                             if var != 1:
                                 term *= self.model.getVarByName("{}[0,0]".format(var))
                     constr += term
-                if node.equal:
-                    self.model.addConstr(parent_vars == constr)
-                    self.model.addConstr(constr == 0)
+
+                if self.mode == 'Boolean':
+                    self.model.addConstr(M * (1 - parent_vars) >= constr)
+                    self.model.addConstr(EPS - M * parent_vars <= constr)
+                    if node.equal:
+                        self.model.addConstr(M * (1 - parent_vars) >= -constr)
+                        self.model.addConstr(EPS - M * parent_vars <= -constr)
                 else:
-                    if self.mode == 'Boolean':
-                        self.model.addConstr(M * (1 - parent_vars) >= constr)
-                        self.model.addConstr(EPS - M * parent_vars <= constr)
-                    else:
-                        self.model.addConstr(parent_vars == -constr)
+                    self.model.addConstr(parent_vars == -constr)
+                    if node.equal:
+                        self.model.addConstr(constr == 0)
             
             else:
                 for t in range(start_time, end_time+1):
@@ -195,15 +244,17 @@ class MILPSolver:
                             if var != 1:
                                 term *= self.model.getVarByName("{}[0,{}]".format(var, t))
                         constr += term
-                    if node.equal:
-                        self.model.addConstr(parent_vars[0,t] == constr)
-                        self.model.addConstr(constr == 0)
+
+                    if self.mode == 'Boolean':
+                        self.model.addConstr(M * (1 - parent_vars[0,t]) >= constr)
+                        self.model.addConstr(EPS - M * parent_vars[0,t] <= constr)
+                        if node.equal:
+                            self.model.addConstr(M * (1 - parent_vars[0,t]) >= -constr)
+                            self.model.addConstr(EPS - M * parent_vars[0,t] <= -constr)
                     else:
-                        if self.mode == 'Boolean':
-                            self.model.addConstr(M * (1 - parent_vars[0,t]) >= constr)
-                            self.model.addConstr(EPS - M * parent_vars[0,t] <= constr)
-                        else:
-                            self.model.addConstr(parent_vars[0,t] == -constr)
+                        self.model.addConstr(parent_vars[0,t] == -constr)
+                        if node.equal:
+                            self.model.addConstr(constr == 0)
         
         elif type(node) == stAP: # Add constraints for a stochastic atomic predicates
             # print(node)
@@ -355,15 +406,11 @@ class MILPSolver:
                 # print(constr)
 
                 # Add constraints
-                if node.equal:
-                    self.model.addConstr(parent_vars == constr)
-                    self.model.addConstr(constr == 0)
+                if self.mode == 'Boolean':
+                    self.model.addConstr(M * (1 - parent_vars) >= constr)
+                    self.model.addConstr(EPS - M * parent_vars <= constr)
                 else:
-                    if self.mode == 'Boolean':
-                        self.model.addConstr(M * (1 - parent_vars) >= constr)
-                        self.model.addConstr(EPS - M * parent_vars <= constr)
-                    else:
-                        self.model.addConstr(parent_vars == -constr)
+                    self.model.addConstr(parent_vars == -constr)
                 self.model.update()
 
             else:
@@ -422,15 +469,11 @@ class MILPSolver:
                     # print(constr)
 
                     # Add constraints
-                    if node.equal:
-                        self.model.addConstr(parent_vars[0,t] == constr)
-                        self.model.addConstr(constr == 0)
+                    if self.mode == 'Boolean':
+                        self.model.addConstr(M * (1 - parent_vars[0,t]) >= constr)
+                        self.model.addConstr(EPS - M * parent_vars[0,t] <= constr)
                     else:
-                        if self.mode == 'Boolean':
-                            self.model.addConstr(M * (1 - parent_vars[0,t]) >= constr)
-                            self.model.addConstr(EPS - M * parent_vars[0,t] <= constr)
-                        else:
-                            self.model.addConstr(parent_vars[0,t] == -constr)
+                        self.model.addConstr(parent_vars[0,t] == -constr)
                     self.model.update()
 
     def add_temporal_unary_constraint(self, node, parent_vars, start_time = 0, end_time = 0, name='b'):
@@ -589,10 +632,11 @@ class MILPSolver:
 
         # Print contract variables
         for var_name, gurobi_var in self.contract_vars.items():
-            for t in range(int(self.interval[1])+1):
+            for t in range(int(self.horizon)+1):
                 print("{}[{}]: {}".format(var_name, t, gurobi_var[0, t].x))
         print()
     
+    # TODO: Fix here
     def fetch_solution(self, controlled_vars, length=1):
         """ 
         Fetches the values of the controlled variables, if available.

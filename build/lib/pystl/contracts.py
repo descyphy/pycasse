@@ -122,7 +122,7 @@ class contract:
         self.assumption = parser(assumption)[0][0]
         for variable in self.assumption.variables:
             if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
-                raise ValueError("Variable {} not in the contract variables or the dynamics".format(variable))
+                raise ValueError("Variable {} not in the contract variables.".format(variable))
 
     def set_guaran(self, guarantee):
         """
@@ -135,7 +135,7 @@ class contract:
         self.guarantee = parser(guarantee)[0][0]
         for variable in self.guarantee.variables:
             if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
-                raise ValueError("Variable {} not in the contract variables or the dynamics".format(variable))
+                raise ValueError("Variable {} not in the contract variables.".format(variable))
 
     def checkSat(self):
         """ Saturates the contract. """
@@ -345,7 +345,7 @@ class contract:
             count += 1
 
         def findPartitionType(partition):
-            print(partition)
+            # print(partition)
             # Update the bounds 
             self.param_var_bounds = partition
             # self.printInfo()
@@ -361,7 +361,7 @@ class contract:
             # Solve the problem
             MILPsolver.set_objective(sense='minimize')
             if not MILPsolver.solve():
-                print("SAT partition!")
+                # print("SAT partition!")
                 return 0
             else:
                 # for v in MILPsolver.model.getVars():
@@ -369,10 +369,10 @@ class contract:
                     
                 MILPsolver.set_objective(sense='maximize')
                 if not MILPsolver.solve():
-                    print("UNSAT partition!")
+                    # print("UNSAT partition!")
                     return 1
                 else: 
-                    print("UNDET partition!")
+                    # print("UNDET partition!")
                     # for v in MILPsolver.model.getVars():
                     #     print('%s %g' % (v.varName, v.x))
                     return 2
@@ -447,8 +447,8 @@ class contract:
 
             # Add objective
             obj = 0
-            for weight, variable in zip(weights, variables):
-                obj += weight*variable
+            for variable in variables:
+                obj += weights[variable.varName]*variable
             model.setObjective(obj, GRB.MINIMIZE)
 
             # Solve the optimization problem
@@ -730,7 +730,9 @@ def merge_variables(c1, c2):
             assert(lower_b <= upper_b)
             c1.param_var_bounds[idx1] = [lower_b, upper_b]
 
-    for var in set(c2.param_var_list) - set(c1.param_var_list):
+    new_params = list(set(c2.param_var_list) - set(c1.param_var_list))
+    new_params.sort()
+    for var in new_params:
         # Find index of the variable
         idx = c2.param_var_list.index(var)
 
