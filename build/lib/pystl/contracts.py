@@ -136,6 +136,19 @@ class contract:
         for variable in self.guarantee.variables:
             if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
                 raise ValueError("Variable {} not in the contract variables.".format(variable))
+    
+    def set_sat_guaran(self, sat_guarantee):
+        """
+        Sets the guarantee of the contract.
+
+        :param guarantee: An STL or StSTL formula which characterizes the guarantee set of the contract
+        :type guarantee: str
+        """
+        self.sat_guarantee_str = sat_guarantee
+        self.sat_guarantee = parser(sat_guarantee)[0][0]
+        for variable in self.guarantee.variables:
+            if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
+                raise ValueError("Variable {} not in the contract variables.".format(variable))
 
     def checkSat(self):
         """ Saturates the contract. """
@@ -311,10 +324,10 @@ class contract:
         merge_variables(refinement_contract, contract2refine)
         
         # Find assumption and guarantee
-        refinement_contract.set_assume("(!({})) & ({})".format(self.assumption_str, contract2refine.assumption_str))
-        refinement_contract.set_guaran("(!({})) & ({})".format(contract2refine.sat_guarantee_str, self.sat_guarantee_str))
-        # refinement_contract.set_guaran("(!({})) & ({})".format(contract2refine.guarantee_str, self.guarantee_str))
-        # refinement_contract.printInfo()
+        refinement_contract.set_assume("({}) -> ({})".format(contract2refine.assumption_str, self.assumption_str))
+        refinement_contract.set_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
+        refinement_contract.set_sat_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
+        refinement_contract.printInfo()
 
         # Find an optimal set of parameters
         refinement_contract.find_opt_param(weights, N=N)
@@ -328,6 +341,7 @@ class contract:
         param_SAT = []
         param_UNSAT = []
         param_UNDET = [deepcopy(self.param_var_bounds)]
+        self_param_var_bounds = deepcopy(self.param_var_bounds)
 
         # Pre-partition the parameter space for probability thresholds
         count = 0
@@ -351,8 +365,8 @@ class contract:
             # self.printInfo()
 
             # Build a Solver
-            # MILPsolver = MILPSolver(mode="Quantitative")
-            MILPsolver = MILPSolver()
+            MILPsolver = MILPSolver(mode="Quantitative")
+            # MILPsolver = MILPSolver()
             MILPsolver.add_contract(self)
             MILPsolver.add_constraint(self.assumption, name='b_a')
             MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
@@ -430,7 +444,7 @@ class contract:
             elif partition_type == 2: # UNDET partition
                 param_UNDET.append(tmp_partition)
 
-        print(param_SAT)
+        # print(param_SAT)
         # print(param_UNSAT)
         # print(param_UNDET)
 
@@ -509,6 +523,7 @@ class contract:
             plt.savefig('{}_param_opt.jpg'.format(self.id))
         
         # return optimal_params
+        self.param_var_bounds = self_param_var_bounds
         return True
 
     def printInfo(self):

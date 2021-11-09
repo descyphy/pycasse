@@ -437,9 +437,7 @@ class MILPSolver:
                     elif isinstance(prob, (gp.QuadExpr, gp.LinExpr, gp.Var)) and isinstance(variance, (float, int)):
                         # Find LHS of the constraint 
                         if p_low >= 0.5:
-                            con
-                    # print(mean1+mean2)
-                    # print(variance)str = mean1 + mean2 + (norm.ppf(p_low)+(norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low)*(prob-p_low))*math.sqrt(variance)
+                            constr = mean1 + mean2 + (norm.ppf(p_low)+(norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low)*(prob-p_low))*math.sqrt(variance)
                         else:
                             constr = mean1 + mean2 + (norm.ppf((p_low+p_high)/2) + 1/norm.pdf(norm.ppf((p_low+p_high)/2))*(prob-(p_low+p_high)/2))*math.sqrt(variance)
                     elif isinstance(prob, (float, int)) and isinstance(variance, (gp.QuadExpr, gp.LinExpr, gp.Var)):
@@ -599,7 +597,7 @@ class MILPSolver:
                 else:
                     self.model.addConstr(parent_vars == M)
             else:
-                for t in range(start_time, end_time):
+                for t in range(start_time, end_time+1):
                     if self.mode == 'Boolean':
                         self.model.addConstr(parent_vars[0,t] == 1)
                     else:
@@ -611,11 +609,12 @@ class MILPSolver:
                 else:
                     self.model.addConstr(parent_vars == -M)
             else:
-                for t in range(start_time, end_time):
+                for t in range(start_time, end_time+1):
                     if self.mode == 'Boolean':
                         self.model.addConstr(parent_vars[0,t] == 0)
                     else:
                         self.model.addConstr(parent_vars[0,t] == -M)
+        self.model.update()
 
     def status(self):
         return self.model.getAttr("Status") == 2
