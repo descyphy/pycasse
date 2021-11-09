@@ -325,8 +325,10 @@ class contract:
         
         # Find assumption and guarantee
         refinement_contract.set_assume("({}) -> ({})".format(contract2refine.assumption_str, self.assumption_str))
-        refinement_contract.set_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
-        refinement_contract.set_sat_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
+        # refinement_contract.set_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
+        refinement_contract.set_guaran("({}) & ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
+        # refinement_contract.set_sat_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
+        refinement_contract.set_sat_guaran("({}) & ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
         refinement_contract.printInfo()
 
         # Find an optimal set of parameters
@@ -369,7 +371,8 @@ class contract:
             # MILPsolver = MILPSolver()
             MILPsolver.add_contract(self)
             MILPsolver.add_constraint(self.assumption, name='b_a')
-            MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
+            # MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
+            MILPsolver.add_constraint(self.sat_guarantee, hard=False, name='b_g')
             # MILPsolver.add_dynamics(sys_dyn)
 
             # Solve the problem
