@@ -218,10 +218,11 @@ class MILPSolver:
                 constr = 0
                 for i in range(len(node.multipliers)):
                     term = node.multipliers[i]
-                    for var_list in node.var_list_list:
+                    for j, var_list in enumerate(node.var_list_list):
                         for var in var_list:
                             if var != 1:
-                                term *= self.model.getVarByName("{}[0,0]".format(var))
+                                for _ in range(int(node.power_list_list[i][j])):
+                                    term *= self.model.getVarByName("{}[0,0]".format(var))
                     constr += term
 
                 if self.mode == 'Boolean':
@@ -240,9 +241,10 @@ class MILPSolver:
                     constr = 0
                     for i in range(len(node.multipliers)):
                         term = node.multipliers[i]
-                        for var in node.var_list_list[i]:
+                        for j, var in enumerate(node.var_list_list[i]):
                             if var != 1:
-                                term *= self.model.getVarByName("{}[0,{}]".format(var, t))
+                                for _ in range(int(node.power_list_list[i][j])):
+                                    term *= self.model.getVarByName("{}[0,{}]".format(var, t))
                         constr += term
 
                     if self.mode == 'Boolean':
@@ -262,9 +264,10 @@ class MILPSolver:
             prob = 0
             for i in range(len(node.prob_multipliers)):
                 term = node.prob_multipliers[i]
-                for var in node.prob_var_list_list[i]:
+                for j, var in enumerate(node.prob_var_list_list[i]):
                     if var != 1:
-                        term *= self.model.getVarByName(var)
+                        for _ in range(int(node.power_list_list[i][j])):
+                            term *= self.model.getVarByName(var)
                     prob += term
 
             if isinstance(prob, (float, int)): 
@@ -355,10 +358,11 @@ class MILPSolver:
                 mean2 = 0
                 for i in range(len(node.multipliers)):
                     term = node.multipliers[i]
-                    for var in node.var_list_list[i]:
+                    for j, var in enumerate(node.var_list_list[i]):
                         if var in self.contract.deter_var_list:
                             if var != 1 and 'w' not in var:
-                                term *= self.model.getVarByName("{}[0,0]".format(var))
+                                for _ in range(int(node.power_list_list[i][j])):
+                                    term *= self.model.getVarByName("{}[0,0]".format(var))
                         elif var in self.contract.param_var_list:
                             term *= self.model.getVarByName("{}".format(var))
                     if node.var_list_list[i] == [1] or any('w' not in var for var in node.var_list_list[i]):
@@ -421,6 +425,7 @@ class MILPSolver:
                         for var in node.var_list_list[i]:
                             if var in self.contract.deter_var_list:
                                 if var != 1 and 'w' not in var:
+                                    # TODO: Add powers
                                     term *= self.model.getVarByName("{}[0,{}]".format(var, t))
                             elif var in self.contract.param_var_list:
                                 term *= self.model.getVarByName("{}".format(var))

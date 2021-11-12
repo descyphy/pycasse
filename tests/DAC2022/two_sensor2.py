@@ -12,11 +12,6 @@ c1.set_guaran('P[0.95] (w1 <= 0.2)') # Set/define the guarantees
 c1.checkSat()  # Saturate c
 c1.printInfo() # Print c
 
-# # Check compatibility, consistency, and feasibility of c1
-# c1.checkCompat(print_sol=True) # Check compatibility of c1
-# c1.checkConsis(print_sol=True) # Check consistency of c1
-# c1.checkFeas(print_sol=True)   # Check feasibility of c1
-
 # Build a contract c2
 c2 = contract('c2') # Create a contract c2
 c2.add_param_vars(['p', 'sigma2'], bounds = [[0.8, 1], [0.01, 0.3]])
@@ -53,8 +48,6 @@ c12_comp.printInfo()                  # Print c12_comp
 
 # Find optimal parameters
 start = time.time()
-c12_comp.find_opt_refine_param(c, {'p': 10, 'sigma2': -1}, N=100)
-# c.find_opt_param({'sigma2': -1}, N=200)
-# c2.find_opt_param({'p': 10, 'sigma2': -1}, N=200)
+c12_comp.find_opt_refine_param(c, {'p': 10, 'sigma2': -1}, N=400)
 end = time.time()
 print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))

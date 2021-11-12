@@ -5,11 +5,11 @@ import time
 
 # Build a contract
 c1 = contract('c1')                                   # Create a contract c1
-c1.add_param_vars(['sigma', 'p'], bounds = [[0.05, 2], [0, 1]])
+c1.add_param_vars(['sigma', 'c'], bounds = [[0.05, 2], [0, 2]])
 c1.add_nondeter_vars(['w'],  mean = [0], \
             cov = [['sigma^2']], dtypes=['GAUSSIAN']) # Set nondeterministic uncontrolled variables
 c1.set_assume('True') # Set/define the assumptions
-c1.set_guaran('P[p] (w <= 1.5)') # Set/define the guarantees
+c1.set_guaran('P[0.9] (w <= c)') # Set/define the guarantees
 c1.checkSat()  # Saturate c1
 c1.printInfo() # Print c1
 
@@ -30,6 +30,6 @@ c2.printInfo()                                        # Print c2
 # print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
 
 start = time.time()
-c2.find_opt_refine_param(c1, {'sigma': -1, 'p': -1}, N=400)
+c2.find_opt_refine_param(c1, {'sigma': -10, 'c': 1}, N=400)
 end = time.time()
 print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
