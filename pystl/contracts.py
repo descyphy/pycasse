@@ -44,11 +44,11 @@ class contract:
         self.nondeter_var_mean    = []
         self.nondeter_var_cov     = [[]]
         self.assumption_str       = 'True'
-        self.assumption           = parser('True')
+        self.assumption           = parser('True')[0][0]
         self.guarantee_str        = 'False'
-        self.guarantee            = parser('False')
+        self.guarantee            = parser('False')[0][0]
         self.sat_guarantee_str    = 'False'
-        self.sat_guarantee        = parser('False')
+        self.sat_guarantee        = parser('False')[0][0]
         self.isSat                = False
         self.objectives           = []
 
@@ -362,7 +362,7 @@ class contract:
             count += 1
 
         def findPartitionType(partition):
-            # print(partition)
+            print(partition)
             # Update the bounds 
             self.param_var_bounds = partition
             # self.printInfo()
@@ -372,8 +372,8 @@ class contract:
             # MILPsolver = MILPSolver()
             MILPsolver.add_contract(self)
             MILPsolver.add_constraint(self.assumption, name='b_a')
-            # MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
-            MILPsolver.add_constraint(self.sat_guarantee, hard=False, name='b_g')
+            MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
+            # MILPsolver.add_constraint(self.sat_guarantee, hard=False, name='b_g')
             # MILPsolver.add_dynamics(sys_dyn)
 
             # Solve the problem
@@ -382,17 +382,23 @@ class contract:
                 # print("SAT partition!")
                 return 0
             else:
-                # for v in MILPsolver.model.getVars():
-                #     print('%s %g' % (v.varName, v.x))
+                for v in MILPsolver.model.getVars():
+                    if 'b' not in v.varName:
+                        print('%s %g' % (v.varName, v.x))
+                    elif v.varName in ('b_a', 'b_g'):
+                        print('%s %g' % (v.varName, v.x))
                     
                 MILPsolver.set_objective(sense='maximize')
                 if not MILPsolver.solve():
                     # print("UNSAT partition!")
                     return 1
                 else: 
-                    # print("UNDET partition!")
-                    # for v in MILPsolver.model.getVars():
-                    #     print('%s %g' % (v.varName, v.x))
+                    print("UNDET partition!")
+                    for v in MILPsolver.model.getVars():
+                        if 'b' not in v.varName:
+                            print('%s %g' % (v.varName, v.x))
+                        elif v.varName in ('b_a', 'b_g'):
+                            print('%s %g' % (v.varName, v.x))
                     return 2
 
         def paramSpacePartition(partition):

@@ -28,7 +28,7 @@ c2.printInfo() # Print c2
 c3 = contract('c3') # Create a contract c3
 c3.add_deter_vars(['x'], bounds=[[0,500]])
 c3.add_nondeter_vars(['w3'],  mean = [0], \
-            cov = [[0.01**2]]) # Set nondeterministic uncontrolled variables
+            cov = [[0.02**2]]) # Set nondeterministic uncontrolled variables
 c3.set_assume('x<=400') # Set/define the assumptions
 c3.set_guaran('P[0.9] (w3 <= 0.1)') # Set/define the guarantees
 c3.checkSat()  # Saturate c3
@@ -53,6 +53,6 @@ c123_comp.printInfo()                 # Print c123_comp
 
 # Find optimal parameters
 start = time.time()
-c123_comp.find_opt_refine_param(c, {'p': 10, 'sigma2': -1}, N=400)
+c123_comp.find_opt_refine_param(c, {'p': 10, 'sigma2': -1}, N=200)
 end = time.time()
 print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
