@@ -326,6 +326,7 @@ class contract:
         
         # Find assumption and guarantee
         refinement_contract.set_assume("({}) -> ({})".format(contract2refine.assumption_str, self.assumption_str))
+        # refinement_contract.set_assume("({}) & ({})".format(contract2refine.assumption_str, self.assumption_str))
         # refinement_contract.set_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
         refinement_contract.set_guaran("({}) & ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
         # refinement_contract.set_sat_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
@@ -379,7 +380,7 @@ class contract:
             # Solve the problem
             MILPsolver.set_objective(sense='minimize')
             if not MILPsolver.solve():
-                # print("SAT partition!")
+                print("SAT partition!")
                 return 0
             else:
                 for v in MILPsolver.model.getVars():
@@ -390,7 +391,7 @@ class contract:
                     
                 MILPsolver.set_objective(sense='maximize')
                 if not MILPsolver.solve():
-                    # print("UNSAT partition!")
+                    print("UNSAT partition!")
                     return 1
                 else: 
                     print("UNDET partition!")

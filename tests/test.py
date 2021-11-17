@@ -25,7 +25,7 @@ car.add_deter_vars(
 
 car.add_nondeter_vars(
     ['noise_velocity', 'noise_position', 'noise_leading_velocity'], 
-    mean = [0, 0, 0], cov = [[0.00002, 0, 0], [0, 0.00003, 0], [0, 0, 0.00004]])
+    mean = [0, 0, 0], cov = [[0.00001, 0, 0], [0, 0.00002, 0], [0, 0, 0.00003]])
 
 car.add_deter_vars(['sensed_velocity'])
 
@@ -49,7 +49,7 @@ car.set_guaran(
 
 ######### Braking system
 brakes = contract('brakes')
-brakes.add_nondeter_vars(['noise_f_b'], mean = [0], cov = [[0.00001]])
+brakes.add_nondeter_vars(['noise_f_b'], mean = [0], cov = [[0.00004]])
 
 brakes.add_deter_vars(
     ['f_b', 'f_b_target']
@@ -93,8 +93,8 @@ sensors.add_nondeter_vars(
     ['noise_velocity', 'noise_position', 'noise_leading_velocity', 
     'noise_f_b', 'noise_f_e'], 
     mean = [0, 0, 0, 0, 0], 
-    cov = [[0.00001, 0, 0, 0, 0], [0, 0.00001, 0, 0, 0], 
-    [0, 0, 0.00001, 0, 0], [0, 0, 0, 0.00001, 0], [0, 0, 0, 0, 0.00001]])
+    cov = [[0.00001, 0, 0, 0, 0], [0, 0.00002, 0, 0, 0], 
+    [0, 0, 0.00003, 0, 0], [0, 0, 0, 0.00004, 0], [0, 0, 0, 0, 0.00005]])
 
 sensors.add_deter_vars(['velocity', 'sensed_velocity', 
     'position', 'sensed_position',
