@@ -5,6 +5,7 @@ import matplotlib.patches as patches
 import random
 
 from copy import deepcopy
+from collections import deque
 from gurobipy import GRB
 from pystl.variable import DeterVar, NondeterVar, M, EPS
 from pystl.vector import Vector, Next
@@ -623,7 +624,7 @@ def composition(c1, c2):
     merge_variables(composed, c2)
 
     # Find composed assumption and guarantee
-    composed.set_assume("(({}) & ({})) | (!({})) | (!({}))".format(composed.assumption_str, c2.assumption_str, composed.sat_guarantee_str, c2.sat_guarantee_str))
+    composed.set_assume("(({}) & ({})) | (!({})) | (!({}))".format(composed.assumption_str, c2.assumption_str, composed.guarantee_str, c2.guarantee_str))
     composed.set_guaran("({}) & ({})".format(composed.sat_guarantee_str, c2.sat_guarantee_str))
     composed.sat_guarantee_str = "({}) & ({})".format(composed.sat_guarantee_str, c2.sat_guarantee_str)
     composed.sat_guarantee = parser(composed.sat_guarantee_str)[0][0]
@@ -762,13 +763,24 @@ def merge_variables(c1, c2):
     # Merge non-deterministic variables
     curr_nondeter_num = len(c1.nondeter_var_list)
     new_nondeter_num = len(list(set(c2.nondeter_var_list) - set(c1.nondeter_var_list)))
-    for var in set(c2.nondeter_var_list) - set(c1.nondeter_var_list):
-        # Find index of the variable
-        idx = c2.nondeter_var_list.index(var)
-
-        # Append the information of the variable
-        c1.nondeter_var_list.append(var)
-        c1.nondeter_var_types.append(c2.nondeter_var_types[idx])
-        c1.nondeter_var_mean.append(c2.nondeter_var_mean[idx])
+    if curr_nondeter_num == 0:
+        c1.nondeter_var_list = c2.nondeter_var_list
+        c1.nondeter_var_types = c2.nondeter_var_types
+        c1.nondeter_var_mean = c2.nondeter_var_mean
+        c1.nondeter_var_cov = c2.nondeter_var_cov
+    else:
         c1.nondeter_var_cov = [row + [0]*new_nondeter_num for row in c1.nondeter_var_cov]
-        c1.nondeter_var_cov += [[0]*curr_nondeter_num  + row for row in c2.nondeter_var_cov]
+        for var in set(c2.nondeter_var_list) - set(c1.nondeter_var_list):
+            # Find index of the variable
+            idx = c2.nondeter_var_list.index(var)
+
+            # Append the information of the variable
+            c1.nondeter_var_list.append(var)
+            c1.nondeter_var_types.append(c2.nondeter_var_types[idx])
+            c1.nondeter_var_mean.append(c2.nondeter_var_mean[idx])
+            if idx == 0:
+                c1.nondeter_var_cov += [[0]*curr_nondeter_num + c2.nondeter_var_cov[idx]]
+            else:
+                deque_list = deque(c2.nondeter_var_cov[idx])
+                deque_list.rotate(-idx)
+                c1.nondeter_var_cov += [[0]*curr_nondeter_num + list(deque_list)]

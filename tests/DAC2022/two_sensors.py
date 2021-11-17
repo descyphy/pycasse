@@ -5,38 +5,32 @@ import time
 
 # Build a contract c1
 c1 = contract('c1') # Create a contract c
+c1.add_deter_vars(['x'], bounds=[[0,500]])
 c1.add_nondeter_vars(['w1'],  mean = [0], \
             cov = [[0.02**2]]) # Set nondeterministic uncontrolled variables
-c1.set_assume('True') # Set/define the assumptions
+c1.set_assume('x<=300') # Set/define the assumptions
 c1.set_guaran('P[0.95] (w1 <= 0.2)') # Set/define the guarantees
 c1.checkSat()  # Saturate c
 c1.printInfo() # Print c
 
 # Build a contract c2
 c2 = contract('c2') # Create a contract c2
+c2.add_deter_vars(['x'])
 c2.add_param_vars(['p', 'sigma2'], bounds = [[0.8, 1], [0.01, 0.3]])
 c2.add_nondeter_vars(['w2'],  mean = [0], \
             cov = [['sigma2^2']]) # Set nondeterministic uncontrolled variables
-c2.set_assume('True') # Set/define the assumptions
+c2.set_assume('x<=200') # Set/define the assumptions
 c2.set_guaran('P[p] (w2 <= 0.1)') # Set/define the guarantees
 c2.checkSat()  # Saturate c2
 c2.printInfo() # Print c2
 
-# # Build a contract c3
-# c3 = contract('c3') # Create a contract c3
-# c3.add_nondeter_vars(['w2'],  mean = [0], \
-#             cov = [['sigma2^2']]) # Set nondeterministic uncontrolled variables
-# c3.set_assume('True') # Set/define the assumptions
-# c3.set_guaran('w == 0.5*w1 + 0.5*w2') # Set/define the guarantees
-# c3.checkSat()  # Saturate c3
-# c3.printInfo() # Print c3
-
 # Build a contract c
 c = contract('c') # Create a contract c
+c.add_deter_vars(['x'])
 c.add_param_vars(['sigma2'], bounds = [[0.01, 0.3]])
 c.add_nondeter_vars(['w1', 'w2'],  mean = [0, 0], \
             cov = [[0.02**2, 0], [0, 'sigma2^2']], dtypes=['GAUSSIAN', 'GAUSSIAN']) # Set nondeterministic uncontrolled variables
-c.set_assume('True') # Set/define the assumptions
+c.set_assume('x<=200') # Set/define the assumptions
 c.set_guaran('P[0.99] (0.5*w1 + 0.5*w2 <= 0.1)') # Set/define the guarantees
 c.checkSat()  # Saturate c
 c.printInfo() # Print c
