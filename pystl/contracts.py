@@ -119,8 +119,8 @@ class contract:
         :param assumption: An STL or StSTL formula which characterizes the assumption set of the contract
         :type assumption: str
         """
-        self.assumption_str = assumption
-        self.assumption = parser(assumption)[0][0]
+        self.assumption_str = ' '.join(assumption.split())
+        self.assumption = parser(self.assumption_str)[0][0]
         for variable in self.assumption.variables:
             if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
                 raise ValueError("Variable {} not in the contract variables.".format(variable))
@@ -132,8 +132,8 @@ class contract:
         :param guarantee: An STL or StSTL formula which characterizes the guarantee set of the contract
         :type guarantee: str
         """
-        self.guarantee_str = guarantee
-        self.guarantee = parser(guarantee)[0][0]
+        self.guarantee_str = ' '.join(guarantee.split())
+        self.guarantee = parser(self.guarantee_str)[0][0]
         for variable in self.guarantee.variables:
             if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
                 raise ValueError("Variable {} not in the contract variables.".format(variable))
@@ -145,8 +145,8 @@ class contract:
         :param guarantee: An STL or StSTL formula which characterizes the guarantee set of the contract
         :type guarantee: str
         """
-        self.sat_guarantee_str = sat_guarantee
-        self.sat_guarantee = parser(sat_guarantee)[0][0]
+        self.sat_guarantee_str = ' '.join(sat_guarantee.split())
+        self.sat_guarantee = parser(self.sat_guarantee_str)[0][0]
         for variable in self.guarantee.variables:
             if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
                 raise ValueError("Variable {} not in the contract variables.".format(variable))
@@ -767,6 +767,7 @@ def merge_variables(c1, c2):
         c1.param_var_bounds.append(c2.param_var_bounds[idx])
 
     # Merge non-deterministic variables
+    # TODO: may need several modifications if non-deterministic variables are correlated
     curr_nondeter_num = len(c1.nondeter_var_list)
     new_nondeter_num = len(list(set(c2.nondeter_var_list) - set(c1.nondeter_var_list)))
     if curr_nondeter_num == 0:

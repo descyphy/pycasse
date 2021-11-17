@@ -10,48 +10,48 @@ Minimize
    + 0 f_e[0,19] + 0 f_e[0,20] + 0 f_e_target[0,11] + 0 f_e_target[0,12]
    + 0 f_e_target[0,13] + 0 f_e_target[0,14] + 0 f_e_target[0,15]
    + 0 f_e_target[0,16] + 0 f_e_target[0,17] + 0 f_e_target[0,18]
-   + 0 f_e_target[0,19] + 0 f_e_target[0,20] + 0 velocity[0,11]
-   + 0 velocity[0,12] + 0 velocity[0,13] + 0 velocity[0,14]
-   + 0 velocity[0,15] + 0 velocity[0,16] + 0 velocity[0,17]
-   + 0 velocity[0,18] + 0 velocity[0,19] + 0 velocity[0,20]
+   + 0 f_e_target[0,19] + 0 f_e_target[0,20] + 0 sensed_velocity[0,11]
+   + 0 sensed_velocity[0,12] + 0 sensed_velocity[0,13]
+   + 0 sensed_velocity[0,14] + 0 sensed_velocity[0,15]
+   + 0 sensed_velocity[0,16] + 0 sensed_velocity[0,17]
+   + 0 sensed_velocity[0,18] + 0 sensed_velocity[0,19]
+   + 0 sensed_velocity[0,20] + 0 velocity[0,11] + 0 velocity[0,12]
+   + 0 velocity[0,13] + 0 velocity[0,14] + 0 velocity[0,15]
+   + 0 velocity[0,16] + 0 velocity[0,17] + 0 velocity[0,18]
+   + 0 velocity[0,19] + 0 velocity[0,20] + 0 position[0,11]
+   + 0 position[0,12] + 0 position[0,13] + 0 position[0,14]
+   + 0 position[0,15] + 0 position[0,16] + 0 position[0,17]
+   + 0 position[0,18] + 0 position[0,19] + 0 position[0,20]
    + 0 leading_velocity[0,11] + 0 leading_velocity[0,12]
    + 0 leading_velocity[0,13] + 0 leading_velocity[0,14]
    + 0 leading_velocity[0,15] + 0 leading_velocity[0,16]
    + 0 leading_velocity[0,17] + 0 leading_velocity[0,18]
    + 0 leading_velocity[0,19] + 0 leading_velocity[0,20]
-   + 0 sensed_velocity[0,11] + 0 sensed_velocity[0,12]
-   + 0 sensed_velocity[0,13] + 0 sensed_velocity[0,14]
-   + 0 sensed_velocity[0,15] + 0 sensed_velocity[0,16]
-   + 0 sensed_velocity[0,17] + 0 sensed_velocity[0,18]
-   + 0 sensed_velocity[0,19] + 0 sensed_velocity[0,20] + 0 sensed_f_e[0,11]
-   + 0 sensed_f_e[0,12] + 0 sensed_f_e[0,13] + 0 sensed_f_e[0,14]
-   + 0 sensed_f_e[0,15] + 0 sensed_f_e[0,16] + 0 sensed_f_e[0,17]
-   + 0 sensed_f_e[0,18] + 0 sensed_f_e[0,19] + 0 sensed_f_e[0,20]
-   + 0 acceleration[0,11] + 0 acceleration[0,12] + 0 acceleration[0,13]
-   + 0 acceleration[0,14] + 0 acceleration[0,15] + 0 acceleration[0,16]
-   + 0 acceleration[0,17] + 0 acceleration[0,18] + 0 acceleration[0,19]
-   + 0 acceleration[0,20] + 0 sensed_leading_velocity[0,11]
-   + 0 sensed_leading_velocity[0,12] + 0 sensed_leading_velocity[0,13]
-   + 0 sensed_leading_velocity[0,14] + 0 sensed_leading_velocity[0,15]
-   + 0 sensed_leading_velocity[0,16] + 0 sensed_leading_velocity[0,17]
-   + 0 sensed_leading_velocity[0,18] + 0 sensed_leading_velocity[0,19]
-   + 0 sensed_leading_velocity[0,20] + 0 position[0,11] + 0 position[0,12]
-   + 0 position[0,13] + 0 position[0,14] + 0 position[0,15]
-   + 0 position[0,16] + 0 position[0,17] + 0 position[0,18]
-   + 0 position[0,19] + 0 position[0,20] + 0 sensed_f_b[0,11]
-   + 0 sensed_f_b[0,12] + 0 sensed_f_b[0,13] + 0 sensed_f_b[0,14]
-   + 0 sensed_f_b[0,15] + 0 sensed_f_b[0,16] + 0 sensed_f_b[0,17]
-   + 0 sensed_f_b[0,18] + 0 sensed_f_b[0,19] + 0 sensed_f_b[0,20]
-   + 0 f_r[0,11] + 0 f_r[0,12] + 0 f_r[0,13] + 0 f_r[0,14] + 0 f_r[0,15]
-   + 0 f_r[0,16] + 0 f_r[0,17] + 0 f_r[0,18] + 0 f_r[0,19] + 0 f_r[0,20]
-   + 0 f_w[0,11] + 0 f_w[0,12] + 0 f_w[0,13] + 0 f_w[0,14] + 0 f_w[0,15]
-   + 0 f_w[0,16] + 0 f_w[0,17] + 0 f_w[0,18] + 0 f_w[0,19] + 0 f_w[0,20]
    + 0 sensed_position[0,11] + 0 sensed_position[0,12]
    + 0 sensed_position[0,13] + 0 sensed_position[0,14]
    + 0 sensed_position[0,15] + 0 sensed_position[0,16]
    + 0 sensed_position[0,17] + 0 sensed_position[0,18]
-   + 0 sensed_position[0,19] + 0 sensed_position[0,20] + 0 b_1[0,0]
-   + 0 b_1_2[0,0] + 0 b_1_3[0,0] + 0 b_1_4[0,0] + 0 b_1_5[0,0]
+   + 0 sensed_position[0,19] + 0 sensed_position[0,20] + 0 f_r[0,11]
+   + 0 f_r[0,12] + 0 f_r[0,13] + 0 f_r[0,14] + 0 f_r[0,15] + 0 f_r[0,16]
+   + 0 f_r[0,17] + 0 f_r[0,18] + 0 f_r[0,19] + 0 f_r[0,20] + 0 f_w[0,11]
+   + 0 f_w[0,12] + 0 f_w[0,13] + 0 f_w[0,14] + 0 f_w[0,15] + 0 f_w[0,16]
+   + 0 f_w[0,17] + 0 f_w[0,18] + 0 f_w[0,19] + 0 f_w[0,20]
+   + 0 sensed_leading_velocity[0,11] + 0 sensed_leading_velocity[0,12]
+   + 0 sensed_leading_velocity[0,13] + 0 sensed_leading_velocity[0,14]
+   + 0 sensed_leading_velocity[0,15] + 0 sensed_leading_velocity[0,16]
+   + 0 sensed_leading_velocity[0,17] + 0 sensed_leading_velocity[0,18]
+   + 0 sensed_leading_velocity[0,19] + 0 sensed_leading_velocity[0,20]
+   + 0 sensed_f_e[0,11] + 0 sensed_f_e[0,12] + 0 sensed_f_e[0,13]
+   + 0 sensed_f_e[0,14] + 0 sensed_f_e[0,15] + 0 sensed_f_e[0,16]
+   + 0 sensed_f_e[0,17] + 0 sensed_f_e[0,18] + 0 sensed_f_e[0,19]
+   + 0 sensed_f_e[0,20] + 0 acceleration[0,11] + 0 acceleration[0,12]
+   + 0 acceleration[0,13] + 0 acceleration[0,14] + 0 acceleration[0,15]
+   + 0 acceleration[0,16] + 0 acceleration[0,17] + 0 acceleration[0,18]
+   + 0 acceleration[0,19] + 0 acceleration[0,20] + 0 sensed_f_b[0,11]
+   + 0 sensed_f_b[0,12] + 0 sensed_f_b[0,13] + 0 sensed_f_b[0,14]
+   + 0 sensed_f_b[0,15] + 0 sensed_f_b[0,16] + 0 sensed_f_b[0,17]
+   + 0 sensed_f_b[0,18] + 0 sensed_f_b[0,19] + 0 sensed_f_b[0,20]
+   + 0 b_1[0,0] + 0 b_1_2[0,0] + 0 b_1_3[0,0] + 0 b_1_4[0,0] + 0 b_1_5[0,0]
    + 0 b_1_6[0,0] + 0 b_1_7[0,0] + 0 b_1_8[0,0] + 0 b_1_8[0,1]
    + 0 b_1_8[0,2] + 0 b_1_8[0,3] + 0 b_1_8[0,4] + 0 b_1_8[0,5]
    + 0 b_1_8[0,6] + 0 b_1_8[0,7] + 0 b_1_8[0,8] + 0 b_1_8[0,9]
@@ -630,93 +630,93 @@ Subject To
  R334: f_e[0,9] - 10000 b_1_40[0,9] <= 360
  R335: f_e[0,10] - 10000 b_1_40[0,10] >= -9639.999900000001
  R336: f_e[0,10] - 10000 b_1_40[0,10] <= 360
- R337: 1.02 velocity[0,0] - sensed_velocity[0,0] - 10000 b_1_46[0,0]
+ R337: - sensed_velocity[0,0] + 1.02 velocity[0,0] - 10000 b_1_46[0,0]
    >= -10000
- R338: 1.02 velocity[0,0] - sensed_velocity[0,0] - 10000 b_1_46[0,0]
+ R338: - sensed_velocity[0,0] + 1.02 velocity[0,0] - 10000 b_1_46[0,0]
    <= -0.0001
- R339: 1.02 velocity[0,1] - sensed_velocity[0,1] - 10000 b_1_46[0,1]
+ R339: - sensed_velocity[0,1] + 1.02 velocity[0,1] - 10000 b_1_46[0,1]
    >= -10000
- R340: 1.02 velocity[0,1] - sensed_velocity[0,1] - 10000 b_1_46[0,1]
+ R340: - sensed_velocity[0,1] + 1.02 velocity[0,1] - 10000 b_1_46[0,1]
    <= -0.0001
- R341: 1.02 velocity[0,2] - sensed_velocity[0,2] - 10000 b_1_46[0,2]
+ R341: - sensed_velocity[0,2] + 1.02 velocity[0,2] - 10000 b_1_46[0,2]
    >= -10000
- R342: 1.02 velocity[0,2] - sensed_velocity[0,2] - 10000 b_1_46[0,2]
+ R342: - sensed_velocity[0,2] + 1.02 velocity[0,2] - 10000 b_1_46[0,2]
    <= -0.0001
- R343: 1.02 velocity[0,3] - sensed_velocity[0,3] - 10000 b_1_46[0,3]
+ R343: - sensed_velocity[0,3] + 1.02 velocity[0,3] - 10000 b_1_46[0,3]
    >= -10000
- R344: 1.02 velocity[0,3] - sensed_velocity[0,3] - 10000 b_1_46[0,3]
+ R344: - sensed_velocity[0,3] + 1.02 velocity[0,3] - 10000 b_1_46[0,3]
    <= -0.0001
- R345: 1.02 velocity[0,4] - sensed_velocity[0,4] - 10000 b_1_46[0,4]
+ R345: - sensed_velocity[0,4] + 1.02 velocity[0,4] - 10000 b_1_46[0,4]
    >= -10000
- R346: 1.02 velocity[0,4] - sensed_velocity[0,4] - 10000 b_1_46[0,4]
+ R346: - sensed_velocity[0,4] + 1.02 velocity[0,4] - 10000 b_1_46[0,4]
    <= -0.0001
- R347: 1.02 velocity[0,5] - sensed_velocity[0,5] - 10000 b_1_46[0,5]
+ R347: - sensed_velocity[0,5] + 1.02 velocity[0,5] - 10000 b_1_46[0,5]
    >= -10000
- R348: 1.02 velocity[0,5] - sensed_velocity[0,5] - 10000 b_1_46[0,5]
+ R348: - sensed_velocity[0,5] + 1.02 velocity[0,5] - 10000 b_1_46[0,5]
    <= -0.0001
- R349: 1.02 velocity[0,6] - sensed_velocity[0,6] - 10000 b_1_46[0,6]
+ R349: - sensed_velocity[0,6] + 1.02 velocity[0,6] - 10000 b_1_46[0,6]
    >= -10000
- R350: 1.02 velocity[0,6] - sensed_velocity[0,6] - 10000 b_1_46[0,6]
+ R350: - sensed_velocity[0,6] + 1.02 velocity[0,6] - 10000 b_1_46[0,6]
    <= -0.0001
- R351: 1.02 velocity[0,7] - sensed_velocity[0,7] - 10000 b_1_46[0,7]
+ R351: - sensed_velocity[0,7] + 1.02 velocity[0,7] - 10000 b_1_46[0,7]
    >= -10000
- R352: 1.02 velocity[0,7] - sensed_velocity[0,7] - 10000 b_1_46[0,7]
+ R352: - sensed_velocity[0,7] + 1.02 velocity[0,7] - 10000 b_1_46[0,7]
    <= -0.0001
- R353: 1.02 velocity[0,8] - sensed_velocity[0,8] - 10000 b_1_46[0,8]
+ R353: - sensed_velocity[0,8] + 1.02 velocity[0,8] - 10000 b_1_46[0,8]
    >= -10000
- R354: 1.02 velocity[0,8] - sensed_velocity[0,8] - 10000 b_1_46[0,8]
+ R354: - sensed_velocity[0,8] + 1.02 velocity[0,8] - 10000 b_1_46[0,8]
    <= -0.0001
- R355: 1.02 velocity[0,9] - sensed_velocity[0,9] - 10000 b_1_46[0,9]
+ R355: - sensed_velocity[0,9] + 1.02 velocity[0,9] - 10000 b_1_46[0,9]
    >= -10000
- R356: 1.02 velocity[0,9] - sensed_velocity[0,9] - 10000 b_1_46[0,9]
+ R356: - sensed_velocity[0,9] + 1.02 velocity[0,9] - 10000 b_1_46[0,9]
    <= -0.0001
- R357: 1.02 velocity[0,10] - sensed_velocity[0,10] - 10000 b_1_46[0,10]
+ R357: - sensed_velocity[0,10] + 1.02 velocity[0,10] - 10000 b_1_46[0,10]
    >= -10000
- R358: 1.02 velocity[0,10] - sensed_velocity[0,10] - 10000 b_1_46[0,10]
+ R358: - sensed_velocity[0,10] + 1.02 velocity[0,10] - 10000 b_1_46[0,10]
    <= -0.0001
- R359: - 0.8 velocity[0,0] + sensed_velocity[0,0] - 10000 b_1_47[0,0]
+ R359: sensed_velocity[0,0] - 0.8 velocity[0,0] - 10000 b_1_47[0,0]
    >= -10000
- R360: - 0.8 velocity[0,0] + sensed_velocity[0,0] - 10000 b_1_47[0,0]
+ R360: sensed_velocity[0,0] - 0.8 velocity[0,0] - 10000 b_1_47[0,0]
    <= -0.0001
- R361: - 0.8 velocity[0,1] + sensed_velocity[0,1] - 10000 b_1_47[0,1]
+ R361: sensed_velocity[0,1] - 0.8 velocity[0,1] - 10000 b_1_47[0,1]
    >= -10000
- R362: - 0.8 velocity[0,1] + sensed_velocity[0,1] - 10000 b_1_47[0,1]
+ R362: sensed_velocity[0,1] - 0.8 velocity[0,1] - 10000 b_1_47[0,1]
    <= -0.0001
- R363: - 0.8 velocity[0,2] + sensed_velocity[0,2] - 10000 b_1_47[0,2]
+ R363: sensed_velocity[0,2] - 0.8 velocity[0,2] - 10000 b_1_47[0,2]
    >= -10000
- R364: - 0.8 velocity[0,2] + sensed_velocity[0,2] - 10000 b_1_47[0,2]
+ R364: sensed_velocity[0,2] - 0.8 velocity[0,2] - 10000 b_1_47[0,2]
    <= -0.0001
- R365: - 0.8 velocity[0,3] + sensed_velocity[0,3] - 10000 b_1_47[0,3]
+ R365: sensed_velocity[0,3] - 0.8 velocity[0,3] - 10000 b_1_47[0,3]
    >= -10000
- R366: - 0.8 velocity[0,3] + sensed_velocity[0,3] - 10000 b_1_47[0,3]
+ R366: sensed_velocity[0,3] - 0.8 velocity[0,3] - 10000 b_1_47[0,3]
    <= -0.0001
- R367: - 0.8 velocity[0,4] + sensed_velocity[0,4] - 10000 b_1_47[0,4]
+ R367: sensed_velocity[0,4] - 0.8 velocity[0,4] - 10000 b_1_47[0,4]
    >= -10000
- R368: - 0.8 velocity[0,4] + sensed_velocity[0,4] - 10000 b_1_47[0,4]
+ R368: sensed_velocity[0,4] - 0.8 velocity[0,4] - 10000 b_1_47[0,4]
    <= -0.0001
- R369: - 0.8 velocity[0,5] + sensed_velocity[0,5] - 10000 b_1_47[0,5]
+ R369: sensed_velocity[0,5] - 0.8 velocity[0,5] - 10000 b_1_47[0,5]
    >= -10000
- R370: - 0.8 velocity[0,5] + sensed_velocity[0,5] - 10000 b_1_47[0,5]
+ R370: sensed_velocity[0,5] - 0.8 velocity[0,5] - 10000 b_1_47[0,5]
    <= -0.0001
- R371: - 0.8 velocity[0,6] + sensed_velocity[0,6] - 10000 b_1_47[0,6]
+ R371: sensed_velocity[0,6] - 0.8 velocity[0,6] - 10000 b_1_47[0,6]
    >= -10000
- R372: - 0.8 velocity[0,6] + sensed_velocity[0,6] - 10000 b_1_47[0,6]
+ R372: sensed_velocity[0,6] - 0.8 velocity[0,6] - 10000 b_1_47[0,6]
    <= -0.0001
- R373: - 0.8 velocity[0,7] + sensed_velocity[0,7] - 10000 b_1_47[0,7]
+ R373: sensed_velocity[0,7] - 0.8 velocity[0,7] - 10000 b_1_47[0,7]
    >= -10000
- R374: - 0.8 velocity[0,7] + sensed_velocity[0,7] - 10000 b_1_47[0,7]
+ R374: sensed_velocity[0,7] - 0.8 velocity[0,7] - 10000 b_1_47[0,7]
    <= -0.0001
- R375: - 0.8 velocity[0,8] + sensed_velocity[0,8] - 10000 b_1_47[0,8]
+ R375: sensed_velocity[0,8] - 0.8 velocity[0,8] - 10000 b_1_47[0,8]
    >= -10000
- R376: - 0.8 velocity[0,8] + sensed_velocity[0,8] - 10000 b_1_47[0,8]
+ R376: sensed_velocity[0,8] - 0.8 velocity[0,8] - 10000 b_1_47[0,8]
    <= -0.0001
- R377: - 0.8 velocity[0,9] + sensed_velocity[0,9] - 10000 b_1_47[0,9]
+ R377: sensed_velocity[0,9] - 0.8 velocity[0,9] - 10000 b_1_47[0,9]
    >= -10000
- R378: - 0.8 velocity[0,9] + sensed_velocity[0,9] - 10000 b_1_47[0,9]
+ R378: sensed_velocity[0,9] - 0.8 velocity[0,9] - 10000 b_1_47[0,9]
    <= -0.0001
- R379: - 0.8 velocity[0,10] + sensed_velocity[0,10] - 10000 b_1_47[0,10]
+ R379: sensed_velocity[0,10] - 0.8 velocity[0,10] - 10000 b_1_47[0,10]
    >= -10000
- R380: - 0.8 velocity[0,10] + sensed_velocity[0,10] - 10000 b_1_47[0,10]
+ R380: sensed_velocity[0,10] - 0.8 velocity[0,10] - 10000 b_1_47[0,10]
    <= -0.0001
  R381: 1.02 position[0,0] - sensed_position[0,0] - 10000 b_1_50[0,0]
    >= -10000
@@ -1355,49 +1355,49 @@ Subject To
    >= -9999.019444345173
  R874: - 0.01 leading_velocity[0,10] - 10000 b_1_96[0,10]
    <= 0.9804556548269499
- R875: - 1616 acceleration[0,0] - f_r[0,0] + f_w[0,0] - 10000 b_1_98[0,0]
+ R875: - f_r[0,0] + f_w[0,0] - 1616 acceleration[0,0] - 10000 b_1_98[0,0]
    >= -9999.999900000001
- R876: - 1616 acceleration[0,0] - f_r[0,0] + f_w[0,0] - 10000 b_1_98[0,0]
+ R876: - f_r[0,0] + f_w[0,0] - 1616 acceleration[0,0] - 10000 b_1_98[0,0]
    <= 0
- R877: - 1616 acceleration[0,1] - f_r[0,1] + f_w[0,1] - 10000 b_1_98[0,1]
+ R877: - f_r[0,1] + f_w[0,1] - 1616 acceleration[0,1] - 10000 b_1_98[0,1]
    >= -9999.999900000001
- R878: - 1616 acceleration[0,1] - f_r[0,1] + f_w[0,1] - 10000 b_1_98[0,1]
+ R878: - f_r[0,1] + f_w[0,1] - 1616 acceleration[0,1] - 10000 b_1_98[0,1]
    <= 0
- R879: - 1616 acceleration[0,2] - f_r[0,2] + f_w[0,2] - 10000 b_1_98[0,2]
+ R879: - f_r[0,2] + f_w[0,2] - 1616 acceleration[0,2] - 10000 b_1_98[0,2]
    >= -9999.999900000001
- R880: - 1616 acceleration[0,2] - f_r[0,2] + f_w[0,2] - 10000 b_1_98[0,2]
+ R880: - f_r[0,2] + f_w[0,2] - 1616 acceleration[0,2] - 10000 b_1_98[0,2]
    <= 0
- R881: - 1616 acceleration[0,3] - f_r[0,3] + f_w[0,3] - 10000 b_1_98[0,3]
+ R881: - f_r[0,3] + f_w[0,3] - 1616 acceleration[0,3] - 10000 b_1_98[0,3]
    >= -9999.999900000001
- R882: - 1616 acceleration[0,3] - f_r[0,3] + f_w[0,3] - 10000 b_1_98[0,3]
+ R882: - f_r[0,3] + f_w[0,3] - 1616 acceleration[0,3] - 10000 b_1_98[0,3]
    <= 0
- R883: - 1616 acceleration[0,4] - f_r[0,4] + f_w[0,4] - 10000 b_1_98[0,4]
+ R883: - f_r[0,4] + f_w[0,4] - 1616 acceleration[0,4] - 10000 b_1_98[0,4]
    >= -9999.999900000001
- R884: - 1616 acceleration[0,4] - f_r[0,4] + f_w[0,4] - 10000 b_1_98[0,4]
+ R884: - f_r[0,4] + f_w[0,4] - 1616 acceleration[0,4] - 10000 b_1_98[0,4]
    <= 0
- R885: - 1616 acceleration[0,5] - f_r[0,5] + f_w[0,5] - 10000 b_1_98[0,5]
+ R885: - f_r[0,5] + f_w[0,5] - 1616 acceleration[0,5] - 10000 b_1_98[0,5]
    >= -9999.999900000001
- R886: - 1616 acceleration[0,5] - f_r[0,5] + f_w[0,5] - 10000 b_1_98[0,5]
+ R886: - f_r[0,5] + f_w[0,5] - 1616 acceleration[0,5] - 10000 b_1_98[0,5]
    <= 0
- R887: - 1616 acceleration[0,6] - f_r[0,6] + f_w[0,6] - 10000 b_1_98[0,6]
+ R887: - f_r[0,6] + f_w[0,6] - 1616 acceleration[0,6] - 10000 b_1_98[0,6]
    >= -9999.999900000001
- R888: - 1616 acceleration[0,6] - f_r[0,6] + f_w[0,6] - 10000 b_1_98[0,6]
+ R888: - f_r[0,6] + f_w[0,6] - 1616 acceleration[0,6] - 10000 b_1_98[0,6]
    <= 0
- R889: - 1616 acceleration[0,7] - f_r[0,7] + f_w[0,7] - 10000 b_1_98[0,7]
+ R889: - f_r[0,7] + f_w[0,7] - 1616 acceleration[0,7] - 10000 b_1_98[0,7]
    >= -9999.999900000001
- R890: - 1616 acceleration[0,7] - f_r[0,7] + f_w[0,7] - 10000 b_1_98[0,7]
+ R890: - f_r[0,7] + f_w[0,7] - 1616 acceleration[0,7] - 10000 b_1_98[0,7]
    <= 0
- R891: - 1616 acceleration[0,8] - f_r[0,8] + f_w[0,8] - 10000 b_1_98[0,8]
+ R891: - f_r[0,8] + f_w[0,8] - 1616 acceleration[0,8] - 10000 b_1_98[0,8]
    >= -9999.999900000001
- R892: - 1616 acceleration[0,8] - f_r[0,8] + f_w[0,8] - 10000 b_1_98[0,8]
+ R892: - f_r[0,8] + f_w[0,8] - 1616 acceleration[0,8] - 10000 b_1_98[0,8]
    <= 0
- R893: - 1616 acceleration[0,9] - f_r[0,9] + f_w[0,9] - 10000 b_1_98[0,9]
+ R893: - f_r[0,9] + f_w[0,9] - 1616 acceleration[0,9] - 10000 b_1_98[0,9]
    >= -9999.999900000001
- R894: - 1616 acceleration[0,9] - f_r[0,9] + f_w[0,9] - 10000 b_1_98[0,9]
+ R894: - f_r[0,9] + f_w[0,9] - 1616 acceleration[0,9] - 10000 b_1_98[0,9]
    <= 0
- R895: - 1616 acceleration[0,10] - f_r[0,10] + f_w[0,10]
+ R895: - f_r[0,10] + f_w[0,10] - 1616 acceleration[0,10]
    - 10000 b_1_98[0,10] >= -9999.999900000001
- R896: - 1616 acceleration[0,10] - f_r[0,10] + f_w[0,10]
+ R896: - f_r[0,10] + f_w[0,10] - 1616 acceleration[0,10]
    - 10000 b_1_98[0,10] <= 0
  R897: f_b[0,0] - f_e[0,0] + f_w[0,0] - 10000 b_1_100[0,0]
    >= -9999.999900000001
@@ -1860,93 +1860,93 @@ Subject To
  R1296: f_e[0,9] - 10000 b_1_143[0,9] <= 360
  R1297: f_e[0,10] - 10000 b_1_143[0,10] >= -9639.999900000001
  R1298: f_e[0,10] - 10000 b_1_143[0,10] <= 360
- R1299: 1.02 velocity[0,0] - sensed_velocity[0,0] - 10000 b_1_149[0,0]
+ R1299: - sensed_velocity[0,0] + 1.02 velocity[0,0] - 10000 b_1_149[0,0]
    >= -10000
- R1300: 1.02 velocity[0,0] - sensed_velocity[0,0] - 10000 b_1_149[0,0]
+ R1300: - sensed_velocity[0,0] + 1.02 velocity[0,0] - 10000 b_1_149[0,0]
    <= -0.0001
- R1301: 1.02 velocity[0,1] - sensed_velocity[0,1] - 10000 b_1_149[0,1]
+ R1301: - sensed_velocity[0,1] + 1.02 velocity[0,1] - 10000 b_1_149[0,1]
    >= -10000
- R1302: 1.02 velocity[0,1] - sensed_velocity[0,1] - 10000 b_1_149[0,1]
+ R1302: - sensed_velocity[0,1] + 1.02 velocity[0,1] - 10000 b_1_149[0,1]
    <= -0.0001
- R1303: 1.02 velocity[0,2] - sensed_velocity[0,2] - 10000 b_1_149[0,2]
+ R1303: - sensed_velocity[0,2] + 1.02 velocity[0,2] - 10000 b_1_149[0,2]
    >= -10000
- R1304: 1.02 velocity[0,2] - sensed_velocity[0,2] - 10000 b_1_149[0,2]
+ R1304: - sensed_velocity[0,2] + 1.02 velocity[0,2] - 10000 b_1_149[0,2]
    <= -0.0001
- R1305: 1.02 velocity[0,3] - sensed_velocity[0,3] - 10000 b_1_149[0,3]
+ R1305: - sensed_velocity[0,3] + 1.02 velocity[0,3] - 10000 b_1_149[0,3]
    >= -10000
- R1306: 1.02 velocity[0,3] - sensed_velocity[0,3] - 10000 b_1_149[0,3]
+ R1306: - sensed_velocity[0,3] + 1.02 velocity[0,3] - 10000 b_1_149[0,3]
    <= -0.0001
- R1307: 1.02 velocity[0,4] - sensed_velocity[0,4] - 10000 b_1_149[0,4]
+ R1307: - sensed_velocity[0,4] + 1.02 velocity[0,4] - 10000 b_1_149[0,4]
    >= -10000
- R1308: 1.02 velocity[0,4] - sensed_velocity[0,4] - 10000 b_1_149[0,4]
+ R1308: - sensed_velocity[0,4] + 1.02 velocity[0,4] - 10000 b_1_149[0,4]
    <= -0.0001
- R1309: 1.02 velocity[0,5] - sensed_velocity[0,5] - 10000 b_1_149[0,5]
+ R1309: - sensed_velocity[0,5] + 1.02 velocity[0,5] - 10000 b_1_149[0,5]
    >= -10000
- R1310: 1.02 velocity[0,5] - sensed_velocity[0,5] - 10000 b_1_149[0,5]
+ R1310: - sensed_velocity[0,5] + 1.02 velocity[0,5] - 10000 b_1_149[0,5]
    <= -0.0001
- R1311: 1.02 velocity[0,6] - sensed_velocity[0,6] - 10000 b_1_149[0,6]
+ R1311: - sensed_velocity[0,6] + 1.02 velocity[0,6] - 10000 b_1_149[0,6]
    >= -10000
- R1312: 1.02 velocity[0,6] - sensed_velocity[0,6] - 10000 b_1_149[0,6]
+ R1312: - sensed_velocity[0,6] + 1.02 velocity[0,6] - 10000 b_1_149[0,6]
    <= -0.0001
- R1313: 1.02 velocity[0,7] - sensed_velocity[0,7] - 10000 b_1_149[0,7]
+ R1313: - sensed_velocity[0,7] + 1.02 velocity[0,7] - 10000 b_1_149[0,7]
    >= -10000
- R1314: 1.02 velocity[0,7] - sensed_velocity[0,7] - 10000 b_1_149[0,7]
+ R1314: - sensed_velocity[0,7] + 1.02 velocity[0,7] - 10000 b_1_149[0,7]
    <= -0.0001
- R1315: 1.02 velocity[0,8] - sensed_velocity[0,8] - 10000 b_1_149[0,8]
+ R1315: - sensed_velocity[0,8] + 1.02 velocity[0,8] - 10000 b_1_149[0,8]
    >= -10000
- R1316: 1.02 velocity[0,8] - sensed_velocity[0,8] - 10000 b_1_149[0,8]
+ R1316: - sensed_velocity[0,8] + 1.02 velocity[0,8] - 10000 b_1_149[0,8]
    <= -0.0001
- R1317: 1.02 velocity[0,9] - sensed_velocity[0,9] - 10000 b_1_149[0,9]
+ R1317: - sensed_velocity[0,9] + 1.02 velocity[0,9] - 10000 b_1_149[0,9]
    >= -10000
- R1318: 1.02 velocity[0,9] - sensed_velocity[0,9] - 10000 b_1_149[0,9]
+ R1318: - sensed_velocity[0,9] + 1.02 velocity[0,9] - 10000 b_1_149[0,9]
    <= -0.0001
- R1319: 1.02 velocity[0,10] - sensed_velocity[0,10] - 10000 b_1_149[0,10]
+ R1319: - sensed_velocity[0,10] + 1.02 velocity[0,10] - 10000 b_1_149[0,10]
    >= -10000
- R1320: 1.02 velocity[0,10] - sensed_velocity[0,10] - 10000 b_1_149[0,10]
+ R1320: - sensed_velocity[0,10] + 1.02 velocity[0,10] - 10000 b_1_149[0,10]
    <= -0.0001
- R1321: - 0.8 velocity[0,0] + sensed_velocity[0,0] - 10000 b_1_150[0,0]
+ R1321: sensed_velocity[0,0] - 0.8 velocity[0,0] - 10000 b_1_150[0,0]
    >= -10000
- R1322: - 0.8 velocity[0,0] + sensed_velocity[0,0] - 10000 b_1_150[0,0]
+ R1322: sensed_velocity[0,0] - 0.8 velocity[0,0] - 10000 b_1_150[0,0]
    <= -0.0001
- R1323: - 0.8 velocity[0,1] + sensed_velocity[0,1] - 10000 b_1_150[0,1]
+ R1323: sensed_velocity[0,1] - 0.8 velocity[0,1] - 10000 b_1_150[0,1]
    >= -10000
- R1324: - 0.8 velocity[0,1] + sensed_velocity[0,1] - 10000 b_1_150[0,1]
+ R1324: sensed_velocity[0,1] - 0.8 velocity[0,1] - 10000 b_1_150[0,1]
    <= -0.0001
- R1325: - 0.8 velocity[0,2] + sensed_velocity[0,2] - 10000 b_1_150[0,2]
+ R1325: sensed_velocity[0,2] - 0.8 velocity[0,2] - 10000 b_1_150[0,2]
    >= -10000
- R1326: - 0.8 velocity[0,2] + sensed_velocity[0,2] - 10000 b_1_150[0,2]
+ R1326: sensed_velocity[0,2] - 0.8 velocity[0,2] - 10000 b_1_150[0,2]
    <= -0.0001
- R1327: - 0.8 velocity[0,3] + sensed_velocity[0,3] - 10000 b_1_150[0,3]
+ R1327: sensed_velocity[0,3] - 0.8 velocity[0,3] - 10000 b_1_150[0,3]
    >= -10000
- R1328: - 0.8 velocity[0,3] + sensed_velocity[0,3] - 10000 b_1_150[0,3]
+ R1328: sensed_velocity[0,3] - 0.8 velocity[0,3] - 10000 b_1_150[0,3]
    <= -0.0001
- R1329: - 0.8 velocity[0,4] + sensed_velocity[0,4] - 10000 b_1_150[0,4]
+ R1329: sensed_velocity[0,4] - 0.8 velocity[0,4] - 10000 b_1_150[0,4]
    >= -10000
- R1330: - 0.8 velocity[0,4] + sensed_velocity[0,4] - 10000 b_1_150[0,4]
+ R1330: sensed_velocity[0,4] - 0.8 velocity[0,4] - 10000 b_1_150[0,4]
    <= -0.0001
- R1331: - 0.8 velocity[0,5] + sensed_velocity[0,5] - 10000 b_1_150[0,5]
+ R1331: sensed_velocity[0,5] - 0.8 velocity[0,5] - 10000 b_1_150[0,5]
    >= -10000
- R1332: - 0.8 velocity[0,5] + sensed_velocity[0,5] - 10000 b_1_150[0,5]
+ R1332: sensed_velocity[0,5] - 0.8 velocity[0,5] - 10000 b_1_150[0,5]
    <= -0.0001
- R1333: - 0.8 velocity[0,6] + sensed_velocity[0,6] - 10000 b_1_150[0,6]
+ R1333: sensed_velocity[0,6] - 0.8 velocity[0,6] - 10000 b_1_150[0,6]
    >= -10000
- R1334: - 0.8 velocity[0,6] + sensed_velocity[0,6] - 10000 b_1_150[0,6]
+ R1334: sensed_velocity[0,6] - 0.8 velocity[0,6] - 10000 b_1_150[0,6]
    <= -0.0001
- R1335: - 0.8 velocity[0,7] + sensed_velocity[0,7] - 10000 b_1_150[0,7]
+ R1335: sensed_velocity[0,7] - 0.8 velocity[0,7] - 10000 b_1_150[0,7]
    >= -10000
- R1336: - 0.8 velocity[0,7] + sensed_velocity[0,7] - 10000 b_1_150[0,7]
+ R1336: sensed_velocity[0,7] - 0.8 velocity[0,7] - 10000 b_1_150[0,7]
    <= -0.0001
- R1337: - 0.8 velocity[0,8] + sensed_velocity[0,8] - 10000 b_1_150[0,8]
+ R1337: sensed_velocity[0,8] - 0.8 velocity[0,8] - 10000 b_1_150[0,8]
    >= -10000
- R1338: - 0.8 velocity[0,8] + sensed_velocity[0,8] - 10000 b_1_150[0,8]
+ R1338: sensed_velocity[0,8] - 0.8 velocity[0,8] - 10000 b_1_150[0,8]
    <= -0.0001
- R1339: - 0.8 velocity[0,9] + sensed_velocity[0,9] - 10000 b_1_150[0,9]
+ R1339: sensed_velocity[0,9] - 0.8 velocity[0,9] - 10000 b_1_150[0,9]
    >= -10000
- R1340: - 0.8 velocity[0,9] + sensed_velocity[0,9] - 10000 b_1_150[0,9]
+ R1340: sensed_velocity[0,9] - 0.8 velocity[0,9] - 10000 b_1_150[0,9]
    <= -0.0001
- R1341: - 0.8 velocity[0,10] + sensed_velocity[0,10] - 10000 b_1_150[0,10]
+ R1341: sensed_velocity[0,10] - 0.8 velocity[0,10] - 10000 b_1_150[0,10]
    >= -10000
- R1342: - 0.8 velocity[0,10] + sensed_velocity[0,10] - 10000 b_1_150[0,10]
+ R1342: sensed_velocity[0,10] - 0.8 velocity[0,10] - 10000 b_1_150[0,10]
    <= -0.0001
  R1343: 1.02 position[0,0] - sensed_position[0,0] - 10000 b_1_153[0,0]
    >= -10000
@@ -2587,49 +2587,49 @@ Subject To
    >= -9999.019444345173
  R1836: - 0.01 leading_velocity[0,10] - 10000 b_1_200[0,10]
    <= 0.9804556548269499
- R1837: - 1616 acceleration[0,0] - f_r[0,0] + f_w[0,0] - 10000 b_1_202[0,0]
+ R1837: - f_r[0,0] + f_w[0,0] - 1616 acceleration[0,0] - 10000 b_1_202[0,0]
    >= -9999.999900000001
- R1838: - 1616 acceleration[0,0] - f_r[0,0] + f_w[0,0] - 10000 b_1_202[0,0]
+ R1838: - f_r[0,0] + f_w[0,0] - 1616 acceleration[0,0] - 10000 b_1_202[0,0]
    <= 0
- R1839: - 1616 acceleration[0,1] - f_r[0,1] + f_w[0,1] - 10000 b_1_202[0,1]
+ R1839: - f_r[0,1] + f_w[0,1] - 1616 acceleration[0,1] - 10000 b_1_202[0,1]
    >= -9999.999900000001
- R1840: - 1616 acceleration[0,1] - f_r[0,1] + f_w[0,1] - 10000 b_1_202[0,1]
+ R1840: - f_r[0,1] + f_w[0,1] - 1616 acceleration[0,1] - 10000 b_1_202[0,1]
    <= 0
- R1841: - 1616 acceleration[0,2] - f_r[0,2] + f_w[0,2] - 10000 b_1_202[0,2]
+ R1841: - f_r[0,2] + f_w[0,2] - 1616 acceleration[0,2] - 10000 b_1_202[0,2]
    >= -9999.999900000001
- R1842: - 1616 acceleration[0,2] - f_r[0,2] + f_w[0,2] - 10000 b_1_202[0,2]
+ R1842: - f_r[0,2] + f_w[0,2] - 1616 acceleration[0,2] - 10000 b_1_202[0,2]
    <= 0
- R1843: - 1616 acceleration[0,3] - f_r[0,3] + f_w[0,3] - 10000 b_1_202[0,3]
+ R1843: - f_r[0,3] + f_w[0,3] - 1616 acceleration[0,3] - 10000 b_1_202[0,3]
    >= -9999.999900000001
- R1844: - 1616 acceleration[0,3] - f_r[0,3] + f_w[0,3] - 10000 b_1_202[0,3]
+ R1844: - f_r[0,3] + f_w[0,3] - 1616 acceleration[0,3] - 10000 b_1_202[0,3]
    <= 0
- R1845: - 1616 acceleration[0,4] - f_r[0,4] + f_w[0,4] - 10000 b_1_202[0,4]
+ R1845: - f_r[0,4] + f_w[0,4] - 1616 acceleration[0,4] - 10000 b_1_202[0,4]
    >= -9999.999900000001
- R1846: - 1616 acceleration[0,4] - f_r[0,4] + f_w[0,4] - 10000 b_1_202[0,4]
+ R1846: - f_r[0,4] + f_w[0,4] - 1616 acceleration[0,4] - 10000 b_1_202[0,4]
    <= 0
- R1847: - 1616 acceleration[0,5] - f_r[0,5] + f_w[0,5] - 10000 b_1_202[0,5]
+ R1847: - f_r[0,5] + f_w[0,5] - 1616 acceleration[0,5] - 10000 b_1_202[0,5]
    >= -9999.999900000001
- R1848: - 1616 acceleration[0,5] - f_r[0,5] + f_w[0,5] - 10000 b_1_202[0,5]
+ R1848: - f_r[0,5] + f_w[0,5] - 1616 acceleration[0,5] - 10000 b_1_202[0,5]
    <= 0
- R1849: - 1616 acceleration[0,6] - f_r[0,6] + f_w[0,6] - 10000 b_1_202[0,6]
+ R1849: - f_r[0,6] + f_w[0,6] - 1616 acceleration[0,6] - 10000 b_1_202[0,6]
    >= -9999.999900000001
- R1850: - 1616 acceleration[0,6] - f_r[0,6] + f_w[0,6] - 10000 b_1_202[0,6]
+ R1850: - f_r[0,6] + f_w[0,6] - 1616 acceleration[0,6] - 10000 b_1_202[0,6]
    <= 0
- R1851: - 1616 acceleration[0,7] - f_r[0,7] + f_w[0,7] - 10000 b_1_202[0,7]
+ R1851: - f_r[0,7] + f_w[0,7] - 1616 acceleration[0,7] - 10000 b_1_202[0,7]
    >= -9999.999900000001
- R1852: - 1616 acceleration[0,7] - f_r[0,7] + f_w[0,7] - 10000 b_1_202[0,7]
+ R1852: - f_r[0,7] + f_w[0,7] - 1616 acceleration[0,7] - 10000 b_1_202[0,7]
    <= 0
- R1853: - 1616 acceleration[0,8] - f_r[0,8] + f_w[0,8] - 10000 b_1_202[0,8]
+ R1853: - f_r[0,8] + f_w[0,8] - 1616 acceleration[0,8] - 10000 b_1_202[0,8]
    >= -9999.999900000001
- R1854: - 1616 acceleration[0,8] - f_r[0,8] + f_w[0,8] - 10000 b_1_202[0,8]
+ R1854: - f_r[0,8] + f_w[0,8] - 1616 acceleration[0,8] - 10000 b_1_202[0,8]
    <= 0
- R1855: - 1616 acceleration[0,9] - f_r[0,9] + f_w[0,9] - 10000 b_1_202[0,9]
+ R1855: - f_r[0,9] + f_w[0,9] - 1616 acceleration[0,9] - 10000 b_1_202[0,9]
    >= -9999.999900000001
- R1856: - 1616 acceleration[0,9] - f_r[0,9] + f_w[0,9] - 10000 b_1_202[0,9]
+ R1856: - f_r[0,9] + f_w[0,9] - 1616 acceleration[0,9] - 10000 b_1_202[0,9]
    <= 0
- R1857: - 1616 acceleration[0,10] - f_r[0,10] + f_w[0,10]
+ R1857: - f_r[0,10] + f_w[0,10] - 1616 acceleration[0,10]
    - 10000 b_1_202[0,10] >= -9999.999900000001
- R1858: - 1616 acceleration[0,10] - f_r[0,10] + f_w[0,10]
+ R1858: - f_r[0,10] + f_w[0,10] - 1616 acceleration[0,10]
    - 10000 b_1_202[0,10] <= 0
  R1859: f_b[0,0] - f_e[0,0] + f_w[0,0] - 10000 b_1_204[0,0]
    >= -9999.999900000001
@@ -3356,93 +3356,93 @@ Subject To
  R2478: f_e[0,9] - 10000 b_1_269[0,9] <= 360
  R2479: f_e[0,10] - 10000 b_1_269[0,10] >= -9639.999900000001
  R2480: f_e[0,10] - 10000 b_1_269[0,10] <= 360
- R2481: 1.02 velocity[0,0] - sensed_velocity[0,0] - 10000 b_1_275[0,0]
+ R2481: - sensed_velocity[0,0] + 1.02 velocity[0,0] - 10000 b_1_275[0,0]
    >= -10000
- R2482: 1.02 velocity[0,0] - sensed_velocity[0,0] - 10000 b_1_275[0,0]
+ R2482: - sensed_velocity[0,0] + 1.02 velocity[0,0] - 10000 b_1_275[0,0]
    <= -0.0001
- R2483: 1.02 velocity[0,1] - sensed_velocity[0,1] - 10000 b_1_275[0,1]
+ R2483: - sensed_velocity[0,1] + 1.02 velocity[0,1] - 10000 b_1_275[0,1]
    >= -10000
- R2484: 1.02 velocity[0,1] - sensed_velocity[0,1] - 10000 b_1_275[0,1]
+ R2484: - sensed_velocity[0,1] + 1.02 velocity[0,1] - 10000 b_1_275[0,1]
    <= -0.0001
- R2485: 1.02 velocity[0,2] - sensed_velocity[0,2] - 10000 b_1_275[0,2]
+ R2485: - sensed_velocity[0,2] + 1.02 velocity[0,2] - 10000 b_1_275[0,2]
    >= -10000
- R2486: 1.02 velocity[0,2] - sensed_velocity[0,2] - 10000 b_1_275[0,2]
+ R2486: - sensed_velocity[0,2] + 1.02 velocity[0,2] - 10000 b_1_275[0,2]
    <= -0.0001
- R2487: 1.02 velocity[0,3] - sensed_velocity[0,3] - 10000 b_1_275[0,3]
+ R2487: - sensed_velocity[0,3] + 1.02 velocity[0,3] - 10000 b_1_275[0,3]
    >= -10000
- R2488: 1.02 velocity[0,3] - sensed_velocity[0,3] - 10000 b_1_275[0,3]
+ R2488: - sensed_velocity[0,3] + 1.02 velocity[0,3] - 10000 b_1_275[0,3]
    <= -0.0001
- R2489: 1.02 velocity[0,4] - sensed_velocity[0,4] - 10000 b_1_275[0,4]
+ R2489: - sensed_velocity[0,4] + 1.02 velocity[0,4] - 10000 b_1_275[0,4]
    >= -10000
- R2490: 1.02 velocity[0,4] - sensed_velocity[0,4] - 10000 b_1_275[0,4]
+ R2490: - sensed_velocity[0,4] + 1.02 velocity[0,4] - 10000 b_1_275[0,4]
    <= -0.0001
- R2491: 1.02 velocity[0,5] - sensed_velocity[0,5] - 10000 b_1_275[0,5]
+ R2491: - sensed_velocity[0,5] + 1.02 velocity[0,5] - 10000 b_1_275[0,5]
    >= -10000
- R2492: 1.02 velocity[0,5] - sensed_velocity[0,5] - 10000 b_1_275[0,5]
+ R2492: - sensed_velocity[0,5] + 1.02 velocity[0,5] - 10000 b_1_275[0,5]
    <= -0.0001
- R2493: 1.02 velocity[0,6] - sensed_velocity[0,6] - 10000 b_1_275[0,6]
+ R2493: - sensed_velocity[0,6] + 1.02 velocity[0,6] - 10000 b_1_275[0,6]
    >= -10000
- R2494: 1.02 velocity[0,6] - sensed_velocity[0,6] - 10000 b_1_275[0,6]
+ R2494: - sensed_velocity[0,6] + 1.02 velocity[0,6] - 10000 b_1_275[0,6]
    <= -0.0001
- R2495: 1.02 velocity[0,7] - sensed_velocity[0,7] - 10000 b_1_275[0,7]
+ R2495: - sensed_velocity[0,7] + 1.02 velocity[0,7] - 10000 b_1_275[0,7]
    >= -10000
- R2496: 1.02 velocity[0,7] - sensed_velocity[0,7] - 10000 b_1_275[0,7]
+ R2496: - sensed_velocity[0,7] + 1.02 velocity[0,7] - 10000 b_1_275[0,7]
    <= -0.0001
- R2497: 1.02 velocity[0,8] - sensed_velocity[0,8] - 10000 b_1_275[0,8]
+ R2497: - sensed_velocity[0,8] + 1.02 velocity[0,8] - 10000 b_1_275[0,8]
    >= -10000
- R2498: 1.02 velocity[0,8] - sensed_velocity[0,8] - 10000 b_1_275[0,8]
+ R2498: - sensed_velocity[0,8] + 1.02 velocity[0,8] - 10000 b_1_275[0,8]
    <= -0.0001
- R2499: 1.02 velocity[0,9] - sensed_velocity[0,9] - 10000 b_1_275[0,9]
+ R2499: - sensed_velocity[0,9] + 1.02 velocity[0,9] - 10000 b_1_275[0,9]
    >= -10000
- R2500: 1.02 velocity[0,9] - sensed_velocity[0,9] - 10000 b_1_275[0,9]
+ R2500: - sensed_velocity[0,9] + 1.02 velocity[0,9] - 10000 b_1_275[0,9]
    <= -0.0001
- R2501: 1.02 velocity[0,10] - sensed_velocity[0,10] - 10000 b_1_275[0,10]
+ R2501: - sensed_velocity[0,10] + 1.02 velocity[0,10] - 10000 b_1_275[0,10]
    >= -10000
- R2502: 1.02 velocity[0,10] - sensed_velocity[0,10] - 10000 b_1_275[0,10]
+ R2502: - sensed_velocity[0,10] + 1.02 velocity[0,10] - 10000 b_1_275[0,10]
    <= -0.0001
- R2503: - 0.8 velocity[0,0] + sensed_velocity[0,0] - 10000 b_1_276[0,0]
+ R2503: sensed_velocity[0,0] - 0.8 velocity[0,0] - 10000 b_1_276[0,0]
    >= -10000
- R2504: - 0.8 velocity[0,0] + sensed_velocity[0,0] - 10000 b_1_276[0,0]
+ R2504: sensed_velocity[0,0] - 0.8 velocity[0,0] - 10000 b_1_276[0,0]
    <= -0.0001
- R2505: - 0.8 velocity[0,1] + sensed_velocity[0,1] - 10000 b_1_276[0,1]
+ R2505: sensed_velocity[0,1] - 0.8 velocity[0,1] - 10000 b_1_276[0,1]
    >= -10000
- R2506: - 0.8 velocity[0,1] + sensed_velocity[0,1] - 10000 b_1_276[0,1]
+ R2506: sensed_velocity[0,1] - 0.8 velocity[0,1] - 10000 b_1_276[0,1]
    <= -0.0001
- R2507: - 0.8 velocity[0,2] + sensed_velocity[0,2] - 10000 b_1_276[0,2]
+ R2507: sensed_velocity[0,2] - 0.8 velocity[0,2] - 10000 b_1_276[0,2]
    >= -10000
- R2508: - 0.8 velocity[0,2] + sensed_velocity[0,2] - 10000 b_1_276[0,2]
+ R2508: sensed_velocity[0,2] - 0.8 velocity[0,2] - 10000 b_1_276[0,2]
    <= -0.0001
- R2509: - 0.8 velocity[0,3] + sensed_velocity[0,3] - 10000 b_1_276[0,3]
+ R2509: sensed_velocity[0,3] - 0.8 velocity[0,3] - 10000 b_1_276[0,3]
    >= -10000
- R2510: - 0.8 velocity[0,3] + sensed_velocity[0,3] - 10000 b_1_276[0,3]
+ R2510: sensed_velocity[0,3] - 0.8 velocity[0,3] - 10000 b_1_276[0,3]
    <= -0.0001
- R2511: - 0.8 velocity[0,4] + sensed_velocity[0,4] - 10000 b_1_276[0,4]
+ R2511: sensed_velocity[0,4] - 0.8 velocity[0,4] - 10000 b_1_276[0,4]
    >= -10000
- R2512: - 0.8 velocity[0,4] + sensed_velocity[0,4] - 10000 b_1_276[0,4]
+ R2512: sensed_velocity[0,4] - 0.8 velocity[0,4] - 10000 b_1_276[0,4]
    <= -0.0001
- R2513: - 0.8 velocity[0,5] + sensed_velocity[0,5] - 10000 b_1_276[0,5]
+ R2513: sensed_velocity[0,5] - 0.8 velocity[0,5] - 10000 b_1_276[0,5]
    >= -10000
- R2514: - 0.8 velocity[0,5] + sensed_velocity[0,5] - 10000 b_1_276[0,5]
+ R2514: sensed_velocity[0,5] - 0.8 velocity[0,5] - 10000 b_1_276[0,5]
    <= -0.0001
- R2515: - 0.8 velocity[0,6] + sensed_velocity[0,6] - 10000 b_1_276[0,6]
+ R2515: sensed_velocity[0,6] - 0.8 velocity[0,6] - 10000 b_1_276[0,6]
    >= -10000
- R2516: - 0.8 velocity[0,6] + sensed_velocity[0,6] - 10000 b_1_276[0,6]
+ R2516: sensed_velocity[0,6] - 0.8 velocity[0,6] - 10000 b_1_276[0,6]
    <= -0.0001
- R2517: - 0.8 velocity[0,7] + sensed_velocity[0,7] - 10000 b_1_276[0,7]
+ R2517: sensed_velocity[0,7] - 0.8 velocity[0,7] - 10000 b_1_276[0,7]
    >= -10000
- R2518: - 0.8 velocity[0,7] + sensed_velocity[0,7] - 10000 b_1_276[0,7]
+ R2518: sensed_velocity[0,7] - 0.8 velocity[0,7] - 10000 b_1_276[0,7]
    <= -0.0001
- R2519: - 0.8 velocity[0,8] + sensed_velocity[0,8] - 10000 b_1_276[0,8]
+ R2519: sensed_velocity[0,8] - 0.8 velocity[0,8] - 10000 b_1_276[0,8]
    >= -10000
- R2520: - 0.8 velocity[0,8] + sensed_velocity[0,8] - 10000 b_1_276[0,8]
+ R2520: sensed_velocity[0,8] - 0.8 velocity[0,8] - 10000 b_1_276[0,8]
    <= -0.0001
- R2521: - 0.8 velocity[0,9] + sensed_velocity[0,9] - 10000 b_1_276[0,9]
+ R2521: sensed_velocity[0,9] - 0.8 velocity[0,9] - 10000 b_1_276[0,9]
    >= -10000
- R2522: - 0.8 velocity[0,9] + sensed_velocity[0,9] - 10000 b_1_276[0,9]
+ R2522: sensed_velocity[0,9] - 0.8 velocity[0,9] - 10000 b_1_276[0,9]
    <= -0.0001
- R2523: - 0.8 velocity[0,10] + sensed_velocity[0,10] - 10000 b_1_276[0,10]
+ R2523: sensed_velocity[0,10] - 0.8 velocity[0,10] - 10000 b_1_276[0,10]
    >= -10000
- R2524: - 0.8 velocity[0,10] + sensed_velocity[0,10] - 10000 b_1_276[0,10]
+ R2524: sensed_velocity[0,10] - 0.8 velocity[0,10] - 10000 b_1_276[0,10]
    <= -0.0001
  R2525: 1.02 position[0,0] - sensed_position[0,0] - 10000 b_1_279[0,0]
    >= -10000
@@ -4083,49 +4083,49 @@ Subject To
    >= -9999.019444345173
  R3018: - 0.01 leading_velocity[0,10] - 10000 b_1_326[0,10]
    <= 0.9804556548269499
- R3019: - 1616 acceleration[0,0] - f_r[0,0] + f_w[0,0] - 10000 b_1_328[0,0]
+ R3019: - f_r[0,0] + f_w[0,0] - 1616 acceleration[0,0] - 10000 b_1_328[0,0]
    >= -9999.999900000001
- R3020: - 1616 acceleration[0,0] - f_r[0,0] + f_w[0,0] - 10000 b_1_328[0,0]
+ R3020: - f_r[0,0] + f_w[0,0] - 1616 acceleration[0,0] - 10000 b_1_328[0,0]
    <= 0
- R3021: - 1616 acceleration[0,1] - f_r[0,1] + f_w[0,1] - 10000 b_1_328[0,1]
+ R3021: - f_r[0,1] + f_w[0,1] - 1616 acceleration[0,1] - 10000 b_1_328[0,1]
    >= -9999.999900000001
- R3022: - 1616 acceleration[0,1] - f_r[0,1] + f_w[0,1] - 10000 b_1_328[0,1]
+ R3022: - f_r[0,1] + f_w[0,1] - 1616 acceleration[0,1] - 10000 b_1_328[0,1]
    <= 0
- R3023: - 1616 acceleration[0,2] - f_r[0,2] + f_w[0,2] - 10000 b_1_328[0,2]
+ R3023: - f_r[0,2] + f_w[0,2] - 1616 acceleration[0,2] - 10000 b_1_328[0,2]
    >= -9999.999900000001
- R3024: - 1616 acceleration[0,2] - f_r[0,2] + f_w[0,2] - 10000 b_1_328[0,2]
+ R3024: - f_r[0,2] + f_w[0,2] - 1616 acceleration[0,2] - 10000 b_1_328[0,2]
    <= 0
- R3025: - 1616 acceleration[0,3] - f_r[0,3] + f_w[0,3] - 10000 b_1_328[0,3]
+ R3025: - f_r[0,3] + f_w[0,3] - 1616 acceleration[0,3] - 10000 b_1_328[0,3]
    >= -9999.999900000001
- R3026: - 1616 acceleration[0,3] - f_r[0,3] + f_w[0,3] - 10000 b_1_328[0,3]
+ R3026: - f_r[0,3] + f_w[0,3] - 1616 acceleration[0,3] - 10000 b_1_328[0,3]
    <= 0
- R3027: - 1616 acceleration[0,4] - f_r[0,4] + f_w[0,4] - 10000 b_1_328[0,4]
+ R3027: - f_r[0,4] + f_w[0,4] - 1616 acceleration[0,4] - 10000 b_1_328[0,4]
    >= -9999.999900000001
- R3028: - 1616 acceleration[0,4] - f_r[0,4] + f_w[0,4] - 10000 b_1_328[0,4]
+ R3028: - f_r[0,4] + f_w[0,4] - 1616 acceleration[0,4] - 10000 b_1_328[0,4]
    <= 0
- R3029: - 1616 acceleration[0,5] - f_r[0,5] + f_w[0,5] - 10000 b_1_328[0,5]
+ R3029: - f_r[0,5] + f_w[0,5] - 1616 acceleration[0,5] - 10000 b_1_328[0,5]
    >= -9999.999900000001
- R3030: - 1616 acceleration[0,5] - f_r[0,5] + f_w[0,5] - 10000 b_1_328[0,5]
+ R3030: - f_r[0,5] + f_w[0,5] - 1616 acceleration[0,5] - 10000 b_1_328[0,5]
    <= 0
- R3031: - 1616 acceleration[0,6] - f_r[0,6] + f_w[0,6] - 10000 b_1_328[0,6]
+ R3031: - f_r[0,6] + f_w[0,6] - 1616 acceleration[0,6] - 10000 b_1_328[0,6]
    >= -9999.999900000001
- R3032: - 1616 acceleration[0,6] - f_r[0,6] + f_w[0,6] - 10000 b_1_328[0,6]
+ R3032: - f_r[0,6] + f_w[0,6] - 1616 acceleration[0,6] - 10000 b_1_328[0,6]
    <= 0
- R3033: - 1616 acceleration[0,7] - f_r[0,7] + f_w[0,7] - 10000 b_1_328[0,7]
+ R3033: - f_r[0,7] + f_w[0,7] - 1616 acceleration[0,7] - 10000 b_1_328[0,7]
    >= -9999.999900000001
- R3034: - 1616 acceleration[0,7] - f_r[0,7] + f_w[0,7] - 10000 b_1_328[0,7]
+ R3034: - f_r[0,7] + f_w[0,7] - 1616 acceleration[0,7] - 10000 b_1_328[0,7]
    <= 0
- R3035: - 1616 acceleration[0,8] - f_r[0,8] + f_w[0,8] - 10000 b_1_328[0,8]
+ R3035: - f_r[0,8] + f_w[0,8] - 1616 acceleration[0,8] - 10000 b_1_328[0,8]
    >= -9999.999900000001
- R3036: - 1616 acceleration[0,8] - f_r[0,8] + f_w[0,8] - 10000 b_1_328[0,8]
+ R3036: - f_r[0,8] + f_w[0,8] - 1616 acceleration[0,8] - 10000 b_1_328[0,8]
    <= 0
- R3037: - 1616 acceleration[0,9] - f_r[0,9] + f_w[0,9] - 10000 b_1_328[0,9]
+ R3037: - f_r[0,9] + f_w[0,9] - 1616 acceleration[0,9] - 10000 b_1_328[0,9]
    >= -9999.999900000001
- R3038: - 1616 acceleration[0,9] - f_r[0,9] + f_w[0,9] - 10000 b_1_328[0,9]
+ R3038: - f_r[0,9] + f_w[0,9] - 1616 acceleration[0,9] - 10000 b_1_328[0,9]
    <= 0
- R3039: - 1616 acceleration[0,10] - f_r[0,10] + f_w[0,10]
+ R3039: - f_r[0,10] + f_w[0,10] - 1616 acceleration[0,10]
    - 10000 b_1_328[0,10] >= -9999.999900000001
- R3040: - 1616 acceleration[0,10] - f_r[0,10] + f_w[0,10]
+ R3040: - f_r[0,10] + f_w[0,10] - 1616 acceleration[0,10]
    - 10000 b_1_328[0,10] <= 0
  R3041: f_b[0,0] - f_e[0,0] + f_w[0,0] - 10000 b_1_330[0,0]
    >= -9999.999900000001
@@ -4216,83 +4216,83 @@ Subject To
    >= -9999.999900000001
  R3106: - velocity[0,10] + leading_velocity[0,10] - 10000 b_1_336[0,10]
    <= 0
- R3107: - 1.2 velocity[0,0] + sensed_velocity[0,0] - 10000 b_1_339[0,0]
+ R3107: sensed_velocity[0,0] - 1.2 velocity[0,0] - 10000 b_1_339[0,0]
    >= -9999.999900000001
- R3108: - 1.2 velocity[0,0] + sensed_velocity[0,0] - 10000 b_1_339[0,0]
+ R3108: sensed_velocity[0,0] - 1.2 velocity[0,0] - 10000 b_1_339[0,0] <= 0
+ R3109: sensed_velocity[0,1] - 1.2 velocity[0,1] - 10000 b_1_339[0,1]
+   >= -9999.999900000001
+ R3110: sensed_velocity[0,1] - 1.2 velocity[0,1] - 10000 b_1_339[0,1] <= 0
+ R3111: sensed_velocity[0,2] - 1.2 velocity[0,2] - 10000 b_1_339[0,2]
+   >= -9999.999900000001
+ R3112: sensed_velocity[0,2] - 1.2 velocity[0,2] - 10000 b_1_339[0,2] <= 0
+ R3113: sensed_velocity[0,3] - 1.2 velocity[0,3] - 10000 b_1_339[0,3]
+   >= -9999.999900000001
+ R3114: sensed_velocity[0,3] - 1.2 velocity[0,3] - 10000 b_1_339[0,3] <= 0
+ R3115: sensed_velocity[0,4] - 1.2 velocity[0,4] - 10000 b_1_339[0,4]
+   >= -9999.999900000001
+ R3116: sensed_velocity[0,4] - 1.2 velocity[0,4] - 10000 b_1_339[0,4] <= 0
+ R3117: sensed_velocity[0,5] - 1.2 velocity[0,5] - 10000 b_1_339[0,5]
+   >= -9999.999900000001
+ R3118: sensed_velocity[0,5] - 1.2 velocity[0,5] - 10000 b_1_339[0,5] <= 0
+ R3119: sensed_velocity[0,6] - 1.2 velocity[0,6] - 10000 b_1_339[0,6]
+   >= -9999.999900000001
+ R3120: sensed_velocity[0,6] - 1.2 velocity[0,6] - 10000 b_1_339[0,6] <= 0
+ R3121: sensed_velocity[0,7] - 1.2 velocity[0,7] - 10000 b_1_339[0,7]
+   >= -9999.999900000001
+ R3122: sensed_velocity[0,7] - 1.2 velocity[0,7] - 10000 b_1_339[0,7] <= 0
+ R3123: sensed_velocity[0,8] - 1.2 velocity[0,8] - 10000 b_1_339[0,8]
+   >= -9999.999900000001
+ R3124: sensed_velocity[0,8] - 1.2 velocity[0,8] - 10000 b_1_339[0,8] <= 0
+ R3125: sensed_velocity[0,9] - 1.2 velocity[0,9] - 10000 b_1_339[0,9]
+   >= -9999.999900000001
+ R3126: sensed_velocity[0,9] - 1.2 velocity[0,9] - 10000 b_1_339[0,9] <= 0
+ R3127: sensed_velocity[0,10] - 1.2 velocity[0,10] - 10000 b_1_339[0,10]
+   >= -9999.999900000001
+ R3128: sensed_velocity[0,10] - 1.2 velocity[0,10] - 10000 b_1_339[0,10]
    <= 0
- R3109: - 1.2 velocity[0,1] + sensed_velocity[0,1] - 10000 b_1_339[0,1]
+ R3129: - sensed_velocity[0,0] + 0.8 velocity[0,0] - 10000 b_1_341[0,0]
    >= -9999.999900000001
- R3110: - 1.2 velocity[0,1] + sensed_velocity[0,1] - 10000 b_1_339[0,1]
+ R3130: - sensed_velocity[0,0] + 0.8 velocity[0,0] - 10000 b_1_341[0,0]
    <= 0
- R3111: - 1.2 velocity[0,2] + sensed_velocity[0,2] - 10000 b_1_339[0,2]
+ R3131: - sensed_velocity[0,1] + 0.8 velocity[0,1] - 10000 b_1_341[0,1]
    >= -9999.999900000001
- R3112: - 1.2 velocity[0,2] + sensed_velocity[0,2] - 10000 b_1_339[0,2]
+ R3132: - sensed_velocity[0,1] + 0.8 velocity[0,1] - 10000 b_1_341[0,1]
    <= 0
- R3113: - 1.2 velocity[0,3] + sensed_velocity[0,3] - 10000 b_1_339[0,3]
+ R3133: - sensed_velocity[0,2] + 0.8 velocity[0,2] - 10000 b_1_341[0,2]
    >= -9999.999900000001
- R3114: - 1.2 velocity[0,3] + sensed_velocity[0,3] - 10000 b_1_339[0,3]
+ R3134: - sensed_velocity[0,2] + 0.8 velocity[0,2] - 10000 b_1_341[0,2]
    <= 0
- R3115: - 1.2 velocity[0,4] + sensed_velocity[0,4] - 10000 b_1_339[0,4]
+ R3135: - sensed_velocity[0,3] + 0.8 velocity[0,3] - 10000 b_1_341[0,3]
    >= -9999.999900000001
- R3116: - 1.2 velocity[0,4] + sensed_velocity[0,4] - 10000 b_1_339[0,4]
+ R3136: - sensed_velocity[0,3] + 0.8 velocity[0,3] - 10000 b_1_341[0,3]
    <= 0
- R3117: - 1.2 velocity[0,5] + sensed_velocity[0,5] - 10000 b_1_339[0,5]
+ R3137: - sensed_velocity[0,4] + 0.8 velocity[0,4] - 10000 b_1_341[0,4]
    >= -9999.999900000001
- R3118: - 1.2 velocity[0,5] + sensed_velocity[0,5] - 10000 b_1_339[0,5]
+ R3138: - sensed_velocity[0,4] + 0.8 velocity[0,4] - 10000 b_1_341[0,4]
    <= 0
- R3119: - 1.2 velocity[0,6] + sensed_velocity[0,6] - 10000 b_1_339[0,6]
+ R3139: - sensed_velocity[0,5] + 0.8 velocity[0,5] - 10000 b_1_341[0,5]
    >= -9999.999900000001
- R3120: - 1.2 velocity[0,6] + sensed_velocity[0,6] - 10000 b_1_339[0,6]
+ R3140: - sensed_velocity[0,5] + 0.8 velocity[0,5] - 10000 b_1_341[0,5]
    <= 0
- R3121: - 1.2 velocity[0,7] + sensed_velocity[0,7] - 10000 b_1_339[0,7]
+ R3141: - sensed_velocity[0,6] + 0.8 velocity[0,6] - 10000 b_1_341[0,6]
    >= -9999.999900000001
- R3122: - 1.2 velocity[0,7] + sensed_velocity[0,7] - 10000 b_1_339[0,7]
+ R3142: - sensed_velocity[0,6] + 0.8 velocity[0,6] - 10000 b_1_341[0,6]
    <= 0
- R3123: - 1.2 velocity[0,8] + sensed_velocity[0,8] - 10000 b_1_339[0,8]
+ R3143: - sensed_velocity[0,7] + 0.8 velocity[0,7] - 10000 b_1_341[0,7]
    >= -9999.999900000001
- R3124: - 1.2 velocity[0,8] + sensed_velocity[0,8] - 10000 b_1_339[0,8]
+ R3144: - sensed_velocity[0,7] + 0.8 velocity[0,7] - 10000 b_1_341[0,7]
    <= 0
- R3125: - 1.2 velocity[0,9] + sensed_velocity[0,9] - 10000 b_1_339[0,9]
+ R3145: - sensed_velocity[0,8] + 0.8 velocity[0,8] - 10000 b_1_341[0,8]
    >= -9999.999900000001
- R3126: - 1.2 velocity[0,9] + sensed_velocity[0,9] - 10000 b_1_339[0,9]
+ R3146: - sensed_velocity[0,8] + 0.8 velocity[0,8] - 10000 b_1_341[0,8]
    <= 0
- R3127: - 1.2 velocity[0,10] + sensed_velocity[0,10] - 10000 b_1_339[0,10]
+ R3147: - sensed_velocity[0,9] + 0.8 velocity[0,9] - 10000 b_1_341[0,9]
    >= -9999.999900000001
- R3128: - 1.2 velocity[0,10] + sensed_velocity[0,10] - 10000 b_1_339[0,10]
+ R3148: - sensed_velocity[0,9] + 0.8 velocity[0,9] - 10000 b_1_341[0,9]
    <= 0
- R3129: 0.8 velocity[0,0] - sensed_velocity[0,0] - 10000 b_1_341[0,0]
+ R3149: - sensed_velocity[0,10] + 0.8 velocity[0,10] - 10000 b_1_341[0,10]
    >= -9999.999900000001
- R3130: 0.8 velocity[0,0] - sensed_velocity[0,0] - 10000 b_1_341[0,0] <= 0
- R3131: 0.8 velocity[0,1] - sensed_velocity[0,1] - 10000 b_1_341[0,1]
-   >= -9999.999900000001
- R3132: 0.8 velocity[0,1] - sensed_velocity[0,1] - 10000 b_1_341[0,1] <= 0
- R3133: 0.8 velocity[0,2] - sensed_velocity[0,2] - 10000 b_1_341[0,2]
-   >= -9999.999900000001
- R3134: 0.8 velocity[0,2] - sensed_velocity[0,2] - 10000 b_1_341[0,2] <= 0
- R3135: 0.8 velocity[0,3] - sensed_velocity[0,3] - 10000 b_1_341[0,3]
-   >= -9999.999900000001
- R3136: 0.8 velocity[0,3] - sensed_velocity[0,3] - 10000 b_1_341[0,3] <= 0
- R3137: 0.8 velocity[0,4] - sensed_velocity[0,4] - 10000 b_1_341[0,4]
-   >= -9999.999900000001
- R3138: 0.8 velocity[0,4] - sensed_velocity[0,4] - 10000 b_1_341[0,4] <= 0
- R3139: 0.8 velocity[0,5] - sensed_velocity[0,5] - 10000 b_1_341[0,5]
-   >= -9999.999900000001
- R3140: 0.8 velocity[0,5] - sensed_velocity[0,5] - 10000 b_1_341[0,5] <= 0
- R3141: 0.8 velocity[0,6] - sensed_velocity[0,6] - 10000 b_1_341[0,6]
-   >= -9999.999900000001
- R3142: 0.8 velocity[0,6] - sensed_velocity[0,6] - 10000 b_1_341[0,6] <= 0
- R3143: 0.8 velocity[0,7] - sensed_velocity[0,7] - 10000 b_1_341[0,7]
-   >= -9999.999900000001
- R3144: 0.8 velocity[0,7] - sensed_velocity[0,7] - 10000 b_1_341[0,7] <= 0
- R3145: 0.8 velocity[0,8] - sensed_velocity[0,8] - 10000 b_1_341[0,8]
-   >= -9999.999900000001
- R3146: 0.8 velocity[0,8] - sensed_velocity[0,8] - 10000 b_1_341[0,8] <= 0
- R3147: 0.8 velocity[0,9] - sensed_velocity[0,9] - 10000 b_1_341[0,9]
-   >= -9999.999900000001
- R3148: 0.8 velocity[0,9] - sensed_velocity[0,9] - 10000 b_1_341[0,9] <= 0
- R3149: 0.8 velocity[0,10] - sensed_velocity[0,10] - 10000 b_1_341[0,10]
-   >= -9999.999900000001
- R3150: 0.8 velocity[0,10] - sensed_velocity[0,10] - 10000 b_1_341[0,10]
+ R3150: - sensed_velocity[0,10] + 0.8 velocity[0,10] - 10000 b_1_341[0,10]
    <= 0
  R3151: - 1.02 position[0,0] + sensed_position[0,0] - 10000 b_1_343[0,0]
    >= -9999.999900000001
@@ -4938,83 +4938,93 @@ Subject To
  R3660: - f_e[0,9] - 10000 b_3_396[0,9] <= -360.0001
  R3661: - f_e[0,10] - 10000 b_3_396[0,10] >= -10360
  R3662: - f_e[0,10] - 10000 b_3_396[0,10] <= -360.0001
- R3663: - 1.02 velocity[0,0] + sensed_velocity[0,0] - 10000 b_3_402[0,0]
+ R3663: sensed_velocity[0,0] - 1.02 velocity[0,0] - 10000 b_3_402[0,0]
    >= -9999.999900000001
- R3664: - 1.02 velocity[0,0] + sensed_velocity[0,0] - 10000 b_3_402[0,0]
+ R3664: sensed_velocity[0,0] - 1.02 velocity[0,0] - 10000 b_3_402[0,0]
    <= 0
- R3665: - 1.02 velocity[0,1] + sensed_velocity[0,1] - 10000 b_3_402[0,1]
+ R3665: sensed_velocity[0,1] - 1.02 velocity[0,1] - 10000 b_3_402[0,1]
    >= -9999.999900000001
- R3666: - 1.02 velocity[0,1] + sensed_velocity[0,1] - 10000 b_3_402[0,1]
+ R3666: sensed_velocity[0,1] - 1.02 velocity[0,1] - 10000 b_3_402[0,1]
    <= 0
- R3667: - 1.02 velocity[0,2] + sensed_velocity[0,2] - 10000 b_3_402[0,2]
+ R3667: sensed_velocity[0,2] - 1.02 velocity[0,2] - 10000 b_3_402[0,2]
    >= -9999.999900000001
- R3668: - 1.02 velocity[0,2] + sensed_velocity[0,2] - 10000 b_3_402[0,2]
+ R3668: sensed_velocity[0,2] - 1.02 velocity[0,2] - 10000 b_3_402[0,2]
    <= 0
- R3669: - 1.02 velocity[0,3] + sensed_velocity[0,3] - 10000 b_3_402[0,3]
+ R3669: sensed_velocity[0,3] - 1.02 velocity[0,3] - 10000 b_3_402[0,3]
    >= -9999.999900000001
- R3670: - 1.02 velocity[0,3] + sensed_velocity[0,3] - 10000 b_3_402[0,3]
+ R3670: sensed_velocity[0,3] - 1.02 velocity[0,3] - 10000 b_3_402[0,3]
    <= 0
- R3671: - 1.02 velocity[0,4] + sensed_velocity[0,4] - 10000 b_3_402[0,4]
+ R3671: sensed_velocity[0,4] - 1.02 velocity[0,4] - 10000 b_3_402[0,4]
    >= -9999.999900000001
- R3672: - 1.02 velocity[0,4] + sensed_velocity[0,4] - 10000 b_3_402[0,4]
+ R3672: sensed_velocity[0,4] - 1.02 velocity[0,4] - 10000 b_3_402[0,4]
    <= 0
- R3673: - 1.02 velocity[0,5] + sensed_velocity[0,5] - 10000 b_3_402[0,5]
+ R3673: sensed_velocity[0,5] - 1.02 velocity[0,5] - 10000 b_3_402[0,5]
    >= -9999.999900000001
- R3674: - 1.02 velocity[0,5] + sensed_velocity[0,5] - 10000 b_3_402[0,5]
+ R3674: sensed_velocity[0,5] - 1.02 velocity[0,5] - 10000 b_3_402[0,5]
    <= 0
- R3675: - 1.02 velocity[0,6] + sensed_velocity[0,6] - 10000 b_3_402[0,6]
+ R3675: sensed_velocity[0,6] - 1.02 velocity[0,6] - 10000 b_3_402[0,6]
    >= -9999.999900000001
- R3676: - 1.02 velocity[0,6] + sensed_velocity[0,6] - 10000 b_3_402[0,6]
+ R3676: sensed_velocity[0,6] - 1.02 velocity[0,6] - 10000 b_3_402[0,6]
    <= 0
- R3677: - 1.02 velocity[0,7] + sensed_velocity[0,7] - 10000 b_3_402[0,7]
+ R3677: sensed_velocity[0,7] - 1.02 velocity[0,7] - 10000 b_3_402[0,7]
    >= -9999.999900000001
- R3678: - 1.02 velocity[0,7] + sensed_velocity[0,7] - 10000 b_3_402[0,7]
+ R3678: sensed_velocity[0,7] - 1.02 velocity[0,7] - 10000 b_3_402[0,7]
    <= 0
- R3679: - 1.02 velocity[0,8] + sensed_velocity[0,8] - 10000 b_3_402[0,8]
+ R3679: sensed_velocity[0,8] - 1.02 velocity[0,8] - 10000 b_3_402[0,8]
    >= -9999.999900000001
- R3680: - 1.02 velocity[0,8] + sensed_velocity[0,8] - 10000 b_3_402[0,8]
+ R3680: sensed_velocity[0,8] - 1.02 velocity[0,8] - 10000 b_3_402[0,8]
    <= 0
- R3681: - 1.02 velocity[0,9] + sensed_velocity[0,9] - 10000 b_3_402[0,9]
+ R3681: sensed_velocity[0,9] - 1.02 velocity[0,9] - 10000 b_3_402[0,9]
    >= -9999.999900000001
- R3682: - 1.02 velocity[0,9] + sensed_velocity[0,9] - 10000 b_3_402[0,9]
+ R3682: sensed_velocity[0,9] - 1.02 velocity[0,9] - 10000 b_3_402[0,9]
    <= 0
- R3683: - 1.02 velocity[0,10] + sensed_velocity[0,10] - 10000 b_3_402[0,10]
+ R3683: sensed_velocity[0,10] - 1.02 velocity[0,10] - 10000 b_3_402[0,10]
    >= -9999.999900000001
- R3684: - 1.02 velocity[0,10] + sensed_velocity[0,10] - 10000 b_3_402[0,10]
+ R3684: sensed_velocity[0,10] - 1.02 velocity[0,10] - 10000 b_3_402[0,10]
    <= 0
- R3685: 0.8 velocity[0,0] - sensed_velocity[0,0] - 10000 b_3_403[0,0]
+ R3685: - sensed_velocity[0,0] + 0.8 velocity[0,0] - 10000 b_3_403[0,0]
    >= -9999.999900000001
- R3686: 0.8 velocity[0,0] - sensed_velocity[0,0] - 10000 b_3_403[0,0] <= 0
- R3687: 0.8 velocity[0,1] - sensed_velocity[0,1] - 10000 b_3_403[0,1]
+ R3686: - sensed_velocity[0,0] + 0.8 velocity[0,0] - 10000 b_3_403[0,0]
+   <= 0
+ R3687: - sensed_velocity[0,1] + 0.8 velocity[0,1] - 10000 b_3_403[0,1]
    >= -9999.999900000001
- R3688: 0.8 velocity[0,1] - sensed_velocity[0,1] - 10000 b_3_403[0,1] <= 0
- R3689: 0.8 velocity[0,2] - sensed_velocity[0,2] - 10000 b_3_403[0,2]
+ R3688: - sensed_velocity[0,1] + 0.8 velocity[0,1] - 10000 b_3_403[0,1]
+   <= 0
+ R3689: - sensed_velocity[0,2] + 0.8 velocity[0,2] - 10000 b_3_403[0,2]
    >= -9999.999900000001
- R3690: 0.8 velocity[0,2] - sensed_velocity[0,2] - 10000 b_3_403[0,2] <= 0
- R3691: 0.8 velocity[0,3] - sensed_velocity[0,3] - 10000 b_3_403[0,3]
+ R3690: - sensed_velocity[0,2] + 0.8 velocity[0,2] - 10000 b_3_403[0,2]
+   <= 0
+ R3691: - sensed_velocity[0,3] + 0.8 velocity[0,3] - 10000 b_3_403[0,3]
    >= -9999.999900000001
- R3692: 0.8 velocity[0,3] - sensed_velocity[0,3] - 10000 b_3_403[0,3] <= 0
- R3693: 0.8 velocity[0,4] - sensed_velocity[0,4] - 10000 b_3_403[0,4]
+ R3692: - sensed_velocity[0,3] + 0.8 velocity[0,3] - 10000 b_3_403[0,3]
+   <= 0
+ R3693: - sensed_velocity[0,4] + 0.8 velocity[0,4] - 10000 b_3_403[0,4]
    >= -9999.999900000001
- R3694: 0.8 velocity[0,4] - sensed_velocity[0,4] - 10000 b_3_403[0,4] <= 0
- R3695: 0.8 velocity[0,5] - sensed_velocity[0,5] - 10000 b_3_403[0,5]
+ R3694: - sensed_velocity[0,4] + 0.8 velocity[0,4] - 10000 b_3_403[0,4]
+   <= 0
+ R3695: - sensed_velocity[0,5] + 0.8 velocity[0,5] - 10000 b_3_403[0,5]
    >= -9999.999900000001
- R3696: 0.8 velocity[0,5] - sensed_velocity[0,5] - 10000 b_3_403[0,5] <= 0
- R3697: 0.8 velocity[0,6] - sensed_velocity[0,6] - 10000 b_3_403[0,6]
+ R3696: - sensed_velocity[0,5] + 0.8 velocity[0,5] - 10000 b_3_403[0,5]
+   <= 0
+ R3697: - sensed_velocity[0,6] + 0.8 velocity[0,6] - 10000 b_3_403[0,6]
    >= -9999.999900000001
- R3698: 0.8 velocity[0,6] - sensed_velocity[0,6] - 10000 b_3_403[0,6] <= 0
- R3699: 0.8 velocity[0,7] - sensed_velocity[0,7] - 10000 b_3_403[0,7]
+ R3698: - sensed_velocity[0,6] + 0.8 velocity[0,6] - 10000 b_3_403[0,6]
+   <= 0
+ R3699: - sensed_velocity[0,7] + 0.8 velocity[0,7] - 10000 b_3_403[0,7]
    >= -9999.999900000001
- R3700: 0.8 velocity[0,7] - sensed_velocity[0,7] - 10000 b_3_403[0,7] <= 0
- R3701: 0.8 velocity[0,8] - sensed_velocity[0,8] - 10000 b_3_403[0,8]
+ R3700: - sensed_velocity[0,7] + 0.8 velocity[0,7] - 10000 b_3_403[0,7]
+   <= 0
+ R3701: - sensed_velocity[0,8] + 0.8 velocity[0,8] - 10000 b_3_403[0,8]
    >= -9999.999900000001
- R3702: 0.8 velocity[0,8] - sensed_velocity[0,8] - 10000 b_3_403[0,8] <= 0
- R3703: 0.8 velocity[0,9] - sensed_velocity[0,9] - 10000 b_3_403[0,9]
+ R3702: - sensed_velocity[0,8] + 0.8 velocity[0,8] - 10000 b_3_403[0,8]
+   <= 0
+ R3703: - sensed_velocity[0,9] + 0.8 velocity[0,9] - 10000 b_3_403[0,9]
    >= -9999.999900000001
- R3704: 0.8 velocity[0,9] - sensed_velocity[0,9] - 10000 b_3_403[0,9] <= 0
- R3705: 0.8 velocity[0,10] - sensed_velocity[0,10] - 10000 b_3_403[0,10]
+ R3704: - sensed_velocity[0,9] + 0.8 velocity[0,9] - 10000 b_3_403[0,9]
+   <= 0
+ R3705: - sensed_velocity[0,10] + 0.8 velocity[0,10] - 10000 b_3_403[0,10]
    >= -9999.999900000001
- R3706: 0.8 velocity[0,10] - sensed_velocity[0,10] - 10000 b_3_403[0,10]
+ R3706: - sensed_velocity[0,10] + 0.8 velocity[0,10] - 10000 b_3_403[0,10]
    <= 0
  R3707: - 1.02 position[0,0] + sensed_position[0,0] - 10000 b_3_406[0,0]
    >= -9999.999900000001
@@ -5655,49 +5665,49 @@ Subject To
    >= -10000.98045565483
  R4200: 0.01 leading_velocity[0,10] - 10000 b_3_453[0,10]
    <= -0.9805556548269498
- R4201: 1616 acceleration[0,0] + f_r[0,0] - f_w[0,0] - 10000 b_3_455[0,0]
+ R4201: f_r[0,0] - f_w[0,0] + 1616 acceleration[0,0] - 10000 b_3_455[0,0]
    >= -10000
- R4202: 1616 acceleration[0,0] + f_r[0,0] - f_w[0,0] - 10000 b_3_455[0,0]
+ R4202: f_r[0,0] - f_w[0,0] + 1616 acceleration[0,0] - 10000 b_3_455[0,0]
    <= -0.0001
- R4203: 1616 acceleration[0,1] + f_r[0,1] - f_w[0,1] - 10000 b_3_455[0,1]
+ R4203: f_r[0,1] - f_w[0,1] + 1616 acceleration[0,1] - 10000 b_3_455[0,1]
    >= -10000
- R4204: 1616 acceleration[0,1] + f_r[0,1] - f_w[0,1] - 10000 b_3_455[0,1]
+ R4204: f_r[0,1] - f_w[0,1] + 1616 acceleration[0,1] - 10000 b_3_455[0,1]
    <= -0.0001
- R4205: 1616 acceleration[0,2] + f_r[0,2] - f_w[0,2] - 10000 b_3_455[0,2]
+ R4205: f_r[0,2] - f_w[0,2] + 1616 acceleration[0,2] - 10000 b_3_455[0,2]
    >= -10000
- R4206: 1616 acceleration[0,2] + f_r[0,2] - f_w[0,2] - 10000 b_3_455[0,2]
+ R4206: f_r[0,2] - f_w[0,2] + 1616 acceleration[0,2] - 10000 b_3_455[0,2]
    <= -0.0001
- R4207: 1616 acceleration[0,3] + f_r[0,3] - f_w[0,3] - 10000 b_3_455[0,3]
+ R4207: f_r[0,3] - f_w[0,3] + 1616 acceleration[0,3] - 10000 b_3_455[0,3]
    >= -10000
- R4208: 1616 acceleration[0,3] + f_r[0,3] - f_w[0,3] - 10000 b_3_455[0,3]
+ R4208: f_r[0,3] - f_w[0,3] + 1616 acceleration[0,3] - 10000 b_3_455[0,3]
    <= -0.0001
- R4209: 1616 acceleration[0,4] + f_r[0,4] - f_w[0,4] - 10000 b_3_455[0,4]
+ R4209: f_r[0,4] - f_w[0,4] + 1616 acceleration[0,4] - 10000 b_3_455[0,4]
    >= -10000
- R4210: 1616 acceleration[0,4] + f_r[0,4] - f_w[0,4] - 10000 b_3_455[0,4]
+ R4210: f_r[0,4] - f_w[0,4] + 1616 acceleration[0,4] - 10000 b_3_455[0,4]
    <= -0.0001
- R4211: 1616 acceleration[0,5] + f_r[0,5] - f_w[0,5] - 10000 b_3_455[0,5]
+ R4211: f_r[0,5] - f_w[0,5] + 1616 acceleration[0,5] - 10000 b_3_455[0,5]
    >= -10000
- R4212: 1616 acceleration[0,5] + f_r[0,5] - f_w[0,5] - 10000 b_3_455[0,5]
+ R4212: f_r[0,5] - f_w[0,5] + 1616 acceleration[0,5] - 10000 b_3_455[0,5]
    <= -0.0001
- R4213: 1616 acceleration[0,6] + f_r[0,6] - f_w[0,6] - 10000 b_3_455[0,6]
+ R4213: f_r[0,6] - f_w[0,6] + 1616 acceleration[0,6] - 10000 b_3_455[0,6]
    >= -10000
- R4214: 1616 acceleration[0,6] + f_r[0,6] - f_w[0,6] - 10000 b_3_455[0,6]
+ R4214: f_r[0,6] - f_w[0,6] + 1616 acceleration[0,6] - 10000 b_3_455[0,6]
    <= -0.0001
- R4215: 1616 acceleration[0,7] + f_r[0,7] - f_w[0,7] - 10000 b_3_455[0,7]
+ R4215: f_r[0,7] - f_w[0,7] + 1616 acceleration[0,7] - 10000 b_3_455[0,7]
    >= -10000
- R4216: 1616 acceleration[0,7] + f_r[0,7] - f_w[0,7] - 10000 b_3_455[0,7]
+ R4216: f_r[0,7] - f_w[0,7] + 1616 acceleration[0,7] - 10000 b_3_455[0,7]
    <= -0.0001
- R4217: 1616 acceleration[0,8] + f_r[0,8] - f_w[0,8] - 10000 b_3_455[0,8]
+ R4217: f_r[0,8] - f_w[0,8] + 1616 acceleration[0,8] - 10000 b_3_455[0,8]
    >= -10000
- R4218: 1616 acceleration[0,8] + f_r[0,8] - f_w[0,8] - 10000 b_3_455[0,8]
+ R4218: f_r[0,8] - f_w[0,8] + 1616 acceleration[0,8] - 10000 b_3_455[0,8]
    <= -0.0001
- R4219: 1616 acceleration[0,9] + f_r[0,9] - f_w[0,9] - 10000 b_3_455[0,9]
+ R4219: f_r[0,9] - f_w[0,9] + 1616 acceleration[0,9] - 10000 b_3_455[0,9]
    >= -10000
- R4220: 1616 acceleration[0,9] + f_r[0,9] - f_w[0,9] - 10000 b_3_455[0,9]
+ R4220: f_r[0,9] - f_w[0,9] + 1616 acceleration[0,9] - 10000 b_3_455[0,9]
    <= -0.0001
- R4221: 1616 acceleration[0,10] + f_r[0,10] - f_w[0,10]
+ R4221: f_r[0,10] - f_w[0,10] + 1616 acceleration[0,10]
    - 10000 b_3_455[0,10] >= -10000
- R4222: 1616 acceleration[0,10] + f_r[0,10] - f_w[0,10]
+ R4222: f_r[0,10] - f_w[0,10] + 1616 acceleration[0,10]
    - 10000 b_3_455[0,10] <= -0.0001
  R4223: - f_b[0,0] + f_e[0,0] - f_w[0,0] - 10000 b_3_457[0,0] >= -10000
  R4224: - f_b[0,0] + f_e[0,0] - f_w[0,0] - 10000 b_3_457[0,0] <= -0.0001
@@ -6053,93 +6063,93 @@ Subject To
  R4506: - 0.01 f_b[0,9] - 10000 b_3_485[0,9] <= 0.9902278274134749
  R4507: - 0.01 f_b[0,10] - 10000 b_3_485[0,10] >= -9999.009672172586
  R4508: - 0.01 f_b[0,10] - 10000 b_3_485[0,10] <= 0.9902278274134749
- R4509: 1.2 velocity[0,0] - sensed_velocity[0,0] - 10000 b_3_488[0,0]
+ R4509: - sensed_velocity[0,0] + 1.2 velocity[0,0] - 10000 b_3_488[0,0]
    >= -10000
- R4510: 1.2 velocity[0,0] - sensed_velocity[0,0] - 10000 b_3_488[0,0]
+ R4510: - sensed_velocity[0,0] + 1.2 velocity[0,0] - 10000 b_3_488[0,0]
    <= -0.0001
- R4511: 1.2 velocity[0,1] - sensed_velocity[0,1] - 10000 b_3_488[0,1]
+ R4511: - sensed_velocity[0,1] + 1.2 velocity[0,1] - 10000 b_3_488[0,1]
    >= -10000
- R4512: 1.2 velocity[0,1] - sensed_velocity[0,1] - 10000 b_3_488[0,1]
+ R4512: - sensed_velocity[0,1] + 1.2 velocity[0,1] - 10000 b_3_488[0,1]
    <= -0.0001
- R4513: 1.2 velocity[0,2] - sensed_velocity[0,2] - 10000 b_3_488[0,2]
+ R4513: - sensed_velocity[0,2] + 1.2 velocity[0,2] - 10000 b_3_488[0,2]
    >= -10000
- R4514: 1.2 velocity[0,2] - sensed_velocity[0,2] - 10000 b_3_488[0,2]
+ R4514: - sensed_velocity[0,2] + 1.2 velocity[0,2] - 10000 b_3_488[0,2]
    <= -0.0001
- R4515: 1.2 velocity[0,3] - sensed_velocity[0,3] - 10000 b_3_488[0,3]
+ R4515: - sensed_velocity[0,3] + 1.2 velocity[0,3] - 10000 b_3_488[0,3]
    >= -10000
- R4516: 1.2 velocity[0,3] - sensed_velocity[0,3] - 10000 b_3_488[0,3]
+ R4516: - sensed_velocity[0,3] + 1.2 velocity[0,3] - 10000 b_3_488[0,3]
    <= -0.0001
- R4517: 1.2 velocity[0,4] - sensed_velocity[0,4] - 10000 b_3_488[0,4]
+ R4517: - sensed_velocity[0,4] + 1.2 velocity[0,4] - 10000 b_3_488[0,4]
    >= -10000
- R4518: 1.2 velocity[0,4] - sensed_velocity[0,4] - 10000 b_3_488[0,4]
+ R4518: - sensed_velocity[0,4] + 1.2 velocity[0,4] - 10000 b_3_488[0,4]
    <= -0.0001
- R4519: 1.2 velocity[0,5] - sensed_velocity[0,5] - 10000 b_3_488[0,5]
+ R4519: - sensed_velocity[0,5] + 1.2 velocity[0,5] - 10000 b_3_488[0,5]
    >= -10000
- R4520: 1.2 velocity[0,5] - sensed_velocity[0,5] - 10000 b_3_488[0,5]
+ R4520: - sensed_velocity[0,5] + 1.2 velocity[0,5] - 10000 b_3_488[0,5]
    <= -0.0001
- R4521: 1.2 velocity[0,6] - sensed_velocity[0,6] - 10000 b_3_488[0,6]
+ R4521: - sensed_velocity[0,6] + 1.2 velocity[0,6] - 10000 b_3_488[0,6]
    >= -10000
- R4522: 1.2 velocity[0,6] - sensed_velocity[0,6] - 10000 b_3_488[0,6]
+ R4522: - sensed_velocity[0,6] + 1.2 velocity[0,6] - 10000 b_3_488[0,6]
    <= -0.0001
- R4523: 1.2 velocity[0,7] - sensed_velocity[0,7] - 10000 b_3_488[0,7]
+ R4523: - sensed_velocity[0,7] + 1.2 velocity[0,7] - 10000 b_3_488[0,7]
    >= -10000
- R4524: 1.2 velocity[0,7] - sensed_velocity[0,7] - 10000 b_3_488[0,7]
+ R4524: - sensed_velocity[0,7] + 1.2 velocity[0,7] - 10000 b_3_488[0,7]
    <= -0.0001
- R4525: 1.2 velocity[0,8] - sensed_velocity[0,8] - 10000 b_3_488[0,8]
+ R4525: - sensed_velocity[0,8] + 1.2 velocity[0,8] - 10000 b_3_488[0,8]
    >= -10000
- R4526: 1.2 velocity[0,8] - sensed_velocity[0,8] - 10000 b_3_488[0,8]
+ R4526: - sensed_velocity[0,8] + 1.2 velocity[0,8] - 10000 b_3_488[0,8]
    <= -0.0001
- R4527: 1.2 velocity[0,9] - sensed_velocity[0,9] - 10000 b_3_488[0,9]
+ R4527: - sensed_velocity[0,9] + 1.2 velocity[0,9] - 10000 b_3_488[0,9]
    >= -10000
- R4528: 1.2 velocity[0,9] - sensed_velocity[0,9] - 10000 b_3_488[0,9]
+ R4528: - sensed_velocity[0,9] + 1.2 velocity[0,9] - 10000 b_3_488[0,9]
    <= -0.0001
- R4529: 1.2 velocity[0,10] - sensed_velocity[0,10] - 10000 b_3_488[0,10]
+ R4529: - sensed_velocity[0,10] + 1.2 velocity[0,10] - 10000 b_3_488[0,10]
    >= -10000
- R4530: 1.2 velocity[0,10] - sensed_velocity[0,10] - 10000 b_3_488[0,10]
+ R4530: - sensed_velocity[0,10] + 1.2 velocity[0,10] - 10000 b_3_488[0,10]
    <= -0.0001
- R4531: - 0.8 velocity[0,0] + sensed_velocity[0,0] - 10000 b_3_490[0,0]
+ R4531: sensed_velocity[0,0] - 0.8 velocity[0,0] - 10000 b_3_490[0,0]
    >= -10000
- R4532: - 0.8 velocity[0,0] + sensed_velocity[0,0] - 10000 b_3_490[0,0]
+ R4532: sensed_velocity[0,0] - 0.8 velocity[0,0] - 10000 b_3_490[0,0]
    <= -0.0001
- R4533: - 0.8 velocity[0,1] + sensed_velocity[0,1] - 10000 b_3_490[0,1]
+ R4533: sensed_velocity[0,1] - 0.8 velocity[0,1] - 10000 b_3_490[0,1]
    >= -10000
- R4534: - 0.8 velocity[0,1] + sensed_velocity[0,1] - 10000 b_3_490[0,1]
+ R4534: sensed_velocity[0,1] - 0.8 velocity[0,1] - 10000 b_3_490[0,1]
    <= -0.0001
- R4535: - 0.8 velocity[0,2] + sensed_velocity[0,2] - 10000 b_3_490[0,2]
+ R4535: sensed_velocity[0,2] - 0.8 velocity[0,2] - 10000 b_3_490[0,2]
    >= -10000
- R4536: - 0.8 velocity[0,2] + sensed_velocity[0,2] - 10000 b_3_490[0,2]
+ R4536: sensed_velocity[0,2] - 0.8 velocity[0,2] - 10000 b_3_490[0,2]
    <= -0.0001
- R4537: - 0.8 velocity[0,3] + sensed_velocity[0,3] - 10000 b_3_490[0,3]
+ R4537: sensed_velocity[0,3] - 0.8 velocity[0,3] - 10000 b_3_490[0,3]
    >= -10000
- R4538: - 0.8 velocity[0,3] + sensed_velocity[0,3] - 10000 b_3_490[0,3]
+ R4538: sensed_velocity[0,3] - 0.8 velocity[0,3] - 10000 b_3_490[0,3]
    <= -0.0001
- R4539: - 0.8 velocity[0,4] + sensed_velocity[0,4] - 10000 b_3_490[0,4]
+ R4539: sensed_velocity[0,4] - 0.8 velocity[0,4] - 10000 b_3_490[0,4]
    >= -10000
- R4540: - 0.8 velocity[0,4] + sensed_velocity[0,4] - 10000 b_3_490[0,4]
+ R4540: sensed_velocity[0,4] - 0.8 velocity[0,4] - 10000 b_3_490[0,4]
    <= -0.0001
- R4541: - 0.8 velocity[0,5] + sensed_velocity[0,5] - 10000 b_3_490[0,5]
+ R4541: sensed_velocity[0,5] - 0.8 velocity[0,5] - 10000 b_3_490[0,5]
    >= -10000
- R4542: - 0.8 velocity[0,5] + sensed_velocity[0,5] - 10000 b_3_490[0,5]
+ R4542: sensed_velocity[0,5] - 0.8 velocity[0,5] - 10000 b_3_490[0,5]
    <= -0.0001
- R4543: - 0.8 velocity[0,6] + sensed_velocity[0,6] - 10000 b_3_490[0,6]
+ R4543: sensed_velocity[0,6] - 0.8 velocity[0,6] - 10000 b_3_490[0,6]
    >= -10000
- R4544: - 0.8 velocity[0,6] + sensed_velocity[0,6] - 10000 b_3_490[0,6]
+ R4544: sensed_velocity[0,6] - 0.8 velocity[0,6] - 10000 b_3_490[0,6]
    <= -0.0001
- R4545: - 0.8 velocity[0,7] + sensed_velocity[0,7] - 10000 b_3_490[0,7]
+ R4545: sensed_velocity[0,7] - 0.8 velocity[0,7] - 10000 b_3_490[0,7]
    >= -10000
- R4546: - 0.8 velocity[0,7] + sensed_velocity[0,7] - 10000 b_3_490[0,7]
+ R4546: sensed_velocity[0,7] - 0.8 velocity[0,7] - 10000 b_3_490[0,7]
    <= -0.0001
- R4547: - 0.8 velocity[0,8] + sensed_velocity[0,8] - 10000 b_3_490[0,8]
+ R4547: sensed_velocity[0,8] - 0.8 velocity[0,8] - 10000 b_3_490[0,8]
    >= -10000
- R4548: - 0.8 velocity[0,8] + sensed_velocity[0,8] - 10000 b_3_490[0,8]
+ R4548: sensed_velocity[0,8] - 0.8 velocity[0,8] - 10000 b_3_490[0,8]
    <= -0.0001
- R4549: - 0.8 velocity[0,9] + sensed_velocity[0,9] - 10000 b_3_490[0,9]
+ R4549: sensed_velocity[0,9] - 0.8 velocity[0,9] - 10000 b_3_490[0,9]
    >= -10000
- R4550: - 0.8 velocity[0,9] + sensed_velocity[0,9] - 10000 b_3_490[0,9]
+ R4550: sensed_velocity[0,9] - 0.8 velocity[0,9] - 10000 b_3_490[0,9]
    <= -0.0001
- R4551: - 0.8 velocity[0,10] + sensed_velocity[0,10] - 10000 b_3_490[0,10]
+ R4551: sensed_velocity[0,10] - 0.8 velocity[0,10] - 10000 b_3_490[0,10]
    >= -10000
- R4552: - 0.8 velocity[0,10] + sensed_velocity[0,10] - 10000 b_3_490[0,10]
+ R4552: sensed_velocity[0,10] - 0.8 velocity[0,10] - 10000 b_3_490[0,10]
    <= -0.0001
  R4553: 1.02 position[0,0] - sensed_position[0,0] - 10000 b_3_492[0,0]
    >= -10000
@@ -6666,48 +6676,6 @@ Bounds
  -10000 <= f_e_target[0,18] <= 10000
  -10000 <= f_e_target[0,19] <= 10000
  -10000 <= f_e_target[0,20] <= 10000
- -10000 <= velocity[0,0] <= 10000
- -10000 <= velocity[0,1] <= 10000
- -10000 <= velocity[0,2] <= 10000
- -10000 <= velocity[0,3] <= 10000
- -10000 <= velocity[0,4] <= 10000
- -10000 <= velocity[0,5] <= 10000
- -10000 <= velocity[0,6] <= 10000
- -10000 <= velocity[0,7] <= 10000
- -10000 <= velocity[0,8] <= 10000
- -10000 <= velocity[0,9] <= 10000
- -10000 <= velocity[0,10] <= 10000
- -10000 <= velocity[0,11] <= 10000
- -10000 <= velocity[0,12] <= 10000
- -10000 <= velocity[0,13] <= 10000
- -10000 <= velocity[0,14] <= 10000
- -10000 <= velocity[0,15] <= 10000
- -10000 <= velocity[0,16] <= 10000
- -10000 <= velocity[0,17] <= 10000
- -10000 <= velocity[0,18] <= 10000
- -10000 <= velocity[0,19] <= 10000
- -10000 <= velocity[0,20] <= 10000
- -10000 <= leading_velocity[0,0] <= 10000
- -10000 <= leading_velocity[0,1] <= 10000
- -10000 <= leading_velocity[0,2] <= 10000
- -10000 <= leading_velocity[0,3] <= 10000
- -10000 <= leading_velocity[0,4] <= 10000
- -10000 <= leading_velocity[0,5] <= 10000
- -10000 <= leading_velocity[0,6] <= 10000
- -10000 <= leading_velocity[0,7] <= 10000
- -10000 <= leading_velocity[0,8] <= 10000
- -10000 <= leading_velocity[0,9] <= 10000
- -10000 <= leading_velocity[0,10] <= 10000
- -10000 <= leading_velocity[0,11] <= 10000
- -10000 <= leading_velocity[0,12] <= 10000
- -10000 <= leading_velocity[0,13] <= 10000
- -10000 <= leading_velocity[0,14] <= 10000
- -10000 <= leading_velocity[0,15] <= 10000
- -10000 <= leading_velocity[0,16] <= 10000
- -10000 <= leading_velocity[0,17] <= 10000
- -10000 <= leading_velocity[0,18] <= 10000
- -10000 <= leading_velocity[0,19] <= 10000
- -10000 <= leading_velocity[0,20] <= 10000
  -10000 <= sensed_velocity[0,0] <= 10000
  -10000 <= sensed_velocity[0,1] <= 10000
  -10000 <= sensed_velocity[0,2] <= 10000
@@ -6729,69 +6697,27 @@ Bounds
  -10000 <= sensed_velocity[0,18] <= 10000
  -10000 <= sensed_velocity[0,19] <= 10000
  -10000 <= sensed_velocity[0,20] <= 10000
- -10000 <= sensed_f_e[0,0] <= 10000
- -10000 <= sensed_f_e[0,1] <= 10000
- -10000 <= sensed_f_e[0,2] <= 10000
- -10000 <= sensed_f_e[0,3] <= 10000
- -10000 <= sensed_f_e[0,4] <= 10000
- -10000 <= sensed_f_e[0,5] <= 10000
- -10000 <= sensed_f_e[0,6] <= 10000
- -10000 <= sensed_f_e[0,7] <= 10000
- -10000 <= sensed_f_e[0,8] <= 10000
- -10000 <= sensed_f_e[0,9] <= 10000
- -10000 <= sensed_f_e[0,10] <= 10000
- -10000 <= sensed_f_e[0,11] <= 10000
- -10000 <= sensed_f_e[0,12] <= 10000
- -10000 <= sensed_f_e[0,13] <= 10000
- -10000 <= sensed_f_e[0,14] <= 10000
- -10000 <= sensed_f_e[0,15] <= 10000
- -10000 <= sensed_f_e[0,16] <= 10000
- -10000 <= sensed_f_e[0,17] <= 10000
- -10000 <= sensed_f_e[0,18] <= 10000
- -10000 <= sensed_f_e[0,19] <= 10000
- -10000 <= sensed_f_e[0,20] <= 10000
- -10000 <= acceleration[0,0] <= 10000
- -10000 <= acceleration[0,1] <= 10000
- -10000 <= acceleration[0,2] <= 10000
- -10000 <= acceleration[0,3] <= 10000
- -10000 <= acceleration[0,4] <= 10000
- -10000 <= acceleration[0,5] <= 10000
- -10000 <= acceleration[0,6] <= 10000
- -10000 <= acceleration[0,7] <= 10000
- -10000 <= acceleration[0,8] <= 10000
- -10000 <= acceleration[0,9] <= 10000
- -10000 <= acceleration[0,10] <= 10000
- -10000 <= acceleration[0,11] <= 10000
- -10000 <= acceleration[0,12] <= 10000
- -10000 <= acceleration[0,13] <= 10000
- -10000 <= acceleration[0,14] <= 10000
- -10000 <= acceleration[0,15] <= 10000
- -10000 <= acceleration[0,16] <= 10000
- -10000 <= acceleration[0,17] <= 10000
- -10000 <= acceleration[0,18] <= 10000
- -10000 <= acceleration[0,19] <= 10000
- -10000 <= acceleration[0,20] <= 10000
- -10000 <= sensed_leading_velocity[0,0] <= 10000
- -10000 <= sensed_leading_velocity[0,1] <= 10000
- -10000 <= sensed_leading_velocity[0,2] <= 10000
- -10000 <= sensed_leading_velocity[0,3] <= 10000
- -10000 <= sensed_leading_velocity[0,4] <= 10000
- -10000 <= sensed_leading_velocity[0,5] <= 10000
- -10000 <= sensed_leading_velocity[0,6] <= 10000
- -10000 <= sensed_leading_velocity[0,7] <= 10000
- -10000 <= sensed_leading_velocity[0,8] <= 10000
- -10000 <= sensed_leading_velocity[0,9] <= 10000
- -10000 <= sensed_leading_velocity[0,10] <= 10000
- -10000 <= sensed_leading_velocity[0,11] <= 10000
- -10000 <= sensed_leading_velocity[0,12] <= 10000
- -10000 <= sensed_leading_velocity[0,13] <= 10000
- -10000 <= sensed_leading_velocity[0,14] <= 10000
- -10000 <= sensed_leading_velocity[0,15] <= 10000
- -10000 <= sensed_leading_velocity[0,16] <= 10000
- -10000 <= sensed_leading_velocity[0,17] <= 10000
- -10000 <= sensed_leading_velocity[0,18] <= 10000
- -10000 <= sensed_leading_velocity[0,19] <= 10000
- -10000 <= sensed_leading_velocity[0,20] <= 10000
+ -10000 <= velocity[0,0] <= 10000
+ -10000 <= velocity[0,1] <= 10000
+ -10000 <= velocity[0,2] <= 10000
+ -10000 <= velocity[0,3] <= 10000
+ -10000 <= velocity[0,4] <= 10000
+ -10000 <= velocity[0,5] <= 10000
+ -10000 <= velocity[0,6] <= 10000
+ -10000 <= velocity[0,7] <= 10000
+ -10000 <= velocity[0,8] <= 10000
+ -10000 <= velocity[0,9] <= 10000
+ -10000 <= velocity[0,10] <= 10000
+ -10000 <= velocity[0,11] <= 10000
+ -10000 <= velocity[0,12] <= 10000
+ -10000 <= velocity[0,13] <= 10000
+ -10000 <= velocity[0,14] <= 10000
+ -10000 <= velocity[0,15] <= 10000
+ -10000 <= velocity[0,16] <= 10000
+ -10000 <= velocity[0,17] <= 10000
+ -10000 <= velocity[0,18] <= 10000
+ -10000 <= velocity[0,19] <= 10000
+ -10000 <= velocity[0,20] <= 10000
  -10000 <= position[0,0] <= 10000
  -10000 <= position[0,1] <= 10000
  -10000 <= position[0,2] <= 10000
@@ -6813,27 +6739,48 @@ Bounds
  -10000 <= position[0,18] <= 10000
  -10000 <= position[0,19] <= 10000
  -10000 <= position[0,20] <= 10000
- -10000 <= sensed_f_b[0,0] <= 10000
- -10000 <= sensed_f_b[0,1] <= 10000
- -10000 <= sensed_f_b[0,2] <= 10000
- -10000 <= sensed_f_b[0,3] <= 10000
- -10000 <= sensed_f_b[0,4] <= 10000
- -10000 <= sensed_f_b[0,5] <= 10000
- -10000 <= sensed_f_b[0,6] <= 10000
- -10000 <= sensed_f_b[0,7] <= 10000
- -10000 <= sensed_f_b[0,8] <= 10000
- -10000 <= sensed_f_b[0,9] <= 10000
- -10000 <= sensed_f_b[0,10] <= 10000
- -10000 <= sensed_f_b[0,11] <= 10000
- -10000 <= sensed_f_b[0,12] <= 10000
- -10000 <= sensed_f_b[0,13] <= 10000
- -10000 <= sensed_f_b[0,14] <= 10000
- -10000 <= sensed_f_b[0,15] <= 10000
- -10000 <= sensed_f_b[0,16] <= 10000
- -10000 <= sensed_f_b[0,17] <= 10000
- -10000 <= sensed_f_b[0,18] <= 10000
- -10000 <= sensed_f_b[0,19] <= 10000
- -10000 <= sensed_f_b[0,20] <= 10000
+ -10000 <= leading_velocity[0,0] <= 10000
+ -10000 <= leading_velocity[0,1] <= 10000
+ -10000 <= leading_velocity[0,2] <= 10000
+ -10000 <= leading_velocity[0,3] <= 10000
+ -10000 <= leading_velocity[0,4] <= 10000
+ -10000 <= leading_velocity[0,5] <= 10000
+ -10000 <= leading_velocity[0,6] <= 10000
+ -10000 <= leading_velocity[0,7] <= 10000
+ -10000 <= leading_velocity[0,8] <= 10000
+ -10000 <= leading_velocity[0,9] <= 10000
+ -10000 <= leading_velocity[0,10] <= 10000
+ -10000 <= leading_velocity[0,11] <= 10000
+ -10000 <= leading_velocity[0,12] <= 10000
+ -10000 <= leading_velocity[0,13] <= 10000
+ -10000 <= leading_velocity[0,14] <= 10000
+ -10000 <= leading_velocity[0,15] <= 10000
+ -10000 <= leading_velocity[0,16] <= 10000
+ -10000 <= leading_velocity[0,17] <= 10000
+ -10000 <= leading_velocity[0,18] <= 10000
+ -10000 <= leading_velocity[0,19] <= 10000
+ -10000 <= leading_velocity[0,20] <= 10000
+ -10000 <= sensed_position[0,0] <= 10000
+ -10000 <= sensed_position[0,1] <= 10000
+ -10000 <= sensed_position[0,2] <= 10000
+ -10000 <= sensed_position[0,3] <= 10000
+ -10000 <= sensed_position[0,4] <= 10000
+ -10000 <= sensed_position[0,5] <= 10000
+ -10000 <= sensed_position[0,6] <= 10000
+ -10000 <= sensed_position[0,7] <= 10000
+ -10000 <= sensed_position[0,8] <= 10000
+ -10000 <= sensed_position[0,9] <= 10000
+ -10000 <= sensed_position[0,10] <= 10000
+ -10000 <= sensed_position[0,11] <= 10000
+ -10000 <= sensed_position[0,12] <= 10000
+ -10000 <= sensed_position[0,13] <= 10000
+ -10000 <= sensed_position[0,14] <= 10000
+ -10000 <= sensed_position[0,15] <= 10000
+ -10000 <= sensed_position[0,16] <= 10000
+ -10000 <= sensed_position[0,17] <= 10000
+ -10000 <= sensed_position[0,18] <= 10000
+ -10000 <= sensed_position[0,19] <= 10000
+ -10000 <= sensed_position[0,20] <= 10000
  -10000 <= f_r[0,0] <= 10000
  -10000 <= f_r[0,1] <= 10000
  -10000 <= f_r[0,2] <= 10000
@@ -6876,27 +6823,90 @@ Bounds
  -10000 <= f_w[0,18] <= 10000
  -10000 <= f_w[0,19] <= 10000
  -10000 <= f_w[0,20] <= 10000
- -10000 <= sensed_position[0,0] <= 10000
- -10000 <= sensed_position[0,1] <= 10000
- -10000 <= sensed_position[0,2] <= 10000
- -10000 <= sensed_position[0,3] <= 10000
- -10000 <= sensed_position[0,4] <= 10000
- -10000 <= sensed_position[0,5] <= 10000
- -10000 <= sensed_position[0,6] <= 10000
- -10000 <= sensed_position[0,7] <= 10000
- -10000 <= sensed_position[0,8] <= 10000
- -10000 <= sensed_position[0,9] <= 10000
- -10000 <= sensed_position[0,10] <= 10000
- -10000 <= sensed_position[0,11] <= 10000
- -10000 <= sensed_position[0,12] <= 10000
- -10000 <= sensed_position[0,13] <= 10000
- -10000 <= sensed_position[0,14] <= 10000
- -10000 <= sensed_position[0,15] <= 10000
- -10000 <= sensed_position[0,16] <= 10000
- -10000 <= sensed_position[0,17] <= 10000
- -10000 <= sensed_position[0,18] <= 10000
- -10000 <= sensed_position[0,19] <= 10000
- -10000 <= sensed_position[0,20] <= 10000
+ -10000 <= sensed_leading_velocity[0,0] <= 10000
+ -10000 <= sensed_leading_velocity[0,1] <= 10000
+ -10000 <= sensed_leading_velocity[0,2] <= 10000
+ -10000 <= sensed_leading_velocity[0,3] <= 10000
+ -10000 <= sensed_leading_velocity[0,4] <= 10000
+ -10000 <= sensed_leading_velocity[0,5] <= 10000
+ -10000 <= sensed_leading_velocity[0,6] <= 10000
+ -10000 <= sensed_leading_velocity[0,7] <= 10000
+ -10000 <= sensed_leading_velocity[0,8] <= 10000
+ -10000 <= sensed_leading_velocity[0,9] <= 10000
+ -10000 <= sensed_leading_velocity[0,10] <= 10000
+ -10000 <= sensed_leading_velocity[0,11] <= 10000
+ -10000 <= sensed_leading_velocity[0,12] <= 10000
+ -10000 <= sensed_leading_velocity[0,13] <= 10000
+ -10000 <= sensed_leading_velocity[0,14] <= 10000
+ -10000 <= sensed_leading_velocity[0,15] <= 10000
+ -10000 <= sensed_leading_velocity[0,16] <= 10000
+ -10000 <= sensed_leading_velocity[0,17] <= 10000
+ -10000 <= sensed_leading_velocity[0,18] <= 10000
+ -10000 <= sensed_leading_velocity[0,19] <= 10000
+ -10000 <= sensed_leading_velocity[0,20] <= 10000
+ -10000 <= sensed_f_e[0,0] <= 10000
+ -10000 <= sensed_f_e[0,1] <= 10000
+ -10000 <= sensed_f_e[0,2] <= 10000
+ -10000 <= sensed_f_e[0,3] <= 10000
+ -10000 <= sensed_f_e[0,4] <= 10000
+ -10000 <= sensed_f_e[0,5] <= 10000
+ -10000 <= sensed_f_e[0,6] <= 10000
+ -10000 <= sensed_f_e[0,7] <= 10000
+ -10000 <= sensed_f_e[0,8] <= 10000
+ -10000 <= sensed_f_e[0,9] <= 10000
+ -10000 <= sensed_f_e[0,10] <= 10000
+ -10000 <= sensed_f_e[0,11] <= 10000
+ -10000 <= sensed_f_e[0,12] <= 10000
+ -10000 <= sensed_f_e[0,13] <= 10000
+ -10000 <= sensed_f_e[0,14] <= 10000
+ -10000 <= sensed_f_e[0,15] <= 10000
+ -10000 <= sensed_f_e[0,16] <= 10000
+ -10000 <= sensed_f_e[0,17] <= 10000
+ -10000 <= sensed_f_e[0,18] <= 10000
+ -10000 <= sensed_f_e[0,19] <= 10000
+ -10000 <= sensed_f_e[0,20] <= 10000
+ -10000 <= acceleration[0,0] <= 10000
+ -10000 <= acceleration[0,1] <= 10000
+ -10000 <= acceleration[0,2] <= 10000
+ -10000 <= acceleration[0,3] <= 10000
+ -10000 <= acceleration[0,4] <= 10000
+ -10000 <= acceleration[0,5] <= 10000
+ -10000 <= acceleration[0,6] <= 10000
+ -10000 <= acceleration[0,7] <= 10000
+ -10000 <= acceleration[0,8] <= 10000
+ -10000 <= acceleration[0,9] <= 10000
+ -10000 <= acceleration[0,10] <= 10000
+ -10000 <= acceleration[0,11] <= 10000
+ -10000 <= acceleration[0,12] <= 10000
+ -10000 <= acceleration[0,13] <= 10000
+ -10000 <= acceleration[0,14] <= 10000
+ -10000 <= acceleration[0,15] <= 10000
+ -10000 <= acceleration[0,16] <= 10000
+ -10000 <= acceleration[0,17] <= 10000
+ -10000 <= acceleration[0,18] <= 10000
+ -10000 <= acceleration[0,19] <= 10000
+ -10000 <= acceleration[0,20] <= 10000
+ -10000 <= sensed_f_b[0,0] <= 10000
+ -10000 <= sensed_f_b[0,1] <= 10000
+ -10000 <= sensed_f_b[0,2] <= 10000
+ -10000 <= sensed_f_b[0,3] <= 10000
+ -10000 <= sensed_f_b[0,4] <= 10000
+ -10000 <= sensed_f_b[0,5] <= 10000
+ -10000 <= sensed_f_b[0,6] <= 10000
+ -10000 <= sensed_f_b[0,7] <= 10000
+ -10000 <= sensed_f_b[0,8] <= 10000
+ -10000 <= sensed_f_b[0,9] <= 10000
+ -10000 <= sensed_f_b[0,10] <= 10000
+ -10000 <= sensed_f_b[0,11] <= 10000
+ -10000 <= sensed_f_b[0,12] <= 10000
+ -10000 <= sensed_f_b[0,13] <= 10000
+ -10000 <= sensed_f_b[0,14] <= 10000
+ -10000 <= sensed_f_b[0,15] <= 10000
+ -10000 <= sensed_f_b[0,16] <= 10000
+ -10000 <= sensed_f_b[0,17] <= 10000
+ -10000 <= sensed_f_b[0,18] <= 10000
+ -10000 <= sensed_f_b[0,19] <= 10000
+ -10000 <= sensed_f_b[0,20] <= 10000
 Binaries
  b b_1[0,0] b_1_2[0,0] b_1_3[0,0] b_1_4[0,0] b_1_5[0,0] b_1_6[0,0]
  b_1_7[0,0] b_1_8[0,0] b_1_8[0,1] b_1_8[0,2] b_1_8[0,3] b_1_8[0,4]
