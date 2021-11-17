@@ -25,7 +25,7 @@ car.add_deter_vars(
 
 car.add_nondeter_vars(
     ['noise_velocity', 'noise_position', 'noise_leading_velocity'], 
-    mean = [0, 0, 0], cov = [[0.00001, 0, 0], [0, 0.00001, 0], [0, 0, 0.00001]])
+    mean = [0, 0, 0], cov = [[0.00002, 0, 0], [0, 0.00003, 0], [0, 0, 0.00004]])
 
 car.add_deter_vars(['sensed_velocity'])
 
@@ -68,7 +68,7 @@ brakes.set_guaran(
 
 ######### Engine
 engine = contract('engine')
-engine.add_nondeter_vars(['noise_f_e'], mean = [0], cov = [[0.00001]])
+engine.add_nondeter_vars(['noise_f_e'], mean = [0], cov = [[0.00005]])
 
 engine.add_deter_vars(
     ['f_e', 'f_e_target']

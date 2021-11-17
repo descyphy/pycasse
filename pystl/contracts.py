@@ -776,7 +776,7 @@ def merge_variables(c1, c2):
         c1.nondeter_var_cov = c2.nondeter_var_cov
     else:
         c1.nondeter_var_cov = [row + [0]*new_nondeter_num for row in c1.nondeter_var_cov]
-        for var in set(c2.nondeter_var_list) - set(c1.nondeter_var_list):
+        for i, var in enumerate(set(c2.nondeter_var_list) - set(c1.nondeter_var_list)):
             # Find index of the variable
             idx = c2.nondeter_var_list.index(var)
 
@@ -784,9 +784,6 @@ def merge_variables(c1, c2):
             c1.nondeter_var_list.append(var)
             c1.nondeter_var_types.append(c2.nondeter_var_types[idx])
             c1.nondeter_var_mean.append(c2.nondeter_var_mean[idx])
-            if idx == 0:
-                c1.nondeter_var_cov += [[0]*curr_nondeter_num + c2.nondeter_var_cov[idx]]
-            else:
-                deque_list = deque(c2.nondeter_var_cov[idx])
-                deque_list.rotate(-idx)
-                c1.nondeter_var_cov += [[0]*curr_nondeter_num + list(deque_list)]
+            deque_list = deque(c2.nondeter_var_cov[idx])
+            deque_list.rotate(-idx+i)
+            c1.nondeter_var_cov += [[0]*curr_nondeter_num + list(deque_list)]
