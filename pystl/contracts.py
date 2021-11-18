@@ -384,10 +384,11 @@ class contract:
                 return 0
             else:
                 for v in MILPsolver.model.getVars():
-                    if 'b' not in v.varName:
-                        print('%s %g' % (v.varName, v.x))
-                    elif v.varName in ('b_a', 'b_g'):
-                        print('%s %g' % (v.varName, v.x))
+                    print('%s %g' % (v.varName, v.x))
+                    # if 'b' not in v.varName:
+                    #     print('%s %g' % (v.varName, v.x))
+                    # elif v.varName in ('b_a', 'b_g'):
+                    #     print('%s %g' % (v.varName, v.x))
                     
                 MILPsolver.set_objective(sense='maximize')
                 if not MILPsolver.solve():
@@ -396,10 +397,11 @@ class contract:
                 else: 
                     print("UNDET partition!")
                     for v in MILPsolver.model.getVars():
-                        if 'b' not in v.varName:
-                            print('%s %g' % (v.varName, v.x))
-                        elif v.varName in ('b_a', 'b_g'):
-                            print('%s %g' % (v.varName, v.x))
+                        print('%s %g' % (v.varName, v.x))
+                        # if 'b' not in v.varName:
+                        #     print('%s %g' % (v.varName, v.x))
+                        # elif v.varName in ('b_a', 'b_g'):
+                        #     print('%s %g' % (v.varName, v.x))
                     return 2
 
         def paramSpacePartition(partition):

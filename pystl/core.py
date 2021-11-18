@@ -20,7 +20,7 @@ class MILPSolver:
         b_vars
         b_var_num
     """
-    __slots__ = ('model', 'contract', 'horizon', 'node_vars', 'contract_vars', 'mode', 'objective', 'verbose', 'soft_constraint_vars')
+    __slots__ = ('model', 'contract', 'horizon', 'node_vars', 'contract_vars', 'mode', 'objective', 'verbose', 'soft_constraint_vars', 'var_dists')
 
     def __init__(self, mode = "Boolean", verbose=False):
         assert(mode in ("Boolean", "Quantitative"))
@@ -39,6 +39,7 @@ class MILPSolver:
         self.contract_vars = {}
         self.horizon = []
         self.soft_constraint_vars = []
+        self.var_dists = {}
 
         # Initialize convex solver
         self.model = gp.Model() # Convex solver for solving the MILP convex problem
@@ -53,8 +54,8 @@ class MILPSolver:
         self.contract = contract
 
         # Add deterministic variables
-        [_, horizon_end_a] = contract.assumption.find_horizon(0, 0)
-        [_, horizon_end_g] = contract.guarantee.find_horizon(0, 0)
+        [_, horizon_end_a] = contract.assumption.find_horizon()
+        [_, horizon_end_g] = contract.guarantee.find_horizon()
         self.horizon = max(horizon_end_a, horizon_end_g)
         for i, variable in enumerate(contract.deter_var_list):
             self.contract_vars[variable] = self.model.addVars(1, max(int(horizon_end_a), int(horizon_end_g))+1, lb=contract.deter_var_bounds[i][0], ub=contract.deter_var_bounds[i][1], vtype=GRB.BINARY if contract.deter_var_types == 'BINARY' else GRB.CONTINUOUS, name=variable)
@@ -65,37 +66,113 @@ class MILPSolver:
             self.model.addVar(lb=contract.param_var_bounds[i][0], ub=contract.param_var_bounds[i][1], vtype=GRB.CONTINUOUS, name=variable)
         self.model.update()
 
-    def add_dynamics(self, x = None, u = None, A = None, B = None):
+    def add_dynamics(self, x = [], u = [], w = [], w_mean = None, w_cov = None, A = None, B = None, C = None):
         """
-        Adds constraints for dynamics.
+        Adds constraints for dynamics. 
+        x_{k+1} = A*x_{k} + B*u_{k} + C*w_{k}
+        y_{k} = D*x_{k} + E*u_{k} + F*w_{k}
 
         :param x: [description], defaults to None
         :type x: [type], optional
         :param u: [description], defaults to None
         :type u: [type], optional
+        :param w: [description], defaults to None
+        :type w: [type], optional
+        :param y: [description], defaults to None
+        :type y: [type], optional
         :param A: [description], defaults to None
         :type A: [type], optional
         :param B: [description], defaults to None
         :type B: [type], optional
+        :param C: [description], defaults to None
+        :type C: [type], optional
         """
-        # Check the dimensions of the matrices A and B
-        assert(len(A) == len(x))
-        assert(len(A[0]) == len(x))
-        assert(len(B) == len(x))
-        assert(len(B[0]) == len(u))
+        # TODO: may have to modify when random variables are correlated
+        # Check the dimensions of the matrices
+        if len(w) != 0:
+            assert(len(w_mean) == len(w))
+            assert(len(w_cov) == len(w))
+            assert(len(w_cov[0]) == len(w))
+        if A is not None:
+            assert(len(A) == len(x))
+            assert(len(A[0]) == len(x))
+        if B is not None:
+            assert(len(B) == len(x))
+            assert(len(B[0]) == len(u))
+        if C is not None:
+            assert(len(C) == len(x))
+            assert(len(C[0]) == len(w))
 
-        # Add constraints for the dynamics
-        for k in range(self.horizon):
-            for i in range(len(x)):
-                expr = 0
-                for j in range(len(x)):
-                    expr += A[i][j]*self.model.getVarByName('{}[0,{}]'.format(x[j], k))
+        # Find distribution of w_{k}
+        for i in range(len(w)):
+            tmp_dists = []
+            for k in range(self.horizon):
+                tmp_dists.append([w_mean[i], w_cov[i][i]])
+            self.var_dists[w[i]] = tmp_dists
+
+        # Intialize distribution of x
+        for i in range(len(x)):
+            self.var_dists[x[i]] = []
+
+        # Find distributions
+        # TODO: Cov has to be dealt with by summing up terms
+        for k in range(self.horizon+1):
+            if k == 0:
+                for i in range(len(x)):
+                    x_mean = 0
+                    x_variance = 0
+                    x_mean = self.model.getVarByName('{}[0,{}]'.format(x[i], k))
+                    # print(x[i])
+                    # print(k)
+                    # print(x_mean)
+                    # print(x_variance)
+                    # input()
+                    self.var_dists[x[i]].append([x_mean, x_variance])
+
+            else:
+                for i in range(len(x)):
+                    x_mean = 0
+                    x_variance = 0
+                    for j in range(len(x)):
+                        if A[i][j] != 0:
+                            x_mean += A[i][j]*self.var_dists[x[j]][k-1][0]
+                            x_variance += A[i][j]**2*self.var_dists[x[j]][k-1][1]
+
+                    for j in range(len(u)):
+                        if B[i][j] != 0:
+                            x_mean += B[i][j]*self.model.getVarByName('{}[0,{}]'.format(u[j], k))
+
+                    for j in range(len(w)):
+                        if C[i][j] != 0:
+                            x_mean += C[i][j]*self.var_dists[w[j]][k-1][0]
+                            x_variance += C[i][j]**2*self.var_dists[w[j]][k-1][1]
+                    # print(x[i])
+                    # print(k)
+                    # print(x_mean)
+                    # print(x_variance)
+                    # input()
+                    self.var_dists[x[i]].append([x_mean, x_variance])
+
+        print(self.var_dists)
+
+        # # Add constraints for the dynamics
+        # for k in range(self.horizon):
+        #     for i in range(len(x)):
+        #         expr = 0
+        #         if x is not None:
+        #             for j in range(len(x)):
+        #                 expr += A[i][j]*self.model.getVarByName('{}[0,{}]'.format(x[j], k))
                 
-                for j in range(len(u)):
-                    expr += B[i][j]*self.model.getVarByName('{}[0,{}]'.format(u[j], k))
+        #         if u is not None:
+        #             for j in range(len(u)):
+        #                 expr += B[i][j]*self.model.getVarByName('{}[0,{}]'.format(u[j], k))
+
+        #         if w is not None:
+        #             for j in range(len(w)):
+        #                 expr += C[i][j]*self.model.getVarByName('{}[0,{}]'.format(w[j], k))
                 
-                self.model.addConstr(self.model.getVarByName('{}[0,{}]'.format(x[i], k+1)) == expr)
-            self.model.update()
+        #         self.model.addConstr(self.model.getVarByName('{}[0,{}]'.format(x[i], k+1)) == expr)
+        #     self.model.update()
 
     def add_init_condition(self, formula):
         """
@@ -222,7 +299,10 @@ class MILPSolver:
                         for var in var_list:
                             if var != 1:
                                 for _ in range(int(node.power_list_list[i][j])):
-                                    term *= self.model.getVarByName("{}[0,0]".format(var))
+                                    if var in self.var_dists.keys():
+                                        term *= self.var_dists[var][0][0]
+                                    else:
+                                        term *= self.model.getVarByName("{}[0,0]".format(var))
                     constr += term
 
                 if self.mode == 'Boolean':
@@ -244,7 +324,12 @@ class MILPSolver:
                         for j, var in enumerate(node.var_list_list[i]):
                             if var != 1:
                                 for _ in range(int(node.power_list_list[i][j])):
-                                    term *= self.model.getVarByName("{}[0,{}]".format(var, t))
+                                    if var in self.var_dists.keys():
+                                        print("{}[0,{}]".format(var, t))
+                                        print(self.var_dists[var][t])
+                                        term *= self.var_dists[var][t][0]
+                                    else:
+                                        term *= self.model.getVarByName("{}[0,{}]".format(var, t))
                         constr += term
 
                     if self.mode == 'Boolean':
@@ -362,7 +447,10 @@ class MILPSolver:
                         if var in self.contract.deter_var_list:
                             if var != 1 and 'w' not in var:
                                 for _ in range(int(node.power_list_list[i][j])):
-                                    term *= self.model.getVarByName("{}[0,0]".format(var))
+                                    if var in self.var_dists.keys():
+                                        term *= self.var_dists[var][0][0]
+                                    else:
+                                        term *= self.model.getVarByName("{}[0,0]".format(var))
                         elif var in self.contract.param_var_list:
                             term *= self.model.getVarByName("{}".format(var))
                     if node.var_list_list[i] == [1] or any('w' not in var for var in node.var_list_list[i]):

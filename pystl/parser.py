@@ -17,33 +17,35 @@ class ASTObject():
         """ Constructor method """
         self.formula = formula
 
-    def find_horizon(self, start, end):
+    def find_horizon(self):
         """ Find the horizon of the AST Object Node. """
         if type(self) in (AP, stAP, boolean):
-            return [start, end]
+            return [0, 0]
         elif type(self) == nontemporal_unary:
+            [tmp_start, tmp_end] = self.children_list[0].find_horizon()
             if self.operator == 'X':
-                return self.children_list[0].find_horizon(start, end+1)
+                return [tmp_start, tmp_end+1]
             else:
-                return self.children_list[0].find_horizon(start, end)
+                return [tmp_start, tmp_end]
         elif type(self) in (nontemporal_binary, nontemporal_multinary):
             tmp_start = 0
             tmp_end = 0
             for children in self.children_list:
-                [tmp_tmp_start, tmp_tmp_end] = children.find_horizon(start, end)
+                [tmp_tmp_start, tmp_tmp_end] = children.find_horizon()
                 if tmp_tmp_start < tmp_start:
                     tmp_start = tmp_tmp_start
                 if tmp_tmp_end > tmp_end:
                     tmp_end = tmp_tmp_end
-            return [start+tmp_start, end+tmp_end]
+            return [tmp_start, tmp_end]
         elif type(self) == temporal_unary:
             [curr_start, curr_end] = self.interval
-            return self.children_list[0].find_horizon(start+curr_start, end+curr_end)
+            [tmp_start, tmp_end] = self.children_list[0].find_horizon()
+            return [curr_start+tmp_start, curr_end+tmp_end]
         elif type(self) == temporal_binary:
             [_, curr_end] = self.interval
-            [tmp_tmp_start1, tmp_tmp_end1] = self.children_list[0].find_horizon(start, end+curr_end)
-            [tmp_tmp_start2, tmp_tmp_end2] = self.children_list[1].find_horizon(start, end+curr_end)
-            return [min(tmp_tmp_start1, tmp_tmp_start2), max(tmp_tmp_end1, tmp_tmp_end2)]
+            [tmp_start1, tmp_end1] = self.children_list[0].find_horizon()
+            [tmp_start2, tmp_end2] = self.children_list[1].find_horizon()
+            return [min(tmp_start1, tmp_start2), max(tmp_end1, tmp_end2)+curr_end]
 
     def push_negation(self, neg=False):
         """ Remove all the negation nodes and push all the negations to the leaf node. """
