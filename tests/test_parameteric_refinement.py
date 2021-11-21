@@ -30,6 +30,6 @@ c2.printInfo()                                        # Print c2
 # print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
 
 start = time.time()
-c2.find_opt_refine_param(c1, {'sigma': -1, 'p': -1}, N=400)
+c2.find_opt_refine_param(c1, {'sigma': -1, 'p': -1}, N=200)
 end = time.time()
 print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))

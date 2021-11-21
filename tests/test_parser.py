@@ -1,7 +1,4 @@
-import sys
-sys.path.append("/home/kevin/Github/pystl")
 from pystl import *
-# from pystl import Parser
 from pystl.parser import ststl_grammar, Parser
 import numpy as np
 
@@ -36,11 +33,24 @@ p = Parser()
 # [ast, formula] = p("!(!((F[0,10] (P[0.95+p] (3*x*y^2*z^3 + x => x2*y^5 - 2))) -> (G[1,12] (P[p] (3*x*y^2*z^3 + x => x2*y^5 - 2)))))")
 # [ast, formula] = p("!(!(G[0,10] (x => 5)))")
 # [ast, formula] = p("!((F[0,10] (P[1-p] (3*x*y^2*z^3 + x => x2*y^5 - 2))) & (-3.3*x*y33^2*z^3 - x^6*y + 1 > z) & (G[0,10] (3*x*y^2*z^3 + x => x2*y^5 - 2)))")
-[ast, formula] = p("G[0,10] ((F[1,14](x => 5)) & (x => 5))")
-print(ast[0].find_horizon())
-ast[0].printInfo()
-negated = ast[0].push_negation()
-negated.printInfo()
+# [ast, formula] = p("G[0,10] ((F[1,14](x => 5)) & (x => 5))")
+# print(ast[0].find_horizon())
+# ast[0].printInfo()
+# negated = ast[0].push_negation()
+# negated.printInfo()
+p1 = p("0", "expression")
+print(p1)
+p2 = p("1+a", "expression")
+print(p2)
+p3 = p1+p2
+p3.printInfo()
+
+# print(p2*p1)
+p4 = p2*p1
+
+# p1.printInfo()
+# p2.printInfo()
+p4.printInfo()
 
 # output = p("3.3", "multiterm")
 # output = p("-8 - 3.3*x*y33^2*z^3 - x^6 + 9", "expression")

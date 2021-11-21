@@ -4,6 +4,146 @@ from parsimonious import Grammar, NodeVisitor
 EPS = 10**-4
 M = 10**4
 
+# StSTL Grammar
+ststl_grammar = Grammar('''
+phi = true / false / nontemporal_unary / nontemporal_binary / nontemporal_multinary / temporal_unary / temporal_binary / stAP / AP
+
+true = "True"
+false = "False"
+
+nontemporal_unary = nontemporal_unary_operator __ "(" __ phi __ ")"
+nontemporal_binary = ("(" __ phi __ ")" __ nontemporal_binary_operator __ "(" __ phi __ ")")
+nontemporal_multinary = ("(" __ phi __ ")" __ nontemporal_multinary_operator __ nontemporal_multinary) / ("(" __ phi __ ")" __ nontemporal_multinary_operator __ "(" __ phi __ ")")
+
+nontemporal_unary_operator = "!" / "X"
+nontemporal_binary_operator = "->"
+nontemporal_multinary_operator = "and" / "&" / "or" / "|"
+
+temporal_unary = temporal_unary_operator __ interval __ "(" __ phi __ ")"
+temporal_binary = "(" __ phi __ ")" __ temporal_binary_operator interval __ "(" __ phi __ ")"
+
+temporal_unary_operator = "G" / "F"
+temporal_binary_operator = "U" / "R"
+
+interval = "[" __ number __ "," __ number __ "]"
+
+AP =  (expression __ comparison __ expression)
+stAP =  "P[" __ expression __ "]" __ "(" __ AP __ ")" 
+
+expression = (multiterm __ operator __ expression) / multiterm
+multiterm = (term product multiterm) / term
+term = number / variable_power / variable
+variable_power = variable power number
+variable = ~r"[a-z_\\d]"*
+number = ~"[0-9.]+"
+
+comparison = "<=" / ">=" / "=>" / "=<" / "<" / ">" / "=="
+operator = "+" / "-"
+product = "*"
+power = "^"
+__ = ~r"\\s"*
+''')
+
+class Parser(NodeVisitor):
+    def __init__(self):
+        super().__init__()
+
+    def __call__(self, formula: str, rule: str = "phi"):
+        return self.visit(ststl_grammar[rule].parse(formula))
+
+    def visit_phi(self, node, children):
+        # print(children[0])
+        # input()
+        return [children, node.text]
+
+    def visit_true(self, node, children):
+        return boolean([True, 'True'])
+
+    def visit_false(self, node, children):
+        return boolean([False, 'False'])
+
+    def visit_nontemporal_unary(self, node, children):
+        return nontemporal_unary([children, node.text])
+
+    def visit_nontemporal_binary(self, node, children):
+        return nontemporal_binary([children, node.text])
+
+    def visit_nontemporal_multinary(self, node, children):
+        return nontemporal_multinary([children[0], node.text])
+
+    def visit_nontemporal_unary_operator(self, node, children):
+        return node.text
+
+    def visit_nontemporal_binary_operator(self, node, children):
+        return node.text
+
+    def visit_nontemporal_multinary_operator(self, node, children):
+        return node.text
+
+    def visit_temporal_unary(self, node, children):
+        return temporal_unary([children, node.text])
+
+    def visit_temporal_binary(self, node, children):
+        return temporal_binary([children, node.text])
+
+    def visit_temporal_unary_operator(self, node, children):
+        return node.text
+
+    def visit_temporal_binary_operator(self, node, children):
+        return node.text
+
+    def visit_interval(self, node, children):
+        (_, _, left, _, _, _, right, _, _) = children
+        return [left, right]
+
+    def visit_AP(self, node, children):
+        return AP([children, node.text])
+
+    def visit_stAP(self, node, children):
+        return stAP([children, node.text])
+
+    def visit_expression(self, node, children):
+        if isinstance(children[0], list):
+            return expression(children[0])
+        else:
+            return expression(children)
+
+    def visit_multiterm(self, node, children):
+        if isinstance(children[0], list):
+            return multiterm(children[0])
+        else:
+            return multiterm(children)
+
+    def visit_term(self, node, children):
+        if isinstance(children[0], list):
+            return term(children[0])
+        else:
+            return term(children)
+
+    def visit_variable(self, node, children):
+        return node.text
+
+    def visit_variable_power(self, node, children):
+        return children
+
+    def visit_number(self, node, children):
+        return float(node.text)
+
+    def visit_power(self, node, children):
+        return node.text
+
+    def visit_product(self, node, children):
+        return node.text
+
+    def visit_operator(self, node, children):
+        return node.text
+
+    def visit_comparison(self, node, children):
+        return node.text
+
+    def generic_visit(self, node, children):
+        return children
+
 class ASTObject():
     """
     An abstract syntax tree (AST) class from which all AST objects are derived.
@@ -235,7 +375,7 @@ class term():
             self.var = data[0]
 
         if len(data) == 3:
-            self.power = data[2]
+            self.power = int(data[2])
         else:
             self.power = 1
 
@@ -297,13 +437,183 @@ class expression():
 
         self.variables = list(self.variables)
 
+    def __add__(self, other):
+        """
+        Adds two expressions.
+
+        :param other: [description]
+        :type other: [type]
+        """
+        out = deepcopy(self)
+        out.variables = []
+        for i, var_list in enumerate(other.var_list_list):
+            exists = False
+            for out_var_list in out.var_list_list:
+                if set(var_list) == set(out_var_list):
+                    exists = True
+                    break
+
+            if exists:
+                idx = out.var_list_list.index(var_list)
+                if set(other.power_list_list[i]) == set(out.power_list_list[idx]):
+                    out.multipliers[idx] = out.multipliers[idx] + other.multipliers[i]
+                else:
+                    out.var_list_list.append(var_list)
+                    out.multipliers.append(other.multipliers[i])
+                    out.power_list_list.append(other.power_list_list[i])
+            else:
+                out.var_list_list.append(var_list)
+                out.multipliers.append(other.multipliers[i])
+                out.power_list_list.append(other.power_list_list[i])
+
+        for i, multiplier in enumerate(out.multipliers[:]):
+            if multiplier == 0 and out.var_list_list[i] != [1]:
+                del out.multipliers[i]
+                del out.var_list_list[i]
+                del out.power_list_list[i]
+        
+        for var_list in out.var_list_list:
+            out.variables += list(set(var_list)-set(out.variables))
+
+        # Delete 1 from variables
+        if 1 in out.variables:
+            out.variables.remove(1)
+
+        return out
+
+    def __sub__(self, other):
+        """
+        Adds two expressions.
+
+        :param other: [description]
+        :type other: [type]
+        """
+        # Negate all multipliers for other
+        for i in range(len(other.multipliers)):
+            other.multipliers[i] = -other.multipliers[i]
+
+        return self.__add__(other)
+
+    def __mul__(self, other):
+        parser = Parser()
+        out = parser('0', 'expression')
+
+        # Multiply the terms
+        for i, self_var_list in enumerate(self.var_list_list):
+            for j, other_var_list in enumerate(other.var_list_list):
+                tmp_multiplier = self.multipliers[i]*other.multipliers[j]
+                tmp_var_list = deepcopy(self_var_list)
+                tmp_power_list = deepcopy(self.power_list_list[i])
+                for k, var in enumerate(other_var_list):
+                    if var in self_var_list and var != [1]:
+                        tmp_power_list[k] += other.power_list_list[j][k]
+                    else:
+                        if var != 1:
+                            tmp_var_list.append(var)
+                            tmp_power_list.append(other.power_list_list[j][k])
+
+                out.multipliers.append(tmp_multiplier)
+                out.var_list_list.append(tmp_var_list)
+                out.power_list_list.append(tmp_power_list)
+
+        # Delete term with multiplier = 0
+        for multiplier, var_list, power_list in zip(out.multipliers[:], out.var_list_list[:], out.power_list_list[:]):
+            if multiplier == 0 and (var_list != [1] or (var_list == [1] and power_list != [1])):
+                out.multipliers.remove(multiplier)
+                out.var_list_list.remove(var_list)
+                out.power_list_list.remove(power_list)
+
+        # Remove terms with 1 and other variables
+        for i, var_list in enumerate(out.var_list_list):
+            if len(var_list) > 1:
+                if 1 in var_list:
+                    idx = var_list.index(1)
+                    del out.var_list_list[i][idx]
+                    del out.power_list_list[i][idx]
+
+        # Merge duplicate terms
+        tmp_multiplier = []
+        tmp_var_list_list = []
+        tmp_power_list_list = []
+        visited = []
+        for i, out_var_list in enumerate(out.var_list_list):
+            if i not in visited:
+                exists_same_term = False
+                same_term_idx = 0
+                for j, out_var_list2 in enumerate(out.var_list_list[i+1:len(out.var_list_list)]):
+                    same_term = True
+                    if set(out_var_list) == set(out_var_list2):
+                        if out_var_list == [1] and out_var_list2 == [1]:
+                            pass
+                        else:
+                            for n, var in enumerate(out_var_list):
+                                for m, var2 in enumerate(out_var_list2):
+                                    if var == var2 and not (out.power_list_list[i][n] == out.power_list_list[i+j+1][m]):
+                                        same_term = False
+                    else:
+                        same_term = False
+
+                    if same_term:
+                        exists_same_term = True
+                        same_term_idx = i+j+1
+                        break
+
+                if exists_same_term:
+                    visited.append(i)
+                    visited.append(same_term_idx)
+                    tmp_multiplier.append(out.multipliers[i]+out.multipliers[same_term_idx])
+                    tmp_var_list_list.append(out.var_list_list[i])
+                    tmp_power_list_list.append(out.power_list_list[i])
+                else:
+                    visited.append(i)
+                    tmp_multiplier.append(out.multipliers[i])
+                    tmp_var_list_list.append(out.var_list_list[i])
+                    tmp_power_list_list.append(out.power_list_list[i])
+
+        out.multipliers = tmp_multiplier
+        out.var_list_list = tmp_var_list_list
+        out.power_list_list = tmp_power_list_list
+
+        # Find variables
+        for var_list in out.var_list_list:
+            out.variables += list(set(var_list)-set(out.variables))
+        
+        # Delete 1 from variables
+        if 1 in out.variables:
+            out.variables.remove(1)
+
+        return out
+
     def __str__(self):
+        first_term = True
         res = ""
-        res += "Variables: {}\n".format(self.variables)
-        res += "Multiplier list: {}\n".format(self.multipliers)
-        res += "Variables lists: {}\n".format(self.var_list_list)
-        res += "Powers lists: {}".format(self.power_list_list)
+        for i, var_list in enumerate(self.var_list_list):
+            if first_term:
+                res += str(self.multipliers[i])
+                first_term = False
+            else:
+                if self.multipliers[i] > 0:
+                    res += " + {}".format(self.multipliers[i])
+                else:
+                    res += " - {}".format(abs(self.multipliers[i]))
+            
+            if var_list != [1]:
+                for j, var in enumerate(var_list):
+                    res += "*{}".format(var)
+                    if self.power_list_list[i][j] != 1:
+                        res += "^{}".format(self.power_list_list[i][j])
         return res
+
+    def __repr__(self):
+        res = self.__str__()
+        return res
+
+    def printInfo(self):
+        print(repr(self))
+        print("Variables: {}".format(self.variables))
+        print("Multipliers: {}".format(self.multipliers))
+        print("Variables lists: {}".format(self.var_list_list))
+        print("Powers lists: {}".format(self.power_list_list))
 
 class AP(ASTObject):
     __slots__ = ('variables', 'multipliers', 'var_list_list', 'power_list_list', 'equal')
@@ -555,143 +865,3 @@ class boolean(ASTObject):
         res += "Formula: {}\n".format(self.formula)
         res += "ID: {}\n".format(hex(id(self)))
         return res
-
-# StSTL Grammar
-ststl_grammar = Grammar('''
-phi = true / false / nontemporal_unary / nontemporal_binary / nontemporal_multinary / temporal_unary / temporal_binary / stAP / AP
-
-true = "True"
-false = "False"
-
-nontemporal_unary = nontemporal_unary_operator __ "(" __ phi __ ")"
-nontemporal_binary = ("(" __ phi __ ")" __ nontemporal_binary_operator __ "(" __ phi __ ")")
-nontemporal_multinary = ("(" __ phi __ ")" __ nontemporal_multinary_operator __ nontemporal_multinary) / ("(" __ phi __ ")" __ nontemporal_multinary_operator __ "(" __ phi __ ")")
-
-nontemporal_unary_operator = "!" / "X"
-nontemporal_binary_operator = "->"
-nontemporal_multinary_operator = "and" / "&" / "or" / "|"
-
-temporal_unary = temporal_unary_operator __ interval __ "(" __ phi __ ")"
-temporal_binary = "(" __ phi __ ")" __ temporal_binary_operator interval __ "(" __ phi __ ")"
-
-temporal_unary_operator = "G" / "F"
-temporal_binary_operator = "U" / "R"
-
-interval = "[" __ number __ "," __ number __ "]"
-
-AP =  (expression __ comparison __ expression)
-stAP =  "P[" __ expression __ "]" __ "(" __ AP __ ")" 
-
-expression = (multiterm __ operator __ expression) / multiterm
-multiterm = (term product multiterm) / term
-term = number / variable_power / variable
-variable_power = variable power number
-variable = ~r"[a-z_\\d]"*
-number = ~"[0-9.]+"
-
-comparison = "<=" / ">=" / "=>" / "=<" / "<" / ">" / "=="
-operator = "+" / "-"
-product = "*"
-power = "^"
-__ = ~r"\\s"*
-''')
-
-class Parser(NodeVisitor):
-    def __init__(self):
-        super().__init__()
-
-    def __call__(self, formula: str, rule: str = "phi"):
-        return self.visit(ststl_grammar[rule].parse(formula))
-
-    def visit_phi(self, node, children):
-        # print(children[0])
-        # input()
-        return [children, node.text]
-
-    def visit_true(self, node, children):
-        return boolean([True, 'True'])
-
-    def visit_false(self, node, children):
-        return boolean([False, 'False'])
-
-    def visit_nontemporal_unary(self, node, children):
-        return nontemporal_unary([children, node.text])
-
-    def visit_nontemporal_binary(self, node, children):
-        return nontemporal_binary([children, node.text])
-
-    def visit_nontemporal_multinary(self, node, children):
-        return nontemporal_multinary([children[0], node.text])
-
-    def visit_nontemporal_unary_operator(self, node, children):
-        return node.text
-
-    def visit_nontemporal_binary_operator(self, node, children):
-        return node.text
-
-    def visit_nontemporal_multinary_operator(self, node, children):
-        return node.text
-
-    def visit_temporal_unary(self, node, children):
-        return temporal_unary([children, node.text])
-
-    def visit_temporal_binary(self, node, children):
-        return temporal_binary([children, node.text])
-
-    def visit_temporal_unary_operator(self, node, children):
-        return node.text
-
-    def visit_temporal_binary_operator(self, node, children):
-        return node.text
-
-    def visit_interval(self, node, children):
-        (_, _, left, _, _, _, right, _, _) = children
-        return [left, right]
-
-    def visit_AP(self, node, children):
-        return AP([children, node.text])
-
-    def visit_stAP(self, node, children):
-        return stAP([children, node.text])
-
-    def visit_expression(self, node, children):
-        if isinstance(children[0], list):
-            return expression(children[0])
-        else:
-            return expression(children)
-
-    def visit_multiterm(self, node, children):
-        if isinstance(children[0], list):
-            return multiterm(children[0])
-        else:
-            return multiterm(children)
-
-    def visit_term(self, node, children):
-        if isinstance(children[0], list):
-            return term(children[0])
-        else:
-            return term(children)
-
-    def visit_variable(self, node, children):
-        return node.text
-
-    def visit_variable_power(self, node, children):
-        return children
-
-    def visit_number(self, node, children):
-        return float(node.text)
-
-    def visit_power(self, node, children):
-        return node.text
-
-    def visit_product(self, node, children):
-        return node.text
-
-    def visit_operator(self, node, children):
-        return node.text
-
-    def visit_comparison(self, node, children):
-        return node.text
-
-    def generic_visit(self, node, children):
-        return children

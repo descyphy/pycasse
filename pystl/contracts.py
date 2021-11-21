@@ -336,7 +336,7 @@ class contract:
         # Find an optimal set of parameters
         refinement_contract.find_opt_param(weights, N=N)
         
-    def find_opt_param(self, weights, N=100):
+    def find_opt_param(self, weights, N=100, dynamics = None, init_conditions = []):
         """ Find an optimal set of parameters for a contract given an objective function. """
         print("Finding an optimal set of parameters for contract {}...".format(self.id))
 
@@ -362,7 +362,7 @@ class contract:
                         tmp_partition[count][1] = 0.5
             count += 1
 
-        def findPartitionType(partition):
+        def findPartitionType(partition, dyn, inits):
             print(partition)
             # Update the bounds 
             self.param_var_bounds = partition
@@ -370,12 +370,16 @@ class contract:
 
             # Build a Solver
             MILPsolver = MILPSolver(mode="Quantitative")
-            # MILPsolver = MILPSolver()
             MILPsolver.add_contract(self)
+            if dyn is not None:
+                MILPsolver.add_dynamics(x=dyn['x'], u=dyn['u'], w=dyn['w'], A=dyn['A'], B=dyn['B'], C=dyn['C'])
+            for init_condition in inits:
+                MILPsolver.add_init_condition(init_condition)
             MILPsolver.add_constraint(self.assumption, name='b_a')
+            self.assumption.printInfo()
             MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
+            self.guarantee.printInfo()
             # MILPsolver.add_constraint(self.sat_guarantee, hard=False, name='b_g')
-            # MILPsolver.add_dynamics(sys_dyn)
 
             # Solve the problem
             MILPsolver.set_objective(sense='minimize')
@@ -383,8 +387,8 @@ class contract:
                 print("SAT partition!")
                 return 0
             else:
-                for v in MILPsolver.model.getVars():
-                    print('%s %g' % (v.varName, v.x))
+                # for v in MILPsolver.model.getVars():
+                #     print('%s %g' % (v.varName, v.x))
                     # if 'b' not in v.varName:
                     #     print('%s %g' % (v.varName, v.x))
                     # elif v.varName in ('b_a', 'b_g'):
@@ -396,8 +400,8 @@ class contract:
                     return 1
                 else: 
                     print("UNDET partition!")
-                    for v in MILPsolver.model.getVars():
-                        print('%s %g' % (v.varName, v.x))
+                    # for v in MILPsolver.model.getVars():
+                    #     print('%s %g' % (v.varName, v.x))
                         # if 'b' not in v.varName:
                         #     print('%s %g' % (v.varName, v.x))
                         # elif v.varName in ('b_a', 'b_g'):
@@ -436,7 +440,7 @@ class contract:
         # Find SAT and UNSAT partitions
         while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(param_UNDET) <= N:
             tmp_partition = param_UNDET.pop(0)
-            partition_type = findPartitionType(tmp_partition)
+            partition_type = findPartitionType(tmp_partition, dynamics, init_conditions)
             if partition_type == 0: # SAT partition
                 param_SAT.append(tmp_partition)
             elif partition_type == 1: # UNSAT partition
@@ -449,7 +453,7 @@ class contract:
         tmp_param_UNDET = deepcopy(param_UNDET)
         param_UNDET = []
         for tmp_partition in tmp_param_UNDET:      
-            partition_type = findPartitionType(tmp_partition)
+            partition_type = findPartitionType(tmp_partition, dynamics, init_conditions)
             if partition_type == 0: # SAT partition
                 param_SAT.append(tmp_partition)
             elif partition_type == 1: # UNSAT partition

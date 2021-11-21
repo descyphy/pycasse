@@ -17,7 +17,7 @@ c1.checkSat()  # Saturate c
 c1.printInfo() # Print c
 
 start = time.time()
-c1.find_opt_param({'p': -10, 'c': 1}, N=200)
+c1.find_opt_param({'p': -10, 'c': 1}, N=500)
 end = time.time()
 print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
 
@@ -30,11 +30,11 @@ c2.add_param_vars(['mean', 'sigma'], bounds = [[-0.1, 0.1], [0.01, 0.1]])
 c2.printInfo() # Print c
 c2.set_assume('True') # Set/define the assumptions
 # c2.set_guaran('P[p] (w + u <= c)') # Set/define the guarantees
-c2.set_guaran('P[0.9] (w <= 0)') # Set/define the guarantees
+c2.set_guaran('P[0.99] (w <= 0)') # Set/define the guarantees
 c2.checkSat()  # Saturate c
 c2.printInfo() # Print c
 
 start = time.time()
-c2.find_opt_param({'mean': 1, 'sigma': -10}, N=600)
+c2.find_opt_param({'mean': 1, 'sigma': -10}, N=400)
 end = time.time()
 print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
