@@ -4,8 +4,8 @@ import time
 # Num of maximum deterministic contracts and parameterized contracts
 # max_N = 5
 # max_M = 1
-N = 1
-M = 2
+N = 5
+M = 1
 
 # Initialize a contract list
 contract_list = []
@@ -81,6 +81,6 @@ for j in range(1, M+1):
     weights['p{}'.format(j)] = -1
     weights['sigma{}'.format(j)] = -10
 print(weights)
-composed.find_opt_refine_param(c, weights, N=100)
+composed.find_opt_refine_param(c, weights, N=200)
 end = time.time()
 print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))

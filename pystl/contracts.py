@@ -370,15 +370,14 @@ class contract:
 
             # Build a Solver
             MILPsolver = MILPSolver(mode="Quantitative")
+            # MILPsolver = MILPSolver()
             MILPsolver.add_contract(self)
             if dyn is not None:
                 MILPsolver.add_dynamics(x=dyn['x'], u=dyn['u'], w=dyn['w'], A=dyn['A'], B=dyn['B'], C=dyn['C'])
             for init_condition in inits:
                 MILPsolver.add_init_condition(init_condition)
             MILPsolver.add_constraint(self.assumption, name='b_a')
-            self.assumption.printInfo()
             MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
-            self.guarantee.printInfo()
             # MILPsolver.add_constraint(self.sat_guarantee, hard=False, name='b_g')
 
             # Solve the problem
@@ -388,7 +387,7 @@ class contract:
                 return 0
             else:
                 # for v in MILPsolver.model.getVars():
-                #     print('%s %g' % (v.varName, v.x))
+                    # print('%s %g' % (v.varName, v.x))
                     # if 'b' not in v.varName:
                     #     print('%s %g' % (v.varName, v.x))
                     # elif v.varName in ('b_a', 'b_g'):
@@ -401,7 +400,7 @@ class contract:
                 else: 
                     print("UNDET partition!")
                     # for v in MILPsolver.model.getVars():
-                    #     print('%s %g' % (v.varName, v.x))
+                        # print('%s %g' % (v.varName, v.x))
                         # if 'b' not in v.varName:
                         #     print('%s %g' % (v.varName, v.x))
                         # elif v.varName in ('b_a', 'b_g'):
