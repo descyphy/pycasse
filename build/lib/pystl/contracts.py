@@ -5,6 +5,7 @@ import matplotlib.patches as patches
 import random
 
 from copy import deepcopy
+from collections import deque
 from gurobipy import GRB
 from pystl.variable import DeterVar, NondeterVar, M, EPS
 from pystl.vector import Vector, Next
@@ -43,11 +44,11 @@ class contract:
         self.nondeter_var_mean    = []
         self.nondeter_var_cov     = [[]]
         self.assumption_str       = 'True'
-        self.assumption           = parser('True')
+        self.assumption           = parser('True')[0][0]
         self.guarantee_str        = 'False'
-        self.guarantee            = parser('False')
+        self.guarantee            = parser('False')[0][0]
         self.sat_guarantee_str    = 'False'
-        self.sat_guarantee        = parser('False')
+        self.sat_guarantee        = parser('False')[0][0]
         self.isSat                = False
         self.objectives           = []
 
@@ -118,8 +119,8 @@ class contract:
         :param assumption: An STL or StSTL formula which characterizes the assumption set of the contract
         :type assumption: str
         """
-        self.assumption_str = assumption
-        self.assumption = parser(assumption)[0][0]
+        self.assumption_str = ' '.join(assumption.split())
+        self.assumption = parser(self.assumption_str)[0][0]
         for variable in self.assumption.variables:
             if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
                 raise ValueError("Variable {} not in the contract variables.".format(variable))
@@ -131,8 +132,8 @@ class contract:
         :param guarantee: An STL or StSTL formula which characterizes the guarantee set of the contract
         :type guarantee: str
         """
-        self.guarantee_str = guarantee
-        self.guarantee = parser(guarantee)[0][0]
+        self.guarantee_str = ' '.join(guarantee.split())
+        self.guarantee = parser(self.guarantee_str)[0][0]
         for variable in self.guarantee.variables:
             if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
                 raise ValueError("Variable {} not in the contract variables.".format(variable))
@@ -144,8 +145,8 @@ class contract:
         :param guarantee: An STL or StSTL formula which characterizes the guarantee set of the contract
         :type guarantee: str
         """
-        self.sat_guarantee_str = sat_guarantee
-        self.sat_guarantee = parser(sat_guarantee)[0][0]
+        self.sat_guarantee_str = ' '.join(sat_guarantee.split())
+        self.sat_guarantee = parser(self.sat_guarantee_str)[0][0]
         for variable in self.guarantee.variables:
             if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
                 raise ValueError("Variable {} not in the contract variables.".format(variable))
@@ -162,7 +163,7 @@ class contract:
             self.sat_guarantee = parser(self.sat_guarantee_str)[0][0]
             self.isSat = True
     
-    def checkCompat(self, print_sol=False, verbose = True):
+    def checkCompat(self, dynamics = None, init_conditions = [], print_sol=False, verbose = True):
         """ Checks compatibility of the contract. """
         # Build a MILP Solver
         print("====================================================================================")
@@ -172,6 +173,10 @@ class contract:
         # Add the contract and assumption constraints to the solver
         self.checkSat()
         solver.add_contract(self)
+        if dynamics is not None:
+            solver.add_dynamics(x=dynamics['x'], u=dynamics['u'], w=dynamics['w'], A=dynamics['A'], B=dynamics['B'], C=dynamics['C'])
+        for init_condition in init_conditions:
+            solver.add_init_condition(init_condition)
         solver.add_constraint(self.assumption)
 
         # Solve the problem
@@ -188,7 +193,7 @@ class contract:
 
         return solved
     
-    def checkConsis(self, print_sol=False, verbose = True):
+    def checkConsis(self, dynamics = None, init_conditions = [], print_sol=False, verbose = True):
         """ Checks consistency of the contract """
         # Build a MILP Solver
         print("====================================================================================")
@@ -199,6 +204,10 @@ class contract:
         # Add the contract and guarantee constraints to the solver
         self.checkSat()
         solver.add_contract(self)
+        if dynamics is not None:
+            solver.add_dynamics(x=dynamics['x'], u=dynamics['u'], w=dynamics['w'], A=dynamics['A'], B=dynamics['B'], C=dynamics['C'])
+        for init_condition in init_conditions:
+            solver.add_init_condition(init_condition)
         solver.add_constraint(self.sat_guarantee)
 
         # Solve the problem
@@ -215,7 +224,7 @@ class contract:
 
         return solved
     
-    def checkFeas(self, print_sol=False, verbose = True):
+    def checkFeas(self, dynamics = None, init_conditions = [], print_sol=False, verbose = True):
         """ Checks feasibility of the contract """
         # Build a MILP Solver
         print("====================================================================================")
@@ -226,6 +235,10 @@ class contract:
         # Add the contract and assumption constraints to the solver
         self.checkSat()
         solver.add_contract(self)
+        if dynamics is not None:
+            solver.add_dynamics(x=dynamics['x'], u=dynamics['u'], w=dynamics['w'], A=dynamics['A'], B=dynamics['B'], C=dynamics['C'])
+        for init_condition in init_conditions:
+            solver.add_init_condition(init_condition)
         solver.add_constraint(parser("({}) & ({})".format(self.assumption_str, self.guarantee_str))[0][0])
 
         # Solve the problem
@@ -242,7 +255,7 @@ class contract:
 
         return solved
     
-    def checkRefine(self, contract2refine, print_sol=False):
+    def checkRefine(self, contract2refine, dynamics = None, init_conditions = [], print_sol=False):
         """ Checks whether the self contract refines the contract contract2refine"""
         print("====================================================================================")
         print("Checking whether contract {} refines contract {}...".format(self.id, contract2refine.id))
@@ -274,6 +287,10 @@ class contract:
         print("Checking assumptions condition for refinement...")
         self.checkSat()
         solver.add_contract(self)
+        if dynamics is not None:
+            solver.add_dynamics(x=dynamics['x'], u=dynamics['u'], w=dynamics['w'], A=dynamics['A'], B=dynamics['B'], C=dynamics['C'])
+        for init_condition in init_conditions:
+            solver.add_init_condition(init_condition)
         solver.add_constraint(refinement_contract.assumption)
     
         # Check refinement condition for assumptions
@@ -294,6 +311,10 @@ class contract:
         print("Checking guarantees condition for refinement...")
         self.checkSat()
         solver.add_contract(contract2refine)
+        if dynamics is not None:
+            solver.add_dynamics(x=dynamics['x'], u=dynamics['u'], w=dynamics['w'], A=dynamics['A'], B=dynamics['B'], C=dynamics['C'])
+        for init_condition in init_conditions:
+            solver.add_init_condition(init_condition)
         solver.add_constraint(refinement_contract.guarantee)
 
         # Check refinement condition for guarantees
@@ -325,6 +346,7 @@ class contract:
         
         # Find assumption and guarantee
         refinement_contract.set_assume("({}) -> ({})".format(contract2refine.assumption_str, self.assumption_str))
+        # refinement_contract.set_assume("({}) & ({})".format(contract2refine.assumption_str, self.assumption_str))
         # refinement_contract.set_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
         refinement_contract.set_guaran("({}) & ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
         # refinement_contract.set_sat_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
@@ -333,8 +355,9 @@ class contract:
 
         # Find an optimal set of parameters
         refinement_contract.find_opt_param(weights, N=N)
+        refinement_contract.printInfo()
         
-    def find_opt_param(self, weights, N=100):
+    def find_opt_param(self, weights, N=100, dynamics = None, init_conditions = []):
         """ Find an optimal set of parameters for a contract given an objective function. """
         print("Finding an optimal set of parameters for contract {}...".format(self.id))
 
@@ -360,8 +383,8 @@ class contract:
                         tmp_partition[count][1] = 0.5
             count += 1
 
-        def findPartitionType(partition):
-            # print(partition)
+        def findPartitionType(partition, dyn, inits):
+            print(partition)
             # Update the bounds 
             self.param_var_bounds = partition
             # self.printInfo()
@@ -370,28 +393,40 @@ class contract:
             MILPsolver = MILPSolver(mode="Quantitative")
             # MILPsolver = MILPSolver()
             MILPsolver.add_contract(self)
-            MILPsolver.add_constraint(self.assumption, name='b_a')
+            if dyn is not None:
+                MILPsolver.add_dynamics(x=dyn['x'], u=dyn['u'], w=dyn['w'], A=dyn['A'], B=dyn['B'], C=dyn['C'])
+            for init_condition in inits:
+                MILPsolver.add_init_condition(init_condition)
+            MILPsolver.add_constraint(self.assumption, hard=False, name='b_a')
+            # MILPsolver.add_constraint(self.assumption, name='b_a')
             # MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
-            MILPsolver.add_constraint(self.sat_guarantee, hard=False, name='b_g')
-            # MILPsolver.add_dynamics(sys_dyn)
+            # MILPsolver.add_constraint(self.sat_guarantee, hard=False, name='b_g')
 
             # Solve the problem
             MILPsolver.set_objective(sense='minimize')
             if not MILPsolver.solve():
-                # print("SAT partition!")
+                print("SAT partition!")
                 return 0
             else:
-                # for v in MILPsolver.model.getVars():
-                #     print('%s %g' % (v.varName, v.x))
+                for v in MILPsolver.model.getVars():
+                    # print('%s %g' % (v.varName, v.x))
+                    if 'b' not in v.varName:
+                        print('%s %g' % (v.varName, v.x))
+                    elif v.varName in ('b_a', 'b_g'):
+                        print('%s %g' % (v.varName, v.x))
                     
                 MILPsolver.set_objective(sense='maximize')
                 if not MILPsolver.solve():
-                    # print("UNSAT partition!")
+                    print("UNSAT partition!")
                     return 1
                 else: 
-                    # print("UNDET partition!")
-                    # for v in MILPsolver.model.getVars():
-                    #     print('%s %g' % (v.varName, v.x))
+                    print("UNDET partition!")
+                    for v in MILPsolver.model.getVars():
+                        # print('%s %g' % (v.varName, v.x))
+                        if 'b' not in v.varName:
+                            print('%s %g' % (v.varName, v.x))
+                        elif v.varName in ('b_a', 'b_g'):
+                            print('%s %g' % (v.varName, v.x))
                     return 2
 
         def paramSpacePartition(partition):
@@ -426,7 +461,7 @@ class contract:
         # Find SAT and UNSAT partitions
         while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(param_UNDET) <= N:
             tmp_partition = param_UNDET.pop(0)
-            partition_type = findPartitionType(tmp_partition)
+            partition_type = findPartitionType(tmp_partition, dynamics, init_conditions)
             if partition_type == 0: # SAT partition
                 param_SAT.append(tmp_partition)
             elif partition_type == 1: # UNSAT partition
@@ -439,7 +474,7 @@ class contract:
         tmp_param_UNDET = deepcopy(param_UNDET)
         param_UNDET = []
         for tmp_partition in tmp_param_UNDET:      
-            partition_type = findPartitionType(tmp_partition)
+            partition_type = findPartitionType(tmp_partition, dynamics, init_conditions)
             if partition_type == 0: # SAT partition
                 param_SAT.append(tmp_partition)
             elif partition_type == 1: # UNSAT partition
@@ -760,15 +795,24 @@ def merge_variables(c1, c2):
         c1.param_var_bounds.append(c2.param_var_bounds[idx])
 
     # Merge non-deterministic variables
+    # TODO: may need several modifications if non-deterministic variables are correlated
     curr_nondeter_num = len(c1.nondeter_var_list)
     new_nondeter_num = len(list(set(c2.nondeter_var_list) - set(c1.nondeter_var_list)))
-    for var in set(c2.nondeter_var_list) - set(c1.nondeter_var_list):
-        # Find index of the variable
-        idx = c2.nondeter_var_list.index(var)
-
-        # Append the information of the variable
-        c1.nondeter_var_list.append(var)
-        c1.nondeter_var_types.append(c2.nondeter_var_types[idx])
-        c1.nondeter_var_mean.append(c2.nondeter_var_mean[idx])
+    if curr_nondeter_num == 0:
+        c1.nondeter_var_list = c2.nondeter_var_list
+        c1.nondeter_var_types = c2.nondeter_var_types
+        c1.nondeter_var_mean = c2.nondeter_var_mean
+        c1.nondeter_var_cov = c2.nondeter_var_cov
+    else:
         c1.nondeter_var_cov = [row + [0]*new_nondeter_num for row in c1.nondeter_var_cov]
-        c1.nondeter_var_cov += [[0]*curr_nondeter_num  + row for row in c2.nondeter_var_cov]
+        for i, var in enumerate(set(c2.nondeter_var_list) - set(c1.nondeter_var_list)):
+            # Find index of the variable
+            idx = c2.nondeter_var_list.index(var)
+
+            # Append the information of the variable
+            c1.nondeter_var_list.append(var)
+            c1.nondeter_var_types.append(c2.nondeter_var_types[idx])
+            c1.nondeter_var_mean.append(c2.nondeter_var_mean[idx])
+            deque_list = deque(c2.nondeter_var_cov[idx])
+            deque_list.rotate(-idx+i)
+            c1.nondeter_var_cov += [[0]*curr_nondeter_num + list(deque_list)]

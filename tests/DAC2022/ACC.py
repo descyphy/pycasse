@@ -12,8 +12,8 @@ car.add_deter_vars(['v', 'vl', 'd', 'a', 'al'],
 # car.add_param_vars(['p', 'vn_sigma', 'vln_sigma'],
 #     bounds=[[0.9, 1], [0.0001, 0.3],[0.0001, 0.3]])
 
-car.add_param_vars(['p', 'dn_sigma'],
-    bounds=[[0, 1], [0.0001, 0.5]])
+# car.add_param_vars(['p', 'dn_sigma'],
+#     bounds=[[0, 1], [0.0001, 0.5]])
 
 # car.add_param_vars(['p'],
 #     bounds=[[0.9, 1]])
@@ -29,15 +29,18 @@ car.add_param_vars(['p', 'dn_sigma'],
 #     mean=[0, 0], cov=[[0.01**2, 0], 
 #     [0, 'vln_sigma^2']])
 
+# car.add_nondeter_vars(['dn'],
+#     mean=[0], cov=[['dn_sigma^2']])
+
 car.add_nondeter_vars(['dn'],
-    mean=[0], cov=[['dn_sigma^2']])
+    mean=[0], cov=[[0.1**2]])
 
 car.set_assume(
     'G[0,10] ((al == -1) & (vl >= 0))'
 )
 
 car.set_guaran(
-    'G[0,10] (P[p] (d > 0.1))'
+    'G[0,10] (P[0.99] (d > 0.1))'
 )
 # cars.set_guaran(
 #     '(G[0,10] (P[0.99999](d > 0.1))) & \
@@ -60,10 +63,11 @@ dynamics = {'x': ['v', 'vl', 'd', 'a'],
     'C': [[0], [0], [1], [0]]
 }
 
-init_conditions = ['v == 4', 'vl == 5', 'd == 79', 'a == 0']
+init_conditions = ['v == 5', 'vl == 10', 'd == 5', 'a == 0']
 
 start = time.time()
-car.find_opt_param({'p': -10, 'dn_sigma': 1}, N=50, dynamics=dynamics, init_conditions=init_conditions)
+car.checkFeas(dynamics=dynamics, init_conditions=init_conditions, print_sol=True)
+# car.find_opt_param({'p': -10, 'dn_sigma': 1}, N=50, dynamics=dynamics, init_conditions=init_conditions)
 end = time.time()
 print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
 

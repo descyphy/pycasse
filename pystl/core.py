@@ -18,6 +18,19 @@ def split_var_time(str):
     idx = str.find('__')
     return [str[0:idx], int(str[idx+2:len(str)])]
 
+def vec2expr(vector):
+    """
+    Translate all the entries in the matrix to expression object.
+
+    :param matrix: [description]
+    :type matrix: [type]
+    :return: [description]
+    :rtype: [type]
+    """
+    for i in range(len(vector)):
+        vector[i] = entry2expr(vector[i])
+    return vector
+
 def mat2expr(matrix):
     """
     Translate all the entries in the matrix to expression object.
@@ -27,17 +40,34 @@ def mat2expr(matrix):
     :return: [description]
     :rtype: [type]
     """
-    for i, row in enumerate(matrix):
-        for j, entry in enumerate(row):
-            if isinstance(entry, str):
-                matrix[i][j] = parser(entry, 'expression')
-            else:
-                matrix[i][j] = parser('{}'.format(entry), 'expression')
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            matrix[i][j] = entry2expr(matrix[i][j])
     return matrix
 
-def int2expr(int):
+def entry2expr(entry):
     """Pystl expression to gurobi expression."""
-    return parser(str(int), 'expression')
+    if isinstance(entry, str):
+        out = parser(entry, 'expression')
+    else:
+        out = parser('{}'.format(entry), 'expression')
+    return out
+
+def expr2gurobiexpr(solver, expr):
+    """Pystl expression to gurobi expression."""
+    gurobi_expr = 0
+    for i in range(len(expr.multipliers)):
+        gurobi_term = expr.multipliers[i]
+        for j in range(len(expr.var_list_list[i])):
+            if expr.var_list_list[i][j] != 1:
+                for _ in range(expr.power_list_list[i][j]):
+                    try:
+                        gurobi_term *= solver.model.getVarByName(expr.var_list_list[i][j])
+                    except:
+                        idx = solver.nondeter_vars.index(expr.var_list_list[i][j])
+                        gurobi_term *= expr2gurobiexpr(solver.nondeter_vars_mean[idx])
+        gurobi_expr += gurobi_term
+    return gurobi_expr
 
 class MILPSolver:
     """
@@ -46,7 +76,7 @@ class MILPSolver:
         b_vars
         b_var_num
     """
-    __slots__ = ('model', 'contract', 'dynamics', 'horizon', 'node_vars', 'deter_vars', 'deter_vars_mean', 'nondeter_vars', 'nondeter_vars_mean', 'nondeter_vars_cov', 'mode', 'soft_constraint_vars', 'verbose')
+    __slots__ = ('model', 'contract', 'dynamics', 'horizon', 'node_vars', 'deter_vars', 'deter_vars_expr', 'nondeter_vars', 'nondeter_vars_expr', 'mode', 'soft_constraint_vars', 'verbose')
 
     def __init__(self, mode = "Boolean", verbose=False):
         assert(mode in ("Boolean", "Quantitative"))
@@ -64,10 +94,9 @@ class MILPSolver:
         self.horizon = [0, 0]
         self.node_vars = {}
         self.deter_vars = []
-        self.deter_vars_mean = []
+        self.deter_vars_expr = []
         self.nondeter_vars = []
-        self.nondeter_vars_mean = []
-        self.nondeter_vars_cov = []
+        self.nondeter_vars_expr = []
         self.soft_constraint_vars = []
 
         # Initialize convex solver
@@ -91,44 +120,34 @@ class MILPSolver:
         for variable in contract.deter_var_list:
             for k in range(self.horizon+1):
                 self.deter_vars.append("{}__{}".format(variable, k))
+        self.deter_vars_expr = [0]*len(self.deter_vars)
             
         # Add deterministic variables
-        for var in self.deter_vars:
-            [var_str, time_str] = split_var_time(var)
+        for i, variable in enumerate(self.deter_vars):
+            [var_str, _] = split_var_time(variable)
             idx = self.contract.deter_var_list.index(var_str)
-            self.model.addVar(name=var, lb=self.contract.deter_var_bounds[idx][0], ub=self.contract.deter_var_bounds[idx][1], vtype=GRB.CONTINUOUS)
+            self.deter_vars_expr[i] = entry2expr(variable)
+            self.model.addVar(name=variable, lb=self.contract.deter_var_bounds[idx][0], ub=self.contract.deter_var_bounds[idx][1], vtype=GRB.CONTINUOUS)
             self.model.update()
 
         # Add non-deterministic variables
-        self.nondeter_vars_mean = [0]*len(contract.nondeter_var_list)*(self.horizon+1)
-        self.nondeter_vars_cov = [[0]*len(contract.nondeter_var_list)*(self.horizon+1) for row in range(len(contract.nondeter_var_list)*(self.horizon+1))]
+        self.nondeter_vars_expr = [0]*len(contract.nondeter_var_list)*(self.horizon+1)
         
         for i, variable in enumerate(contract.nondeter_var_list):
             for k in range(self.horizon+1):
                 self.nondeter_vars.append("{}__{}".format(variable, k))
-                self.nondeter_vars_mean[i*(self.horizon+1)+k] = contract.nondeter_var_mean[i]
-                self.nondeter_vars_cov[i*(self.horizon+1)+k][i*(self.horizon+1)+k] = contract.nondeter_var_cov[i][i]
-
-        for row in self.nondeter_vars_cov:
-            for entry in row:
-                if isinstance(entry, str):
-                    entry = parser(entry, 'expression')
-                else:
-                    entry = parser('{}'.format(entry), 'expression')
+                self.nondeter_vars_expr[i*(self.horizon+1)+k] = entry2expr("{}__{}".format(variable, k))
 
         # Add parametric variables
         for i, variable in enumerate(contract.param_var_list):
             self.model.addVar(lb=contract.param_var_bounds[i][0], ub=contract.param_var_bounds[i][1], vtype=GRB.CONTINUOUS, name=variable)
         self.model.update()
-        
-        # Translate mean and cov matrix to expression
-        self.nondeter_vars_mean = [parser(str(entry), 'expression') for entry in self.nondeter_vars_mean]
-        mat2expr(self.nondeter_vars_cov)
 
-        # print(self.deter_vars)
-        # print(self.nondeter_vars)
-        # print(self.nondeter_vars_mean)
-        # print(self.nondeter_vars_cov)
+        print(self.deter_vars)
+        print(self.deter_vars_expr)
+        print(self.nondeter_vars)
+        print(self.nondeter_vars_expr)
+        # input()
 
     def add_dynamics(self, x = [], u = [], w = [], A = None, B = None, C = None):
         """
@@ -150,22 +169,14 @@ class MILPSolver:
         :param C: [description], defaults to None
         :type C: [type], optional
         """
-        def expr2gurobiexpr(expr):
-            """Pystl expression to gurobi expression."""
-            gurobi_expr = 0
-            for i in range(len(expr.multipliers)):
-                gurobi_term = expr.multipliers[i]
-                for j in range(len(expr.var_list_list[i])):
-                    if expr.var_list_list[i][j] != 1:
-                        for _ in range(expr.power_list_list[i][j]):
-                            try:
-                                gurobi_term *= self.model.getVarByName(expr.var_list_list[i][j])
-                            except:
-                                idx = self.nondeter_vars.index(expr.var_list_list[i][j])
-                                gurobi_term *= expr2gurobiexpr(self.nondeter_vars_mean[idx])
-                gurobi_expr += gurobi_term
-            return gurobi_expr
-            
+        # Define a function which recognizes a list of lists with all zero entries
+        def allZero(listoflists):
+            allZero = True
+            for row in listoflists:
+                if not all(elem == 0 for elem in row):
+                    allZero = False
+            return allZero
+
         # TODO: may have to modify when random variables are correlated
         # Check the dimensions of the matrices
         if A is not None:
@@ -179,7 +190,7 @@ class MILPSolver:
             mat2expr(B)
 
         if C is not None:
-            C_orig = deepcopy(C)
+            validC = allZero(C)
             assert(len(C) == len(x))
             assert(len(C[0]) == len(w))
             mat2expr(C)
@@ -187,106 +198,70 @@ class MILPSolver:
         # Add dynamics as a dictionary
         self.dynamics = {'x': x, 'u': u, 'w': w, 'A': A, 'B': B, 'C': C}
 
-        # Define a function which recognizes a list of lists with all zero entries
-        def allZero(listoflists):
-            allZero = True
-            for row in listoflists:
-                if not all(elem == 0 for elem in row):
-                    allZero = False
-            return allZero
-
         # If w-vector exists and C is nonzero, convert all variables within x-vector to nondeter variables
         orig_nondeter_num = len(self.nondeter_vars)
-        if len(w) != 0 and not allZero(C_orig):
+        if len(w) != 0 and not validC:
             # Remove vars in x-vector from deter_var
             for var in x:
-                for k in range(self.horizon+1):
-                    self.deter_vars.remove("{}__{}".format(var, k))
+                for k in range(1, self.horizon+1):
+                    idx = self.deter_vars.index("{}__{}".format(var, k))
+                    del self.deter_vars[idx]
+                    del self.deter_vars_expr[idx]
                     self.model.remove(self.model.getVarByName("{}__{}".format(var, k)))
                     self.nondeter_vars.append("{}__{}".format(var, k))
-            self.nondeter_vars_mean = self.nondeter_vars_mean + [parser('0', 'expression')]*len(x)*(self.horizon+1)
-            self.nondeter_vars_cov = [row + [parser('0', 'expression')]*len(x)*(self.horizon+1) for row in self.nondeter_vars_cov]
-            self.nondeter_vars_cov = self.nondeter_vars_cov + [[parser('0', 'expression')]*len(self.nondeter_vars_cov[0]) for i in range(len(x)*(self.horizon+1))]
-            
-            self.deter_vars_mean = [parser('0', 'expression')]*len(self.deter_vars)
-            for k in range(self.horizon+1):
-                for i in range(len(u)):
-                    idx = self.deter_vars.index("{}__{}".format(u[i], k))
-                    self.deter_vars_mean[idx] = parser("{}__{}".format(u[i], k), 'expression')
+            self.nondeter_vars_expr= self.nondeter_vars_expr + [0]*len(x)*self.horizon
 
-            # Find distributions
-            # TODO: Cov has to be dealt with by summing up terms
-            for i, var in enumerate(self.nondeter_vars):
-                if i >= orig_nondeter_num:
-                    [var_str, time_str] = split_var_time(var)
-                    if time_str == 0:
-                        self.model.addVar(name=var, lb=-M, ub=M, vtype=GRB.CONTINUOUS)
-                        self.model.update()
-                        self.nondeter_vars_mean[i] = parser(var, 'expression')
-
+            # Find expression for each nondeter variable
+            # TODO: Cov has to be better dealt with if two nondeter vars are correlated. Assuming independence for now.
             for k in range(1, self.horizon+1):
                 for i in range(len(x)):
-                    idx1 = orig_nondeter_num + (self.horizon+1)*i + k
-                    x_mean = parser('0', 'expression')
-                    x_variance = parser('0', 'expression')
+                    tmp_x = entry2expr(0)
+                    idx1 = self.nondeter_vars.index("{}__{}".format(x[i], k))
                     for j in range(len(x)):
                         if repr(A[i][j]) != '0.0':
-                            idx2 = orig_nondeter_num + (self.horizon+1)*j + k - 1
-                            x_mean += A[i][j]*self.nondeter_vars_mean[idx2]
-                            squared = A[i][j]*A[i][j]
-                            x_variance += squared*self.nondeter_vars_cov[idx2][idx2]
+                            if k == 1:
+                                idx2 = self.deter_vars.index("{}__{}".format(x[j], k-1))
+                                tmp_x += A[i][j]*self.deter_vars_expr[idx2]
+                            else:
+                                idx2 = self.nondeter_vars.index("{}__{}".format(x[j], k-1))
+                                tmp_x += A[i][j]*self.nondeter_vars_expr[idx2]
 
                     for j in range(len(u)):
                         if repr(B[i][j]) != '0.0':
-                            x_mean += B[i][j]*parser("{}__{}".format(u[j], k-1), 'expression')
+                            idx2 = self.deter_vars.index("{}__{}".format(u[j], k-1))
+                            tmp_x += B[i][j]*self.deter_vars_expr[idx2]
 
                     for j in range(len(w)):
                         if repr(C[i][j]) != '0.0':
-                            idx3 = (self.horizon+1)*j + k - 1
-                            x_mean += C[i][j]*self.nondeter_vars_mean[idx3]
-                            squared = C[i][j]*C[i][j]
-                            # print(squared)
-                            # print(self.nondeter_vars_cov[idx3][idx3])
-                            x_variance += squared*self.nondeter_vars_cov[idx3][idx3]
+                            idx2 = self.nondeter_vars.index("{}__{}".format(w[j], k-1))
+                            tmp_x += C[i][j]*self.nondeter_vars_expr[idx2]
                     
-                    self.nondeter_vars_mean[idx1] = x_mean
-                    self.nondeter_vars_cov[idx1][idx1] = x_variance 
                     
-                    # print(self.nondeter_vars[idx1])
-                    # print(x_mean)
-                    # print(x_variance)
-                    # input()
+                    self.nondeter_vars_expr[idx1] = tmp_x
         else:
-            self.deter_vars_mean = [parser('0', 'expression')]*len(self.deter_vars)
-            for k in range(self.horizon+1):
-                for i in range(len(x)):
-                    idx = self.deter_vars.index("{}__{}".format(x[i], k))
-                    self.deter_vars_mean[idx] = parser("{}__{}".format(x[i], k), 'expression')
-
-                for i in range(len(u)):
-                    idx = self.deter_vars.index("{}__{}".format(u[i], k))
-                    self.deter_vars_mean[idx] = parser("{}__{}".format(u[i], k), 'expression')
-
             for k in range(1, self.horizon+1):
                 for i in range(len(x)):
-                    x_mean = parser('0', 'expression')
+                    tmp_x = entry2expr(0)
+                    idx1 = self.deter_vars.index("{}__{}".format(x[i], k))
                     for j in range(len(x)):
                         if repr(A[i][j]) != '0.0':
-                            x_mean += A[i][j]*parser("{}__{}".format(x[j], k-1), 'expression')
+                            tmp_x += A[i][j]*entry2expr("{}__{}".format(x[j], k-1))
 
                     for j in range(len(u)):
                         if repr(B[i][j]) != '0.0':
-                            x_mean += B[i][j]*parser("{}__{}".format(u[j], k-1), 'expression')
+                            tmp_x += B[i][j]*entry2expr("{}__{}".format(u[j], k-1))
                     
-                    self.model.addConstr(expr2gurobiexpr(parser("{}__{}".format(x[i], k), 'expression')) == expr2gurobiexpr(x_mean))
+                    self.deter_vars_expr[idx1] = tmp_x
+                    
+                    self.model.addConstr(expr2gurobiexpr(self, entry2expr("{}__{}".format(x[i], k))) == expr2gurobiexpr(self, tmp_x))
                     self.model.update
 
-        # print(self.deter_vars)
-        # print(self.deter_vars_mean)
-        # print(self.nondeter_vars)
-        # print(self.nondeter_vars_mean)
-        # print(self.nondeter_vars_cov)
-        # input()
+        print(self.deter_vars)
+        print(self.deter_vars_expr)
+        print(self.nondeter_vars)
+        print(self.nondeter_vars_expr)
+        self.model.write('MILP.lp')
+        input()
 
     def add_init_condition(self, formula):
         """
@@ -406,42 +381,20 @@ class MILPSolver:
         return self.node_vars[b_name]
 
     def add_ap_stap_constraint(self, node, parent_vars, start_time = 0, end_time = 0, name='b'):
-        def expr2gurobiexpr(expr):
-            """Pystl expression to gurobi expression."""
-            gurobi_expr = 0
-            for i in range(len(expr.multipliers)):
-                gurobi_term = expr.multipliers[i]
-                for j in range(len(expr.var_list_list[i])):
-                    if expr.var_list_list[i][j] != 1:
-                        for _ in range(expr.power_list_list[i][j]):
-                            try:
-                                gurobi_term *= self.model.getVarByName(expr.var_list_list[i][j])
-                            except:
-                                idx = self.nondeter_vars.index(expr.var_list_list[i][j])
-                                gurobi_term *= expr2gurobiexpr(self.nondeter_vars_mean[idx])
-                gurobi_expr += gurobi_term
-            return gurobi_expr
-
         if type(node) == AP: # Add constraints for an atomic predicate
             if type(parent_vars) == gp.Var:
-                constr = int2expr(0)
+                constr = entry2expr(0)
                 for i in range(len(node.multipliers)):
-                    term = int2expr(node.multipliers[i])
+                    term = entry2expr(node.multipliers[i])
                     for j, var in enumerate(node.var_list_list[i]):
                         if var != 1:
-                            if var in self.contract.param_var_list:
-                                term *= parser(var, 'expression')
-                            else:
-                                for _ in range(int(node.power_list_list[i][j])):
-                                    if "{}__0".format(var) in self.deter_vars:
-                                        idx = self.deter_vars.index("{}__0".format(var))
-                                        term *= self.deter_vars_mean[idx]
-                                    else:
-                                        term *= parser("{}__0".format(var), 'expression')
+                            for _ in range(int(node.power_list_list[i][j])):
+                                idx = self.deter_vars.index("{}__0".format(var))
+                                term *= self.deter_vars_expr[idx]
                     constr += term
 
                 # Pystl expression to gurobi expression
-                gurobi_expr = expr2gurobiexpr(constr)
+                gurobi_expr = expr2gurobiexpr(self, constr)
 
                 # Add constraints
                 if self.mode == 'Boolean':
@@ -457,24 +410,18 @@ class MILPSolver:
             
             else:
                 for t in range(start_time, end_time+1):
-                    constr = int2expr(0)
+                    constr = entry2expr(0)
                     for i in range(len(node.multipliers)):
-                        term = int2expr(node.multipliers[i])
+                        term = entry2expr(node.multipliers[i])
                         for j, var in enumerate(node.var_list_list[i]):
                             if var != 1:
-                                if var in self.contract.param_var_list:
-                                    term *= parser(var, 'expression')
-                                else:
-                                    for _ in range(int(node.power_list_list[i][j])):
-                                        if "{}__{}".format(var, t) in self.deter_vars:
-                                            idx = self.deter_vars.index("{}__{}".format(var, t))
-                                            term *= self.deter_vars_mean[idx]
-                                        else:
-                                            term *= parser("{}__{}".format(var, t), 'expression')
+                                for _ in range(int(node.power_list_list[i][j])):
+                                    idx = self.deter_vars.index("{}__{}".format(var, t))
+                                    term *= self.deter_vars_expr[idx]
                         constr += term
 
                     # Pystl expression to gurobi expression
-                    gurobi_expr = expr2gurobiexpr(constr)
+                    gurobi_expr = expr2gurobiexpr(self, constr)
 
                     # Add constraints
                     if self.mode == 'Boolean':
@@ -493,21 +440,21 @@ class MILPSolver:
             # print(node)
 
             # Fetch the probability expression for the node
-            prob = int2expr(0)
+            prob = entry2expr(0)
             for i in range(len(node.prob_multipliers)):
-                term = int2expr(node.prob_multipliers[i])
+                term = entry2expr(node.prob_multipliers[i])
                 for j, var in enumerate(node.prob_var_list_list[i]):
                     if var != 1:
                         for _ in range(int(node.power_list_list[i][j])):
-                            term *= parser(var, 'expression')
+                            term *= entry2expr(var)
                     prob += term
 
             if len(prob.variables) == 0:
                 # Handle extreme cases
                 if prob.multipliers[0] == 0:
-                    prob = parser('{}'.format(0.0000000000000001), 'expression')
+                    prob = entry2expr(0.0000000000000001)
                 elif prob.multipliers[0] == 1:
-                    prob = parser('{}'.format(0.9999999999999999), 'expression')
+                    prob = entry2expr(0.9999999999999999)
             else:
                 # Find lower and upper bounds for the probability threshold
                 p_low_mat = []
@@ -544,193 +491,191 @@ class MILPSolver:
             
                 # print((p_low, p_high))
 
-            # print(self.nondeter_vars)
-            # print(self.nondeter_vars_mean)
-            # print(self.nondeter_vars_cov)
-
             if type(parent_vars) == gp.Var:
-                constr = int2expr(0)
-                mean = int2expr(0)
-                variance = int2expr(0)
+                constr = entry2expr(0)
+                mean = entry2expr(0)
+                variance = entry2expr(0)
                 for i in range(len(node.multipliers)):
-                    term_mean = int2expr(node.multipliers[i])
-                    term_var = int2expr(node.multipliers[i]*node.multipliers[i])
+                    term_mean = entry2expr(node.multipliers[i])
+                    term_var = entry2expr(node.multipliers[i]*node.multipliers[i])
                     for j, var in enumerate(node.var_list_list[i]):
                         if var != 1:
                             if var in self.contract.param_var_list:
-                                term_mean *= parser(var, 'expression')
-                                term_var = int2expr(0)
+                                term_mean *= entry2expr(var)
+                                term_var *= entry2expr(0)
                             else:
                                 for _ in range(int(node.power_list_list[i][j])):
                                     if "{}__0".format(var) in self.nondeter_vars:
                                         idx = self.nondeter_vars.index("{}__0".format(var))
                                         term_mean *= self.nondeter_vars_mean[idx]
-                                        term_var *= self.nondeter_vars_cov[idx][idx]
+                                        term_var *= self.nondeter_vars_variance[idx][idx]
                                     else:
-                                        term_mean *= parser("{}__0".format(var), 'expression')
-                                        term_var = int2expr(0)
+                                        term_mean *= entry2expr("{}__0".format(var))
+                                        term_var = entry2expr(0)
                         else:
-                            term_var = int2expr(0)
+                            term_var = entry2expr(0)
                     mean += term_mean
                     variance += term_var
                 
-                # print(prob)
-                # print(mean)
-                # print(variance)
-                # input()
+                print(prob)
+                print(mean)
+                print(variance)
+                input()
                 
-                # Find chance constraint
-                probIsNum = False
-                if len(prob.variables) == 0:
-                    probIsNum = True
-                varIsNum = False
-                if len(variance.variables) == 0:
-                    varIsNum = True
+                # # Find chance constraint
+                # probIsNum = False
+                # if len(prob.variables) == 0:
+                #     probIsNum = True
+                # varIsNum = False
+                # if len(variance.variables) == 0:
+                #     varIsNum = True
 
-                if probIsNum and varIsNum:
-                    # Find LHS of the constraint 
-                    constr = mean + int2expr(norm.ppf(float(repr(prob))))*int2expr(math.sqrt(float(repr(variance))))
+                # if probIsNum and varIsNum:
+                #     # Find LHS of the constraint 
+                #     constr = mean + entry2expr(norm.ppf(float(repr(prob))))*entry2expr(math.sqrt(float(repr(variance))))
                 
-                elif not probIsNum and varIsNum:
-                    # Find LHS of the constraint 
-                    if p_low >= 0.5:
-                        constr = mean + (int2expr(norm.ppf(p_low)) + int2expr((norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low))*(prob-int2expr(p_low)))*int2expr(math.sqrt(float(repr(variance))))
-                    else:
-                        constr = mean + (int2expr(norm.ppf((p_low+p_high)/2)) + int2expr(1/norm.pdf(norm.ppf((p_low+p_high)/2)))*(prob-int2expr((p_low+p_high)/2)))*int2expr(math.sqrt(float(repr(variance))))
+                # elif not probIsNum and varIsNum:
+                #     # Find LHS of the constraint 
+                #     if p_low >= 0.5:
+                #         constr = mean + (entry2expr(norm.ppf(p_low)) + entry2expr((norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low))*(prob-entry2expr(p_low)))*entry2expr(math.sqrt(float(repr(variance))))
+                #     else:
+                #         constr = mean + (entry2expr(norm.ppf((p_low+p_high)/2)) + entry2expr(1/norm.pdf(norm.ppf((p_low+p_high)/2)))*(prob-entry2expr((p_low+p_high)/2)))*entry2expr(math.sqrt(float(repr(variance))))
                 
-                elif probIsNum and not varIsNum:
-                    # Add anxiliary variables and constraints
-                    tmp_variance = self.model.addVar(name='{}_variance__0'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
-                    tmp_sigma = self.model.addVar(name='{}_sigma__0'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
-                    self.model.addConstr(tmp_variance == expr2gurobiexpr(variance))
-                    self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
-                    self.model.update()
+                # elif probIsNum and not varIsNum:
+                #     # Add anxiliary variables and constraints
+                #     tmp_variance = self.model.addVar(name='{}_variance__0'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                #     tmp_sigma = self.model.addVar(name='{}_sigma__0'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                #     self.model.addConstr(tmp_variance == expr2gurobiexpr(variance))
+                #     self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
+                #     self.model.update()
                     
-                    # Find LHS of the constraint 
-                    constr = mean + int2expr(norm.ppf(float(repr(prob))))*parser('{}_sigma__0'.format(name), 'expression')
+                #     # Find LHS of the constraint 
+                #     constr = mean + entry2expr(norm.ppf(float(repr(prob))))*parser('{}_sigma__0'.format(name), 'expression')
                 
-                elif not probIsNum and not varIsNum:
-                    # Add anxiliary variables and constraints
-                    tmp_variance = self.model.addVar(name='{}_variance__0'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
-                    tmp_sigma = self.model.addVar(name='{}_sigma__0'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
-                    self.model.addConstr(tmp_variance == expr2gurobiexpr(variance))
-                    self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
-                    self.model.update()
+                # elif not probIsNum and not varIsNum:
+                #     # Add anxiliary variables and constraints
+                #     tmp_variance = self.model.addVar(name='{}_variance__0'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                #     tmp_sigma = self.model.addVar(name='{}_sigma__0'.format(name), ub = 10**4, vtype=GRB.CONTINUOUS)
+                #     self.model.addConstr(tmp_variance == expr2gurobiexpr(variance))
+                #     self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
+                #     self.model.update()
                     
-                    # Find LHS of the constraint 
-                    if p_low >= 0.5:
-                        constr = mean + (int2expr(norm.ppf(p_low)) + int2expr((norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low))*(prob-int2expr(p_low)))*parser('{}_sigma__0'.format(name), 'expression')
-                    else:
-                        constr = mean + (int2expr(norm.ppf((p_low+p_high)/2)) + int2expr(1/norm.pdf(norm.ppf((p_low+p_high)/2)))*(prob-int2expr((p_low+p_high)/2)))*parser('{}_sigma__0'.format(name), 'expression')
+                #     # Find LHS of the constraint 
+                #     if p_low >= 0.5:
+                #         constr = mean + (entry2expr(norm.ppf(p_low)) + entry2expr((norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low))*(prob-entry2expr(p_low)))*parser('{}_sigma__0'.format(name), 'expression')
+                #     else:
+                #         constr = mean + (entry2expr(norm.ppf((p_low+p_high)/2)) + entry2expr(1/norm.pdf(norm.ppf((p_low+p_high)/2)))*(prob-entry2expr((p_low+p_high)/2)))*parser('{}_sigma__0'.format(name), 'expression')
                 
-                # print("constr: " + repr(constr))
-                # print("mean: " + repr(mean))
-                # print("variance: " + repr(variance))
-                # input()
+                # # print("constr: " + repr(constr))
+                # # print("mean: " + repr(mean))
+                # # print("variance: " + repr(variance))
+                # # input()
 
-                # Pystl expression to gurobi expression
-                gurobi_expr = expr2gurobiexpr(constr)
+                # # Pystl expression to gurobi expression
+                # gurobi_expr = expr2gurobiexpr(self, constr)
 
-                # Add constraints
-                if self.mode == 'Boolean':
-                    self.model.addConstr(M * (1 - parent_vars) >= gurobi_expr)
-                    self.model.addConstr(EPS - M * parent_vars <= gurobi_expr)
-                else:
-                    self.model.addConstr(parent_vars == -gurobi_expr)
-                self.model.update()
+                # # Add constraints
+                # if self.mode == 'Boolean':
+                #     self.model.addConstr(M * (1 - parent_vars) >= gurobi_expr)
+                #     self.model.addConstr(EPS - M * parent_vars <= gurobi_expr)
+                # else:
+                #     self.model.addConstr(parent_vars == -gurobi_expr)
+                # self.model.update()
                 
             else:
                 for t in range(start_time, end_time+1):
-                    constr = int2expr(0)
-                    mean = int2expr(0)
-                    variance = int2expr(0)
+                    constr = entry2expr(0)
+                    mean = entry2expr(0)
+                    variance = entry2expr(0)
                     for i in range(len(node.multipliers)):
-                        term_mean = int2expr(node.multipliers[i])
-                        term_var = int2expr(node.multipliers[i]*node.multipliers[i])
+                        term_mean = entry2expr(node.multipliers[i])
+                        term_var = entry2expr(node.multipliers[i]*node.multipliers[i])
                         for j, var in enumerate(node.var_list_list[i]):
+                            is_deter_term = True
                             if var != 1:
                                 if var in self.contract.param_var_list:
-                                    term_mean *= parser(var, 'expression')
-                                    term_var = int2expr(0)
+                                    term_mean *= entry2expr(var)
+                                    term_var *= entry2expr(0)
                                 else:
                                     for _ in range(int(node.power_list_list[i][j])):
                                         if "{}__{}".format(var, t) in self.nondeter_vars:
                                             idx = self.nondeter_vars.index("{}__{}".format(var, t))
-                                            term_mean *= self.nondeter_vars_mean[idx]
-                                            term_var *= self.nondeter_vars_cov[idx][idx]
+                                            term_mean *= self.nondeter_vars_expr[idx]
+                                            # term_var *= self.nondeter_vars_variance[idx][idx]
+                                            is_deter_term = False
                                         else:
-                                            term_mean *= parser("{}__{}".format(var, t), 'expression')
-                                            term_var = int2expr(0)
-                            else:
-                                term_var = int2expr(0)
+                                            term_mean *= entry2expr("{}__{}".format(var, t))
+                            if is_deter_term:
+                                term_var = entry2expr(0)
                         mean += term_mean
                         variance += term_var
             
-                    # print(prob)
-                    # print(mean)
-                    # print(variance)
-                    # input()
+                    print("At time: {}".format(t))
+                    print(prob)
+                    print(mean)
+                    print(variance)
+                    input()
                 
-                    # Find chance constraint
-                    probIsNum = False
-                    if len(prob.variables) == 0:
-                        probIsNum = True
-                    varIsNum = False
-                    if len(variance.variables) == 0:
-                        varIsNum = True
+        #             # Find chance constraint
+        #             probIsNum = False
+        #             if len(prob.variables) == 0:
+        #                 probIsNum = True
+        #             varIsNum = False
+        #             if len(variance.variables) == 0:
+        #                 varIsNum = True
 
-                    if probIsNum and varIsNum:
-                        # Find LHS of the constraint 
-                        constr = mean + int2expr(norm.ppf(float(repr(prob))))*int2expr(math.sqrt(float(repr(variance))))
+        #             if probIsNum and varIsNum:
+        #                 # Find LHS of the constraint 
+        #                 constr = mean + entry2expr(norm.ppf(float(repr(prob))))*entry2expr(math.sqrt(float(repr(variance))))
                     
-                    elif not probIsNum and varIsNum:
-                        # Find LHS of the constraint 
-                        if p_low >= 0.5:
-                            constr = mean + (int2expr(norm.ppf(p_low)) + int2expr((norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low))*(prob-int2expr(p_low)))*int2expr(math.sqrt(float(repr(variance))))
-                        else:
-                            constr = mean + (int2expr(norm.ppf((p_low+p_high)/2)) + int2expr(1/norm.pdf(norm.ppf((p_low+p_high)/2)))*(prob-int2expr((p_low+p_high)/2)))*int2expr(math.sqrt(float(repr(variance))))
+        #             elif not probIsNum and varIsNum:
+        #                 # Find LHS of the constraint 
+        #                 if p_low >= 0.5:
+        #                     constr = mean + (entry2expr(norm.ppf(p_low)) + entry2expr((norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low))*(prob-entry2expr(p_low)))*entry2expr(math.sqrt(float(repr(variance))))
+        #                 else:
+        #                     constr = mean + (entry2expr(norm.ppf((p_low+p_high)/2)) + entry2expr(1/norm.pdf(norm.ppf((p_low+p_high)/2)))*(prob-entry2expr((p_low+p_high)/2)))*entry2expr(math.sqrt(float(repr(variance))))
                     
-                    elif probIsNum and not varIsNum:
-                        # Add anxiliary variables and constraints
-                        tmp_variance = self.model.addVar(name='{}_variance__{}'.format(name, t), ub = 10**4, vtype=GRB.CONTINUOUS)
-                        tmp_sigma = self.model.addVar(name='{}_sigma__{}'.format(name, t), ub = 10**4, vtype=GRB.CONTINUOUS)
-                        self.model.addConstr(tmp_variance == expr2gurobiexpr(variance))
-                        self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
-                        self.model.update()
+        #             elif probIsNum and not varIsNum:
+        #                 # Add anxiliary variables and constraints
+        #                 tmp_variance = self.model.addVar(name='{}_variance__{}'.format(name, t), ub = 10**4, vtype=GRB.CONTINUOUS)
+        #                 tmp_sigma = self.model.addVar(name='{}_sigma__{}'.format(name, t), ub = 10**4, vtype=GRB.CONTINUOUS)
+        #                 self.model.addConstr(tmp_variance == expr2gurobiexpr(variance))
+        #                 self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
+        #                 self.model.update()
                         
-                        # Find LHS of the constraint 
-                        constr = mean + int2expr(norm.ppf(float(repr(prob))))*parser('{}_sigma__{}'.format(name, t), 'expression')
+        #                 # Find LHS of the constraint 
+        #                 constr = mean + entry2expr(norm.ppf(float(repr(prob))))*parser('{}_sigma__{}'.format(name, t), 'expression')
                     
-                    elif not probIsNum and not varIsNum:
-                        # Add anxiliary variables and constraints
-                        tmp_variance = self.model.addVar(name='{}_variance__{}'.format(name, t), ub = 10**4, vtype=GRB.CONTINUOUS)
-                        tmp_sigma = self.model.addVar(name='{}_sigma__{}'.format(name, t), ub = 10**4, vtype=GRB.CONTINUOUS)
-                        self.model.addConstr(tmp_variance == expr2gurobiexpr(variance))
-                        self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
-                        self.model.update()
+        #             elif not probIsNum and not varIsNum:
+        #                 # Add anxiliary variables and constraints
+        #                 tmp_variance = self.model.addVar(name='{}_variance__{}'.format(name, t), ub = 10**4, vtype=GRB.CONTINUOUS)
+        #                 tmp_sigma = self.model.addVar(name='{}_sigma__{}'.format(name, t), ub = 10**4, vtype=GRB.CONTINUOUS)
+        #                 self.model.addConstr(tmp_variance == expr2gurobiexpr(variance))
+        #                 self.model.addGenConstrPow(tmp_variance, tmp_sigma, 0.5)
+        #                 self.model.update()
                         
-                        # Find LHS of the constraint 
-                        if p_low >= 0.5:
-                            constr = mean + (int2expr(norm.ppf(p_low)) + int2expr((norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low))*(prob-int2expr(p_low)))*parser('{}_sigma__{}'.format(name, t), 'expression')
-                        else:
-                            constr = mean + (int2expr(norm.ppf((p_low+p_high)/2)) + int2expr(1/norm.pdf(norm.ppf((p_low+p_high)/2)))*(prob-int2expr((p_low+p_high)/2)))*parser('{}_sigma__{}'.format(name, t), 'expression')
+        #                 # Find LHS of the constraint 
+        #                 if p_low >= 0.5:
+        #                     constr = mean + (entry2expr(norm.ppf(p_low)) + entry2expr((norm.ppf(p_high)-norm.ppf(p_low))/(p_high-p_low))*(prob-entry2expr(p_low)))*parser('{}_sigma__{}'.format(name, t), 'expression')
+        #                 else:
+        #                     constr = mean + (entry2expr(norm.ppf((p_low+p_high)/2)) + entry2expr(1/norm.pdf(norm.ppf((p_low+p_high)/2)))*(prob-entry2expr((p_low+p_high)/2)))*parser('{}_sigma__{}'.format(name, t), 'expression')
                     
-                    # print("At time: {}".format(t))
-                    # print("constr: " + repr(constr))
-                    # print("mean: " + repr(mean))
-                    # print("variance: " + repr(variance))
-                    # input()
+        #             # print("At time: {}".format(t))
+        #             # print("constr: " + repr(constr))
+        #             # print("mean: " + repr(mean))
+        #             # print("variance: " + repr(variance))
+        #             # input()
 
-                    # Pystl expression to gurobi expression
-                    gurobi_expr = expr2gurobiexpr(constr)
+        #             # Pystl expression to gurobi expression
+        #             gurobi_expr = expr2gurobiexpr(constr)
 
-                    # Add constraints
-                    if self.mode == 'Boolean':
-                        self.model.addConstr(M * (1 - parent_vars[0,t]) >= gurobi_expr)
-                        self.model.addConstr(EPS - M * parent_vars[0,t] <= gurobi_expr)
-                    else:
-                        self.model.addConstr(parent_vars[0,t] == -gurobi_expr)
-                    self.model.update()
+        #             # Add constraints
+        #             if self.mode == 'Boolean':
+        #                 self.model.addConstr(M * (1 - parent_vars[0,t]) >= gurobi_expr)
+        #                 self.model.addConstr(EPS - M * parent_vars[0,t] <= gurobi_expr)
+        #             else:
+        #                 self.model.addConstr(parent_vars[0,t] == -gurobi_expr)
+        #             self.model.update()
 
     def add_temporal_unary_constraint(self, node, parent_vars, start_time = 0, end_time = 0, name='b'):
         # Fetch node variables from the child node

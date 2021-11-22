@@ -17,7 +17,7 @@ for i in range(1, N+1):
     tmp_contract.add_nondeter_vars(['w{}'.format(i)],  
         mean = [0],
         cov = [[0.02**2]])
-    # tmp_contract.set_assume('x<=300')
+    tmp_contract.set_assume('x<=300')
     tmp_contract.set_guaran('P[0.95] (w{} <= 0.2)'.format(i)) 
     tmp_contract.checkSat()
     contract_list.append(tmp_contract)
@@ -30,7 +30,7 @@ for i in range(1, M+1):
     tmp_contract.add_nondeter_vars(['param_w{}'.format(i)],  
         mean = [0],
         cov = [['sigma{}^2'.format(i)]])
-    # tmp_contract.set_assume('x<=300')
+    tmp_contract.set_assume('x<=250')
     tmp_contract.set_guaran('P[p{}] (param_w{} <= 0.1)'.format(i, i)) 
     tmp_contract.checkSat()
     contract_list.append(tmp_contract)
@@ -53,7 +53,7 @@ c.add_nondeter_vars(['w{}'.format(i) for i in range(1, N+1)] + ['param_w{}'.form
     cov = tmp_cov) # Set nondeterministic uncontrolled variables
 
 # Set assumptions and guarantees for the contract c
-# c.set_assume('x<=200') # Set/define the assumptions
+c.set_assume('x<=200') # Set/define the assumptions
 expression = ''
 for i in range(1, N+1):
     expression += ' + w{}'.format(i)

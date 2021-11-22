@@ -163,7 +163,7 @@ class contract:
             self.sat_guarantee = parser(self.sat_guarantee_str)[0][0]
             self.isSat = True
     
-    def checkCompat(self, print_sol=False, verbose = True):
+    def checkCompat(self, dynamics = None, init_conditions = [], print_sol=False, verbose = True):
         """ Checks compatibility of the contract. """
         # Build a MILP Solver
         print("====================================================================================")
@@ -173,6 +173,10 @@ class contract:
         # Add the contract and assumption constraints to the solver
         self.checkSat()
         solver.add_contract(self)
+        if dynamics is not None:
+            solver.add_dynamics(x=dynamics['x'], u=dynamics['u'], w=dynamics['w'], A=dynamics['A'], B=dynamics['B'], C=dynamics['C'])
+        for init_condition in init_conditions:
+            solver.add_init_condition(init_condition)
         solver.add_constraint(self.assumption)
 
         # Solve the problem
@@ -189,7 +193,7 @@ class contract:
 
         return solved
     
-    def checkConsis(self, print_sol=False, verbose = True):
+    def checkConsis(self, dynamics = None, init_conditions = [], print_sol=False, verbose = True):
         """ Checks consistency of the contract """
         # Build a MILP Solver
         print("====================================================================================")
@@ -200,6 +204,10 @@ class contract:
         # Add the contract and guarantee constraints to the solver
         self.checkSat()
         solver.add_contract(self)
+        if dynamics is not None:
+            solver.add_dynamics(x=dynamics['x'], u=dynamics['u'], w=dynamics['w'], A=dynamics['A'], B=dynamics['B'], C=dynamics['C'])
+        for init_condition in init_conditions:
+            solver.add_init_condition(init_condition)
         solver.add_constraint(self.sat_guarantee)
 
         # Solve the problem
@@ -216,7 +224,7 @@ class contract:
 
         return solved
     
-    def checkFeas(self, print_sol=False, verbose = True):
+    def checkFeas(self, dynamics = None, init_conditions = [], print_sol=False, verbose = True):
         """ Checks feasibility of the contract """
         # Build a MILP Solver
         print("====================================================================================")
@@ -227,6 +235,10 @@ class contract:
         # Add the contract and assumption constraints to the solver
         self.checkSat()
         solver.add_contract(self)
+        if dynamics is not None:
+            solver.add_dynamics(x=dynamics['x'], u=dynamics['u'], w=dynamics['w'], A=dynamics['A'], B=dynamics['B'], C=dynamics['C'])
+        for init_condition in init_conditions:
+            solver.add_init_condition(init_condition)
         solver.add_constraint(parser("({}) & ({})".format(self.assumption_str, self.guarantee_str))[0][0])
 
         # Solve the problem
@@ -243,7 +255,7 @@ class contract:
 
         return solved
     
-    def checkRefine(self, contract2refine, print_sol=False):
+    def checkRefine(self, contract2refine, dynamics = None, init_conditions = [], print_sol=False):
         """ Checks whether the self contract refines the contract contract2refine"""
         print("====================================================================================")
         print("Checking whether contract {} refines contract {}...".format(self.id, contract2refine.id))
@@ -275,6 +287,10 @@ class contract:
         print("Checking assumptions condition for refinement...")
         self.checkSat()
         solver.add_contract(self)
+        if dynamics is not None:
+            solver.add_dynamics(x=dynamics['x'], u=dynamics['u'], w=dynamics['w'], A=dynamics['A'], B=dynamics['B'], C=dynamics['C'])
+        for init_condition in init_conditions:
+            solver.add_init_condition(init_condition)
         solver.add_constraint(refinement_contract.assumption)
     
         # Check refinement condition for assumptions
@@ -295,6 +311,10 @@ class contract:
         print("Checking guarantees condition for refinement...")
         self.checkSat()
         solver.add_contract(contract2refine)
+        if dynamics is not None:
+            solver.add_dynamics(x=dynamics['x'], u=dynamics['u'], w=dynamics['w'], A=dynamics['A'], B=dynamics['B'], C=dynamics['C'])
+        for init_condition in init_conditions:
+            solver.add_init_condition(init_condition)
         solver.add_constraint(refinement_contract.guarantee)
 
         # Check refinement condition for guarantees
@@ -335,6 +355,7 @@ class contract:
 
         # Find an optimal set of parameters
         refinement_contract.find_opt_param(weights, N=N)
+        refinement_contract.printInfo()
         
     def find_opt_param(self, weights, N=100, dynamics = None, init_conditions = []):
         """ Find an optimal set of parameters for a contract given an objective function. """
@@ -376,8 +397,9 @@ class contract:
                 MILPsolver.add_dynamics(x=dyn['x'], u=dyn['u'], w=dyn['w'], A=dyn['A'], B=dyn['B'], C=dyn['C'])
             for init_condition in inits:
                 MILPsolver.add_init_condition(init_condition)
-            MILPsolver.add_constraint(self.assumption, name='b_a')
-            MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
+            MILPsolver.add_constraint(self.assumption, hard=False, name='b_a')
+            # MILPsolver.add_constraint(self.assumption, name='b_a')
+            # MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
             # MILPsolver.add_constraint(self.sat_guarantee, hard=False, name='b_g')
 
             # Solve the problem
@@ -386,12 +408,12 @@ class contract:
                 print("SAT partition!")
                 return 0
             else:
-                # for v in MILPsolver.model.getVars():
+                for v in MILPsolver.model.getVars():
                     # print('%s %g' % (v.varName, v.x))
-                    # if 'b' not in v.varName:
-                    #     print('%s %g' % (v.varName, v.x))
-                    # elif v.varName in ('b_a', 'b_g'):
-                    #     print('%s %g' % (v.varName, v.x))
+                    if 'b' not in v.varName:
+                        print('%s %g' % (v.varName, v.x))
+                    elif v.varName in ('b_a', 'b_g'):
+                        print('%s %g' % (v.varName, v.x))
                     
                 MILPsolver.set_objective(sense='maximize')
                 if not MILPsolver.solve():
@@ -399,12 +421,12 @@ class contract:
                     return 1
                 else: 
                     print("UNDET partition!")
-                    # for v in MILPsolver.model.getVars():
+                    for v in MILPsolver.model.getVars():
                         # print('%s %g' % (v.varName, v.x))
-                        # if 'b' not in v.varName:
-                        #     print('%s %g' % (v.varName, v.x))
-                        # elif v.varName in ('b_a', 'b_g'):
-                        #     print('%s %g' % (v.varName, v.x))
+                        if 'b' not in v.varName:
+                            print('%s %g' % (v.varName, v.x))
+                        elif v.varName in ('b_a', 'b_g'):
+                            print('%s %g' % (v.varName, v.x))
                     return 2
 
         def paramSpacePartition(partition):
