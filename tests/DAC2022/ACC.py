@@ -3,11 +3,9 @@ from pystl import *
 import numpy
 import time
 
-K = 1
-
 car = contract('car')
-car.add_deter_vars(['v', 'vl', 'd', 'a', 'al'],
-    bounds=[[0, 34], [0, 34], [-100, 500], [-2.95, 1.99], [-3.5,3.5]]) 
+car.add_deter_vars(['xe', 've', 'xl', 'vl', 'ae', 'd', 'v'],
+    bounds=[[0, 500], [0, 34], [0, 500], [0, 34], [-2.95, 1.99], [-100, 100], [-34, 34]]) 
 
 # car.add_param_vars(['p', 'vn_sigma', 'vln_sigma'],
 #     bounds=[[0.9, 1], [0.0001, 0.3],[0.0001, 0.3]])
@@ -15,8 +13,9 @@ car.add_deter_vars(['v', 'vl', 'd', 'a', 'al'],
 # car.add_param_vars(['p', 'dn_sigma'],
 #     bounds=[[0, 1], [0.0001, 0.5]])
 
-# car.add_param_vars(['p'],
-#     bounds=[[0.9, 1]])
+# car.add_param_vars(['p'], bounds=[[0.9, 1]])
+car.add_param_vars(['c'], bounds=[[1, 5]])
+# car.add_param_vars(['p', 'c'], bounds=[[0.9, 1], [1, 5]])
 
 # car.add_param_vars(['vln_sigma'],
 #     bounds=[[0.0001, 0.3]])
@@ -32,41 +31,46 @@ car.add_deter_vars(['v', 'vl', 'd', 'a', 'al'],
 # car.add_nondeter_vars(['dn'],
 #     mean=[0], cov=[['dn_sigma^2']])
 
-car.add_nondeter_vars(['dn'],
-    mean=[0], cov=[[0.1**2]])
+# car.add_nondeter_vars(['dw'],
+#     mean=[0], cov=[[0.1**2]])
 
 car.set_assume(
-    'G[0,10] ((al == -1) & (vl >= 0))'
+    'True'
 )
 
 car.set_guaran(
-    'G[0,10] (P[0.99] (d > 0.1))'
+    # '(G[0,10] (P[0.99] (d >= c))) & (G[0,10] (P[p] (a <= 0.9)))'
+    # '(G[0,10] (P[0.99] (d >= c))) & (G[0,10] (P[0.9] (a <= 0.9)))'
+    # '(G[0,10] (P[0.9](d >= c))) & (G[0,10]((P[0.01](d <= 0.1)) -> F[1,10] G[1,10](P[0.9999] (v <= vl)))'
+    'G[0,10] (P[0.9] (d >= c))'
 )
 # cars.set_guaran(
-#     '(G[0,10] (P[0.99999](d > 0.1))) & \
-#     (G[0,10]((P[0.01](d <= 0.1)) -> F[1,10] G[1,10](P[0.9999] (v <= vl)))'
 # )
 
-# dynamics = {'x': ['v', 'vl', 'd', 'a'], 
-#     'u': ['al'], 
-#     'w': ['vn', 'vln'],
-#     'A': [[1, 0, 0, 1], [0, 1, 0, 0], [-1, 1, 1, 0], [K, -K, 0, 0]],
-#     'B': [[0], [1], [0], [0]], 
-#     'C': [[0, 0],[0, 0],[0, 0], [K, -K]]
-# }
+car.checkSat()
+car.printInfo()
 
-dynamics = {'x': ['v', 'vl', 'd', 'a'], 
-    'u': ['al'], 
-    'w': ['dn'],
-    'A': [[1, 0, 0, 1], [0, 1, 0, 0], [-1, 1, 1, 0], [K, -K, 0, 0]],
+K = 1
+
+dynamics = {'x': ['xe', 've', 'xl', 'vl'], 
+    'u': ['ae'], 
+    'z': ['d', 'v'],
+    'A': [[1, 1, 0, 0], [0, 1, 0, 0], [0, 0, 1, 1], [0, 0, 0, 1]],
     'B': [[0], [1], [0], [0]], 
-    'C': [[0], [0], [1], [0]]
+    'C': [[-1, 0, 1, 0], [0, -1, 0, 1]],
+    'D': [[0, -K]],
+    'Q': [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1**2]],
+    'R': [[2**2, 0], [0, 0.5**2]]
 }
 
-init_conditions = ['v == 5', 'vl == 10', 'd == 5', 'a == 0']
+# TODO: dynamics addition function...
+
+init_conditions = ['xe == 0', 'xl == 15', 've == 5', 'vl == 10', 'a == 0']
 
 start = time.time()
-car.checkFeas(dynamics=dynamics, init_conditions=init_conditions, print_sol=True)
+# car.checkFeas(dynamics=dynamics, init_conditions=init_conditions, print_sol=True)
+car.find_opt_param({'c': -1}, N=50, dynamics=dynamics, init_conditions=init_conditions)
+# car.find_opt_param({'p': -1, 'c': -1}, N=50, dynamics=dynamics, init_conditions=init_conditions)
 # car.find_opt_param({'p': -10, 'dn_sigma': 1}, N=50, dynamics=dynamics, init_conditions=init_conditions)
 end = time.time()
 print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))

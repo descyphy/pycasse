@@ -466,11 +466,13 @@ class expression():
                 out.multipliers.append(other.multipliers[i])
                 out.power_list_list.append(other.power_list_list[i])
 
+        deleted_num = 0
         for i, multiplier in enumerate(out.multipliers[:]):
             if multiplier == 0 and out.var_list_list[i] != [1]:
-                del out.multipliers[i]
-                del out.var_list_list[i]
-                del out.power_list_list[i]
+                del out.multipliers[i-deleted_num]
+                del out.var_list_list[i-deleted_num]
+                del out.power_list_list[i-deleted_num]
+                deleted_num += 1
         
         for var_list in out.var_list_list:
             out.variables += list(set(var_list)-set(out.variables))

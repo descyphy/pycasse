@@ -2,10 +2,8 @@ from pystl import *
 import time
 
 # Num of maximum deterministic contracts and parameterized contracts
-# max_N = 5
-# max_M = 1
-N = 5
-M = 1
+N = 10
+M = 3
 
 # Initialize a contract list
 contract_list = []
@@ -13,11 +11,11 @@ contract_list = []
 # Create deterministic contracts
 for i in range(1, N+1):
     tmp_contract = contract('c{}'.format(i))
-    tmp_contract.add_deter_vars(['x'], bounds=[[0,500]])
+    tmp_contract.add_deter_vars(['x'], bounds=[[1,500]])
     tmp_contract.add_nondeter_vars(['w{}'.format(i)],  
         mean = [0],
         cov = [[0.02**2]])
-    tmp_contract.set_assume('x<=300')
+    tmp_contract.set_assume('x <= 300')
     tmp_contract.set_guaran('P[0.95] (w{} <= 0.2)'.format(i)) 
     tmp_contract.checkSat()
     contract_list.append(tmp_contract)
@@ -25,19 +23,21 @@ for i in range(1, N+1):
 # Create parameterized contracts
 for i in range(1, M+1):
     tmp_contract = contract('param_c{}'.format(i))
-    tmp_contract.add_deter_vars(['x'], bounds=[[0,500]])
+    tmp_contract.add_deter_vars(['x'], bounds=[[1,500]])
+    # tmp_contract.add_param_vars(['p{}'.format(i), 'sigma{}'.format(i), 'x_max{}'.format(i)], bounds = [[0.8, 1], [0.01, 0.3], [100, 500]])
     tmp_contract.add_param_vars(['p{}'.format(i), 'sigma{}'.format(i)], bounds = [[0.8, 1], [0.01, 0.3]])
     tmp_contract.add_nondeter_vars(['param_w{}'.format(i)],  
         mean = [0],
         cov = [['sigma{}^2'.format(i)]])
-    tmp_contract.set_assume('x<=250')
+    tmp_contract.set_assume('x <= 250')
+    # tmp_contract.set_assume('x <= x_max{}'.format(i))
     tmp_contract.set_guaran('P[p{}] (param_w{} <= 0.1)'.format(i, i)) 
     tmp_contract.checkSat()
     contract_list.append(tmp_contract)
 
 # Build a contract c
 c = contract('c') # Create a contract c
-c.add_deter_vars(['x'], bounds=[[0,500]])
+c.add_deter_vars(['x'], bounds=[[1,500]])
 c.add_param_vars(['p{}'.format(i) for i in range(1, M+1)] + ['sigma{}'.format(i) for i in range(1, M+1)], bounds = [[0.8, 1]]*M + [[0.01, 0.3]]*M)
 tmp_cov = [] # Create a cov matrix for the contract c
 for i in range(1, N+1):
@@ -53,7 +53,7 @@ c.add_nondeter_vars(['w{}'.format(i) for i in range(1, N+1)] + ['param_w{}'.form
     cov = tmp_cov) # Set nondeterministic uncontrolled variables
 
 # Set assumptions and guarantees for the contract c
-c.set_assume('x<=200') # Set/define the assumptions
+c.set_assume('x <= 250') # Set/define the assumptions
 expression = ''
 for i in range(1, N+1):
     expression += ' + w{}'.format(i)
@@ -64,22 +64,16 @@ c.checkSat()  # Saturate c
 # c.printInfo()
 
 # Compose the contracts
-first = True
-composed = None
-for contract in contract_list:
-    if first:
-        composed = contract
-        first = False
-    else:
-        composed = composition(composed, contract)
+composed = composition(contract_list, mode = 'simple')
 # composed.printInfo()
 
 # Find optimal parameters
 start = time.time()
 weights = {}
-for j in range(1, M+1):
-    weights['p{}'.format(j)] = -1
-    weights['sigma{}'.format(j)] = -10
+for i in range(1, M+1):
+    weights['p{}'.format(i)] = -1
+    weights['sigma{}'.format(i)] = -10
+    weights['x_max{}'.format(i)] = 1
 print(weights)
 composed.find_opt_refine_param(c, weights, N=200)
 end = time.time()

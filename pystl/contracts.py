@@ -333,31 +333,41 @@ class contract:
     def find_opt_refine_param(self, contract2refine, weights, N=100):
         # Check saturation of the contracts
         self.checkSat()
+        self.printInfo()
         contract2refine.checkSat()
 
         # Build a contract for checking refinement
         refinement_contract = deepcopy(self)
         refinement_contract.id = 'refinement_check'
-        # refinement_contract.printInfo()
-        # contract2refine.printInfo()
+        contract2refine.printInfo()
 
         # Merge variables
         merge_variables(refinement_contract, contract2refine)
         
         # Find assumption and guarantee
-        refinement_contract.set_assume("({}) -> ({})".format(contract2refine.assumption_str, self.assumption_str))
-        # refinement_contract.set_assume("({}) & ({})".format(contract2refine.assumption_str, self.assumption_str))
+        # refinement_contract.set_assume(contract2refine.assumption_str)
+        refinement_contract.set_assume("({}) & ({})".format(contract2refine.assumption_str, self.assumption_str))
+        # refinement_contract.set_assume("({}) -> ({})".format(contract2refine.assumption_str, self.assumption_str))
+        # refinement_contract.set_assume("(({}) -> ({})) & ({})".format(contract2refine.assumption_str, self.assumption_str, self.guarantee_str))
+        # refinement_contract.set_assume("(({}) -> ({})) & ({})".format(contract2refine.assumption_str, self.assumption_str, self.sat_guarantee_str))
+
+        refinement_contract.set_guaran("({}) & ({})".format(self.guarantee_str, contract2refine.guarantee_str))
+        # refinement_contract.set_guaran("({}) & ({}) & ({})".format(self.assumption_str, self.guarantee_str, contract2refine.guarantee_str))
+        # refinement_contract.set_guaran("({}) & ({}) & ({}) & ({})".format(contract2refine.assumption_str, self.assumption_str, self.guarantee_str, contract2refine.guarantee_str))
         # refinement_contract.set_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
-        refinement_contract.set_guaran("({}) & ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
+        
+        refinement_contract.set_sat_guaran("({}) & ({})".format(self.guarantee_str, contract2refine.guarantee_str))
+        # refinement_contract.set_sat_guaran("({}) & ({}) & ({})".format(self.assumption_str, self.guarantee_str, contract2refine.guarantee_str))
+        # refinement_contract.set_sat_guaran("({}) & ({}) & ({}) & ({})".format(contract2refine.assumption_str, self.assumption_str, self.guarantee_str, contract2refine.guarantee_str))
         # refinement_contract.set_sat_guaran("({}) -> ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
-        refinement_contract.set_sat_guaran("({}) & ({})".format(self.sat_guarantee_str, contract2refine.sat_guarantee_str))
+        refinement_contract.isSat = True
         refinement_contract.printInfo()
 
         # Find an optimal set of parameters
+        # input()
         refinement_contract.find_opt_param(weights, N=N)
-        refinement_contract.printInfo()
         
-    def find_opt_param(self, weights, N=100, dynamics = None, init_conditions = []):
+    def find_opt_param(self, weights, N=100, dynamics = None, init_conditions = [], sorted_UNDET = False):
         """ Find an optimal set of parameters for a contract given an objective function. """
         print("Finding an optimal set of parameters for contract {}...".format(self.id))
 
@@ -383,51 +393,77 @@ class contract:
                         tmp_partition[count][1] = 0.5
             count += 1
 
+        count = 0
+        if sorted_UNDET:
+            sorted_param_UNDET = {}
+            for partition in param_UNDET:
+                sorted_param_UNDET[count] = [partition, M]
+                count += 1
+
+            # print(param_UNDET)
+            # print(sorted_param_UNDET)
+            
         def findPartitionType(partition, dyn, inits):
+            print("==============================")
             print(partition)
             # Update the bounds 
             self.param_var_bounds = partition
             # self.printInfo()
 
             # Build a Solver
-            MILPsolver = MILPSolver(mode="Quantitative")
+            realMILPsolver = MILPSolver(mode="Quantitative")
             # MILPsolver = MILPSolver()
-            MILPsolver.add_contract(self)
+            realMILPsolver.add_contract(self)
             if dyn is not None:
-                MILPsolver.add_dynamics(x=dyn['x'], u=dyn['u'], w=dyn['w'], A=dyn['A'], B=dyn['B'], C=dyn['C'])
+                realMILPsolver.add_dynamics(x=dyn['x'], u=dyn['u'], z=dyn['z'], A=dyn['A'], B=dyn['B'], C=dyn['C'], D=dyn['D'], Q=dyn['Q'], R=dyn['R'])
             for init_condition in inits:
-                MILPsolver.add_init_condition(init_condition)
-            MILPsolver.add_constraint(self.assumption, hard=False, name='b_a')
-            # MILPsolver.add_constraint(self.assumption, name='b_a')
-            # MILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
-            # MILPsolver.add_constraint(self.sat_guarantee, hard=False, name='b_g')
+                realMILPsolver.add_init_condition(init_condition)
+            realMILPsolver.add_constraint(self.assumption, name='b_a')
+            realMILPsolver.add_constraint(self.guarantee, hard=False, name='b_g')
+            # realMILPsolver.add_constraint(self.sat_guarantee, hard=False, name='b_g')
+            # tmp_parsetree = '({}) & ({})'.format(self.assumption_str, self.sat_guarantee_str)
+            # tmp_parsetree = parser(tmp_parsetree)[0][0]
+            # realMILPsolver.add_constraint(tmp_parsetree, hard=False, name='b_g')
 
             # Solve the problem
-            MILPsolver.set_objective(sense='minimize')
-            if not MILPsolver.solve():
-                print("SAT partition!")
-                return 0
+            realMILPsolver.set_objective(sense='minimize')
+            if not realMILPsolver.solve():
+                print("UNSAT partition!")
+                # input()
+                return 0, 1
             else:
-                for v in MILPsolver.model.getVars():
-                    # print('%s %g' % (v.varName, v.x))
-                    if 'b' not in v.varName:
-                        print('%s %g' % (v.varName, v.x))
-                    elif v.varName in ('b_a', 'b_g'):
-                        print('%s %g' % (v.varName, v.x))
-                    
-                MILPsolver.set_objective(sense='maximize')
-                if not MILPsolver.solve():
-                    print("UNSAT partition!")
-                    return 1
-                else: 
-                    print("UNDET partition!")
-                    for v in MILPsolver.model.getVars():
-                        # print('%s %g' % (v.varName, v.x))
-                        if 'b' not in v.varName:
-                            print('%s %g' % (v.varName, v.x))
-                        elif v.varName in ('b_a', 'b_g'):
-                            print('%s %g' % (v.varName, v.x))
-                    return 2
+                # for v in realMILPsolver.model.getVars():
+                #     # print('%s %g' % (v.varName, v.x))
+                #     if 'b' not in v.varName:
+                #         print('%s %g' % (v.varName, v.x))
+                #     elif v.varName in ('b_a', 'b_g'):
+                #         print('%s %g' % (v.varName, v.x))
+                objective_val1 = realMILPsolver.soft_constraint_vars[0].x
+                print(objective_val1)
+                if objective_val1 >= 0:
+                    print("SAT partition!")
+                    # input()
+                    return 0, 0
+                else:
+                    realMILPsolver.set_objective(sense='maximize')
+                    realMILPsolver.solve()
+                    # for v in realMILPsolver.model.getVars():
+                    #     # print('%s %g' % (v.varName, v.x))
+                    #     if 'b' not in v.varName:
+                    #         print('%s %g' % (v.varName, v.x))
+                    #     elif v.varName in ('b_a', 'b_g'):
+                    #         print('%s %g' % (v.varName, v.x))
+                    objective_val2 = realMILPsolver.soft_constraint_vars[0].x
+                    print(objective_val2)
+                    if objective_val2 <= -EPS:
+                        print("UNSAT partition!")
+                        # input()
+                        return 0, 1
+                    else: 
+                        print("UNDET partition!")
+                        # input()
+                        # print(objective_val2-objective_val1)
+                        return objective_val2-objective_val1, 2
 
         def paramSpacePartition(partition):
             """
@@ -459,22 +495,44 @@ class contract:
             return prev_partition_list
 
         # Find SAT and UNSAT partitions
-        while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(param_UNDET) <= N:
-            tmp_partition = param_UNDET.pop(0)
-            partition_type = findPartitionType(tmp_partition, dynamics, init_conditions)
-            if partition_type == 0: # SAT partition
-                param_SAT.append(tmp_partition)
-            elif partition_type == 1: # UNSAT partition
-                param_UNSAT.append(tmp_partition)
-            elif partition_type == 2: # UNDET partition
-                for partitioned_partition in paramSpacePartition(tmp_partition):
-                    param_UNDET.append(partitioned_partition)
+        if sorted_UNDET:
+            while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(sorted_param_UNDET) <= N:
+                sorted_param_UNDET = {k: v for k, v in sorted(sorted_param_UNDET.items(), key=lambda item: item[1][1], reverse=True)}
+                first_pair = list(sorted_param_UNDET.items())[0]
+                tmp_count = first_pair[0] 
+                tmp_partition = first_pair[1][0]
+                del sorted_param_UNDET[tmp_count]
+                obj_val, partition_type = findPartitionType(tmp_partition, dynamics, init_conditions)
+                if partition_type == 0: # SAT partition
+                    param_SAT.append(tmp_partition)
+                elif partition_type == 1: # UNSAT partition
+                    param_UNSAT.append(tmp_partition)
+                elif partition_type == 2: # UNDET partition
+                    for partitioned_partition in paramSpacePartition(tmp_partition):
+                        count += 1
+                        sorted_param_UNDET[count] = [partitioned_partition, obj_val]
+        else:
+            while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(param_UNDET) <= N:
+                # print(len(param_SAT)+len(param_UNSAT)+len(param_UNDET))
+                tmp_partition = param_UNDET.pop(0)
+                obj_val, partition_type = findPartitionType(tmp_partition, dynamics, init_conditions)
+                if partition_type == 0: # SAT partition
+                    param_SAT.append(tmp_partition)
+                elif partition_type == 1: # UNSAT partition
+                    param_UNSAT.append(tmp_partition)
+                elif partition_type == 2: # UNDET partition
+                    for partitioned_partition in paramSpacePartition(tmp_partition):
+                        param_UNDET.append(partitioned_partition)
 
         # Double-check UNDET partitions
         tmp_param_UNDET = deepcopy(param_UNDET)
+        # print(tmp_param_UNDET)
+        # input()
         param_UNDET = []
-        for tmp_partition in tmp_param_UNDET:      
-            partition_type = findPartitionType(tmp_partition, dynamics, init_conditions)
+        for tmp_partition in tmp_param_UNDET:
+            # print(param_UNDET)
+            # print(len(param_SAT)+len(param_UNSAT)+len(param_UNDET))
+            obj_val, partition_type = findPartitionType(tmp_partition, dynamics, init_conditions)
             if partition_type == 0: # SAT partition
                 param_SAT.append(tmp_partition)
             elif partition_type == 1: # UNSAT partition
@@ -485,6 +543,7 @@ class contract:
         # print(param_SAT)
         # print(param_UNSAT)
         # print(param_UNDET)
+        # print(sorted_param_UNDET)
 
         def findMinCost(weights, partition):
             # Initialize Gurobi model
@@ -526,13 +585,18 @@ class contract:
                 minCost = tmp_minCost
                 optimal_params = tmp_optimal_params
         
+        # print(param_SAT)
         print(optimal_params)
 
-        # Plot SAT, UNSAT, and UNDET regions, if the parameter space is 2D
-        if len(self.param_var_list) == 2:
+        # Plot SAT, UNSAT, and UNDET regions 
+        if len(self.param_var_list) == 2: # If the parameter space is 2D
             _, ax = plt.subplots()
-            plt.xlabel(self.param_var_list[0])
-            plt.ylabel(self.param_var_list[1])
+            plt.xticks(fontsize='large')
+            plt.yticks(fontsize='large')
+            plt.xlabel(self.param_var_list[0], fontsize='large')
+            plt.ylabel(self.param_var_list[1], fontsize='large')
+            # plt.xlabel(r'$\bf{p}$', fontsize='large')
+            # plt.ylabel(r'$\bf{\sigma}$', fontsize='large')
             plt.xlim(bounds[0][0], bounds[0][1])
             plt.ylim(bounds[1][0], bounds[1][1])
 
@@ -551,14 +615,67 @@ class contract:
                         edgecolor = 'black', facecolor = 'red', fill=True))
 
             # Color UNDET regions
-            for partition in param_UNDET:
-                ax.add_patch(patches.Rectangle(
-                        (partition[0][0], partition[1][0]),
-                        partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
-                        edgecolor = 'black', facecolor = 'grey', fill=True))
+            if sorted_UNDET:
+                for _, value in sorted_param_UNDET.items():
+                    partition = value[0]
+                    ax.add_patch(patches.Rectangle(
+                            (partition[0][0], partition[1][0]),
+                            partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
+                            edgecolor = 'black', facecolor = 'grey', fill=True))
+            else:
+                for partition in param_UNDET:
+                    ax.add_patch(patches.Rectangle(
+                            (partition[0][0], partition[1][0]),
+                            partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
+                            edgecolor = 'black', facecolor = 'grey', fill=True))
 
             # Save the figure
             plt.savefig('{}_param_opt.jpg'.format(self.id))
+
+        # elif len(self.param_var_list) == 3: # If the parameter space is 3D
+        #     from mpl_toolkits.mplot3d import Axes3D
+        #     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+        #     import numpy as np
+        #     import matplotlib.pyplot as plt
+
+        #     def cuboid_data2(o, size=(1,1,1)):
+        #         X = [[[0, 1, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]],
+        #             [[0, 0, 0], [0, 0, 1], [1, 0, 1], [1, 0, 0]],
+        #             [[1, 0, 1], [1, 0, 0], [1, 1, 0], [1, 1, 1]],
+        #             [[0, 0, 1], [0, 0, 0], [0, 1, 0], [0, 1, 1]],
+        #             [[0, 1, 0], [0, 1, 1], [1, 1, 1], [1, 1, 0]],
+        #             [[0, 1, 1], [0, 0, 1], [1, 0, 1], [1, 1, 1]]]
+        #         X = np.array(X).astype(float)
+        #         for i in range(3):
+        #             X[:,:,i] *= size[i]
+        #         X += np.array(o)
+        #         return X
+
+        #     def plotCubeAt2(positions,sizes=None,colors=None, **kwargs):
+        #         if not isinstance(colors,(list,np.ndarray)): colors=["C0"]*len(positions)
+        #         if not isinstance(sizes,(list,np.ndarray)): sizes=[(1,1,1)]*len(positions)
+        #         g = []
+        #         for p,s,c in zip(positions,sizes,colors):
+        #             g.append( cuboid_data2(p, size=s) )
+        #         return Poly3DCollection(np.concatenate(g),  
+        #                                 facecolors=np.repeat(colors,6), **kwargs)
+                
+        #     positions = [(-3,5,-2), (1,7,1)]
+        #     sizes = [(4,5,3), (3,3,7)]
+        #     colors = ["crimson","limegreen"]
+
+        #     fig = plt.figure()
+        #     ax = fig.gca(projection='3d')
+        #     ax.set_aspect('equal')
+
+        #     pc = plotCubeAt2(positions,sizes,colors=colors, edgecolor="k")
+        #     ax.add_collection3d(pc)    
+
+        #     ax.set_xlim([-4,6])
+        #     ax.set_ylim([4,13])
+        #     ax.set_zlim([-3,9])
+
+        #     plt.show()
         
         # return optimal_params
         self.param_var_bounds = self_param_var_bounds
@@ -636,7 +753,8 @@ def conjunction(c1, c2):
 
     return conjoined
 
-def composition(c1, c2):
+# def composition(c1, c2):
+def composition(c_list, mode = 'default'):
     """ Returns the composition of two contracts
 
     :param c1: A contract c1
@@ -646,23 +764,48 @@ def composition(c1, c2):
     :return: A composed contract c1*c2
     :rtype: :class:`pystl.contracts.contract.contract`
     """
-    # Check saturation of c1 and c2, saturate them if not saturated
-    c1.checkSat()
-    c2.checkSat()
+    first_contract = True
+    assumption_str1 = ''
+    assumption_str2 = ''
+    guarantee_str = ''
+    sat_guarantee_str = ''
 
-    # Initialize a conposed contract object
-    composed = deepcopy(c1)
-    composed.id = (c1.id + '*' + c2.id)
+    for c in c_list:
+        # Check saturation of c, saturate it if not saturated
+        c.checkSat()
 
-    # Merge variables
-    merge_variables(composed, c2)
+        if first_contract:
+            # Initialize a conposed contract object
+            composed = deepcopy(c)
+            composed.id = ('composed')
+            assumption_str1 += "({})".format(c.assumption_str)
+            assumption_str2 += "(!(({}) -> ({})))".format(c.assumption_str, c.guarantee_str)
+            guarantee_str += "({})".format(c.guarantee_str)
+            sat_guarantee_str += "({})".format(c.sat_guarantee_str)
 
-    # Find composed assumption and guarantee
-    composed.set_assume("(({}) & ({})) | (!({})) | (!({}))".format(composed.assumption_str, c2.assumption_str, composed.guarantee_str, c2.guarantee_str))
-    composed.set_guaran("({}) & ({})".format(composed.sat_guarantee_str, c2.sat_guarantee_str))
-    composed.sat_guarantee_str = "({}) & ({})".format(composed.sat_guarantee_str, c2.sat_guarantee_str)
-    composed.sat_guarantee = parser(composed.sat_guarantee_str)[0][0]
-    composed.isSat = True
+            first_contract = False
+        else:
+            # Merge variables
+            merge_variables(composed, c)
+
+            # Find assumptions
+            assumption_str1 += " & ({})".format(c.assumption_str)
+            assumption_str2 += " | (!(({}) -> ({})))".format(c.assumption_str, c.guarantee_str)
+            guarantee_str += " & ({})".format(c.guarantee_str)
+            sat_guarantee_str += " & ({})".format(c.sat_guarantee_str)
+
+    if mode == 'default':
+        composed.set_assume("({}) | {}".format(assumption_str1, assumption_str2))
+        composed.set_guaran(guarantee_str)
+        composed.set_sat_guaran(sat_guarantee_str)
+        composed.isSat = True
+    else:
+        composed.set_assume(assumption_str1)   
+        composed.set_guaran(guarantee_str)
+        composed.isSat = False
+    # composed.sat_guarantee_str = guarantee_str
+    # composed.sat_guarantee = parser(guarantee_str)[0][0]
+    
     return composed
 
 # TODO: quotient not implemented correctly

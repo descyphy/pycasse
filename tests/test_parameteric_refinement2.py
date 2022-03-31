@@ -23,12 +23,6 @@ c2.set_guaran('P[0.9] (w <= 1.5)')                    # Set/define the guarantee
 c2.checkSat()                                         # Saturate c2
 c2.printInfo()                                        # Print c2
 
-# start = time.time()
-# c1.find_opt_param({'sigma': -1, 'p': -1}, N=100)
-# c2.find_opt_param({'sigma': -1}, N=100)
-# end = time.time()
-# print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
-
 start = time.time()
 c2.find_opt_refine_param(c1, {'sigma': -10, 'c': 1}, N=400)
 end = time.time()
