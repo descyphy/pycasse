@@ -1,3 +1,4 @@
+from sympy import Point2D
 from pystl import *
 from pystl.parser import ststl_grammar, Parser
 import numpy as np
@@ -21,7 +22,8 @@ import numpy as np
 # print(ststl_grammar.parse("(F[1,3] (x >= 0)) & (P[x] (3*x*y^2*z + x >= x2*y^5-2)) & (P[x] (3*x*y^2*z^3 + x >= x2*y^5-2))"))
 
 p = Parser()
-# print(p("3*x*y^2*z^3 + x + x2*y^5 - 2", "expression"))
+# [ast, formula] = p("1", "expression")
+# [ast, formula] = print(p("3*x*y^2*z^3 + x + x2*y^5 - 2", "expression"))
 # [ast, formula] = p("G[0,10] (!(!(True)))")
 # [ast, formula] = p("!(P[0.85 + p] (y - 2*w1 + 3*w2 <= 8))")
 # [ast, formula] = p("(!(P[0.99] (0.5*w1 + 0.5*w2 <= 0.1))) & ((((True) & (True)) | (!(P[0.95] (w1 <= 0.2))) | (!(P[p] (w2 <= c)))) -> ((P[0.95] (w1 <= 0.2)) & (P[p] (w2 <= c))))")
@@ -30,20 +32,21 @@ p = Parser()
 # [ast, formula] = p("X(F[0,25] (3*x*y^2*z^3 + x => x2*y^5 - 2))")
 # [ast, formula] = p("!((F[0,25](3*x*y^2*z^3 + x < x2*y^5 + 3)) U[0,12] (P[x] (3*x*y^2*z^3 + x => x2*y^5 - 2)))")
 # [ast, formula] = p("(F[0,10] (3*x*y^2*z^3 + x => x2*y^5 - 2)) -> (G[1,12] (P[x] (3*x*y^2*z^3 + x => x2*y^5 - 2)))")
-# [ast, formula] = p("!(!((F[0,10] (P[0.95+p] (3*x*y^2*z^3 + x => x2*y^5 - 2))) -> (G[1,12] (P[p] (3*x*y^2*z^3 + x => x2*y^5 - 2)))))")
+[ast, formula] = p("!(!((F[0,10] (P[0.95+p] (3*x*y^2*z^3 + x => x2*y^5 - 2))) -> (G[1,12] (P[p] (3*x*y^2*z^3 + x => x2*y^5 - 2)))))")
 # [ast, formula] = p("!(!(G[0,10] (x => 5)))")
 # [ast, formula] = p("!((F[0,10] (P[1-p] (3*x*y^2*z^3 + x => x2*y^5 - 2))) & (-3.3*x*y33^2*z^3 - x^6*y + 1 > z) & (G[0,10] (3*x*y^2*z^3 + x => x2*y^5 - 2)))")
 # [ast, formula] = p("G[0,10] ((F[1,14](x => 5)) & (x => 5))")
+# [ast, formula] = p("(G[0,10] (x => 5)) U[0,10] (F[1,14] (x => 5))")
 # [ast, formula] = p("(True) -> (True)")
-[ast, formula] = p("K")
+# [ast, formula] = p("G[0,60] ((0.0 d_x_0^2 + 0.0 d_x_0 + 0.0 d_y_0^2 + 1.0 d_y_0 + -19.5 <= 0) & (0.0 d_x_0^2 + 0.0 d_x_0 + 0.0 d_y_0^2 + -1.0 d_y_0 + 15.0 <= 0) & (0.0 d_x_0^2 + -1.0 d_x_0 + 0.0 d_y_0^2 + 0.0 d_y_0 + 0.0 <= 0) & (0.0 d_x_0^2 + 1.0 d_x_0 + 0.0 d_y_0^2 + 0.0 d_y_0 + -200.0 <= 0))")
 print(ast[0].find_horizon())
 ast[0].printInfo()
 negated = ast[0].push_negation()
 negated.printInfo()
-# p1 = p("0", "expression")
-# print(p1)
-# p2 = p("1+a", "expression")
-# print(p2)
+# p1 = p("2+3*x*y^2*z^3", "expression")
+# p2 = p("1+x2*y^5", "expression")
+# p1.printInfo()
+# p2.printInfo()
 # p3 = p1+p2
 # p3.printInfo()
 

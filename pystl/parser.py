@@ -468,7 +468,7 @@ class expression():
 
         deleted_num = 0
         for i, multiplier in enumerate(out.multipliers[:]):
-            if multiplier == 0 and out.var_list_list[i] != [1]:
+            if multiplier == 0 and out.var_list_list[i-deleted_num] != [1]:
                 del out.multipliers[i-deleted_num]
                 del out.var_list_list[i-deleted_num]
                 del out.power_list_list[i-deleted_num]

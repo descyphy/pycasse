@@ -1,16 +1,12 @@
-import numpy as np
 import gurobipy as gp
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import random
 
 from copy import deepcopy
 from collections import deque
 from gurobipy import GRB
-from pystl.variable import DeterVar, NondeterVar, M, EPS
-from pystl.vector import Vector, Next
 from pystl.core import MILPSolver
-from pystl.parser import Parser, ASTObject
+from pystl.parser import Parser
 
 M = 10**4
 EPS = 10**-4
@@ -377,6 +373,7 @@ class contract:
         param_UNSAT = []
         param_UNDET = [deepcopy(self.param_var_bounds)]
         self_param_var_bounds = deepcopy(self.param_var_bounds)
+        param_num = len(bounds)
 
         # Pre-partition the parameter space for probability thresholds
         count = 0
@@ -415,7 +412,7 @@ class contract:
             # MILPsolver = MILPSolver()
             realMILPsolver.add_contract(self)
             if dyn is not None:
-                realMILPsolver.add_dynamics(x=dyn['x'], u=dyn['u'], w=dyn['w'], A=dyn['A'], B=dyn['B'], C=dyn['C'])
+                realMILPsolver.add_dynamics(x=dyn['x'], u=dyn['u'], z=dyn['z'], A=dyn['A'], B=dyn['B'], C=dyn['C'], D=dyn['D'], E=dyn['E'], Q=dyn['Q'], R=dyn['R'])
             for init_condition in inits:
                 realMILPsolver.add_init_condition(init_condition)
             realMILPsolver.add_constraint(self.assumption, name='b_a')
@@ -496,7 +493,7 @@ class contract:
 
         # Find SAT and UNSAT partitions
         if sorted_UNDET:
-            while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(sorted_param_UNDET) <= N:
+            while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(sorted_param_UNDET)-1+2**param_num <= N:
                 sorted_param_UNDET = {k: v for k, v in sorted(sorted_param_UNDET.items(), key=lambda item: item[1][1], reverse=True)}
                 first_pair = list(sorted_param_UNDET.items())[0]
                 tmp_count = first_pair[0] 
@@ -512,8 +509,7 @@ class contract:
                         count += 1
                         sorted_param_UNDET[count] = [partitioned_partition, obj_val]
         else:
-            while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(param_UNDET) <= N:
-                # print(len(param_SAT)+len(param_UNSAT)+len(param_UNDET))
+            while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(param_UNDET)-1+2**param_num <= N:
                 tmp_partition = param_UNDET.pop(0)
                 obj_val, partition_type = findPartitionType(tmp_partition, dynamics, init_conditions)
                 if partition_type == 0: # SAT partition
@@ -593,10 +589,12 @@ class contract:
             _, ax = plt.subplots()
             plt.xticks(fontsize='large')
             plt.yticks(fontsize='large')
-            plt.xlabel(self.param_var_list[0], fontsize='large')
-            plt.ylabel(self.param_var_list[1], fontsize='large')
-            # plt.xlabel(r'$\bf{p}$', fontsize='large')
-            # plt.ylabel(r'$\bf{\sigma}$', fontsize='large')
+            # plt.xlabel(self.param_var_list[0], fontsize='large')
+            # plt.ylabel(self.param_var_list[1], fontsize='large')
+            # plt.xlabel(r'$p_{s}$', fontsize='large')
+            # plt.ylabel(r'$c_{s}$', fontsize='large')
+            plt.xlabel(r'$p_{c}$', fontsize='large')
+            plt.ylabel(r'$c_{c}$', fontsize='large')
             plt.xlim(bounds[0][0], bounds[0][1])
             plt.ylim(bounds[1][0], bounds[1][1])
 
@@ -630,56 +628,10 @@ class contract:
                             edgecolor = 'black', facecolor = 'grey', fill=True))
 
             # Save the figure
-            plt.savefig('{}_param_opt.jpg'.format(self.id))
-
-        # elif len(self.param_var_list) == 3: # If the parameter space is 3D
-        #     from mpl_toolkits.mplot3d import Axes3D
-        #     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-        #     import numpy as np
-        #     import matplotlib.pyplot as plt
-
-        #     def cuboid_data2(o, size=(1,1,1)):
-        #         X = [[[0, 1, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]],
-        #             [[0, 0, 0], [0, 0, 1], [1, 0, 1], [1, 0, 0]],
-        #             [[1, 0, 1], [1, 0, 0], [1, 1, 0], [1, 1, 1]],
-        #             [[0, 0, 1], [0, 0, 0], [0, 1, 0], [0, 1, 1]],
-        #             [[0, 1, 0], [0, 1, 1], [1, 1, 1], [1, 1, 0]],
-        #             [[0, 1, 1], [0, 0, 1], [1, 0, 1], [1, 1, 1]]]
-        #         X = np.array(X).astype(float)
-        #         for i in range(3):
-        #             X[:,:,i] *= size[i]
-        #         X += np.array(o)
-        #         return X
-
-        #     def plotCubeAt2(positions,sizes=None,colors=None, **kwargs):
-        #         if not isinstance(colors,(list,np.ndarray)): colors=["C0"]*len(positions)
-        #         if not isinstance(sizes,(list,np.ndarray)): sizes=[(1,1,1)]*len(positions)
-        #         g = []
-        #         for p,s,c in zip(positions,sizes,colors):
-        #             g.append( cuboid_data2(p, size=s) )
-        #         return Poly3DCollection(np.concatenate(g),  
-        #                                 facecolors=np.repeat(colors,6), **kwargs)
-                
-        #     positions = [(-3,5,-2), (1,7,1)]
-        #     sizes = [(4,5,3), (3,3,7)]
-        #     colors = ["crimson","limegreen"]
-
-        #     fig = plt.figure()
-        #     ax = fig.gca(projection='3d')
-        #     ax.set_aspect('equal')
-
-        #     pc = plotCubeAt2(positions,sizes,colors=colors, edgecolor="k")
-        #     ax.add_collection3d(pc)    
-
-        #     ax.set_xlim([-4,6])
-        #     ax.set_ylim([4,13])
-        #     ax.set_zlim([-3,9])
-
-        #     plt.show()
+            plt.savefig('{}_param_opt.pdf'.format(self.id))
         
         # return optimal_params
-        self.param_var_bounds = self_param_var_bounds
-        return True
+        return optimal_params
 
     def printInfo(self):
         print(str(self))
@@ -725,7 +677,7 @@ class contract:
         res += "    isSat: {}\n".format(self.isSat)
         return res
 
-def conjunction(c1, c2):
+def conjunction(c_list):
     """ Returns the conjunction of two contracts
 
     :param c1: A contract c1
@@ -735,86 +687,160 @@ def conjunction(c1, c2):
     :return: A conjoined contract c1^c2
     :rtype: :class:`pystl.contracts.contract.contract`
     """
-    # Check saturation of c1 and c2, saturate them if not saturated
-    c1.checkSat()
-    c2.checkSat()
+    # Initialize variables
+    first_contract = True
+    assumption_str = ''
+    guarantee_str = ''
 
-    # Initialize a conjoined contract object
-    conjoined = deepcopy(c1)
-    conjoined.id = (c1.id + '^' + c2.id)
+    if len(c_list) == 1: # If there is only one contract in the list, return that contract
+        return c_list[0]
+    
+    else: # If there are more than two contracts in the list, compose the contracts and return the composed contract
+        for c in c_list:
+            # Check saturation of c, saturate it if not saturated
+            c.checkSat()
 
-    # Merge variables
-    merge_variables(conjoined, c2)
+            if first_contract:
+                # Initialize a conposed contract object
+                conjoined = deepcopy(c)
+                conjoined.id = '{}'.format(c.id)
+                assumption_str += "({})".format(c.assumption_str)
+                guarantee_str += "({})".format(c.sat_guarantee_str)
 
-    # Find conjoined assumption and guarantee
-    conjoined.set_assume("({}) | ({})".format(conjoined.assumption_str, c2.assumption_str))
-    conjoined.set_guaran("({}) & ({})".format(conjoined.sat_guarantee_str, c2.sat_guarantee_str))
-    conjoined.checkSat()
+                first_contract = False
+            else:
+                # Update the conjoined name
+                conjoined.id += '^{}'.format(c.id)
 
-    return conjoined
+                # Merge variables
+                merge_variables(conjoined, c)
 
-# def composition(c1, c2):
-def composition(c_list, mode = 'default'):
-    """ Returns the composition of two contracts
+                # Find assumptions and guarantees
+                assumption_str += " | ({})".format(c.assumption_str)
+                guarantee_str += " & ({})".format(c.sat_guarantee_str)
+
+        conjoined.set_assume(assumption_str)   
+        conjoined.set_guaran(guarantee_str)
+        conjoined.set_sat_guaran(guarantee_str)
+        conjoined.isSat = True
+
+        return conjoined
+
+def merge(c_list):
+    """ Returns the merge of two contracts
 
     :param c1: A contract c1
     :type c1: :class:`pystl.contracts.contract.contract`
     :param c2: A contract c2
     :type c2: :class:`pystl.contracts.contract.contract`
-    :return: A composed contract c1*c2
+    :return: A merged contract c1+c2
     :rtype: :class:`pystl.contracts.contract.contract`
     """
+    # Initialize variables
+    first_contract = True
+    assumption_str = ''
+    guarantee_str = ''
+
+    if len(c_list) == 1: # If there is only one contract in the list, return that contract
+        return c_list[0]
+    
+    else: # If there are more than two contracts in the list, compose the contracts and return the composed contract
+        for c in c_list:
+            # Check saturation of c, saturate it if not saturated
+            c.checkSat()
+
+            if first_contract:
+                # Initialize a conposed contract object
+                merged = deepcopy(c)
+                merged.id = '{}'.format(c.id)
+                assumption_str += "({})".format(c.assumption_str)
+                guarantee_str += "({})".format(c.sat_guarantee_str)
+
+                first_contract = False
+            else:
+                # Update the conjoined name
+                merged.id += '+{}'.format(c.id)
+
+                # Merge variables
+                merge_variables(merged, c)
+
+                # Find assumptions and guarantees
+                assumption_str += " & ({})".format(c.assumption_str)
+                guarantee_str += " & ({})".format(c.sat_guarantee_str)
+
+        merged.set_assume(assumption_str)   
+        merged.set_guaran(guarantee_str)
+        merged.set_sat_guaran(guarantee_str)
+        merged.isSat = True
+
+        return merged
+
+def composition(c_list, mode = 'default'):
+    """Returns the composition of the contracts in a list.
+
+    :param c_list: _description_
+    :type c_list: _type_
+    :param mode: _description_, defaults to 'default'.
+    :type mode: str, optional
+    :return: _description_
+    :rtype: _type_
+    """
+    # Initialize variables
     first_contract = True
     assumption_str1 = ''
     assumption_str2 = ''
     guarantee_str = ''
     sat_guarantee_str = ''
 
-    for c in c_list:
-        # Check saturation of c, saturate it if not saturated
-        c.checkSat()
-
-        if first_contract:
-            # Initialize a conposed contract object
-            composed = deepcopy(c)
-            composed.id = ('composed')
-            assumption_str1 += "({})".format(c.assumption_str)
-            assumption_str2 += "(!(({}) -> ({})))".format(c.assumption_str, c.guarantee_str)
-            guarantee_str += "({})".format(c.guarantee_str)
-            sat_guarantee_str += "({})".format(c.sat_guarantee_str)
-
-            first_contract = False
-        else:
-            # Merge variables
-            merge_variables(composed, c)
-
-            # Find assumptions
-            assumption_str1 += " & ({})".format(c.assumption_str)
-            assumption_str2 += " | (!(({}) -> ({})))".format(c.assumption_str, c.guarantee_str)
-            guarantee_str += " & ({})".format(c.guarantee_str)
-            sat_guarantee_str += " & ({})".format(c.sat_guarantee_str)
-
-    if mode == 'default':
-        composed.set_assume("({}) | {}".format(assumption_str1, assumption_str2))
-        composed.set_guaran(guarantee_str)
-        composed.set_sat_guaran(sat_guarantee_str)
-        composed.isSat = True
-    else:
-        composed.set_assume(assumption_str1)   
-        composed.set_guaran(guarantee_str)
-        composed.isSat = False
-    # composed.sat_guarantee_str = guarantee_str
-    # composed.sat_guarantee = parser(guarantee_str)[0][0]
+    if len(c_list) == 1: # If there is only one contract in the list, return that contract
+        return c_list[0]
     
-    return composed
+    else: # If there are more than two contracts in the list, compose the contracts and return the composed contract
+        for c in c_list:
+            # Check saturation of c, saturate it if not saturated
+            c.checkSat()
 
-# TODO: quotient not implemented correctly
+            if first_contract:
+                # Initialize a conposed contract object
+                composed = deepcopy(c)
+                composed.id = '{}'.format(c.id)
+                assumption_str1 += "({})".format(c.assumption_str)
+                assumption_str2 += "(!({}))".format(c.sat_guarantee_str)
+                guarantee_str += "({})".format(c.guarantee_str)
+                sat_guarantee_str += "({})".format(c.sat_guarantee_str)
+
+                first_contract = False
+            else:
+                # Update the conjoined name
+                composed.id += '*{}'.format(c.id)
+
+                # Merge variables
+                merge_variables(composed, c)
+
+                # Find assumptions
+                assumption_str1 += " & ({})".format(c.assumption_str)
+                assumption_str2 += " | (!({}))".format(c.sat_guarantee_str)
+                guarantee_str += " & ({})".format(c.guarantee_str)
+                sat_guarantee_str += " & ({})".format(c.sat_guarantee_str)
+
+        if mode == 'default':
+            composed.set_assume("({}) | {}".format(assumption_str1, assumption_str2))
+            composed.set_guaran(guarantee_str)
+            composed.set_sat_guaran(sat_guarantee_str)
+            composed.isSat = True
+        else:
+            composed.set_assume(assumption_str1)   
+            composed.set_guaran(guarantee_str)
+            composed.isSat = False
+        
+        return composed
+
 def quotient(c, c2):
-    """ Returns the quotient c/c2
+    """ Returns the quotient c/c2.
 
     :param c: A contract c
     :type c: :class:`pystl.contracts.contract.contract`
-    :param c2: A contract c2
+    :param c2:  contract c2
     :type c2: :class:`pystl.contracts.contract.contract`
     :return: A quotient contract c/c2
     :rtype: :class:`pystl.contracts.contract.contract`
@@ -823,30 +849,28 @@ def quotient(c, c2):
     c.checkSat()
     c2.checkSat()
 
-    # Initialize a conposed contract object
+    # Initialize a quotient contract object
     quotient = deepcopy(c)
     quotient.id = (c.id + '/' + c2.id)
 
-    # Merge controlled and uncontrolled variables
-    (deter_id_map, nondeter_id_map) = quotient.merge_contract_variables(c2)
+    # Merge variables
+    merge_variables(quotient, c2)
 
-    # Find conjoined guarantee, G': G1 and G2
-    assumption1 = quotient.assumption
-    assumption2 = deepcopy(c2.assumption)
-    assumption2.transform(deter_id_map, nondeter_id_map)
+    # Find assumptions and guarantees for the quotient
+    assumption_str1 = quotient.assumption_str
+    assumption_str2 = deepcopy(c2.assumption_str)
 
-    guarantee1 = quotient.sat_guarantee
-    guarantee2 = deepcopy(c2.sat_guarantee)
-    guarantee2.transform(deter_id_map, nondeter_id_map)
+    guarantee_str1 = quotient.sat_guarantee_str
+    guarantee_str2 = deepcopy(c2.sat_guarantee_str)
 
-    quotient.assumption = deepcopy(assumption1 & guarantee2)
-    quotient.guarantee = deepcopy((guarantee1 & assumption2) | ~assumption1)
-    quotient.sat_guarantee = deepcopy(quotient.guarantee)
+    quotient.set_assume("({}) & ({})".format(assumption_str1, guarantee_str2))
+    quotient.set_guaran("(({}) & ({})) | (!({}))".format(guarantee_str1, assumption_str2, quotient.assumption_str))
+    quotient.set_sat_guaran(quotient.guarantee_str)
     quotient.isSat = True
 
     return quotient
 
-# TODO: separation not implemented correctly
+# TODO: Separation might not implemented correctly. Double-check.
 def separation(c, c2):
     """ Returns the separation c%c2
 
@@ -857,29 +881,27 @@ def separation(c, c2):
     :return: A separated contract c%c2
     :rtype: :class:`pystl.contracts.contract.contract`
     """
-    # Check saturation of c1 and c2, saturate them if not saturated
+    # Check saturation of c and c2, saturate them if not saturated
     c.checkSat()
     c2.checkSat()
 
-    # Initialize a conposed contract object
+    # Initialize a separation contract object
     separation = deepcopy(c)
-    separation.id = (c.id + '%' + c2.id)
+    separation.id = (c.id + '/' + c2.id)
 
-    # Merge controlled and uncontrolled variables
-    (deter_id_map, nondeter_id_map) = separation.merge_contract_variables(c2)
+    # Merge variables
+    merge_variables(separation, c2)
 
-    # Find conjoined guarantee, G': G1 and G2
-    assumption1 = separation.assumption
-    assumption2 = deepcopy(c2.assumption)
-    assumption2.transform(deter_id_map, nondeter_id_map)
+    # Find assumptions and guarantees for the quotient
+    assumption_str1 = separation.assumption_str
+    assumption_str2 = deepcopy(c2.assumption_str)
 
-    guarantee1 = separation.sat_guarantee
-    guarantee2 = deepcopy(c2.sat_guarantee)
-    guarantee2.transform(deter_id_map, nondeter_id_map)
+    guarantee_str1 = separation.sat_guarantee_str
+    guarantee_str2 = deepcopy(c2.sat_guarantee_str)
 
-    separation.assumption = deepcopy(assumption1 & guarantee2)
-    separation.guarantee = deepcopy((guarantee1 & assumption2) | ~assumption1)
-    separation.sat_guarantee = deepcopy(separation.guarantee)
+    separation.set_guaran("({}) & ({})".format(guarantee_str1, assumption_str2))
+    separation.set_assume("(({}) & ({})) | (!({}))".format(assumption_str1, guarantee_str2, separation.guarantee_str))
+    separation.set_sat_guaran(separation.guarantee_str)
     separation.isSat = True
 
     return separation

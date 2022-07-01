@@ -3,7 +3,6 @@
 from posixpath import split
 from gurobipy import GRB
 import gurobipy as gp
-import numpy as np
 from scipy.stats import norm
 from z3 import *
 
@@ -146,148 +145,162 @@ class MILPSolver:
             self.model.addVar(lb=contract.param_var_bounds[i][0], ub=contract.param_var_bounds[i][1], vtype=GRB.CONTINUOUS, name=variable)
         self.model.update()
 
-        # print(self.deter_vars)
-        # print(self.deter_vars_expr)
-        # print(self.nondeter_vars)
-        # print(self.nondeter_vars_expr)
-        # input()
-
-    def add_dynamics(self, x = [], u = [], w = [], A = None, B = None, C = None, D = None, E = None):
+    def add_dynamics(self, x = [], u = [], z = [], A = None, B = None, C = None, D = None, E = None, Q = None, R = None):
         """
         Adds constraints for dynamics. 
-        x_{k+1} = A*x_{k} + B*u_{k} + C*w_{k}
-
-        :param x: [description], defaults to None
-        :type x: [type], optional
-        :param u: [description], defaults to None
-        :type u: [type], optional
-        :param w: [description], defaults to None
-        :type w: [type], optional
-        :param y: [description], defaults to None
-        :type y: [type], optional
-        :param A: [description], defaults to None
-        :type A: [type], optional
-        :param B: [description], defaults to None
-        :type B: [type], optional
-        :param C: [description], defaults to None
-        :type C: [type], optional
+        x_{k+1} = A*x_{k} + B*u_{k} + w_{k}
+        z_{k}   = C*x_{k}           + v_{k}
+        u_{k}   = D*z_{k} + E
         """
-        # Define a function which recognizes a list of lists with all zero entries
-        def allZero(listoflists):
-            allZero = True
-            for row in listoflists:
-                if not all(elem == 0 for elem in row):
-                    allZero = False
-            return allZero
+        # Find length of x, u, and z
+        x_len = len(x)
+        u_len = len(u)
+        z_len = len(z)
 
-        # TODO: may have to modify when random variables are correlated
         # Check the dimensions of the matrices
+        def checkMatDim(mat, row_len, col_len):
+            """ Checks the dimension of a matrix and parse parameters, if necessary. """
+            assert(len(mat) == row_len)
+            assert(len(mat[0]) == col_len)
+            mat2expr(mat)
+
         if A is not None:
-            assert(len(A) == len(x))
-            assert(len(A[0]) == len(x))
-            mat2expr(A)
+            checkMatDim(A, x_len, x_len)
 
         if B is not None:
-            assert(len(B) == len(x))
-            assert(len(B[0]) == len(u))
-            mat2expr(B)
+            checkMatDim(B, x_len, u_len)
 
         if C is not None:
-            validC = allZero(C)
-            assert(len(C) == len(x))
-            assert(len(C[0]) == len(w))
-            mat2expr(C)
+            checkMatDim(C, z_len, x_len)
 
         if D is not None:
-            assert(len(D) == len(u))
-            assert(len(D[0]) == len(x))
-            mat2expr(D)
+            checkMatDim(D, u_len, z_len)
+
+        if E is not None:
+            checkMatDim(E, u_len, 1)
+
+        if Q is not None:
+            checkMatDim(Q, x_len, x_len)
+
+        if R is not None:
+            checkMatDim(R, z_len, z_len)
 
         # Add dynamics as a dictionary
-        self.dynamics = {'x': x, 'u': u, 'w': w, 'A': A, 'B': B, 'C': C, 'D': D}
+        self.dynamics = {'x': x, 'u': u, 'z': z, 'A': A, 'B': B, 'C': C, 'D': D, 'E': E, 'Q': Q, 'R': R}
 
-        # If w-vector exists and C is nonzero, convert all variables within x-vector to nondeter variables
-        orig_nondeter_num = len(self.nondeter_vars)
-        if len(w) != 0 and not validC:
+        # If either Q or R is nonzero, x, u, and z variables become nondeter variables
+        if Q is not None or R is not None:
             # Remove vars in x-vector from deter_var
-            for var in x:
-                for k in range(1, self.horizon+1):
-                    idx = self.deter_vars.index("{}__{}".format(var, k))
-                    del self.deter_vars[idx]
-                    del self.deter_vars_expr[idx]
-                    self.model.remove(self.model.getVarByName("{}__{}".format(var, k)))
-                    self.nondeter_vars.append("{}__{}".format(var, k))
-            self.nondeter_vars_expr= self.nondeter_vars_expr + [0]*len(x)*self.horizon
+            def addNonDeterVar(var, num, k):
+                """ Adds a nondeter var."""
+                self.nondeter_vars.append("{}{}__{}".format(var, num, k))
+                self.nondeter_vars_expr = self.nondeter_vars_expr + [entry2expr("{}{}__{}".format(var, num, k))]
+                
+            def delVarFromDeter(var):
+                """ Delete a var from deter_vars. """
+                idx = self.deter_vars.index("{}__{}".format(var, k))
+                del self.deter_vars[idx]
+                del self.deter_vars_expr[idx]
+                self.model.remove(self.model.getVarByName("{}__{}".format(var, k)))
+                self.nondeter_vars.append("{}__{}".format(var, k))
+                self.nondeter_vars_expr = self.nondeter_vars_expr + [entry2expr(0)]
+
+            for k in range(self.horizon+1):
+                if Q is not None:
+                    for i in range(1, x_len+1):
+                        addNonDeterVar('w', i, k)
+                if R is not None:
+                    for i in range(1, z_len+1):
+                        addNonDeterVar('v', i, k)
+
+            for k in range(1, self.horizon+1):
+                for var in x:
+                    delVarFromDeter(var)
+
+            for k in range(self.horizon+1):
+                for var in u:
+                    delVarFromDeter(var)
+                for var in z:
+                    delVarFromDeter(var)
 
             # Find expression for each nondeter variable
-            # TODO: Cov has to be better dealt with if two nondeter vars are correlated. Assuming independence for now.
-            for k in range(1, self.horizon+1):
-                for i in range(len(x)):
-                    tmp_x = entry2expr(0)
-                    idx1 = self.nondeter_vars.index("{}__{}".format(x[i], k))
-                    for j in range(len(x)):
-                        if repr(A[i][j]) != '0.0':
-                            if k == 1:
-                                idx2 = self.deter_vars.index("{}__{}".format(x[j], k-1))
-                                tmp_x += A[i][j]*self.deter_vars_expr[idx2]
-                            else:
-                                idx2 = self.nondeter_vars.index("{}__{}".format(x[j], k-1))
-                                tmp_x += A[i][j]*self.nondeter_vars_expr[idx2]
-
-                    for j in range(len(u)):
-                        if repr(B[i][j]) != '0.0':
-                            idx2 = self.deter_vars.index("{}__{}".format(u[j], k-1))
-                            tmp_x += B[i][j]*self.deter_vars_expr[idx2]
-
-                    for j in range(len(w)):
+            for k in range(self.horizon+1):
+                for i in range(z_len):
+                    tmp_z = entry2expr(0)
+                    idx1 = self.nondeter_vars.index("{}__{}".format(z[i], k))
+                    for j in range(x_len):
                         if repr(C[i][j]) != '0.0':
-                            if "{}__{}".format(w[j], k-1) in self.deter_vars:
-                                idx2 = self.deter_vars.index("{}__{}".format(w[j], k-1))
-                                tmp_x += C[i][j]*self.deter_vars_expr[idx2]
-                            elif "{}__{}".format(w[j], k-1) in self.nondeter_vars:
-                                idx2 = self.nondeter_vars.index("{}__{}".format(w[j], k-1))
-                                tmp_x += C[i][j]*self.nondeter_vars_expr[idx2]
+                            if k == 0:
+                                idx2 = self.deter_vars.index("{}__{}".format(x[j], k))
+                                tmp_z += C[i][j]*self.deter_vars_expr[idx2]
+                            else:
+                                idx2 = self.nondeter_vars.index("{}__{}".format(x[j], k))
+                                tmp_z += C[i][j]*self.nondeter_vars_expr[idx2]
 
-                    self.nondeter_vars_expr[idx1] = tmp_x
+                    idx2 = self.nondeter_vars.index("v{}__{}".format(i+1, k))
+                    tmp_z += self.nondeter_vars_expr[idx2]
+
+                    self.nondeter_vars_expr[idx1] = tmp_z
+
+                for i in range(u_len):
+                    tmp_u = entry2expr(0)
+                    idx1 = self.nondeter_vars.index("{}__{}".format(u[i], k))
+                    for j in range(z_len):
+                        if repr(D[i][j]) != '0.0':
+                            idx2 = self.nondeter_vars.index("{}__{}".format(z[j], k))
+                            tmp_u += D[i][j]*self.nondeter_vars_expr[idx2]
+                    
+                    if E is not None:
+                        tmp_u += E[0][i]
+
+                    self.nondeter_vars_expr[idx1] = tmp_u
+
+                if k != self.horizon:
+                    for i in range(x_len):
+                        tmp_x = entry2expr(0)
+                        idx1 = self.nondeter_vars.index("{}__{}".format(x[i], k+1))
+                        for j in range(x_len):
+                            if repr(A[i][j]) != '0.0':
+                                if k == 0:
+                                    idx2 = self.deter_vars.index("{}__{}".format(x[j], k))
+                                    tmp_x += A[i][j]*self.deter_vars_expr[idx2]
+                                else:
+                                    idx2 = self.nondeter_vars.index("{}__{}".format(x[j], k))
+                                    tmp_x += A[i][j]*self.nondeter_vars_expr[idx2]
+
+                        for j in range(u_len):
+                            if repr(B[i][j]) != '0.0':
+                                idx2 = self.nondeter_vars.index("{}__{}".format(u[j], k))
+                                tmp_x += B[i][j]*self.nondeter_vars_expr[idx2]
+
+                        idx2 = self.nondeter_vars.index("w{}__{}".format(i+1, k))
+                        tmp_x += self.nondeter_vars_expr[idx2]
+
+                        self.nondeter_vars_expr[idx1] = tmp_x
     
         else:
             for k in range(1, self.horizon+1):
-                for i in range(len(x)):
+                for i in range(x_len):
                     tmp_x = entry2expr(0)
                     idx1 = self.deter_vars.index("{}__{}".format(x[i], k))
-                    for j in range(len(x)):
+                    for j in range(x_len):
                         if repr(A[i][j]) != '0.0':
                             tmp_x += A[i][j]*entry2expr("{}__{}".format(x[j], k-1))
 
-                    for j in range(len(u)):
+                    for j in range(u_len):
                         if repr(B[i][j]) != '0.0':
                             tmp_x += B[i][j]*entry2expr("{}__{}".format(u[j], k-1))
                     
                     self.deter_vars_expr[idx1] = tmp_x
-                    
+
                     self.model.addConstr(expr2gurobiexpr(self, entry2expr("{}__{}".format(x[i], k))) == expr2gurobiexpr(self, tmp_x))
                     self.model.update
-
-        # for k in range(1, self.horizon):
-        #     for i in range(len(u)):
-        #         tmp_x = entry2expr(0)
-        #         idx1 = self.nondeter_vars.index("{}__{}".format(x[i], k))
-        #         for j in range(len(x)):
-        #             if repr(D[i][j]) != '0.0':
-        #                 if k == 1:
-        #                     idx2 = self.deter_vars.index("{}__{}".format(x[j], k-1))
-        #                     tmp_x += D[i][j]*self.deter_vars_expr[idx2]
-        #                 else:
-        #                     idx2 = self.nondeter_vars.index("{}__{}".format(x[j], k-1))
-        #                     tmp_x += D[i][j]*self.nondeter_vars_expr[idx2]
-
-        #         self.nondeter_vars_expr[idx1] = tmp_x
-
-        # print(self.deter_vars)
-        # print(self.deter_vars_expr)
-        # print(self.nondeter_vars)
-        # print(self.nondeter_vars_expr)
-        # input()
+        
+        print(self.deter_vars)
+        print(self.deter_vars_expr)
+        print(self.nondeter_vars)
+        print(self.nondeter_vars_expr)
+        input()
 
     def add_init_condition(self, formula):
         """
@@ -306,25 +319,9 @@ class MILPSolver:
     def set_objective(self, sense='minimize'):
         # input()
         if sense == 'minimize':
-            # try:
-            #     self.model.remove(self.model.getConstrByName('UNSAT'))
-            # except:
-            #     pass
             self.model.setObjective(self.soft_constraint_vars[0], GRB.MINIMIZE)
-            # if self.mode == 'Quantitative':
-            #     self.model.addConstr(self.soft_constraint_vars[0] <= -EPS, 'SAT')
-            # else:
-            #     self.model.addConstr(self.soft_constraint_vars[0] == 0, 'SAT')
         else:
-            # try:
-            #     self.model.remove(self.model.getConstrByName('SAT'))
-            # except:
-            #     pass
             self.model.setObjective(self.soft_constraint_vars[0], GRB.MAXIMIZE)
-            # if self.mode == 'Quantitative':
-            #     # self.model.addConstr(self.soft_constraint_vars[0] >= 0, 'UNSAT')
-            # else:
-            #     self.model.addConstr(self.soft_constraint_vars[0] == 1, 'UNSAT')
         self.model.update()
 
     def solve(self):
@@ -348,7 +345,16 @@ class MILPSolver:
 
     def add_constraint(self, node, hard=True, name='b'):
         """
-        Adds contraints of a StSTL formula to the solvers.
+        Adds contraints of a STL/ StSTL formula to the solvers.
+
+        # TODO: Add explanations of parameters
+
+        :param node: _description_
+        :type node: _type_
+        :param hard: _description_, defaults to True
+        :type hard: bool, optional
+        :param name: _description_, defaults to 'b'
+        :type name: str, optional
         """
         # Build the parse tree
         # node.printInfo()
@@ -379,11 +385,11 @@ class MILPSolver:
         """
         Adds convex constraints from a contract to a convex solver.
         """
+        # Add Gurobi variables to the MILP convex solver
         if top_node:
             b_name = name
         else:
             b_name = "{}_{}".format(name[0:3], len(self.node_vars))
-            # 1. Add Boolean variables to the MILP convex solver
             if self.mode == 'Boolean':
                 self.node_vars[b_name] = self.model.addVars(1, end_time+1, vtype=GRB.BINARY, name=b_name)
             elif self.mode == 'Quantitative':
@@ -391,7 +397,7 @@ class MILPSolver:
             
             self.model.update()
 
-        #  2. construct constraints according to the operation type
+        # Construct constraints according to the operation type
         if type(node) in (AP, stAP):
             self.add_ap_stap_constraint(node, self.node_vars[b_name], start_time, end_time, name=b_name)
         elif type(node) == temporal_unary: # Temporal unary operators
@@ -451,9 +457,14 @@ class MILPSolver:
                                     term *= entry2expr(var)
                                 else:
                                     for _ in range(int(node.power_list_list[i][j])):
-                                        idx = self.deter_vars.index("{}__{}".format(var, t))
-                                        term *= self.deter_vars_expr[idx]
+                                        # idx = self.deter_vars.index("{}__{}".format(var, t))
+                                        # print("hey")
+                                        # print("{}__{}".format(var, t))
+                                        # print(self.deter_vars_expr[idx])
+                                        # term *= self.deter_vars_expr[idx]
+                                        term *= entry2expr("{}__{}".format(var, t))
                         constr += term
+                        # print(constr)
 
                     # Pystl expression to gurobi expression
                     gurobi_expr = expr2gurobiexpr(self, constr)
@@ -477,27 +488,37 @@ class MILPSolver:
                 mean = entry2expr(0)
                 variance = entry2expr(0)
                 for i in range(len(expr.multipliers)):
-                    term_mean = entry2expr(expr.multipliers[i])
-                    term_variance = entry2expr(expr.multipliers[i]*expr.multipliers[i])
-                    for j, var in enumerate(expr.var_list_list[i]):
-                        if var != 1:
-                            if var in self.contract.param_var_list:
-                                term_mean *= entry2expr(var)
-                                term_variance = entry2expr(0)
+                    if repr(expr.multipliers[i]) != '0.0':
+                        term_mean = entry2expr('{:.16f}'.format(expr.multipliers[i]))
+                        term_variance = entry2expr('{:.16f}'.format(expr.multipliers[i]*expr.multipliers[i]))
+                        for j, var in enumerate(expr.var_list_list[i]):
+                            if var != 1:
+                                if var in self.contract.param_var_list:
+                                    term_mean *= entry2expr(var)
+                                    term_variance = entry2expr(0)
+                                else:
+                                    for _ in range(int(expr.power_list_list[i][j])):
+                                        if var in self.nondeter_vars:
+                                            [varname, _] = split_var_time(var)
+                                            if varname[0] == 'w' or varname[0] == 'v':
+                                                idx = int(varname[1])-1
+                                                term_mean *= entry2expr(0)
+                                                if varname[0] == 'w':
+                                                    covariance_matrix = self.dynamics['Q']
+                                                elif varname[0] == 'v':
+                                                    covariance_matrix = self.dynamics['R']
+                                                term_variance *= entry2expr(covariance_matrix[idx][idx])
+                                            else:
+                                                idx = self.contract.nondeter_var_list.index(varname)
+                                                term_mean *= entry2expr(self.contract.nondeter_var_mean[idx])
+                                                term_variance *= entry2expr(self.contract.nondeter_var_cov[idx][idx])
+                                        else:
+                                            term_mean *= entry2expr(var)
+                                            term_variance *= entry2expr(0)
                             else:
-                                for _ in range(int(expr.power_list_list[i][j])):
-                                    if var in self.nondeter_vars:
-                                        [varname, _] = split_var_time(var)
-                                        idx = self.contract.nondeter_var_list.index(varname)
-                                        term_mean *= entry2expr(self.contract.nondeter_var_mean[idx])
-                                        term_variance *= entry2expr(self.contract.nondeter_var_cov[idx][idx])
-                                    else:
-                                        term_mean *= entry2expr(var)
-                                        term_variance = entry2expr(0)
-                        else:
-                            term_variance = entry2expr(0)
-                    mean += term_mean
-                    variance += term_variance
+                                term_variance = entry2expr(0)
+                        mean += term_mean
+                        variance += term_variance
                 return [mean, variance]
 
             # Fetch the probability expression for the node
@@ -749,7 +770,7 @@ class MILPSolver:
         
         self.model.update()
 
-    # TODO: Not implemented
+    # TODO: Should check again
     def add_temporal_binary_constraint(self, node, parent_vars, start_time = 0, end_time = 0, name='b'):
         # Fetch node variables from the child node
         child_vars1 = self.add_node_constraint(node.children_list[0], start_time=start_time, end_time=end_time+node.interval[1]-1, name=name)
@@ -882,7 +903,6 @@ class MILPSolver:
             print("{}: {}".format(var_name, self.model.getVarByName(var_name).x))
         print()
     
-    # TODO: Fix here
     def fetch_solution(self, controlled_vars, length=1):
         """ 
         Fetches the values of the controlled variables, if available.
@@ -891,10 +911,7 @@ class MILPSolver:
         output = []
 
         # Find the output
-        #  print(controlled_vars)
-        #  print(self.contract_variable[controlled_vars[0].idx, 0])
-        #  input()
-        for var in controlled_vars:
-            output.append([v.x for v in self.contract_variable[var.idx, 0: length]])
-                    
+        for var_list in controlled_vars:
+            output.append([self.model.getVarByName(var_list[0]).x, self.model.getVarByName(var_list[1]).x])
+
         return output
