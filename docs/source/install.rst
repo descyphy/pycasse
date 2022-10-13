@@ -5,7 +5,7 @@ Pre-requisites
 --------------
 * Install dependencies::
 
-   $ pip install -r requirements.txt
+   $ pip3 install -r requirements.txt
 
 
 Optimization Solver
@@ -33,6 +33,6 @@ PyCASSE
 
 * Install PyCASSE::
 
-   $ pip install .
+   $ pip3 install .
 
 You are now ready to use PyCASSE!

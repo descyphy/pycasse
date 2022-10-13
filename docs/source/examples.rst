@@ -62,15 +62,15 @@ Controller Synthesis in Intersection Scenario
 
 .. Any contract in PyCASSE can be saturated and its information can be printed. For example, :math:`C_1` and :math:`C_1'` can be saturated and their information can be printed as follows:
 
-Parameter Synthesis using StSTL Contracts
------------------------------------------
+Parameter Synthesis using StSTL Contracts (ICCAD 2022)
+------------------------------------------------------
 
 Finding Parameters for Multi-Sensor Perception system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The case study can be run::
 
-   $ python tests/ICCAD2022/sensor_experiment1.py
+   $ python tests/ICCAD2022/sensor_experiment.py
 
 Finding Parameters for Cruise Control System
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -86,7 +86,7 @@ Finding Parameters for Cruise Control System
 
 The cruise control system in the figure above controls the ego vehicle to keep it as close as possible to a target distance :math:`d_{target} = d_{safe} + \tau v_e`, while adapting to the leading vehicle's behavior. :math:`d_{safe}` is the pre-determined safe distance and :math:`\tau` is the time gap. Several parts of such system are intrinsically of stochastic nature, e.g., the noise of the sensors detecting the distance and velocity, and the behavior of the leading vehicle. In this case study, we illustrate the parameter synthesis process on an system whose safety and comfort requirements are specified by two parametric stochastic contracts.
 
-In this case study, we search for the sets of optimal parameter values :math:`\pi_{safe} = (c_s, p_s)`` and :math:`\pi_{comf} = (c_c, p_c)` for two requirements expressed as the parametric stochastic contracts :math:`C_{safe}(\pi_{safe})` and :math:`C_{comf}(\pi_{comf})`. 
+In this case study, we search for the sets of optimal parameter values :math:`\pi_{safe} = (c_s, p_s)` and :math:`\pi_{comf} = (c_c, p_c)` for two requirements expressed as the parametric stochastic contracts :math:`C_{safe}(\pi_{safe})` and :math:`C_{comf}(\pi_{comf})`. 
 
 :math:`C_{safe}` requires that the probability of maintaining the distance :math:`d` larger than or equal to :math:`c_{s}` is greater than or equal to :math:`p_{s}` when the initial distance is greater than or equal to :math:`d_{target}` and the initial relative velocity between the ego and the leading vehicle is smaller than or equal to :math:`5~m/s`.
 
@@ -100,15 +100,19 @@ The case study can be run::
 
    $ python tests/ICCAD2022/ACC_experiment.py
 
-As a result, the feasible regions for finding the set of optimal parameter values :math:`\pi_{safe} = (c_s, p_s)`:
+As a result, feasible regions for finding the set of optimal parameter values :math:`\pi_{safe} = (c_s, p_s)`:
 
 .. figure:: acc_safety_result.png
    :width: 300
    :align: center
 
-and :math:`\pi_{comf} = (c_c, p_c)` can be found:
+and the optimal paramter values is :math:`(c_{s}^*, p_{s}^*) = (5.625, 0.99375)`.
+
+Similarly, feasible regions for finding the set of optimal parameter values :math:`\pi_{comf} = (c_c, p_c)` can be found:
 
 .. figure:: acc_comfort_result.png
    :class: with-shadow
    :width: 300
    :align: center
+
+and the optimal paramter values is :math:`(c_{c}^*, p_{c}^*) = (-7.5, 0.99375)`.

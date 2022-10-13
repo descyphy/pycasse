@@ -138,9 +138,9 @@ A/G contracts :math:`C_1 = (V_1, A_1, G_1)` and :math:`C_2 = (V_2, A_2, G_2)` ca
 
 .. The quotient can be computed as follows [Passerone19]_:
 
-.. math::
+.. .. math::
 
-   C / C_2 = (V \cup V_2, A \cap G_2, (G \cap A_2) \cup \overline{(A \cap G_2)})
+..    C / C_2 = (V \cup V_2, A \cap G_2, (G \cap A_2) \cup \overline{(A \cap G_2)})
 
 ..
    and that acquired from `separation` operation, denoted as :math:`C \div C_2`, has the properties:

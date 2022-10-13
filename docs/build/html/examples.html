@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>4. Examples &mdash; PySTL v1.0  documentation</title>
+  <title>6. Examples &mdash; PySTL v1.0  documentation</title>
   
 
   
@@ -40,8 +40,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="5. Bibiliography" href="bib.html" />
-    <link rel="prev" title="3. Assume-Guarantee (A/G) Contracts" href="contracts.html" /> 
+    <link rel="next" title="7. Bibiliography" href="bib.html" />
+    <link rel="prev" title="5. A/G Contracts with Parameters" href="contracts_w_param.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -94,21 +94,23 @@
 <li class="toctree-l1"><a class="reference internal" href="install.html">1. Installing PyCASSE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="specifications.html">2. Writing Specifications for PyCASSE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contracts.html">3. Assume-Guarantee (A/G) Contracts</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#multi-agent-control-synthesis-using-reward-contracts">4.1. Multi-Agent Control Synthesis using Reward Contracts</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#controller-synthesis-in-highway-scenario">4.1.1. Controller Synthesis in Highway Scenario</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#controller-synthesis-in-highway-merging-scenario">4.1.2. Controller Synthesis in Highway Merging Scenario</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#controller-synthesis-in-intersection-scenario">4.1.3. Controller Synthesis in Intersection Scenario</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contracts_w_dyn.html">4. A/G Contracts with Dynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contracts_w_param.html">5. A/G Contracts with Parameters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">6. Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#multi-agent-control-synthesis-using-reward-contracts">6.1. Multi-Agent Control Synthesis using Reward Contracts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#controller-synthesis-in-highway-scenario">6.1.1. Controller Synthesis in Highway Scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#controller-synthesis-in-highway-merging-scenario">6.1.2. Controller Synthesis in Highway Merging Scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#controller-synthesis-in-intersection-scenario">6.1.3. Controller Synthesis in Intersection Scenario</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#parameter-synthesis-using-ststl-contracts">4.2. Parameter Synthesis using StSTL Contracts</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#finding-parameters-for-multi-sensor-perception-system">4.2.1. Finding Parameters for Multi-Sensor Perception system</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#finding-parameters-for-cruise-control-system">4.2.2. Finding Parameters for Cruise Control System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-synthesis-using-ststl-contracts-iccad-2022">6.2. Parameter Synthesis using StSTL Contracts (ICCAD 2022)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#finding-parameters-for-multi-sensor-perception-system">6.2.1. Finding Parameters for Multi-Sensor Perception system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#finding-parameters-for-cruise-control-system">6.2.2. Finding Parameters for Cruise Control System</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="bib.html">5. Bibiliography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bib.html">7. Bibiliography</a></li>
 </ul>
 
             
@@ -157,7 +159,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>4. Examples</li>
+      <li>6. Examples</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -177,30 +179,30 @@
            <div itemprop="articleBody">
             
   <div class="section" id="examples">
-<h1>4. Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<h1>6. Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="multi-agent-control-synthesis-using-reward-contracts">
-<h2>4.1. Multi-Agent Control Synthesis using Reward Contracts<a class="headerlink" href="#multi-agent-control-synthesis-using-reward-contracts" title="Permalink to this headline">¶</a></h2>
+<h2>6.1. Multi-Agent Control Synthesis using Reward Contracts<a class="headerlink" href="#multi-agent-control-synthesis-using-reward-contracts" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="controller-synthesis-in-highway-scenario">
-<h3>4.1.1. Controller Synthesis in Highway Scenario<a class="headerlink" href="#controller-synthesis-in-highway-scenario" title="Permalink to this headline">¶</a></h3>
+<h3>6.1.1. Controller Synthesis in Highway Scenario<a class="headerlink" href="#controller-synthesis-in-highway-scenario" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="controller-synthesis-in-highway-merging-scenario">
-<h3>4.1.2. Controller Synthesis in Highway Merging Scenario<a class="headerlink" href="#controller-synthesis-in-highway-merging-scenario" title="Permalink to this headline">¶</a></h3>
+<h3>6.1.2. Controller Synthesis in Highway Merging Scenario<a class="headerlink" href="#controller-synthesis-in-highway-merging-scenario" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="controller-synthesis-in-intersection-scenario">
-<h3>4.1.3. Controller Synthesis in Intersection Scenario<a class="headerlink" href="#controller-synthesis-in-intersection-scenario" title="Permalink to this headline">¶</a></h3>
+<h3>6.1.3. Controller Synthesis in Intersection Scenario<a class="headerlink" href="#controller-synthesis-in-intersection-scenario" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
-<div class="section" id="parameter-synthesis-using-ststl-contracts">
-<h2>4.2. Parameter Synthesis using StSTL Contracts<a class="headerlink" href="#parameter-synthesis-using-ststl-contracts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="parameter-synthesis-using-ststl-contracts-iccad-2022">
+<h2>6.2. Parameter Synthesis using StSTL Contracts (ICCAD 2022)<a class="headerlink" href="#parameter-synthesis-using-ststl-contracts-iccad-2022" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="finding-parameters-for-multi-sensor-perception-system">
-<h3>4.2.1. Finding Parameters for Multi-Sensor Perception system<a class="headerlink" href="#finding-parameters-for-multi-sensor-perception-system" title="Permalink to this headline">¶</a></h3>
+<h3>6.2.1. Finding Parameters for Multi-Sensor Perception system<a class="headerlink" href="#finding-parameters-for-multi-sensor-perception-system" title="Permalink to this headline">¶</a></h3>
 <p>The case study can be run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python tests/ICCAD2022/sensor_experiment1.py
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python tests/ICCAD2022/sensor_experiment.py
 </pre></div>
 </div>
 </div>
 <div class="section" id="finding-parameters-for-cruise-control-system">
-<h3>4.2.2. Finding Parameters for Cruise Control System<a class="headerlink" href="#finding-parameters-for-cruise-control-system" title="Permalink to this headline">¶</a></h3>
+<h3>6.2.2. Finding Parameters for Cruise Control System<a class="headerlink" href="#finding-parameters-for-cruise-control-system" title="Permalink to this headline">¶</a></h3>
 <div class="figure align-center">
 <a class="reference internal image-reference" href="_images/acc_fig1.png"><img alt="_images/acc_fig1.png" src="_images/acc_fig1.png" style="width: 300px;" /></a>
 </div>
@@ -217,14 +219,16 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python tests/ICCAD2022/ACC_experiment.py
 </pre></div>
 </div>
-<p>As a result, the feasible region for finding the set of optimal parameter values <span class="math notranslate nohighlight">\(\pi_{safe} = (c_s, p_s)\)</span>:</p>
+<p>As a result, feasible regions for finding the set of optimal parameter values <span class="math notranslate nohighlight">\(\pi_{safe} = (c_s, p_s)\)</span>:</p>
 <div class="figure align-center">
 <a class="reference internal image-reference" href="_images/acc_safety_result.png"><img alt="_images/acc_safety_result.png" src="_images/acc_safety_result.png" style="width: 300px;" /></a>
 </div>
-<p>and <span class="math notranslate nohighlight">\(\pi_{comf} = (c_c, p_c)\)</span> can be found:</p>
+<p>and the optimal paramter values is <span class="math notranslate nohighlight">\((c_{s}^*, p_{s}^*) = (5.625, 0.99375)\)</span>.</p>
+<p>Similarly, feasible regions for finding the set of optimal parameter values <span class="math notranslate nohighlight">\(\pi_{comf} = (c_c, p_c)\)</span> can be found:</p>
 <div class="figure align-center">
 <a class="with-shadow reference internal image-reference" href="_images/acc_comfort_result.png"><img alt="_images/acc_comfort_result.png" class="with-shadow" src="_images/acc_comfort_result.png" style="width: 300px;" /></a>
 </div>
+<p>and the optimal paramter values is <span class="math notranslate nohighlight">\((c_{c}^*, p_{c}^*) = (-7.5, 0.99375)\)</span>.</p>
 </div>
 </div>
 </div>
@@ -235,8 +239,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="bib.html" class="btn btn-neutral float-right" title="5. Bibiliography" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="contracts.html" class="btn btn-neutral float-left" title="3. Assume-Guarantee (A/G) Contracts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bib.html" class="btn btn-neutral float-right" title="7. Bibiliography" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="contracts_w_param.html" class="btn btn-neutral float-left" title="5. A/G Contracts with Parameters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

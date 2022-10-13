@@ -1,5 +1,5 @@
-Assume-Guarantee (A/G) Contracts
-================================
+A/G Contracts with Dynamics
+===========================
 
 What is an A/G Contract?
 ------------------------

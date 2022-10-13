@@ -1,8 +1,8 @@
-Assume-Guarantee (A/G) Contracts
-================================
+A/G Contracts with Parameters
+=============================
 
-What is an A/G Contract?
-------------------------
+Parameteric A/G Contracts
+-------------------------
 An assume-guarantee (A/G) contract :math:`C` is a triple :math:`(V,A,G)` where :math:`V` is the set of variables, :math:`A` is the set of behaviors which a component (or system) expects from its environment, and :math:`G` is the set of behaviors that the component promises given that the environment provides behaviors within the assumption set. We say :math:`M` is an `implementation` of :math:`C` by writing :math:`M \models C`.
 
 A contract is in `saturated` form if it satisfies :math:`\overline{A} \subseteq G` where :math:`\overline{A}` is the complement of :math:`A`. An unsaturated contract :math:`C'=(V,A,G)` can always be `saturated` to the equivalent contract :math:`C=(V,A,G')` where :math:`G'=G \cup \overline{A}`.
@@ -116,96 +116,3 @@ PyCASSE Contract Class
 .. automodule:: pycasse.contract
 	:members:
 	.. :exclude-members: reset_controlled_vars, reset_uncontrolled_vars, addVars2model, printSol
-
-A/G Contracts Operations
-------------------------
-..
-   A/G contracts :math:`C_1 = (V_1, A_1, G_1)` and :math:`C_2 = (V_2, A_2, G_2)` can be combined using contract operations: `conjunction` (:math:`\wedge`) (or `greatest lower bound` (:math:`\sqcap`)), `composition` (:math:`\otimes`), `merging` (:math:`\cdot`), and `least upper bound` (:math:`\sqcup`). A combined contract using these contract operations has the following properties:
-
-A/G contracts :math:`C_1 = (V_1, A_1, G_1)` and :math:`C_2 = (V_2, A_2, G_2)` can be combined using contract operations: `conjunction` (:math:`\wedge`) and `composition` (:math:`\otimes`). A combined contract using these contract operations can be computed as follows:
-
-.. math::
-
-   C_1 \wedge C_2 = & \; (V_1 \cup V_2, A_1 \cup A_2, G_1 \cap G_2) \\
-   C_1 \otimes C_2 = & \; (V_1 \cup V_2, (A_1 \cap A_2) \cup \overline{(G_1 \cap G_2)}, G_1 \cap G_2) 
-
-.. An A/G contract :math:`C = (V, A, G)` can also be decomposed via the `quotient` operation. Given a contract :math:`C_2 = (V_2, A_2, G_2)` the quotient contract :math:`C/C_2`, has the following properties:
-
-.. .. math::
-
-..    & C / C_2 \otimes C_2 \preceq C \\
-..    & \forall C_1, C_1 \otimes C_2 \preceq C \leftrightarrow C_1 \preceq C / C_2
-
-.. The quotient can be computed as follows [Passerone19]_:
-
-.. .. math::
-
-..    C / C_2 = (V \cup V_2, A \cap G_2, (G \cap A_2) \cup \overline{(A \cap G_2)})
-
-..
-   and that acquired from `separation` operation, denoted as :math:`C \div C_2`, has the properties:
-
-   .. math::
-
-      & \forall C_1, C \preceq C_1 \cdot C_2 \leftrightarrow C \div C_2 \preceq C_1 \\
-      & C \div C_2 = (V \cup V_2, (A \cap G_2) \cup \overline{(G \cap A_2)}, G \cap A_2) \
-
-A/G Contracts Operations in PyCASSE
------------------------------------
-
-Combining Contracts
-^^^^^^^^^^^^^^^^^^^
-Assume that we have contracts :math:`C_1` and :math:`C_2`, we can combine them by using `conjunction` and `composition`.
-
-.. code-block:: python
-
-   c12_conj = conjunction(c1, c2)          # Conjunction of c1 and c2
-   c12_conj.printInfo()                    # Print c12_conj
-
-   c12_comp = composition(c1, c2)          # Composition of c1 and c2
-   c12_comp.printInfo()                    # Print c12_comp
-
-..
-   c12_merge = merge(c1, c2)               # Merge of c1 and c2
-   c12_merge.printInfo()                   # Print c12_merge
-
-For an example where contracts are combined, refer to :download:`test_contracts_combine.py <../../tests/contract_tests/test_contracts_combine.py>`. 
-
-.. Decomposing Contracts
-.. ^^^^^^^^^^^^^^^^^^^^^
-.. Assume that we have contracts :math:`C` and :math:`C_2`. We can split :math:`C` into :math:`C_2` and :math:`C / C_2` by using `quotient` such that :math:`(C / C_2) \otimes C_2 \preceq C`.
-
-.. .. code-block:: python
-
-..   c2_quo = quotient(c, c2)                # Quotient c/c2
-..   c2_quo.printInfo()                      # Print c2_quo
-
-..   c2_comp = composition(c2_quo, c2)       # Composition of c2_quo and c2
-..   c2_comp.printInfo()                     # Print c2_comp
-
-..   c.checkRefine(c2_comp)                  # Check whether c2_comp refines c
-
-.. For an example where contracts are split using `quotient` operation, refer to :download:`test_contracts_quotient.py <../../tests/test_contracts_quotient.py>`. 
-
-
-..    We can also split :math:`C` into :math:`C_2` and :math:`C%C_2` by using `separation` such that :math:`C \preceq (C/C_2) \cdot C_2`.
-
-.. .. .. code-block:: python
-
-.. ..    c2_sep = separation(c, c2)              # Separation c%c2
-.. ..    c2_sep.saturate()                       # Saturate c2_sep
-.. ..    c2_sep.printInfo()                      # Print c2_sep
-
-.. ..    c2_merge = merge(c2_sep, c2)            # Merge of c2_sep and c2
-.. ..    c2_merge.saturate()                     # Saturate c2_merge
-.. ..    c2_merge.printInfo()                    # Print c2_merge
-
-.. ..    c2_merge.checkRefine(c)                 # Check whether c refines c2_merge
-
-.. .. For an example where contracts are split using `separation` operation, refer to :download:`test_contracts_separation.py <../../tests/test_contracts_separation.py>`.
-
-PyCASSE Contract Class and Its Operations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: pycasse.contracts
-	:members:
-	:exclude-members: set_params, merge_contract_variables, quotient, separation

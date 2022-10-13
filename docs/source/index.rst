@@ -4,8 +4,10 @@
    contain the root `toctree` directive.
 
 PyCASSE User's Guide
-===============================================
-Welcome to PyCASSE, a Python module for reasoning with assume-guarantee (A/G) contracts expressed in Signal Temporal Logic (STL) and Stochastic Signal Temporal Logic (StSTL).
+====================
+Welcome to PyCASSE, a Python tool: Contract-based Analysis for Stochastic Systems Exploration.
+PyCASSE enables automated reasoning with assume-guarantee (A/G) contracts expressed in Signal Temporal Logic (STL) and Stochastic Signal Temporal Logic (StSTL).
+.. Add bibtex for the tool
 
 .. toctree::
    :numbered:
@@ -14,6 +16,8 @@ Welcome to PyCASSE, a Python module for reasoning with assume-guarantee (A/G) co
    install
    specifications
    contracts
+   contracts_w_dyn
+   contracts_w_param
    examples
    bib
 

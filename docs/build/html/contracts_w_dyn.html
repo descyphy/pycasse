@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>3. Assume-Guarantee (A/G) Contracts &mdash; PySTL v1.0  documentation</title>
+  <title>4. A/G Contracts with Dynamics &mdash; PySTL v1.0  documentation</title>
   
 
   
@@ -40,8 +40,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="4. A/G Contracts with Dynamics" href="contracts_w_dyn.html" />
-    <link rel="prev" title="2. Writing Specifications for PyCASSE" href="specifications.html" /> 
+    <link rel="next" title="5. A/G Contracts with Parameters" href="contracts_w_param.html" />
+    <link rel="prev" title="3. Assume-Guarantee (A/G) Contracts" href="contracts.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -93,24 +93,24 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">1. Installing PyCASSE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="specifications.html">2. Writing Specifications for PyCASSE</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Assume-Guarantee (A/G) Contracts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#what-is-an-a-g-contract">3.1. What is an A/G Contract?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#a-g-contracts-in-pycasse">3.2. A/G Contracts in PyCASSE</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#creating-an-a-g-contract">3.2.1. Creating an A/G Contract</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#checking-compatibility-consistency-and-feasibility">3.2.2. Checking Compatibility, Consistency, and Feasibility</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#refinement">3.2.3. Refinement</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pycasse-contract-class">3.2.4. PyCASSE Contract Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contracts.html">3. Assume-Guarantee (A/G) Contracts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. A/G Contracts with Dynamics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-an-a-g-contract">4.1. What is an A/G Contract?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-g-contracts-in-pycasse">4.2. A/G Contracts in PyCASSE</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-an-a-g-contract">4.2.1. Creating an A/G Contract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#checking-compatibility-consistency-and-feasibility">4.2.2. Checking Compatibility, Consistency, and Feasibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#refinement">4.2.3. Refinement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycasse-contract-class">4.2.4. PyCASSE Contract Class</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#a-g-contracts-operations">3.3. A/G Contracts Operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#a-g-contracts-operations-in-pycasse">3.4. A/G Contracts Operations in PyCASSE</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#combining-contracts">3.4.1. Combining Contracts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pycasse-contract-class-and-its-operations">3.4.2. PyCASSE Contract Class and Its Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-g-contracts-operations">4.3. A/G Contracts Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-g-contracts-operations-in-pycasse">4.4. A/G Contracts Operations in PyCASSE</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#combining-contracts">4.4.1. Combining Contracts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycasse-contract-class-and-its-operations">4.4.2. PyCASSE Contract Class and Its Operations</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="contracts_w_dyn.html">4. A/G Contracts with Dynamics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contracts_w_param.html">5. A/G Contracts with Parameters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">6. Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bib.html">7. Bibiliography</a></li>
@@ -162,13 +162,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>3. Assume-Guarantee (A/G) Contracts</li>
+      <li>4. A/G Contracts with Dynamics</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/contracts.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/contracts_w_dyn.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -181,19 +181,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="assume-guarantee-a-g-contracts">
-<h1>3. Assume-Guarantee (A/G) Contracts<a class="headerlink" href="#assume-guarantee-a-g-contracts" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="a-g-contracts-with-dynamics">
+<h1>4. A/G Contracts with Dynamics<a class="headerlink" href="#a-g-contracts-with-dynamics" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="what-is-an-a-g-contract">
-<h2>3.1. What is an A/G Contract?<a class="headerlink" href="#what-is-an-a-g-contract" title="Permalink to this headline">¶</a></h2>
+<h2>4.1. What is an A/G Contract?<a class="headerlink" href="#what-is-an-a-g-contract" title="Permalink to this headline">¶</a></h2>
 <p>An assume-guarantee (A/G) contract <span class="math notranslate nohighlight">\(C\)</span> is a triple <span class="math notranslate nohighlight">\((V,A,G)\)</span> where <span class="math notranslate nohighlight">\(V\)</span> is the set of variables, <span class="math notranslate nohighlight">\(A\)</span> is the set of behaviors which a component (or system) expects from its environment, and <span class="math notranslate nohighlight">\(G\)</span> is the set of behaviors that the component promises given that the environment provides behaviors within the assumption set. We say <span class="math notranslate nohighlight">\(M\)</span> is an <cite>implementation</cite> of <span class="math notranslate nohighlight">\(C\)</span> by writing <span class="math notranslate nohighlight">\(M \models C\)</span>.</p>
 <p>A contract is in <cite>saturated</cite> form if it satisfies <span class="math notranslate nohighlight">\(\overline{A} \subseteq G\)</span> where <span class="math notranslate nohighlight">\(\overline{A}\)</span> is the complement of <span class="math notranslate nohighlight">\(A\)</span>. An unsaturated contract <span class="math notranslate nohighlight">\(C'=(V,A,G)\)</span> can always be <cite>saturated</cite> to the equivalent contract <span class="math notranslate nohighlight">\(C=(V,A,G')\)</span> where <span class="math notranslate nohighlight">\(G'=G \cup \overline{A}\)</span>.</p>
 <p>An A/G contract <span class="math notranslate nohighlight">\(C = (V,A,G)\)</span> is <cite>compatible</cite> if there exists an environment behavior over the set of variables <span class="math notranslate nohighlight">\(V\)</span>, i.e., <span class="math notranslate nohighlight">\(A \neq \emptyset\)</span>, <cite>consistent</cite> if there exists a behavior satisfying the (saturated) guarantees, i.e., <span class="math notranslate nohighlight">\(G \neq \emptyset\)</span>, and <cite>feasible</cite> if there exists a behavior that satisfies both the assumptions and the guarantees, i.e., <span class="math notranslate nohighlight">\(A \cap G \neq \emptyset\)</span>.</p>
 <p>Via <cite>refinement</cite>, we can reason about different abstraction layers in system design. A contract <span class="math notranslate nohighlight">\(C_2 = (V,A_2,G_2)\)</span> refines <span class="math notranslate nohighlight">\(C_1 = (V,A_1,G_1)\)</span> if and only if (1) <span class="math notranslate nohighlight">\(A_1 \subseteq A_2\)</span> and (2) <span class="math notranslate nohighlight">\(G_2 \subseteq G_1\)</span>. We denote this relationship as <span class="math notranslate nohighlight">\(C_2 \preceq C_1\)</span>. Intuitively, if a contract <span class="math notranslate nohighlight">\(C_2\)</span> refines another contract <span class="math notranslate nohighlight">\(C_1\)</span>, then <span class="math notranslate nohighlight">\(C_2\)</span> can replace <span class="math notranslate nohighlight">\(C_1\)</span>. For further details we refer to the monograph <a class="reference internal" href="bib.html#contractmono" id="id1">[ContractMono]</a>.</p>
 </div>
 <div class="section" id="a-g-contracts-in-pycasse">
-<h2>3.2. A/G Contracts in PyCASSE<a class="headerlink" href="#a-g-contracts-in-pycasse" title="Permalink to this headline">¶</a></h2>
+<h2>4.2. A/G Contracts in PyCASSE<a class="headerlink" href="#a-g-contracts-in-pycasse" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="creating-an-a-g-contract">
-<h3>3.2.1. Creating an A/G Contract<a class="headerlink" href="#creating-an-a-g-contract" title="Permalink to this headline">¶</a></h3>
+<h3>4.2.1. Creating an A/G Contract<a class="headerlink" href="#creating-an-a-g-contract" title="Permalink to this headline">¶</a></h3>
 <a class="reference internal image-reference" href="_images/system1.png"><img alt="_images/system1.png" class="align-center" src="_images/system1.png" style="width: 300px;" /></a>
 <p>Consider the component above. An STL contract <span class="math notranslate nohighlight">\(C_1 = (V_1,A_1,G_1)\)</span> where <span class="math notranslate nohighlight">\(V_1 := \{ x, y, z \}\)</span>, <span class="math notranslate nohighlight">\(A_1 := 5 \leq x \leq 9\)</span>, and <span class="math notranslate nohighlight">\(G_1 := (2 \leq y) \land (z \leq 2)\)</span> can be created as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pycasse</span> <span class="kn">import</span> <span class="o">*</span>
@@ -225,7 +225,7 @@
 <p>Please note that in PyCASSE, contracts are automatically saturated whenever necessary.</p>
 </div>
 <div class="section" id="checking-compatibility-consistency-and-feasibility">
-<h3>3.2.2. Checking Compatibility, Consistency, and Feasibility<a class="headerlink" href="#checking-compatibility-consistency-and-feasibility" title="Permalink to this headline">¶</a></h3>
+<h3>4.2.2. Checking Compatibility, Consistency, and Feasibility<a class="headerlink" href="#checking-compatibility-consistency-and-feasibility" title="Permalink to this headline">¶</a></h3>
 <p>We can check <cite>compatibility</cite>, <cite>consistency</cite>, and <cite>feasiblity</cite> of the contract <span class="math notranslate nohighlight">\(C_1\)</span> and <span class="math notranslate nohighlight">\(C_1'\)</span>. This includes when PyCASSE checks for <cite>compatibility</cite>, <cite>consistency</cite>, and <cite>feasiblity</cite>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c1</span><span class="o">.</span><span class="n">checkCompat</span><span class="p">(</span><span class="n">print_sol</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># Check compatibility of c1</span>
 <span class="n">c1</span><span class="o">.</span><span class="n">checkConsis</span><span class="p">(</span><span class="n">print_sol</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># Check consistency of c1</span>
@@ -238,7 +238,7 @@
 </div>
 </div>
 <div class="section" id="refinement">
-<h3>3.2.3. Refinement<a class="headerlink" href="#refinement" title="Permalink to this headline">¶</a></h3>
+<h3>4.2.3. Refinement<a class="headerlink" href="#refinement" title="Permalink to this headline">¶</a></h3>
 <p>Let’s create two more contracts <span class="math notranslate nohighlight">\(C_2\)</span> and <span class="math notranslate nohighlight">\(C_3\)</span> and check their <cite>compatibility</cite>, <cite>consistency</cite>, and <cite>feasiblity</cite>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c2</span> <span class="o">=</span> <span class="n">contract</span><span class="p">(</span><span class="s1">&#39;c2&#39;</span><span class="p">)</span>                     <span class="c1"># Create a contract c2</span>
 <span class="n">c2</span><span class="o">.</span><span class="n">add_deter_vars</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">])</span>           <span class="c1"># Set a controlled variable</span>
@@ -272,20 +272,20 @@
 <p>Similarly, it is also possible to check refinement between probabilistic contracts. For an example with STL contracts refer to <a class="reference download internal" download="" href="_downloads/ca5235e68996804a24bc016038df5bc1/test_contracts.py"><code class="xref download docutils literal notranslate"><span class="pre">test_contracts.py</span></code></a> and <a class="reference download internal" download="" href="_downloads/a2263d63dd61205d2d3f95fb1aedbcba/test_contracts_stl.py"><code class="xref download docutils literal notranslate"><span class="pre">test_contracts_stl.py</span></code></a>. For an example with StSTL contracts refer to <a class="reference download internal" download="" href="_downloads/7aac97c30bd8817f1cac8cd616b686b9/test_contracts_ststl.py"><code class="xref download docutils literal notranslate"><span class="pre">test_contracts_ststl.py</span></code></a>.</p>
 </div>
 <div class="section" id="pycasse-contract-class">
-<h3>3.2.4. PyCASSE Contract Class<a class="headerlink" href="#pycasse-contract-class" title="Permalink to this headline">¶</a></h3>
+<h3>4.2.4. PyCASSE Contract Class<a class="headerlink" href="#pycasse-contract-class" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 <div class="section" id="a-g-contracts-operations">
-<h2>3.3. A/G Contracts Operations<a class="headerlink" href="#a-g-contracts-operations" title="Permalink to this headline">¶</a></h2>
+<h2>4.3. A/G Contracts Operations<a class="headerlink" href="#a-g-contracts-operations" title="Permalink to this headline">¶</a></h2>
 <p>A/G contracts <span class="math notranslate nohighlight">\(C_1 = (V_1, A_1, G_1)\)</span> and <span class="math notranslate nohighlight">\(C_2 = (V_2, A_2, G_2)\)</span> can be combined using contract operations: <cite>conjunction</cite> (<span class="math notranslate nohighlight">\(\wedge\)</span>) and <cite>composition</cite> (<span class="math notranslate nohighlight">\(\otimes\)</span>). A combined contract using these contract operations can be computed as follows:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}C_1 \wedge C_2 = &amp; \; (V_1 \cup V_2, A_1 \cup A_2, G_1 \cap G_2) \\
 C_1 \otimes C_2 = &amp; \; (V_1 \cup V_2, (A_1 \cap A_2) \cup \overline{(G_1 \cap G_2)}, G_1 \cap G_2)\end{split}\]</div>
 </div>
 <div class="section" id="a-g-contracts-operations-in-pycasse">
-<h2>3.4. A/G Contracts Operations in PyCASSE<a class="headerlink" href="#a-g-contracts-operations-in-pycasse" title="Permalink to this headline">¶</a></h2>
+<h2>4.4. A/G Contracts Operations in PyCASSE<a class="headerlink" href="#a-g-contracts-operations-in-pycasse" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="combining-contracts">
-<h3>3.4.1. Combining Contracts<a class="headerlink" href="#combining-contracts" title="Permalink to this headline">¶</a></h3>
+<h3>4.4.1. Combining Contracts<a class="headerlink" href="#combining-contracts" title="Permalink to this headline">¶</a></h3>
 <p>Assume that we have contracts <span class="math notranslate nohighlight">\(C_1\)</span> and <span class="math notranslate nohighlight">\(C_2\)</span>, we can combine them by using <cite>conjunction</cite> and <cite>composition</cite>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c12_conj</span> <span class="o">=</span> <span class="n">conjunction</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>          <span class="c1"># Conjunction of c1 and c2</span>
 <span class="n">c12_conj</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                    <span class="c1"># Print c12_conj</span>
@@ -297,7 +297,7 @@ C_1 \otimes C_2 = &amp; \; (V_1 \cup V_2, (A_1 \cap A_2) \cup \overline{(G_1 \ca
 <p>For an example where contracts are combined, refer to <a class="reference download internal" download="" href="_downloads/997e10a4df4d2257d7203c592922c4ea/test_contracts_combine.py"><code class="xref download docutils literal notranslate"><span class="pre">test_contracts_combine.py</span></code></a>.</p>
 </div>
 <div class="section" id="pycasse-contract-class-and-its-operations">
-<h3>3.4.2. PyCASSE Contract Class and Its Operations<a class="headerlink" href="#pycasse-contract-class-and-its-operations" title="Permalink to this headline">¶</a></h3>
+<h3>4.4.2. PyCASSE Contract Class and Its Operations<a class="headerlink" href="#pycasse-contract-class-and-its-operations" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 </div>
@@ -308,8 +308,8 @@ C_1 \otimes C_2 = &amp; \; (V_1 \cup V_2, (A_1 \cap A_2) \cup \overline{(G_1 \ca
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="contracts_w_dyn.html" class="btn btn-neutral float-right" title="4. A/G Contracts with Dynamics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="specifications.html" class="btn btn-neutral float-left" title="2. Writing Specifications for PyCASSE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contracts_w_param.html" class="btn btn-neutral float-right" title="5. A/G Contracts with Parameters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="contracts.html" class="btn btn-neutral float-left" title="3. Assume-Guarantee (A/G) Contracts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
