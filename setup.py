@@ -2,11 +2,11 @@
 
 from setuptools import setup, find_packages
 
-setup(name='pystl',
-      version='1.1.0',
-      description='Python Module for Reasoning with Contracts written in STL or StSTL',
+setup(name='pycasse',
+      version='1.0',
+      description='Python tool: Contract-based Analysis for Stochastic Systems Engineering (PyCASSE)',
       author='Chanwook Oh',
       author_email='chanwooo@usc.edu',
-    #   url='https://github.com/chanwook128/PySTL-git.git',
+      url='https://github.com/descyphy/pycasse',
       packages=find_packages(),
      )

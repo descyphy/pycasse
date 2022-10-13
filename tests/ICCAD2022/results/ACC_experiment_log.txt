@@ -1,0 +1,61 @@
+Contract ID: acc_safety
+  Deterministic Variables: 
+    xe, CONTINUOUS, [0, 50]
+    ve, CONTINUOUS, [0, 30]
+    xl, CONTINUOUS, [0, 50]
+    vl, CONTINUOUS, [0, 30]
+    ae, CONTINUOUS, [-3, 2]
+    dm, CONTINUOUS, [-100, 100]
+    vrm, CONTINUOUS, [-30, 30]
+    vem, CONTINUOUS, [0, 30]
+  Parameteric Variables: 
+    p, CONTINUOUS, [0.9, 1]
+    c, CONTINUOUS, [0, 10]
+  Assumption: (xl - xe >= 10 + 1.6*ve) & (ve - 5 <= vl) & (vl <= ve + 5)
+  Guarantee: G[0,20] (P[p] (xl - xe >= c))
+  Saturated Guarantee: ((xl - xe >= 10 + 1.6*ve) & (ve - 5 <= vl) & (vl <= ve + 5)) -> (G[0,20] (P[p] (xl - xe >= c)))
+  isSat: True
+
+Finding an optimal set of parameters for contract acc_safety...
+Using license file /home/chanwook/gurobi.lic
+Academic license - for non-commercial use only
+xe__0 0
+ve__0 0
+xl__0 50
+vl__0 0
+p 0.99375
+c 5.625
+b_a 5
+b_g 0.0259274
+The set of optimal parameter values is {'p': 0.99375, 'c': 5.625} with the cost -105.0 and the robustness estimate 0.025927381851941433.
+Time elaspsed for MILP: 433.7607808113098 [seconds].
+
+Contract ID: acc_comfort
+  Deterministic Variables: 
+    xe, CONTINUOUS, [0, 50]
+    ve, CONTINUOUS, [0, 30]
+    xl, CONTINUOUS, [0, 50]
+    vl, CONTINUOUS, [0, 30]
+    ae, CONTINUOUS, [-3, 2]
+    dm, CONTINUOUS, [-100, 100]
+    vrm, CONTINUOUS, [-30, 30]
+    vem, CONTINUOUS, [0, 30]
+  Parameteric Variables: 
+    p, CONTINUOUS, [0.9, 1]
+    c, CONTINUOUS, [-30, 0]
+  Assumption: (xl - xe >= 10 + 1.6*ve) & (ve - 5 <= vl) & (vl <= ve + 5)
+  Guarantee: G[0,20] (P[p] (c <= ae))
+  Saturated Guarantee: ((xl - xe >= 10 + 1.6*ve) & (ve - 5 <= vl) & (vl <= ve + 5)) -> (G[0,20] (P[p] (c <= ae)))
+  isSat: True
+
+Finding an optimal set of parameters for contract acc_comfort...
+xe__0 0
+ve__0 0
+xl__0 50
+vl__0 0
+p 0.99375
+c -7.5
+b_a 5
+b_g 0.348809
+The set of optimal parameter values is {'p': 0.99375, 'c': -7.5} with the cost -91.875 and the robustness estimate 0.3488093706746431.
+Time elaspsed for MILP: 444.9479172229767 [seconds].

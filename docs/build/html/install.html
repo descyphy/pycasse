@@ -1,23 +1,31 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>1. Installing PySTL &mdash; PySTL v1.0  documentation</title>
+  <title>1. Installing PyCASSE &mdash; PySTL v1.0  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -30,14 +38,10 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="2. Writing Specifications for PySTL" href="specifications.html" />
-    <link rel="prev" title="PySTL User’s Guide" href="index.html" /> 
+    <link rel="prev" title="PyCASSE User’s Guide" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -78,6 +82,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -86,10 +91,13 @@
             
             
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">1. Installing PySTL</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">1. Installing PyCASSE</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#pre-requisites">1.1. Pre-requisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#gurobi">1.2. Gurobi</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pystl">1.3. PySTL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optimization-solver">1.2. Optimization Solver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gurobi">1.2.1. Gurobi</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pycasse">1.3. PyCASSE</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="specifications.html">2. Writing Specifications for PySTL</a></li>
@@ -100,6 +108,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -134,18 +143,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>1. Installing PySTL</li>
+      <li>1. Installing PyCASSE</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/install.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -159,21 +170,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="installing-pystl">
-<h1>1. Installing PySTL<a class="headerlink" href="#installing-pystl" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="installing-pycasse">
+<h1>1. Installing PyCASSE<a class="headerlink" href="#installing-pycasse" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="pre-requisites">
 <h2>1.1. Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p class="first">Install dependencies:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip3 install -r requirements
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install -r requirements.txt
 </pre></div>
 </div>
 </li>
 </ul>
 </div>
+<div class="section" id="optimization-solver">
+<h2>1.2. Optimization Solver<a class="headerlink" href="#optimization-solver" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="gurobi">
-<h2>1.2. Gurobi<a class="headerlink" href="#gurobi" title="Permalink to this headline">¶</a></h2>
-<p>PySTL uses Gurobi <a class="reference internal" href="bib.html#gurobi" id="id1">[Gurobi]</a> for solving mixed integer linear programs (MILP).</p>
+<h3>1.2.1. Gurobi<a class="headerlink" href="#gurobi" title="Permalink to this headline">¶</a></h3>
+<p>PyCASSE uses Gurobi <a class="reference internal" href="bib.html#gurobi" id="id1">[Gurobi]</a> for solving mixed integer programs (MIP).</p>
 <ul class="simple">
 <li>Install <a class="reference external" href="https://www.gurobi.com/">Gurobi</a></li>
 <li>Setup <a class="reference external" href="https://www.gurobi.com/documentation/9.0/quickstart_mac/the_grb_python_interface_f.html">Gurobi Python Interface for Python Users</a></li>
@@ -187,23 +200,24 @@
 </li>
 </ul>
 </div>
-<div class="section" id="pystl">
-<h2>1.3. PySTL<a class="headerlink" href="#pystl" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="pycasse">
+<h2>1.3. PyCASSE<a class="headerlink" href="#pycasse" title="Permalink to this headline">¶</a></h2>
 <ul>
-<li><p class="first">Download or clone the PySTL-git repository:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/chanwook128/PySTL-git.git
+<li><p class="first">Download or clone the PyCASSE-git repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/descyphy/pycasse
 </pre></div>
 </div>
 </li>
-<li><p class="first">Navigate to PySTL-git folder where <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> is located</p>
+<li><p class="first">Navigate to PyCASSE-git folder where <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> is located</p>
 </li>
-<li><p class="first">Install PySTL:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip3 install .
+<li><p class="first">Install PyCASSE:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install .
 </pre></div>
 </div>
 </li>
 </ul>
-<p>You are now ready to use PySTL!</p>
+<p>You are now ready to use PyCASSE!</p>
 </div>
 </div>
 
@@ -212,29 +226,29 @@
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="specifications.html" class="btn btn-neutral float-right" title="2. Writing Specifications for PySTL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral float-left" title="PySTL User’s Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="specifications.html" class="btn btn-neutral float-right" title="2. Writing Specifications for PySTL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="PyCASSE User’s Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Chanwook Oh
+        &#169; Copyright 2021, Chanwook Oh.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -242,7 +256,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

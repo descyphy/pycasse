@@ -1,23 +1,31 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html4" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>2. Writing Specifications for PySTL &mdash; PySTL v1.0  documentation</title>
+  <title>2. Writing Specifications for PyCASSE &mdash; PySTL v1.0  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
 
   
   
-  
+
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -30,14 +38,10 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="3. Assume-Guarantee (A/G) Contracts" href="contracts.html" />
-    <link rel="prev" title="1. Installing PySTL" href="install.html" /> 
+    <link rel="prev" title="1. Installing PyCASSE" href="install.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -78,6 +82,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -86,9 +91,9 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="install.html">1. Installing PySTL</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Writing Specifications for PySTL</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#pystl-syntax">2.1. PySTL Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">1. Installing PyCASSE</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Writing Specifications for PyCASSE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pycasse-syntax">2.1. PyCASSE Syntax</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="contracts.html">3. Assume-Guarantee (A/G) Contracts</a></li>
@@ -98,6 +103,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,18 +138,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>2. Writing Specifications for PySTL</li>
+      <li>2. Writing Specifications for PyCASSE</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/specifications.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -157,50 +165,52 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="writing-specifications-for-pystl">
-<h1>2. Writing Specifications for PySTL<a class="headerlink" href="#writing-specifications-for-pystl" title="Permalink to this headline">¶</a></h1>
-<p>PySTL currently supports specifications written in Signal Temporal Logic (STL) and Stochastic Temporal Logic (StSTL).</p>
-<div class="section" id="pystl-syntax">
-<h2>2.1. PySTL Syntax<a class="headerlink" href="#pystl-syntax" title="Permalink to this headline">¶</a></h2>
-<p>An STL <a class="reference internal" href="bib.html#maler04" id="id1">[Maler04]</a> or an StSTL <a class="reference internal" href="bib.html#nuzzo19" id="id2">[Nuzzo19]</a> formula can be written in PySTL using the following PySTL syntax in <a class="reference external" href="https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form">Backus-Naur form</a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">boolean</span><span class="o">&gt;</span> <span class="p">::</span><span class="o">=</span> <span class="s2">&quot;TRUE&quot;</span> <span class="o">|</span> <span class="s2">&quot;FALSE&quot;</span>
+  <div class="section" id="writing-specifications-for-pycasse">
+<h1>2. Writing Specifications for PyCASSE<a class="headerlink" href="#writing-specifications-for-pycasse" title="Permalink to this headline">¶</a></h1>
+<p>PyCASSE currently supports specifications written in Signal Temporal Logic (STL) and Stochastic Temporal Logic (StSTL).</p>
+<div class="section" id="pycasse-syntax">
+<h2>2.1. PyCASSE Syntax<a class="headerlink" href="#pycasse-syntax" title="Permalink to this headline">¶</a></h2>
+<p>An STL <a class="reference internal" href="bib.html#maler04" id="id1">[Maler04]</a> or an StSTL <a class="reference internal" href="bib.html#nuzzo19" id="id2">[Nuzzo19]</a> formula can be written in PyCASSE using the following PyCASSE syntax in <a class="reference external" href="https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form">Backus-Naur form</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">boolean</span><span class="o">&gt;</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;TRUE&quot;</span> <span class="o">|</span> <span class="s2">&quot;FALSE&quot;</span>
 
-<span class="o">&lt;</span><span class="n">digit</span><span class="o">&gt;</span> <span class="p">::</span><span class="o">=</span> <span class="s2">&quot;0&quot;</span> <span class="o">|</span> <span class="s2">&quot;1&quot;</span> <span class="o">|</span> <span class="s2">&quot;2&quot;</span> <span class="o">|</span> <span class="s2">&quot;3&quot;</span> <span class="o">|</span> <span class="s2">&quot;4&quot;</span> <span class="o">|</span> <span class="s2">&quot;5&quot;</span> <span class="o">|</span> <span class="s2">&quot;6&quot;</span> <span class="o">|</span> <span class="s2">&quot;7&quot;</span> <span class="o">|</span> <span class="s2">&quot;8&quot;</span> <span class="o">|</span> <span class="s2">&quot;9&quot;</span>
+<span class="o">&lt;</span><span class="n">digit</span><span class="o">&gt;</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;0&quot;</span> <span class="o">|</span> <span class="s2">&quot;1&quot;</span> <span class="o">|</span> <span class="s2">&quot;2&quot;</span> <span class="o">|</span> <span class="s2">&quot;3&quot;</span> <span class="o">|</span> <span class="s2">&quot;4&quot;</span> <span class="o">|</span> <span class="s2">&quot;5&quot;</span> <span class="o">|</span> <span class="s2">&quot;6&quot;</span> <span class="o">|</span> <span class="s2">&quot;7&quot;</span> <span class="o">|</span> <span class="s2">&quot;8&quot;</span> <span class="o">|</span> <span class="s2">&quot;9&quot;</span>
 
-<span class="o">&lt;</span><span class="n">letter</span><span class="o">&gt;</span> <span class="p">::</span><span class="o">=</span> <span class="s2">&quot;A&quot;</span> <span class="o">|</span> <span class="s2">&quot;B&quot;</span> <span class="o">|</span> <span class="s2">&quot;C&quot;</span> <span class="o">|</span> <span class="s2">&quot;D&quot;</span> <span class="o">|</span> <span class="s2">&quot;E&quot;</span> <span class="o">|</span> <span class="s2">&quot;H&quot;</span> <span class="o">|</span> <span class="s2">&quot;I&quot;</span> <span class="o">|</span> <span class="s2">&quot;J&quot;</span> <span class="o">|</span> <span class="s2">&quot;K&quot;</span> <span class="o">|</span> <span class="s2">&quot;L&quot;</span> <span class="o">|</span> <span class="s2">&quot;M&quot;</span>
+<span class="o">&lt;</span><span class="n">letter</span><span class="o">&gt;</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;A&quot;</span> <span class="o">|</span> <span class="s2">&quot;B&quot;</span> <span class="o">|</span> <span class="s2">&quot;C&quot;</span> <span class="o">|</span> <span class="s2">&quot;D&quot;</span> <span class="o">|</span> <span class="s2">&quot;E&quot;</span> <span class="o">|</span> <span class="s2">&quot;H&quot;</span> <span class="o">|</span> <span class="s2">&quot;I&quot;</span> <span class="o">|</span> <span class="s2">&quot;J&quot;</span> <span class="o">|</span> <span class="s2">&quot;K&quot;</span> <span class="o">|</span> <span class="s2">&quot;L&quot;</span> <span class="o">|</span> <span class="s2">&quot;M&quot;</span>
            <span class="o">|</span> <span class="s2">&quot;N&quot;</span> <span class="o">|</span> <span class="s2">&quot;O&quot;</span> <span class="o">|</span> <span class="s2">&quot;Q&quot;</span> <span class="o">|</span> <span class="s2">&quot;R&quot;</span> <span class="o">|</span> <span class="s2">&quot;S&quot;</span> <span class="o">|</span> <span class="s2">&quot;T&quot;</span> <span class="o">|</span> <span class="s2">&quot;V&quot;</span> <span class="o">|</span> <span class="s2">&quot;W&quot;</span> <span class="o">|</span> <span class="s2">&quot;X&quot;</span> <span class="o">|</span> <span class="s2">&quot;Y&quot;</span> <span class="o">|</span> <span class="s2">&quot;Z&quot;</span>
            <span class="o">|</span> <span class="s2">&quot;a&quot;</span> <span class="o">|</span> <span class="s2">&quot;b&quot;</span> <span class="o">|</span> <span class="s2">&quot;c&quot;</span> <span class="o">|</span> <span class="s2">&quot;d&quot;</span> <span class="o">|</span> <span class="s2">&quot;e&quot;</span> <span class="o">|</span> <span class="s2">&quot;f&quot;</span> <span class="o">|</span> <span class="s2">&quot;g&quot;</span> <span class="o">|</span> <span class="s2">&quot;h&quot;</span> <span class="o">|</span> <span class="s2">&quot;i&quot;</span> <span class="o">|</span> <span class="s2">&quot;j&quot;</span> <span class="o">|</span> <span class="s2">&quot;k&quot;</span> <span class="o">|</span> <span class="s2">&quot;l&quot;</span> <span class="o">|</span> <span class="s2">&quot;m&quot;</span>
            <span class="o">|</span> <span class="s2">&quot;n&quot;</span> <span class="o">|</span> <span class="s2">&quot;o&quot;</span> <span class="o">|</span> <span class="s2">&quot;p&quot;</span> <span class="o">|</span> <span class="s2">&quot;q&quot;</span> <span class="o">|</span> <span class="s2">&quot;r&quot;</span> <span class="o">|</span> <span class="s2">&quot;s&quot;</span> <span class="o">|</span> <span class="s2">&quot;t&quot;</span> <span class="o">|</span> <span class="s2">&quot;u&quot;</span> <span class="o">|</span> <span class="s2">&quot;v&quot;</span> <span class="o">|</span> <span class="s2">&quot;w&quot;</span> <span class="o">|</span> <span class="s2">&quot;x&quot;</span> <span class="o">|</span> <span class="s2">&quot;y&quot;</span> <span class="o">|</span> <span class="s2">&quot;z&quot;</span>
 
-<span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span> <span class="p">::</span><span class="o">=</span> <span class="o">&lt;</span><span class="n">digit</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">digit</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span> <span class="p">:</span><span class="o">:=</span> <span class="o">&lt;</span><span class="n">digit</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">digit</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span>
 
-<span class="o">&lt;</span><span class="n">interval</span><span class="o">&gt;</span> <span class="p">::</span><span class="o">=</span> <span class="s2">&quot;[&quot;</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span> <span class="s2">&quot;,&quot;</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span> <span class="s2">&quot;]&quot;</span>
+<span class="o">&lt;</span><span class="n">interval</span><span class="o">&gt;</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;[&quot;</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span> <span class="s2">&quot;,&quot;</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span> <span class="s2">&quot;]&quot;</span>
 
-<span class="o">&lt;</span><span class="n">variable</span><span class="o">&gt;</span> <span class="p">::</span><span class="o">=</span> <span class="o">&lt;</span><span class="n">letter</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">letter</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">variable</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">variable</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">variable</span><span class="o">&gt;</span> <span class="p">:</span><span class="o">:=</span> <span class="o">&lt;</span><span class="n">letter</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">letter</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">variable</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">variable</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span>
 
-<span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="p">::</span><span class="o">=</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">variable</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">variable</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="p">:</span><span class="o">:=</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">variable</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span> <span class="s2">&quot;*&quot;</span> <span class="o">&lt;</span><span class="n">variable</span><span class="o">&gt;</span>
                <span class="o">|</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="s2">&quot;+&quot;</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span>
                <span class="o">|</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="s2">&quot;-&quot;</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span>
 
-<span class="o">&lt;</span><span class="n">inequality</span><span class="o">&gt;</span> <span class="p">::</span><span class="o">=</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="s2">&quot;&lt;=&quot;</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span>
-               <span class="o">|</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="s2">&quot;&gt;=&quot;</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">inequality</span><span class="o">&gt;</span> <span class="p">:</span><span class="o">:=</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="s2">&quot;&lt;&quot;</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span>
+               <span class="o">|</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="s2">&quot;&gt;&quot;</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span>
+               <span class="o">|</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="s2">&quot;&lt;=&quot;</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span>
+               <span class="o">|</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="s2">&quot;=&gt;&quot;</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span>
                <span class="o">|</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="s2">&quot;==&quot;</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span>
 
-<span class="o">&lt;</span><span class="n">predicate</span><span class="o">&gt;</span> <span class="p">::</span><span class="o">=</span> <span class="o">&lt;</span><span class="n">boolean</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">inequality</span><span class="o">&gt;</span> <span class="o">|</span> <span class="s2">&quot;P{&quot;</span> <span class="o">&lt;</span><span class="n">inequality</span><span class="o">&gt;</span> <span class="s2">&quot;}&gt;=0.&quot;</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">predicate</span><span class="o">&gt;</span> <span class="p">:</span><span class="o">:=</span> <span class="o">&lt;</span><span class="n">boolean</span><span class="o">&gt;</span> <span class="o">|</span> <span class="o">&lt;</span><span class="n">inequality</span><span class="o">&gt;</span> <span class="o">|</span> <span class="s2">&quot;P(&quot;</span> <span class="o">&lt;</span><span class="n">inequality</span><span class="o">&gt;</span> <span class="s2">&quot;) =&gt; 0.&quot;</span> <span class="o">&lt;</span><span class="n">integer</span><span class="o">&gt;</span>
 
-<span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="p">::</span><span class="o">=</span> <span class="o">&lt;</span><span class="n">predicate</span><span class="o">&gt;</span>
-            <span class="o">|</span> <span class="s2">&quot;!(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
-            <span class="o">|</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&amp;&amp;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
-            <span class="o">|</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)||(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
-            <span class="o">|</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)-&gt;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
+<span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">predicate</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
+            <span class="o">|</span> <span class="s2">&quot;(!&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
+            <span class="o">|</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot; &amp; &quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
+            <span class="o">|</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot; | &quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
+            <span class="o">|</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot; -&gt; &quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
 
-            <span class="o">|</span> <span class="s2">&quot;G&quot;</span> <span class="o">&lt;</span><span class="n">interval</span><span class="o">&gt;</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
-            <span class="o">|</span> <span class="s2">&quot;F&quot;</span> <span class="o">&lt;</span><span class="n">interval</span><span class="o">&gt;</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
-            <span class="o">|</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)U&quot;</span> <span class="o">&lt;</span><span class="n">interval</span><span class="o">&gt;</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
+            <span class="o">|</span> <span class="s2">&quot;(G&quot;</span> <span class="o">&lt;</span><span class="n">interval</span><span class="o">&gt;</span> <span class="s2">&quot; &quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
+            <span class="o">|</span> <span class="s2">&quot;(F&quot;</span> <span class="o">&lt;</span><span class="n">interval</span><span class="o">&gt;</span> <span class="s2">&quot; &quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
+            <span class="o">|</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot; U&quot;</span> <span class="o">&lt;</span><span class="n">interval</span><span class="o">&gt;</span> <span class="s2">&quot; &quot;</span> <span class="o">&lt;</span><span class="n">formula</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
 </pre></div>
 </div>
-<p>For example, ‘Globally from time step <span class="math notranslate nohighlight">\(0\)</span> to <span class="math notranslate nohighlight">\(3\)</span>, <span class="math notranslate nohighlight">\(x \geq 3\)</span> implies eventually from time step <span class="math notranslate nohighlight">\(4\)</span> to <span class="math notranslate nohighlight">\(5\)</span>, the probability of <span class="math notranslate nohighlight">\(5 \leq y\)</span> larger than or equal to <span class="math notranslate nohighlight">\(0.95\)</span>’ can be written as an StSTL formula: <span class="math notranslate nohighlight">\(\mathbf{G}_{[0,3]}(x \geq 3) \rightarrow \mathbf{F}_{[4,5]}(P\{ 5 \leq y \} \geq 0.95)\)</span> and can be written as a formula in PySTL:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">](</span><span class="n">x</span><span class="o">&gt;=</span><span class="mi">3</span><span class="p">))</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">](</span><span class="n">P</span><span class="p">{</span><span class="mi">5</span><span class="o">&lt;=</span><span class="n">y</span><span class="p">}</span><span class="o">&gt;=</span><span class="mf">0.95</span><span class="p">))</span>
+<p>For example, ‘Globally from time step <span class="math notranslate nohighlight">\(0\)</span> to <span class="math notranslate nohighlight">\(3\)</span>, <span class="math notranslate nohighlight">\(2x \geq 3\)</span> implies eventually from time step <span class="math notranslate nohighlight">\(4\)</span> to <span class="math notranslate nohighlight">\(5\)</span>, the probability of <span class="math notranslate nohighlight">\(5 \leq y\)</span> larger than or equal to <span class="math notranslate nohighlight">\(0.95\)</span>’ can be written as an StSTL formula: <span class="math notranslate nohighlight">\(\mathbf{G}_{[0,3]}(x \geq 3) \rightarrow \mathbf{F}_{[4,5]}(P\{ 5 \leq y \} \geq 0.95)\)</span> and can be written as a formula in PySTL:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">((</span><span class="n">G</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span> <span class="p">(</span><span class="n">P</span><span class="p">(</span><span class="mi">5</span> <span class="o">&lt;=</span> <span class="n">y</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="mf">0.95</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -211,29 +221,29 @@
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="contracts.html" class="btn btn-neutral float-right" title="3. Assume-Guarantee (A/G) Contracts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="install.html" class="btn btn-neutral float-left" title="1. Installing PySTL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="contracts.html" class="btn btn-neutral float-right" title="3. Assume-Guarantee (A/G) Contracts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="install.html" class="btn btn-neutral float-left" title="1. Installing PyCASSE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Chanwook Oh
+        &#169; Copyright 2021, Chanwook Oh.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -241,7 +251,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
