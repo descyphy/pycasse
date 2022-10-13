@@ -1,4 +1,4 @@
-from pystl import *
+from pycasse import *
 import time
 
 # Build a contract c1

@@ -221,8 +221,8 @@ class MILPSolver:
                 for var in z:
                     delVarFromDeter(var)
             
-            print(self.deter_vars)
-            print(self.nondeter_vars)
+            # print(self.deter_vars)
+            # print(self.nondeter_vars)
 
             # Find expression for each nondeter variable
             for k in range(self.horizon+1):
@@ -298,10 +298,10 @@ class MILPSolver:
                     self.model.addConstr(expr2gurobiexpr(self, entry2expr("{}__{}".format(x[i], k))) == expr2gurobiexpr(self, tmp_x))
                     self.model.update
         
-        print(self.deter_vars)
-        print(self.deter_vars_expr)
-        print(self.nondeter_vars)
-        print(self.nondeter_vars_expr)
+        # print(self.deter_vars)
+        # print(self.deter_vars_expr)
+        # print(self.nondeter_vars)
+        # print(self.nondeter_vars_expr)
 
     def add_init_condition(self, formula):
         """

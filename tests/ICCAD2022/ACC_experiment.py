@@ -1,4 +1,4 @@
-from pystl import *
+from pycasse import *
 import time
 
 DEBUG = False

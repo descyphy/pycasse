@@ -113,7 +113,7 @@ Similarly, it is also possible to check refinement between probabilistic contrac
 
 PyCASSE Contract Class
 ^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: pycasse.contracts
+.. automodule:: pycasse.contract
 	:members:
 	.. :exclude-members: reset_controlled_vars, reset_uncontrolled_vars, addVars2model, printSol
 
