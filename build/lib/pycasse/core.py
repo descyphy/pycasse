@@ -152,7 +152,11 @@ class MILPSolver:
         # Find length of x, u, and z
         x_len = len(x)
         u_len = len(u)
-        z_len = len(z)
+        if z is None:
+            z = []
+            z_len = 0
+        else:
+            z_len = len(z)
 
         # Check the dimensions of the matrices
         def checkMatDim(mat, row_len, col_len):
@@ -213,7 +217,7 @@ class MILPSolver:
             for k in range(1, self.horizon+1):
                 for var in x:
                     delVarFromDeter(var)
-
+            
             for k in range(self.horizon+1):
                 if D is not None:
                     for var in u:
@@ -269,11 +273,16 @@ class MILPSolver:
                                 else:
                                     idx2 = self.nondeter_vars.index("{}__{}".format(x[j], k))
                                     tmp_x += A[i][j]*self.nondeter_vars_expr[idx2]
-
-                        for j in range(u_len):
-                            if repr(B[i][j]) != '0.0':
-                                idx2 = self.nondeter_vars.index("{}__{}".format(u[j], k))
-                                tmp_x += B[i][j]*self.nondeter_vars_expr[idx2]
+                        if D is not None:
+                            for j in range(u_len):
+                                if repr(B[i][j]) != '0.0':
+                                    idx2 = self.nondeter_vars.index("{}__{}".format(u[j], k))
+                                    tmp_x += B[i][j]*self.nondeter_vars_expr[idx2]
+                        else:
+                            for j in range(u_len):
+                                if repr(B[i][j]) != '0.0':
+                                    idx2 = self.deter_vars.index("{}__{}".format(u[j], k))
+                                    tmp_x += B[i][j]*self.deter_vars_expr[idx2]
 
                         idx2 = self.nondeter_vars.index("w{}__{}".format(i+1, k))
                         tmp_x += self.nondeter_vars_expr[idx2]

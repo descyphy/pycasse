@@ -147,8 +147,15 @@ class contract:
             if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
                 raise ValueError("Variable {} not in the contract variables.".format(variable))
 
-    def checkSat(self):
+
+    def saturate(self):
         """ Saturates the contract. """
+        if not self.isSat:
+            self.saturate()
+
+    # TODO: Add a "saturate" function
+    def checkSat(self):
+        """ Check whether the contract is saturated or not. Saturate, if not already saturated. """
         if not self.isSat:
             if self.assumption_str == 'True':
                 self.sat_guarantee_str = self.guarantee_str
@@ -414,7 +421,8 @@ class contract:
             # MILPsolver = MILPSolver()
             realMILPsolver.add_contract(self)
             if dyn is not None:
-                realMILPsolver.add_dynamics(x=dyn['x'], u=dyn['u'], z=dyn['z'], A=dyn['A'], B=dyn['B'], C=dyn['C'], D=dyn['D'], E=dyn['E'], Q=dyn['Q'], R=dyn['R'])
+                realMILPsolver.add_dynamics(x=dyn.get('x'), u=dyn.get('u'), z=dyn.get('z'), 
+                    A=dyn.get('A'), B=dyn.get('B'), C=dyn.get('C'), D=dyn.get('D'), E=dyn.get('E'), Q=dyn.get('Q'), R=dyn.get('R'))
             for init_condition in inits:
                 realMILPsolver.add_init_condition(init_condition)
             realMILPsolver.add_constraint(self.assumption, name='b_a')
@@ -595,7 +603,8 @@ class contract:
             self.param_var_bounds = optimal_partition
             realMILPsolver2.add_contract(self)
             if dynamics is not None:
-                realMILPsolver2.add_dynamics(x=dynamics['x'], u=dynamics['u'], z=dynamics['z'], A=dynamics['A'], B=dynamics['B'], C=dynamics['C'], D=dynamics['D'], E=dynamics['E'], Q=dynamics['Q'], R=dynamics['R'])
+                realMILPsolver2.add_dynamics(x=dynamics.get('x'), u=dynamics.get('u'), z=dynamics.get('z'), 
+                    A=dynamics.get('A'), B=dynamics.get('B'), C=dynamics.get('C'), D=dynamics.get('D'), E=dynamics.get('E'), Q=dynamics.get('Q'), R=dynamics.get('R'))
             for init_condition in init_conditions:
                 realMILPsolver2.add_init_condition(init_condition)
             realMILPsolver2.add_constraint(self.assumption, name='b_a')

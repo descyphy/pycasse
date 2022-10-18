@@ -1,6 +1,4 @@
-import sys
-from pystl import *
-import numpy as np
+from pycasse import *
 import time
 
 # Build a contract

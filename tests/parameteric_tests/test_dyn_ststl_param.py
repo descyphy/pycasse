@@ -1,8 +1,4 @@
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__) ) ) )
-from pystl import *
-from pystl.parser import *
-import numpy as np
+from pycasse import *
 import time
 
 # Build a contract
@@ -10,7 +6,7 @@ c = contract('c')                               # Create a contract c
 c.add_deter_vars(['s', 'v', 'a'], 
     bounds = [[-100, 2000], [-5, 10], [-1, 2]]) # Set a deterministic variables
 c.add_nondeter_vars(['w'], 
-    mean = [0], cov = [[0.2**2]])     
+    mean = [0], cov = [[0.5**2]])     
 c.add_param_vars(['p', 'c'], 
     bounds = [[0, 1], [20, 60]])
 c.set_assume('G[0,9] (a == 1)')                 # Set/define the assumptions
@@ -20,11 +16,10 @@ c.printInfo()                                   # Print c
 
 # Dynamics
 dynamics = {'x': ['s', 'v'], 
-    'u': ['a'], 
-    'w': ['w'],
+    'u': ['a'],
     'A': [[1, 1], [0, 1]],
     'B': [[0], [1]], 
-    'C': [[0], [1]]
+    'Q': [[0, 0], [0, 0.5**2]]
 }
 
 # Initial conditions

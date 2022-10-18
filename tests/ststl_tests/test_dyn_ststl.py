@@ -7,7 +7,7 @@ c = contract('c')                               # Create a contract c
 c.add_deter_vars(['s', 'v', 'a'], 
     bounds = [[-100, 2000], [-5, 10], [-1, 1]]) # Set deterministic variables
 c.set_assume('True')                            # Set/define the assumptions
-c.set_guaran('F[0,10] (P[0.9] (s => 1))')      # Set/define the guarantees
+c.set_guaran('F[0,10] (P[0.9] (s => 34))')      # Set/define the guarantees
 c.checkSat()                                    # Saturate c
 c.printInfo()                                   # Print c
 
