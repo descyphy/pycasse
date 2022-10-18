@@ -16,7 +16,7 @@ A/G Contracts in PyCASSE
 
 Creating an A/G Contract
 ^^^^^^^^^^^^^^^^^^^^^^^^
-.. image:: system1.png
+.. image:: figs/system1.png
    :width: 300
    :align: center
 
@@ -31,7 +31,7 @@ Consider the component above. An STL contract :math:`C_1 = (V_1,A_1,G_1)` where 
    c1.set_assume('(5 <= x) & (x <= 9)')    # Set assumptions of c1
    c1.set_guaran('(2 <= y) & (z <= 2)')    # Set guarantees of c1
 
-.. image:: system2.png
+.. image:: figs/system2.png
    :width: 300
    :align: center
 

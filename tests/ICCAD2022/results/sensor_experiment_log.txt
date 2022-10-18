@@ -1,4 +1,4 @@
-$ python3 tests/ICCAD2022/sensor_experiment1.py 
+$ python3 tests/ICCAD2022/sensor_experiment.py 
 
 ===========================================
 Initiating parameter synthesis with 1 specified sensors, 1 unspecified sensors, and 10 partitions.

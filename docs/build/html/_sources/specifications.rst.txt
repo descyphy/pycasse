@@ -1,10 +1,10 @@
 Writing Specifications for PyCASSE
-================================
+==================================
 
-PyCASSE currently supports specifications written in Signal Temporal Logic (STL) and Stochastic Temporal Logic (StSTL).
+PyCASSE supports specifications written in Signal Temporal Logic (STL) and Stochastic Temporal Logic (StSTL).
 
 PyCASSE Syntax
---------------------------
+--------------
 .. Syntax for PyCASSE
 
 An STL [Maler04]_ or an StSTL [Nuzzo19]_ formula can be written in PyCASSE using the following PyCASSE syntax in `Backus-Naur form <https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form>`_::
