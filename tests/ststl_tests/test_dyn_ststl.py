@@ -1,5 +1,4 @@
 from pycasse import *
-from pycasse.parser import *
 import time
 
 # Build a contract
@@ -17,7 +16,6 @@ solver.add_contract(c)
 
 # Build a linear system dynamics
 solver.add_dynamics(x = ['s', 'v'], u = ['a'], A = [[1, 1], [0, 1]], B = [[0], [1]], Q = [[0, 0], [0, 0.5**2]])
-# x_{k+1} = A*x_{k} + B*u_{k} + w_{k}
 
 # Add initial conditions
 solver.add_init_condition('s == 0')

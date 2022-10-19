@@ -110,9 +110,3 @@ We can check whether :math:`C_2` and :math:`C_3` `refines` :math:`C_1` or not:
    c3.checkRefine(c1, print_sol=True)      # Check whether c3 refines c1, should refine
 
 Similarly, it is also possible to check refinement between probabilistic contracts. For an example with STL contracts refer to :download:`test_contracts.py <../../tests/contract_tests/test_contracts.py>` and :download:`test_contracts_stl.py <../../tests/stl_tests/test_contracts_stl.py>`. For an example with StSTL contracts refer to :download:`test_contracts_ststl.py <../../tests/ststl_tests/test_contracts_ststl.py>`.
-
-PyCASSE Contract Class
-^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: pycasse.contract
-	:members:
-	.. :exclude-members: reset_controlled_vars, reset_uncontrolled_vars, addVars2model, printSol

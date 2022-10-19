@@ -14,12 +14,8 @@ parser = Parser()
 
 class contract:
     """
-    A contract class for defining a contract object.
-
-    :param id: A name (id) of the contract
-    :type id: str
+    A contract class for defining a contract.
     """
-
     __slots__ = ('id', 'deter_var_list', 'deter_var_types', 'deter_var_bounds', 'nondeter_var_list', 'nondeter_var_types', 'nondeter_var_mean', 'nondeter_var_cov', 'param_var_list', 'param_var_types', 'param_var_bounds', 'assumption_str', 'assumption', 'guarantee_str', 'guarantee', 'sat_guarantee_str', 'sat_guarantee', 'isSat', 'objectives')
 
     def __init__(self, id = ''):
@@ -54,10 +50,10 @@ class contract:
 
         :param var_names: A list of names for controlled variables
         :type var_names: list
-        :param dtypes: A list of variable types for controlled variables, each entry can be either "BINARY", "INTEGER", or "CONTINUOUS", defaults to "CONTINUOUS", defaults to None
+        :param dtypes: A list of variable types for controlled variables, each entry can be either `BINARY`, `INTEGER`, or `CONTINUOUS`. If None, defaults to `CONTINUOUS`.
         :type dtypes: list, optional
-        :param bounds: An numpy array of lower and upper bounds for controlled variables, defaults to `[-10^4,10^4]` for "CONTINUOUS" and "INTEGER" variable and `[0,1]` for "BINARY", defaults to None
-        :type bounds: :class:`numpy.ndarray`, optional
+        :param bounds: A list of lower and upper bounds for controlled variables, defaults to `[-10^4,10^4]` for `CONTINUOUS` and `INTEGER` variables and `[0,1]` for a `BINARY` variable, defaults to `None`.
+        :type bounds: list, optional
         """
         # For all variables, construct a variable class
         for i, name in enumerate(var_names):
@@ -67,16 +63,16 @@ class contract:
 
     def add_nondeter_vars(self, var_names, mean, cov, dtypes = None):
         """
-        Adds nondeterministic variables and their information to the contract. We plan to add more distribution such as `UNIFORM`, `TRUNCATED_GAUSSIAN`, or even a distribution from `DATA`.
+        Adds nondeterministic variables and their information to the contract. 
 
         :param var_names: A list of names for nondeterministic variables
         :type var_names: list
         :param mean: A mean vector of nondeterministic variables
-        :type mean: :class:`numpy.ndarray`
+        :type mean: list of floats
         :param cov: A covariance matrix of nondeterministic variables
-        :type cov: :class:`numpy.ndarray`
-        :param dtype: A distribution type for nondeterministic variables, can only be `GAUSSIAN` for now, defaults to None
-        :type dtype: str, optional
+        :type cov: list of lists of floats
+        :param dtype: Distribution types for nondeterministic variables, can only support `GAUSSIAN`, defaults to `None`.
+        :type dtype: list of strs, optional
         """
         # Check the dimensions of mean and covariance matrix
         assert(len(mean) == len(var_names))
@@ -147,8 +143,15 @@ class contract:
             if variable != 1 and not (variable in self.deter_var_list or variable in self.nondeter_var_list or variable in self.param_var_list):
                 raise ValueError("Variable {} not in the contract variables.".format(variable))
 
+    def saturate(self):
+        """
+        Saturates the contract. 
+        """
+        if not self.isSat:
+            self.checkSat()
+
     def checkSat(self):
-        """ Saturates the contract. """
+        """ Checks whether the contract is saturated or not. If not saturated, saturate the contract. """
         if not self.isSat:
             if self.assumption_str == 'True':
                 self.sat_guarantee_str = self.guarantee_str
@@ -159,8 +162,18 @@ class contract:
             self.sat_guarantee = parser(self.sat_guarantee_str)[0][0]
             self.isSat = True
     
-    def checkCompat(self, dynamics = None, init_conditions = [], print_sol=False, verbose = True):
-        """ Checks compatibility of the contract. """
+    def checkCompat(self, dynamics = None, init_conditions = [], print_sol=False):
+        """ Checks compatibility of the contract.
+
+        :param dynamics: A dictionary describing the dynamics of the component/system, defaults to `None`
+        :type dynamics: dict, optional
+        :param init_conditions: A list of str describing the initial conditions of the component/system, defaults to '[]'
+        :type init_conditions: list of str, optional
+        :param print_sol: If `True`, prints the behavior which shows the compatibility of the component/system, defaults to `False`
+        :type print_sol: bool, optional
+        :return: `True` if compatible, `False` otherwise.
+        :rtype: bool
+        """
         # Build a MILP Solver
         print("====================================================================================")
         print("Checking compatibility of the contract {}...".format(self.id))
@@ -179,18 +192,28 @@ class contract:
         solved = solver.solve()
 
         # Print the solution
-        if verbose and solved:
+        if solved:
             print("Contract {} is compatible.\n".format(self.id))
             if print_sol:
                 print("Printing a behavior that satisfies the assumptions of the contract {}...".format(self.id))
                 solver.print_solution()
-        elif verbose and not solved:
+        elif not solved:
             print("Contract {} is not compatible.\n".format(self.id))
 
         return solved
     
-    def checkConsis(self, dynamics = None, init_conditions = [], print_sol=False, verbose = True):
-        """ Checks consistency of the contract """
+    def checkConsis(self, dynamics = None, init_conditions = [], print_sol=False):
+        """ Checks consistency of the contract 
+
+        :param dynamics: A dictionary describing the dynamics of the component/system, defaults to `None`
+        :type dynamics: dict, optional
+        :param init_conditions: A list of str describing the initial conditions of the component/system, defaults to '[]'
+        :type init_conditions: list of str, optional
+        :param print_sol: If `True`, prints the behavior which shows the consistency of the component/system, defaults to `False`
+        :type print_sol: bool, optional
+        :return: `True` if compatible, `False` otherwise.
+        :rtype: bool
+        """
         # Build a MILP Solver
         print("====================================================================================")
         print("Checking consistency of the contract {}...".format(self.id))
@@ -209,18 +232,28 @@ class contract:
         solved = solver.solve()
 
         # Print the solution
-        if verbose and solved:
+        if solved:
             print("Contract {} is consistent.\n".format(self.id))
             if print_sol:
                 print("Printing a behavior that satisfies the saturated guarantees of the contract {}...".format(self.id))
                 solver.print_solution()
-        elif verbose and not solved:
+        elif not solved:
             print("Contract {} is not consistent.\n".format(self.id))
 
         return solved
     
-    def checkFeas(self, dynamics = None, init_conditions = [], print_sol=False, verbose = True):
-        """ Checks feasibility of the contract """
+    def checkFeas(self, dynamics = None, init_conditions = [], print_sol=False):
+        """ Checks feasibility of the contract.
+        
+        :param dynamics: A dictionary describing the dynamics of the component/system, defaults to `None`
+        :type dynamics: dict, optional
+        :param init_conditions: A list of str describing the initial conditions of the component/system, defaults to '[]'
+        :type init_conditions: list of str, optional
+        :param print_sol: If `True`, prints the behavior which shows the feasibility of the component/system, defaults to `False`
+        :type print_sol: bool, optional
+        :return: `True` if compatible, `False` otherwise.
+        :rtype: bool
+        """
         # Build a MILP Solver
         print("====================================================================================")
         print("Checking feasibility of the contract {}...".format(self.id))
@@ -239,18 +272,31 @@ class contract:
         solved = solver.solve()
 
         # Print the solution
-        if verbose and solved:
+        if solved:
             print("Contract {} is feasible.\n".format(self.id))
             if print_sol:
                 print("Printing a behavior that satisfies both the assumptions and guarantees of the contract {}...".format(self.id))
                 solver.print_solution()
-        elif verbose and not solved:
+        elif not solved:
             print("Contract {} is not feasible.\n".format(self.id))
 
         return solved
     
     def checkRefine(self, contract2refine, dynamics = None, init_conditions = [], print_sol=False):
-        """ Checks whether the self contract refines the contract contract2refine"""
+        """
+        Checks whether the self contract refines another contract.
+
+        :param contract2refine: A contract to refine.
+        :type contract2refine: :class:`pycasse.contracts.contract`
+        :param dynamics: A dictionary describing the dynamics of the component/system, defaults to `None`
+        :type dynamics: dict, optional
+        :param init_conditions: A list of str describing the initial conditions of the component/system, defaults to '[]'
+        :type init_conditions: list of str, optional
+        :param print_sol: If `True`, prints the behavior which violates the refinement relationship, defaults to `False`
+        :type print_sol: bool, optional
+        :return: `True` if the refinement relationship holds, `False` otherwise.
+        :rtype: bool
+        """
         print("====================================================================================")
         print("Checking whether contract {} refines contract {}...".format(self.id, contract2refine.id))
         
@@ -295,7 +341,7 @@ class contract:
             if print_sol:
                 print("Printing a counterexample which violates assumptions condition for refinement...")
                 solver.print_solution()
-            return
+            return False
 
         # Resets a MILP Solver
         solver.reset()
@@ -319,9 +365,10 @@ class contract:
             if print_sol:
                 print("Printing a counterexample which violates guarantees condition for refinement...")
                 solver.print_solution()
-            return
+            return False
 
         print("Contract {} refines {}.\n".format(self.id, contract2refine.id))
+        return True
     
     def find_opt_refine_param(self, contract2refine, weights, N=100, debug=False):
         # Check saturation of the contracts
@@ -719,11 +766,11 @@ def conjunction(c_list):
     """ Returns the conjunction of two contracts
 
     :param c1: A contract c1
-    :type c1: :class:`pycasse.contracts.contract.contract`
+    :type c1: :class:`pycasse.contracts.contract`
     :param c2: A contract c2
-    :type c2: :class:`pycasse.contracts.contract.contract`
-    :return: A conjoined contract c1^c2
-    :rtype: :class:`pycasse.contracts.contract.contract`
+    :type c2: :class:`pycasse.contracts.contract`
+    :return: A conjoined contract
+    :rtype: :class:`pycasse.contracts.contract`
     """
     # Initialize variables
     first_contract = True
@@ -771,7 +818,7 @@ def merge(c_list):
     :type c1: :class:`pycasse.contracts.contract.contract`
     :param c2: A contract c2
     :type c2: :class:`pycasse.contracts.contract.contract`
-    :return: A merged contract c1+c2
+    :return: A merged contract
     :rtype: :class:`pycasse.contracts.contract.contract`
     """
     # Initialize variables
@@ -816,12 +863,10 @@ def merge(c_list):
 def composition(c_list, mode = 'default'):
     """Returns the composition of the contracts in a list.
 
-    :param c_list: _description_
-    :type c_list: _type_
-    :param mode: _description_, defaults to 'default'.
-    :type mode: str, optional
-    :return: _description_
-    :rtype: _type_
+    :param c_list: A list of contracts
+    :type c_list: list
+    :return: A composed contract
+    :rtype: :class:`pycasse.contracts.contract`
     """
     # Initialize variables
     first_contract = True
@@ -912,11 +957,11 @@ def separation(c, c2):
     """ Returns the separation c%c2
 
     :param c: A contract c
-    :type c: :class:`pycasse.contracts.contract.contract`
+    :type c: :class:`pycasse.contracts.contract`
     :param c2: A contract c2
-    :type c2: :class:`pycasse.contracts.contract.contract`
+    :type c2: :class:`pycasse.contracts.contract`
     :return: A separated contract c%c2
-    :rtype: :class:`pycasse.contracts.contract.contract`
+    :rtype: :class:`pycasse.contracts.contract`
     """
     # Check saturation of c and c2, saturate them if not saturated
     c.checkSat()

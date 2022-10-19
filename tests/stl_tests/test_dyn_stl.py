@@ -1,7 +1,4 @@
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__) ) ) )
 from pycasse import *
-from pycasse.parser import *
 import time
 
 # Build a contract
@@ -9,8 +6,6 @@ c = contract('c')                                               # Create a contr
 c.add_deter_vars(['s', 'v', 'a'], 
     bounds = [[-100, 1000], [-5, 10], [-1, 1]])                 # Set deterministic variables
 c.set_assume('True')                                            # Set/define the assumptions
-# c.set_guaran('F[0,50] (s >= 445)')                              # Set/define the guarantees
-# c.set_guaran('F[0,100] (s => 945)')                             # Set/define the guarantees
 c.set_guaran('G[0,10] ((F[0,5] (s => 3)) & (F[0,5] (s <= 0)))') # Set/define the guarantees
 c.checkSat()                                                    # Saturate c
 c.printInfo()                                                   # Print c
