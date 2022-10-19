@@ -864,7 +864,7 @@ def composition(c_list, mode = 'default'):
     """Returns the composition of the contracts in a list.
 
     :param c_list: A list of contracts
-    :type c_list: list
+    :type c_list: list of :class:`pycasse.contracts.contract`
     :return: A composed contract
     :rtype: :class:`pycasse.contracts.contract`
     """

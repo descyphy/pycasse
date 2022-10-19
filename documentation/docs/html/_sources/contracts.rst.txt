@@ -204,6 +204,6 @@ For an example where contracts are combined, refer to :download:`test_contracts_
 .. .. For an example where contracts are split using `separation` operation, refer to :download:`test_contracts_separation.py <../../tests/test_contracts_separation.py>`.
 
 PyCASSE Contract Operations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: pycasse.contracts
-	:members: conjunction, composition
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: pycasse.contracts.conjunction
+.. autofunction:: pycasse.contracts.composition

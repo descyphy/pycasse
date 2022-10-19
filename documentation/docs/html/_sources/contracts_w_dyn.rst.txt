@@ -179,4 +179,4 @@ To validate whether the the synthesized control input satisfies the StSTL specif
    :math:`10^5` simulation in MATLAB.
 
 The above figure shows that the control input synthesized by PyCASSE satisfies the StSTL specification :math:`\phi'_G`.
-For details, refer to :download:`test_dyn_ststl.py <../../tests/ststl_tests/test_dyn_ststl.py>` and :download:`test_dyn_stl_simu.m <../../tests/ststl_tests/test_dyn_ststl_simu.m>`.
+For details, refer to :download:`test_dyn_ststl.py <../../tests/ststl_tests/test_dyn_ststl.py>` and :download:`test_dyn_ststl_simu.m <../../tests/ststl_tests/test_dyn_ststl_simu.m>`.
