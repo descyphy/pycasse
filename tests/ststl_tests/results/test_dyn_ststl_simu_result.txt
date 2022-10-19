@@ -1,0 +1,2 @@
+>> ACC_simulation_dyn_ststl
+Elapsed time is 166.433363 seconds.

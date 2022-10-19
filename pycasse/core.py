@@ -1,3 +1,4 @@
+from re import L
 import gurobipy as gp
 import math
 
@@ -903,9 +904,16 @@ class MILPSolver:
                         print("{}[{}]: {}".format(var_name, var_idx[1], gurobi_var.x))
     
         # Print contract deterministic variables
+        traj = {}
         for var_name in self.deter_vars:
             print("{}: {}".format(var_name, self.model.getVarByName(var_name).x))
-        print()
+            [var, time_step] = var_name.split('__')
+            if var in traj.keys():
+                traj[var].append(self.model.getVarByName(var_name).x)
+            else:
+                traj[var] = [self.model.getVarByName(var_name).x]
+        
+        return traj
     
     def fetch_solution(self, controlled_vars, length=1):
         """ 
