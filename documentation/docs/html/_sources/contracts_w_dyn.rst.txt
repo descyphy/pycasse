@@ -35,7 +35,7 @@ Given the initial state :math:`x_0 = [0, 0]^T`, PyCASSE can synthesize the contr
       bounds = [[-100, 1000], [-5, 10], [-1, 1]])                  # Set deterministic variables
    c.set_assume('True')                                            # Set/define the assumptions
    c.set_guaran('G[0,10] ((F[0,5] (s => 3)) & (F[0,5] (s <= 0)))') # Set/define the guarantees
-   c.checkSat()                                                    # Saturate c
+   c.saturate()                                                    # Saturate c
    c.printInfo()                                                   # Print c
 
    # Initialize a milp solver and add a contract
@@ -85,7 +85,7 @@ Given the initial state :math:`x_0 = [0, 0]^T`, PyCASSE can synthesize the contr
       axs[2].set_ylabel(r'$a [m/s^2]$', fontsize='large')
 
       # Save the figure
-      plt.savefig('test_dyn_stl_result_fig.pdf')
+      plt.savefig('test_dyn_stl_log_fig.pdf')
 
 .. figure:: figs/dyn_stl_result.png
    :width: 750
@@ -126,7 +126,7 @@ Given the initial state :math:`x_0 = [0, 0]^T`, PyCASSE can synthesize the contr
       bounds = [[-100, 2000], [-5, 10], [-1, 1]])   # Set deterministic variables
    c_prime.set_assume('True')                       # Set/define the assumptions
    c_prime.set_guaran('F[0,10] (P[0.9] (s => 34))') # Set/define the guarantees
-   c_prime.checkSat()                               # Saturate c_prime
+   c_prime.saturate()                               # Saturate c_prime
    c_prime.printInfo()                              # Print c_prime
 
    # Initialize a milp solver and add a contract
@@ -163,7 +163,7 @@ Given the initial state :math:`x_0 = [0, 0]^T`, PyCASSE can synthesize the contr
       ax.set_ylabel(r'$a [m/s^2]$', fontsize='large')
 
       # Save the figure
-      plt.savefig('test_dyn_ststl_result_fig.pdf')
+      plt.savefig('test_dyn_ststl_log_fig.pdf')
 
 .. figure:: figs/dyn_ststl_result.png
    :width: 300
@@ -178,5 +178,5 @@ To validate whether the the synthesized control input satisfies the StSTL specif
 
    :math:`10^5` simulation in MATLAB.
 
-The above figure shows that the control input synthesized by PyCASSE satisfies the StSTL specification :math:`\phi'_G`.
+As shown in the simulation results, the control input synthesized by PyCASSE satisfies the StSTL specification :math:`\phi'_G`.
 For details, refer to :download:`test_dyn_ststl.py <../../tests/ststl_tests/test_dyn_ststl.py>` and :download:`test_dyn_ststl_simu.m <../../tests/ststl_tests/test_dyn_ststl_simu.m>`.

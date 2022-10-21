@@ -40,7 +40,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="5. A/G Contracts with Parameters" href="contracts_w_param.html" />
+    <link rel="next" title="5. Parameter Synthesis with A/G Contract" href="contracts_w_param.html" />
     <link rel="prev" title="3. Assume-Guarantee (A/G) Contracts" href="contracts.html" /> 
 </head>
 
@@ -99,7 +99,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#control-synthesis-with-ststl-a-g-contract-in-pycasse">4.2. Control Synthesis with StSTL A/G Contract in PyCASSE</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="contracts_w_param.html">5. A/G Contracts with Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contracts_w_param.html">5. Parameter Synthesis with A/G Contract</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">6. Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bib.html">7. Bibiliography</a></li>
 </ul>
@@ -196,7 +196,7 @@ the robot visits the regions <span class="math notranslate nohighlight">\(\{ r |
    <span class="n">bounds</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>                  <span class="c1"># Set deterministic variables</span>
 <span class="n">c</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>                                            <span class="c1"># Set/define the assumptions</span>
 <span class="n">c</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;G[0,10] ((F[0,5] (s =&gt; 3)) &amp; (F[0,5] (s &lt;= 0)))&#39;</span><span class="p">)</span> <span class="c1"># Set/define the guarantees</span>
-<span class="n">c</span><span class="o">.</span><span class="n">checkSat</span><span class="p">()</span>                                                    <span class="c1"># Saturate c</span>
+<span class="n">c</span><span class="o">.</span><span class="n">saturate</span><span class="p">()</span>                                                    <span class="c1"># Saturate c</span>
 <span class="n">c</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                                                   <span class="c1"># Print c</span>
 
 <span class="c1"># Initialize a milp solver and add a contract</span>
@@ -246,7 +246,7 @@ the robot visits the regions <span class="math notranslate nohighlight">\(\{ r |
    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$a [m/s^2]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
 
    <span class="c1"># Save the figure</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;test_dyn_stl_result_fig.pdf&#39;</span><span class="p">)</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;test_dyn_stl_log_fig.pdf&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="figure align-center">
@@ -279,7 +279,7 @@ the robot eventually in <span class="math notranslate nohighlight">\(10~s\)</spa
    <span class="n">bounds</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>   <span class="c1"># Set deterministic variables</span>
 <span class="n">c_prime</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>                       <span class="c1"># Set/define the assumptions</span>
 <span class="n">c_prime</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;F[0,10] (P[0.9] (s =&gt; 34))&#39;</span><span class="p">)</span> <span class="c1"># Set/define the guarantees</span>
-<span class="n">c_prime</span><span class="o">.</span><span class="n">checkSat</span><span class="p">()</span>                               <span class="c1"># Saturate c_prime</span>
+<span class="n">c_prime</span><span class="o">.</span><span class="n">saturate</span><span class="p">()</span>                               <span class="c1"># Saturate c_prime</span>
 <span class="n">c_prime</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                              <span class="c1"># Print c_prime</span>
 
 <span class="c1"># Initialize a milp solver and add a contract</span>
@@ -316,7 +316,7 @@ the robot eventually in <span class="math notranslate nohighlight">\(10~s\)</spa
    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$a [m/s^2]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
 
    <span class="c1"># Save the figure</span>
-   <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;test_dyn_ststl_result_fig.pdf&#39;</span><span class="p">)</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;test_dyn_ststl_log_fig.pdf&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="figure align-center">
@@ -328,7 +328,7 @@ To validate whether the the synthesized control input satisfies the StSTL specif
 <a class="reference internal image-reference" href="_images/dyn_ststl_simu.png"><img alt="_images/dyn_ststl_simu.png" src="_images/dyn_ststl_simu.png" style="width: 350px;" /></a>
 <p class="caption"><span class="caption-text"><span class="math notranslate nohighlight">\(10^5\)</span> simulation in MATLAB.</span></p>
 </div>
-<p>The above figure shows that the control input synthesized by PyCASSE satisfies the StSTL specification <span class="math notranslate nohighlight">\(\phi'_G\)</span>.
+<p>As shown in the simulation results, the control input synthesized by PyCASSE satisfies the StSTL specification <span class="math notranslate nohighlight">\(\phi'_G\)</span>.
 For details, refer to <a class="reference download internal" download="" href="_downloads/dd39fb0fa6ebbda25f380f3d93f3f843/test_dyn_ststl.py"><code class="xref download docutils literal notranslate"><span class="pre">test_dyn_ststl.py</span></code></a> and <a class="reference download internal" download="" href="_downloads/b546070b8cc48b698736e9cb85720666/test_dyn_ststl_simu.m"><code class="xref download docutils literal notranslate"><span class="pre">test_dyn_ststl_simu.m</span></code></a>.</p>
 </div>
 </div>
@@ -339,7 +339,7 @@ For details, refer to <a class="reference download internal" download="" href="_
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="contracts_w_param.html" class="btn btn-neutral float-right" title="5. A/G Contracts with Parameters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="contracts_w_param.html" class="btn btn-neutral float-right" title="5. Parameter Synthesis with A/G Contract" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="contracts.html" class="btn btn-neutral float-left" title="3. Assume-Guarantee (A/G) Contracts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

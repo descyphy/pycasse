@@ -37,7 +37,7 @@ for L in Ls:
                     cov = [[0.5**2]])
                 tmp_contract.set_assume('d <= 300')
                 tmp_contract.set_guaran('P[0.95] (n{} <= 2)'.format(i)) 
-                tmp_contract.checkSat()
+                tmp_contract.saturate()
                 contract_list.append(tmp_contract)
 
             # Create parameterized contracts
@@ -50,7 +50,7 @@ for L in Ls:
                     cov = [['sigma{}^2'.format(i)]])
                 tmp_contract.set_assume('d <= 250')
                 tmp_contract.set_guaran('P[p{}] (param_n{} <= 1)'.format(i, i)) 
-                tmp_contract.checkSat()
+                tmp_contract.saturate()
                 contract_list.append(tmp_contract)
 
             # Build a contract c
@@ -78,7 +78,7 @@ for L in Ls:
             for j in range(1, L+1):
                 expression += ' + param_n{}'.format(j)
             c.set_guaran('P[0.99] ({} <= {})'.format(expression[3:len(expression)], 1*(N+L))) # Set/define the guarantees
-            c.checkSat()  # Saturate c
+            c.saturate()  # Saturate c
             if DEBUG:
                 c.printInfo()
 

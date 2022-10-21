@@ -8,7 +8,7 @@ c.add_deter_vars(['s', 'v', 'a'],
     bounds = [[-100, 1000], [-5, 10], [-1, 1]])                 # Set deterministic variables
 c.set_assume('True')                                            # Set/define the assumptions
 c.set_guaran('G[0,10] ((F[0,5] (s => 3)) & (F[0,5] (s <= 0)))') # Set/define the guarantees
-c.checkSat()                                                    # Saturate c
+c.saturate()                                                    # Saturate c
 c.printInfo()                                                   # Print c
 
 # Initialize a milp solver and add a contract
@@ -58,4 +58,4 @@ if solved:
     axs[2].set_ylabel(r'$a [m/s^2]$', fontsize='large')
 
     # Save the figure
-    plt.savefig('test_dyn_stl_result_fig.pdf')
+    plt.savefig('test_dyn_stl_log_fig.pdf')

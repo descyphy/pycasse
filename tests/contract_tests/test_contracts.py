@@ -4,7 +4,7 @@ c1 = contract('c1')                     # Create a contract c1
 c1.add_deter_vars(['x', 'y', 'z'])      # Set a controlled variable
 c1.set_assume('(5 <= x) & (x <= 9)')    # Set assumptions of c1
 c1.set_guaran('(2 <= y) & (z <= 2)')    # Set guarantees of c1
-c1.checkSat()                           # Saturate c1
+c1.saturate()                           # Saturate c1
 c1.printInfo()                          # Print information of c1
 
 c1.checkCompat(print_sol=True)          # Check compatibility of c1
@@ -15,7 +15,7 @@ c2 = contract('c2')                     # Create a contract c2
 c2.add_deter_vars(['x', 'y'])           # Set a controlled variable
 c2.set_assume('(6 <= x) & (x <= 9)')    # Set assumptions of c2
 c2.set_guaran('3 <= y')                 # Set guarantees of c2
-c2.checkSat()                           # Saturate c2
+c2.saturate()                           # Saturate c2
 c2.printInfo()                          # Print information of c2
  
 c2.checkCompat(print_sol=True)          # Check compatibility of c2
@@ -26,7 +26,7 @@ c3 = contract('c3')                     # Create a contract c3
 c3.add_deter_vars(['x', 'y'])           # Set a controlled variable
 c3.set_assume('1 <= x')                 # Set assumptions of c3
 c3.set_guaran('1 <= y')                 # Set guarantees of c3
-c3.checkSat()                           # Saturate c3
+c3.saturate()                           # Saturate c3
 c3.printInfo()                          # Print information of c3
 
 c3.checkCompat(print_sol=True)          # Check compatibility of c3
@@ -37,7 +37,7 @@ c4 = contract('c4')                     # Create a contract c4
 c4.add_deter_vars(['x', 'y', 'z'])      # Set a controlled variable
 c4.set_assume('4 <= x')                 # Set assumptions of c4
 c4.set_guaran('(4 <= y) & (z <= -1)')   # Set guarantees of c4
-c4.checkSat()                           # Saturate c4
+c4.saturate()                           # Saturate c4
 c4.printInfo()                          # Print information of c4
 
 c4.checkCompat(print_sol=True)          # Check compatibility of c4

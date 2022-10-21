@@ -44,7 +44,7 @@ acc_safety.set_guaran(
     'G[0,20] (P[p] (xl - xe >= c))' # Safety guarantee
 )
 
-acc_safety.checkSat()
+acc_safety.saturate()
 acc_safety.printInfo()
 # input()
 
@@ -85,7 +85,7 @@ acc_comfort.set_guaran(
     'G[0,20] (P[p] (c <= ae))' # Comfort guarantee
 )
 
-acc_comfort.checkSat()
+acc_comfort.saturate()
 acc_comfort.printInfo()
 # input()
 

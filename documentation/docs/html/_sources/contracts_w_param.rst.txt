@@ -1,112 +1,170 @@
-A/G Contracts with Parameters
-=============================
+Parameter Synthesis with A/G Contract
+=====================================
 
-Parameteric A/G Contracts
--------------------------
-An assume-guarantee (A/G) contract :math:`C` is a triple :math:`(V,A,G)` where :math:`V` is the set of variables, :math:`A` is the set of behaviors which a component (or system) expects from its environment, and :math:`G` is the set of behaviors that the component promises given that the environment provides behaviors within the assumption set. We say :math:`M` is an `implementation` of :math:`C` by writing :math:`M \models C`.
+Parameterization of StSTL Formulas and Component Models
+-----------------------------------------------------------------------------------
 
-A contract is in `saturated` form if it satisfies :math:`\overline{A} \subseteq G` where :math:`\overline{A}` is the complement of :math:`A`. An unsaturated contract :math:`C'=(V,A,G)` can always be `saturated` to the equivalent contract :math:`C=(V,A,G')` where :math:`G'=G \cup \overline{A}`.
+Parameteric Stochastic Signal Temporal Logic (PStSTL) [Oh22]_ extends StSTL [Nuzzo19]_ with parameters. 
+Let :math:`\pi \in \Pi`` be a set of parameters partitioned into two disjoint sets of signal parameters, 
+:math:`\pi_s = \{ s_1, s_2, \ldots \}`, with domain :math:`\Pi_s`, and probability threshold parameters, :math:`\pi_p = \{ p_1, p_2, \ldots \}`, with domain :math:`\Pi_p`. 
+We denote a PStSTL formula :math:`\phi` parametrized by :math:`\pi` by :math:`\phi(\pi)`. 
+For example, :math:`\phi(\pi) := \mathbf{F}_{[0,5]} (x + s)^{\left[ p \right]}` has parameter set :math:`\pi = \{ s, p \}`. 
+Similarly to how an A/G contract can be expressed using STL or StSTL, PStSTL can be utilized to write an A/G contract.
+We denote such A/G contract as PStSTL A/G contract.
 
-An A/G contract :math:`C = (V,A,G)` is `compatible` if there exists an environment behavior over the set of variables :math:`V`, i.e., :math:`A \neq \emptyset`, `consistent` if there exists a behavior satisfying the (saturated) guarantees, i.e., :math:`G \neq \emptyset`, and `feasible` if there exists a behavior that satisfies both the assumptions and the guarantees, i.e., :math:`A \cap G \neq \emptyset`.
+During the design process, some constants in a system may be regarded as design parameters. 
+We represent such scenario with a parametric system (component) :math:`M(\pi_M)`, where :math:`\pi_M` is a set of parameters.
+In this chapter, we show how PyCASSE can be used to synthesize optimal parameter values, guided by the cost function :math:`J`, 
+such that the implementation relationship, i.e., :math:`M(\pi_M) \models C(\pi_C)`, 
+or the refinement relationship, i.e., :math:`C_2(\pi_C) \preceq C_1`.
 
-Via `refinement`, we can reason about different abstraction layers in system design. A contract :math:`C_2 = (V,A_2,G_2)` refines :math:`C_1 = (V,A_1,G_1)` if and only if (1) :math:`A_1 \subseteq A_2` and (2) :math:`G_2 \subseteq G_1`. We denote this relationship as :math:`C_2 \preceq C_1`. Intuitively, if a contract :math:`C_2` refines another contract :math:`C_1`, then :math:`C_2` can replace :math:`C_1`. For further details we refer to the monograph [ContractMono]_.
+Parameter Synthesis with PStSTL A/G Contract in PyCASSE
+-------------------------------------------------------
 
-A/G Contracts in PyCASSE
-------------------------
-
-Creating an A/G Contract
-^^^^^^^^^^^^^^^^^^^^^^^^
-.. image:: figs/system1.png
+Synthesizing Parameters for Requirements in PyCASSE
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. image:: figs/test_parameteric_sys1.png
    :width: 300
    :align: center
 
-Consider the component above. An STL contract :math:`C_1 = (V_1,A_1,G_1)` where :math:`V_1 := \{ x, y, z \}`, :math:`A_1 := 5 \leq x \leq 9`, and :math:`G_1 := (2 \leq y) \land (z \leq 2)` can be created as follows:
+Consider the component which has a nondeterministic input :math:`w` and an output :math:`u`. 
+A PStSTL A/G contract :math:`C_1 = (V_1,A_1,G_1)` where :math:`V_1 := \{ u, w \}`, :math:`A_1 := \top`, 
+:math:`G_1 := \mathbb{P} \{ w + u \leq c \} \geq p`, and :math:`\pi_C = \{ p, c \}` can be created as follows:
 
 .. code-block:: python
 
    from pycasse import *
 
-   c1 = contract('c1')                     # Create a contract c1
-   c1.add_deter_vars(['x', 'y', 'z'])      # Set a controlled variable
-   c1.set_assume('(5 <= x) & (x <= 9)')    # Set assumptions of c1
-   c1.set_guaran('(2 <= y) & (z <= 2)')    # Set guarantees of c1
+   c1 = contract('c1')                                       # Create a contract c1
+   c1.add_nondeter_vars(['w'],  mean = [0], \
+               cov = [[2**2]], dtypes=['GAUSSIAN'])          # Set nondeterministic variables
+   c1.add_param_vars(['p', 'c'], bounds = [[0, 1], [-4, 4]]) # Set parameteric variables
+   c1.set_assume('True')                                     # Set/define the assumptions
+   c1.set_guaran('P[p] (w <= c)')                            # Set/define the guarantees
+   c1.saturate()                                             # Saturate c
+   c1.printInfo()                                            # Print c
 
-.. image:: figs/system2.png
+Given the cost function :math:`J(p, c) = -10p + c`, the optimal parameter values which guarantees the implementation relationship,
+i.e., :math:`M_1 \models C_1(\pi_C)` can be found by running:
+
+.. code-block:: python
+
+   c1.find_opt_param({'p': -10, 'c': 1}, N=200)              # Find the optimal parameters (p, c)
+
+.. image:: figs/test_parameteric_result1.png
    :width: 300
    :align: center
 
-Using StSTL specifications, a contract :math:`C_1' = (V_1', A_1', G_1')` where :math:`V_1' = U_1' \cup X_1'`, :math:`U_1' := \{ x, w_1, w_2 \}`, :math:`X_1' := \{ y \}`, :math:`A_1' := \mathbf{G}_{[0,3]}(5 \leq x)`, :math:`G_1' := \mathbf{G}_{[1,3]}(P\{ y-2w_1+3w_2 \leq 8 \} \geq 0.95)`, and :math:`\mathbf{w} = [w_1, w_2]^T \sim N([0,2]^T, [[1,0],[0,1]])` can be created as follows:
+All the parameter values in the green boxes (SAT partitions) guarantee that the implementation relationship holds. 
+The red boxes indicate UNSAT partitions and the grey boxes indicate UNDET partitions.
+The set of optimal parameter values is :math:`(p^*, c^*) = (0.875, 3)`, which is within the SAT region.
+
+Synthesizing Parameters for Components in PyCASSE
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. image:: figs/test_parameteric_sys2.png
+   :width: 300
+   :align: center
+
+Now, consider the parameterized component which only accepts a nondeterministic input :math:`z`. 
+An A/G contract :math:`C_2 = (V_2,A_2,G_2)` where :math:`V_1 := \{ w \}`, :math:`A_1 := \top`, 
+:math:`G_2 := \mathbb{P} \{ w \leq 0 \} \geq 0.99`, and :math:`\pi_M = \{ \mu, \sigma \}` can be created as follows:
 
 .. code-block:: python
 
-   c1_prime = contract('c1_prime')                                # Create a contract c1_prime
-   c1_prime.add_deter_vars(['x', 'y'])                            # Set deterministic variables
-   c1_prime.add_nondeter_vars(['w1', 'w2'], \
-                  mean = [0, 2], cov = [[1**2, 0], [0, 1**2]])    # Set nondeterministic variables
-   c1_prime.set_assume('G[0,3] (5 <= x)')                         # Set assumptions of c1_prime
-   c1_prime.set_guaran('G[1,3] (P[0.95] (y - 2*w1 + 3*w2 <= 8))') # Set guarantees of c1_prime
+   c2 = contract('c2')                                                       # Create a contract c2
+   c2.add_nondeter_vars(['w'],  mean = ['mean'], \
+               cov = [['sigma^2']], dtypes=['GAUSSIAN'])                     # Set nondeterministic variables
+   c2.add_param_vars(['mean', 'sigma'], bounds = [[-0.1, 0.1], [0.01, 0.1]]) # Set parameteric variables
+   c2.set_assume('True')                                                     # Set/define the assumptions
+   c2.set_guaran('P[0.99] (w <= 0)')                                         # Set/define the guarantees
+   c2.saturate()                                                             # Saturate c
+   c1.printInfo()                                                            # Print c
+
+Given the cost function :math:`J(\mu, \sigma) = \mu - 10 \sigma`, the optimal parameter values which guarantees the implementation relationship,
+i.e., :math:`M_2(\pi_M) \models C_2` can be found by running:
+
+.. code-block:: python
+
+   c2.find_opt_param({'mean': 1, 'sigma': -10}, N=200)                       # Find the optimal parameters (mean, sigma)
+
+.. image:: figs/test_parameteric_result2.png
+   :width: 300
+   :align: center
+
+The set of optimal parameter values is :math:`(\mu^*, \sigma^*) = (-0.1, 0.0409375)`, which is within the SAT region.
+
+
+Synthesizing Parameters under Refinement in PyCASSE
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. image:: figs/test_parameteric_sys2.png
+   :width: 300
+   :align: center
+
+.. code-block:: python
+
+   from pycasse import *
+   import time
+
+   # Build a contract
+   c1 = contract('c1')                                   # Create a contract c1
+   c1.add_param_vars(['p', 'sigma'], bounds = [[0, 1], [0.05, 2]])
+   c1.add_nondeter_vars(['w'],  mean = [0], \
+               cov = [['sigma^2']], dtypes=['GAUSSIAN']) # Set nondeterministic variables
+   c1.set_assume('True')                                 # Set/define the assumptions
+   c1.set_guaran('P[p] (w <= 1.5)')                      # Set/define the guarantees
+   c1.saturate()                                         # Saturate c1
+
+   # Build a contract
+   c2 = contract('c2')                                   # Create a contract c2
+   c2.add_param_vars(['sigma'], bounds = [[0.05, 2]])
+   c2.add_nondeter_vars(['w'],  mean = [0], \
+               cov = [['sigma^2']], dtypes=['GAUSSIAN']) # Set nondeterministic variables
+   c2.set_assume('True')                                 # Set/define the assumptions
+   c2.set_guaran('P[0.9] (w <= 1.5)')                    # Set/define the guarantees
+   c2.saturate()                                         # Saturate c2
+
+   # Find an optimal set of parameters for refinement to hold
+   start = time.time()
+   c2.find_opt_refine_param(c1, {'p': -1, 'sigma': -1}, N=200)
+   end = time.time()
+   print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
    
-Any contract in PyCASSE can be saturated and its information can be printed. For example, :math:`C_1` and :math:`C_1'` can be saturated and their information can be printed as follows:
+.. image:: figs/test_parameteric_refinement2_fig.png
+   :width: 300
+   :align: center
 
 .. code-block:: python
 
-   c1.checkSat()                           # Saturate c1
-   c1.printInfo()                          # Print c1
-
-   c1_prime.checkSat()                     # Saturate c1_prime
-   c1_prime.printInfo()                    # Print c1_prime
-
-Please note that in PyCASSE, contracts are automatically saturated whenever necessary. 
-
-Checking Compatibility, Consistency, and Feasibility
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-We can check `compatibility`, `consistency`, and `feasiblity` of the contract :math:`C_1` and :math:`C_1'`. This includes when PyCASSE checks for `compatibility`, `consistency`, and `feasiblity`.
-
-.. code-block:: python
-
-   c1.checkCompat(print_sol=True)          # Check compatibility of c1
-   c1.checkConsis(print_sol=True)          # Check consistency of c1
-   c1.checkFeas(print_sol=True)            # Check feasiblity of c1
-
-   c1_prime.checkCompat(print_sol=True)    # Check compatibility of c1_prime
-   c1_prime.checkConsis(print_sol=True)    # Check consistency of c1_prime
-   c1_prime.checkFeas(print_sol=True)      # Check feasibility of c1_prime
-
-Refinement
-^^^^^^^^^^
-Let's create two more contracts :math:`C_2` and :math:`C_3` and check their `compatibility`, `consistency`, and `feasiblity`:
-
-.. code-block:: python
-
-   c2 = contract('c2')                     # Create a contract c2
-   c2.add_deter_vars(['x', 'y'])           # Set a controlled variable
-   c2.set_assume('(6 <= x) & (x <= 9)')    # Set assumptions of c2
-   c2.set_guaran('3 <= y')                 # Set guarantees of c2
-   c2.checkSat()                           # Saturate c2
-   c2.printInfo()                          # Print information of c2
+   from pycasse import *
+   import time
    
-   c2.checkCompat(print_sol=True)          # Check compatibility of c2
-   c2.checkConsis(print_sol=True)          # Check consistency of c2
-   c2.checkFeas(print_sol=True)            # Check feasiblity of c2
+   # Build a contract
+   c1 = contract('c1')                                   # Create a contract c1
+   c1.add_param_vars(['sigma', 'c'], bounds = [[0.05, 2], [0, 2]])
+   c1.add_nondeter_vars(['w'],  mean = [0], \
+               cov = [['sigma^2']], dtypes=['GAUSSIAN']) # Set nondeterministic uncontrolled variables
+   c1.set_assume('True')                                 # Set/define the assumptions
+   c1.set_guaran('P[0.9] (w <= c)')                      # Set/define the guarantees
+   c1.saturate()                                         # Saturate c1
+   c1.printInfo()                                        # Print c1
 
-.. code-block:: python
+   # Build a contract
+   c2 = contract('c2')                                   # Create a contract c2
+   c2.add_param_vars(['sigma'], bounds = [[0.05, 2]])
+   c2.add_nondeter_vars(['w'],  mean = [0], \
+               cov = [['sigma^2']], dtypes=['GAUSSIAN']) # Set nondeterministic uncontrolled variables
+   c2.set_assume('True')                                 # Set/define the assumptions
+   c2.set_guaran('P[0.9] (w <= 1.5)')                    # Set/define the guarantees
+   c2.saturate()                                         # Saturate c2
+   c2.printInfo()                                        # Print c2
 
-   c3 = contract('c4')                     # Create a contract c3
-   c3.add_deter_vars(['x', 'y', 'z'])      # Set a controlled variable
-   c3.set_assume('4 <= x')                 # Set assumptions of c3
-   c3.set_guaran('(4 <= y) & (z <= -1)')   # Set guarantees of c3
-   c3.checkSat()                           # Saturate c3
-   c3.printInfo()                          # Print information of c3
-  
-   c3.checkCompat(print_sol=True)          # Check compatibility of c3
-   c3.checkConsis(print_sol=True)          # Check consistency of c3
-   c3.checkFeas(print_sol=True)            # Check feasiblity of c3
+   start = time.time()
+   c2.find_opt_refine_param(c1, {'sigma': -10, 'c': 1}, N=400)
+   end = time.time()
+   print("Time elaspsed for MILP: {} [seconds].\n".format(end - start))
 
-We can check whether :math:`C_2` and :math:`C_3` `refines` :math:`C_1` or not:
-
-.. code-block:: python
-
-   c2.checkRefine(c1, print_sol=True)      # Check whether c2 refines c1, should not refine
-   c3.checkRefine(c1, print_sol=True)      # Check whether c3 refines c1, should refine
-
-Similarly, it is also possible to check refinement between probabilistic contracts. For an example with STL contracts refer to :download:`test_contracts.py <../../tests/contract_tests/test_contracts.py>` and :download:`test_contracts_stl.py <../../tests/stl_tests/test_contracts_stl.py>`. For an example with StSTL contracts refer to :download:`test_contracts_ststl.py <../../tests/ststl_tests/test_contracts_ststl.py>`.
+.. image:: figs/test_parameteric_refinement_fig.png
+   :width: 300
+   :align: center

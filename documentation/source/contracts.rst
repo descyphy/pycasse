@@ -50,10 +50,10 @@ Any contract in PyCASSE can be saturated and its information can be printed. For
 
 .. code-block:: python
 
-   c1.checkSat()                           # Saturate c1
+   c1.saturate()                           # Saturate c1
    c1.printInfo()                          # Print c1
 
-   c1_prime.checkSat()                     # Saturate c1_prime
+   c1_prime.saturate()                     # Saturate c1_prime
    c1_prime.printInfo()                    # Print c1_prime
 
 Please note that in PyCASSE, contracts are automatically saturated whenever necessary. 
@@ -82,7 +82,7 @@ Let's create two more contracts :math:`C_2` and :math:`C_3` and check their `com
    c2.add_deter_vars(['x', 'y'])           # Set a controlled variable
    c2.set_assume('(6 <= x) & (x <= 9)')    # Set assumptions of c2
    c2.set_guaran('3 <= y')                 # Set guarantees of c2
-   c2.checkSat()                           # Saturate c2
+   c2.saturate()                           # Saturate c2
    c2.printInfo()                          # Print information of c2
    
    c2.checkCompat(print_sol=True)          # Check compatibility of c2
@@ -95,7 +95,7 @@ Let's create two more contracts :math:`C_2` and :math:`C_3` and check their `com
    c3.add_deter_vars(['x', 'y', 'z'])      # Set a controlled variable
    c3.set_assume('4 <= x')                 # Set assumptions of c3
    c3.set_guaran('(4 <= y) & (z <= -1)')   # Set guarantees of c3
-   c3.checkSat()                           # Saturate c3
+   c3.saturate()                           # Saturate c3
    c3.printInfo()                          # Print information of c3
   
    c3.checkCompat(print_sol=True)          # Check compatibility of c3
@@ -115,7 +115,7 @@ PyCASSE Contract Class
 ^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: pycasse.contracts.contract
    :members: add_deter_vars, add_nondeter_vars, set_assume, set_guaran, saturate, checkCompat, checkConsis, checkFeas, checkRefine
-   :exclude-members: checkSat, add_param_vars, find_opt_param, reset, set_sat_guaran
+   :exclude-members: saturate, add_param_vars, find_opt_param, reset, set_sat_guaran
 A/G Contracts Operations
 ------------------------
 
