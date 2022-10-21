@@ -71,10 +71,7 @@ def expr2gurobiexpr(solver, expr):
 
 class MILPSolver:
     """
-    Attributes
-        MILP_convex_solver
-        b_vars
-        b_var_num
+    A contract class for defining a mip solver.
     """
     __slots__ = ('model', 'contract', 'dynamics', 'horizon', 'node_vars', 'deter_vars', 'deter_vars_expr', 'nondeter_vars', 'nondeter_vars_expr', 'mode', 'soft_constraint_vars', 'verbose')
 
@@ -107,6 +104,9 @@ class MILPSolver:
     def add_contract(self, contract):
         """
         Adds a contract to the MILP solver.
+
+        :param contract: A contract object.
+        :type contract: :class:`pycasse.contracts.contract`
         """
         # Add contract
         self.contract = contract
@@ -145,10 +145,31 @@ class MILPSolver:
 
     def add_dynamics(self, x = [], u = [], z = [], A = None, B = None, C = None, D = None, E = None, Q = None, R = None):
         """
-        Adds constraints for dynamics. 
+        Adds constraints for dynamics of the system (or a component). 
         x_{k+1} = A*x_{k} + B*u_{k} + w_{k}
         z_{k}   = C*x_{k}           + v_{k}
         u_{k}   = D*z_{k} + E
+
+        :param x: A list of str representing the state of the system, defaults to `[]`
+        :type x: list, optional
+        :param u: A list of str representing the control input of the system, defaults to `[]`
+        :type u: list, optional
+        :param z: A list of str representing the measurement of the system, defaults to `[]`
+        :type z: list, optional
+        :param A: A matrix representing process of the system, defaults to `None`
+        :type A: list[list[float]], optional
+        :param B: A matrix representing process of the system, defaults to `None`
+        :type B: list[list[float]], optional
+        :param C: A matrix representing measurements of the state of the system, defaults to `None`
+        :type C: list[list[float]], optional
+        :param D: A matrix deciding the control input of the system, defaults to `None`
+        :type D: list[list[float]], optional
+        :param E: A matrix deciding the control input of the system, defaults to `None`
+        :type E: list[list[float]], optional
+        :param Q: A covariance matrix representing the process error of the system, defaults to `None`
+        :type Q: list[list[float]], optional
+        :param R: A covariance matrix representing the measurement error of the system, defaults to `None`
+        :type R: list[list[float]], optional
         """
         # Find length of x, u, and z
         x_len = len(x)
@@ -317,8 +338,8 @@ class MILPSolver:
         """
         Adds constraints for an initial condition.
 
-        :param formula: [description]
-        :type formula: [type]
+        :param formula: An StSTL or a STL formula.
+        :type formula: str
         """
         # Parse the nontemporal formula
         if isinstance(formula, str):
@@ -336,7 +357,7 @@ class MILPSolver:
         self.model.update()
 
     def solve(self):
-        """ Solves the MILP problem """
+        """ Solves the MIP problem. """
         # Solve the optimization problem
         self.model.write('MILP.lp')
         self.model.optimize()
@@ -356,15 +377,13 @@ class MILPSolver:
 
     def add_constraint(self, node, hard=True, name='b'):
         """
-        Adds contraints of a STL/ StSTL formula to the solvers.
+        Adds contraints of a STL/ StSTL formula to the MIP solver.
 
-        # TODO: Add explanations of parameters
-
-        :param node: _description_
-        :type node: _type_
-        :param hard: _description_, defaults to True
+        :param node: An abstract syntax tree (AST) object representing an STL or an StSTL formula
+        :type node: :class:`pycasse.ASTObject`
+        :param hard: If `False`, add soft constraints, defaults to `True` where hard constraints are added
         :type hard: bool, optional
-        :param name: _description_, defaults to 'b'
+        :param name: The name of the Boolean variable tied to the STL/StSTL formula, defaults to `b`
         :type name: str, optional
         """
         # Build the parse tree
@@ -894,6 +913,14 @@ class MILPSolver:
         return self.model.getAttr("Status") == 2
 
     def print_solution(self, node_var_print=False):
+        """
+        Prints the solution of the MIP.
+
+        :param node_var_print: If `True` prints the solution of the MIP solver, defaults to `False`
+        :type node_var_print: bool, optional
+        :return: A dictionary of the trajectories of the deterministic variables
+        :rtype: dict
+        """
         # Print node variables
         if node_var_print:
             for var_name, gurobi_vars in self.node_vars.items():

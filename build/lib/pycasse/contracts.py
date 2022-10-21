@@ -93,10 +93,10 @@ class contract:
 
         :param param_names  : A list of names for parameters
         :type  param_names  : list
-        :param dtypes       : A list of variable types for controlled variables, each entry can be either "BINARY", "INTEGER", or "CONTINUOUS", defaults to "CONTINUOUS"
+        :param dtypes       : A list of variable types for parameter variables, each entry can be either "BINARY", "INTEGER", or "CONTINUOUS", defaults to "CONTINUOUS"
         :type  dtypes       : list, optional
-        :param bounds       : An numpy array of lower and upper bounds for controlled variables, defaults to `[-10^4,10^4]` for "CONTINUOUS" and "INTEGER" variable and `[0,1]` for "BINARY"
-        :type  bounds       : :class:`numpy.ndarray`, optional
+        :param bounds       : A list of lower and upper bounds for controlled variables, defaults to `[-10^4,10^4]` for "CONTINUOUS" and "INTEGER" variable and `[0,1]` for "BINARY"
+        :type  bounds       : list, optional
         """
         # For all variables, construct a variable class
         for i, name in enumerate(param_names):
@@ -167,7 +167,7 @@ class contract:
 
         :param dynamics: A dictionary describing the dynamics of the component/system, defaults to `None`
         :type dynamics: dict, optional
-        :param init_conditions: A list of str describing the initial conditions of the component/system, defaults to '[]'
+        :param init_conditions: A list of str describing the initial conditions of the system or the component, defaults to '[]'
         :type init_conditions: list of str, optional
         :param print_sol: If `True`, prints the behavior which shows the compatibility of the component/system, defaults to `False`
         :type print_sol: bool, optional
@@ -207,7 +207,7 @@ class contract:
 
         :param dynamics: A dictionary describing the dynamics of the component/system, defaults to `None`
         :type dynamics: dict, optional
-        :param init_conditions: A list of str describing the initial conditions of the component/system, defaults to '[]'
+        :param init_conditions: A list of str describing the initial conditions of the system or the component, defaults to '[]'
         :type init_conditions: list of str, optional
         :param print_sol: If `True`, prints the behavior which shows the consistency of the component/system, defaults to `False`
         :type print_sol: bool, optional
@@ -247,7 +247,7 @@ class contract:
         
         :param dynamics: A dictionary describing the dynamics of the component/system, defaults to `None`
         :type dynamics: dict, optional
-        :param init_conditions: A list of str describing the initial conditions of the component/system, defaults to '[]'
+        :param init_conditions: A list of str describing the initial conditions of the system or the component, defaults to '[]'
         :type init_conditions: list of str, optional
         :param print_sol: If `True`, prints the behavior which shows the feasibility of the component/system, defaults to `False`
         :type print_sol: bool, optional
@@ -290,7 +290,7 @@ class contract:
         :type contract2refine: :class:`pycasse.contracts.contract`
         :param dynamics: A dictionary describing the dynamics of the component/system, defaults to `None`
         :type dynamics: dict, optional
-        :param init_conditions: A list of str describing the initial conditions of the component/system, defaults to '[]'
+        :param init_conditions: A list of str describing the initial conditions of the system or the component, defaults to '[]'
         :type init_conditions: list of str, optional
         :param print_sol: If `True`, prints the behavior which violates the refinement relationship, defaults to `False`
         :type print_sol: bool, optional
@@ -370,7 +370,23 @@ class contract:
         print("Contract {} refines {}.\n".format(self.id, contract2refine.id))
         return True
     
-    def find_opt_refine_param(self, contract2refine, weights, N=100, debug=False):
+    def find_opt_refine_param(self, contract2refine, weights, N=100, dynamics = None, init_conditions = [], debug=False):
+        """
+        Find an optimal set of parameters given an objective function such that the self contract refine the contract2refine.
+
+        :param contract2refine: A contract to refine.
+        :type contract2refine: :class:`pycasse.contracts.contract`
+        :param weights: A dictionary containing information on the weight of each parameter
+        :type weights: dict
+        :param N: The maximum number of partitions, defaults to `100`
+        :type N: int, optional
+        :param dynamics: A dictionary describing the dynamics of the component/system, defaults to `None`
+        :type dynamics: dict, optional
+        :param init_conditions: A list of str describing the initial conditions of the system or the component, defaults to '[]'
+        :type init_conditions: list of str, optional
+        :param debug: If `True`, prints useful information for debugging the function, defaults to `False`
+        :type debug: bool, optional
+        """
         # Check saturation of the contracts
         self.checkSat()
         if debug:
@@ -407,11 +423,25 @@ class contract:
             refinement_contract.printInfo()
 
         # Find an optimal set of parameters
-        # input()
-        refinement_contract.find_opt_param(weights, N=N, debug=debug)
+        refinement_contract.find_opt_param(weights, N=N, dynamics=dynamics, init_conditions=init_conditions, debug=debug)
         
-    def find_opt_param(self, weights, N=100, dynamics = None, init_conditions = [], sorted_UNDET = False, debug=False):
-        """ Find an optimal set of parameters for a contract given an objective function. """
+    def find_opt_param(self, weights, N=100, dynamics = None, init_conditions = [], debug=False):
+        """
+        Find an optimal set of parameters for a contract given an objective function.
+
+        :param weights: A dictionary containing information on the weight of each parameter
+        :type weights: dict
+        :param N: The maximum number of partitions, defaults to `100`
+        :type N: int, optional
+        :param dynamics: A dictionary describing the dynamics of the component/system, defaults to `None`
+        :type dynamics: dict, optional
+        :param init_conditions: A list of str describing the initial conditions of the system or the component, defaults to '[]'
+        :type init_conditions: list of str, optional
+        :param debug: If `True`, prints useful information for debugging the function, defaults to `False`
+        :type debug: bool, optional
+        :return: A dictionary of the optimal parameter values
+        :rtype: dict
+        """
         print("Finding an optimal set of parameters for contract {}...".format(self.id))
 
         # Initialize the initial bounds, SAT, UNSAT, and UNDETERMINED sets
@@ -435,16 +465,6 @@ class contract:
                         # Modify the current partition
                         tmp_partition[count][1] = 0.5
             count += 1
-
-        count = 0
-        if sorted_UNDET:
-            sorted_param_UNDET = {}
-            for partition in param_UNDET:
-                sorted_param_UNDET[count] = [partition, M]
-                count += 1
-
-            # print(param_UNDET)
-            # print(sorted_param_UNDET)
             
         def findPartitionType(partition, dyn, inits, debug=False):
             # Print the current partition
@@ -544,33 +564,16 @@ class contract:
             return prev_partition_list
 
         # Find SAT and UNSAT partitions
-        if sorted_UNDET:
-            while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(sorted_param_UNDET)-1+2**param_num <= N:
-                sorted_param_UNDET = {k: v for k, v in sorted(sorted_param_UNDET.items(), key=lambda item: item[1][1], reverse=True)}
-                first_pair = list(sorted_param_UNDET.items())[0]
-                tmp_count = first_pair[0] 
-                tmp_partition = first_pair[1][0]
-                del sorted_param_UNDET[tmp_count]
-                obj_val, partition_type = findPartitionType(tmp_partition, dynamics, init_conditions, debug=debug)
-                if partition_type == 0: # SAT partition
-                    param_SAT.append(tmp_partition)
-                elif partition_type == 1: # UNSAT partition
-                    param_UNSAT.append(tmp_partition)
-                elif partition_type == 2: # UNDET partition
-                    for partitioned_partition in paramSpacePartition(tmp_partition):
-                        count += 1
-                        sorted_param_UNDET[count] = [partitioned_partition, obj_val]
-        else:
-            while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(param_UNDET)-1+2**param_num <= N:
-                tmp_partition = param_UNDET.pop(0)
-                obj_val, partition_type = findPartitionType(tmp_partition, dynamics, init_conditions, debug=debug)
-                if partition_type == 0: # SAT partition
-                    param_SAT.append(tmp_partition)
-                elif partition_type == 1: # UNSAT partition
-                    param_UNSAT.append(tmp_partition)
-                elif partition_type == 2: # UNDET partition
-                    for partitioned_partition in paramSpacePartition(tmp_partition):
-                        param_UNDET.append(partitioned_partition)
+        while len(param_UNDET) != 0 and len(param_SAT)+len(param_UNSAT)+len(param_UNDET)-1+2**param_num <= N:
+            tmp_partition = param_UNDET.pop(0)
+            obj_val, partition_type = findPartitionType(tmp_partition, dynamics, init_conditions, debug=debug)
+            if partition_type == 0: # SAT partition
+                param_SAT.append(tmp_partition)
+            elif partition_type == 1: # UNSAT partition
+                param_UNSAT.append(tmp_partition)
+            elif partition_type == 2: # UNDET partition
+                for partitioned_partition in paramSpacePartition(tmp_partition):
+                    param_UNDET.append(partitioned_partition)
 
         # Double-check UNDET partitions
         tmp_param_UNDET = deepcopy(param_UNDET)
@@ -698,19 +701,11 @@ class contract:
                         edgecolor = 'black', facecolor = 'red', fill=True))
 
             # Color UNDET regions
-            if sorted_UNDET:
-                for _, value in sorted_param_UNDET.items():
-                    partition = value[0]
-                    ax.add_patch(patches.Rectangle(
-                            (partition[0][0], partition[1][0]),
-                            partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
-                            edgecolor = 'black', facecolor = 'grey', fill=True))
-            else:
-                for partition in param_UNDET:
-                    ax.add_patch(patches.Rectangle(
-                            (partition[0][0], partition[1][0]),
-                            partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
-                            edgecolor = 'black', facecolor = 'grey', fill=True))
+            for partition in param_UNDET:
+                ax.add_patch(patches.Rectangle(
+                        (partition[0][0], partition[1][0]),
+                        partition[0][1]-partition[0][0], partition[1][1]-partition[1][0],
+                        edgecolor = 'black', facecolor = 'grey', fill=True))
 
             # Save the figure
             plt.savefig('{}_param_opt.pdf'.format(self.id))

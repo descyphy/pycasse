@@ -116,12 +116,12 @@ PyCASSE Contract Class
 .. autoclass:: pycasse.contracts.contract
    :members: add_deter_vars, add_nondeter_vars, set_assume, set_guaran, saturate, checkCompat, checkConsis, checkFeas, checkRefine
    :exclude-members: saturate, add_param_vars, find_opt_param, reset, set_sat_guaran
+   
 A/G Contracts Operations
 ------------------------
 
 A/G contracts :math:`C_1 = (V_1, A_1, G_1)` and :math:`C_2 = (V_2, A_2, G_2)` can be combined using contract operations: `conjunction` (:math:`\wedge`) and `composition` (:math:`\otimes`). A combined contract using these contract operations can be computed as follows:
-..
-   A/G contracts :math:`C_1 = (V_1, A_1, G_1)` and :math:`C_2 = (V_2, A_2, G_2)` can be combined using contract operations: `conjunction` (:math:`\wedge`) (or `greatest lower bound` (:math:`\sqcap`)), `composition` (:math:`\otimes`), `merging` (:math:`\cdot`), and `least upper bound` (:math:`\sqcup`). A combined contract using these contract operations has the following properties:
+.. A/G contracts :math:`C_1 = (V_1, A_1, G_1)` and :math:`C_2 = (V_2, A_2, G_2)` can be combined using contract operations: `conjunction` (:math:`\wedge`) (or `greatest lower bound` (:math:`\sqcap`)), `composition` (:math:`\otimes`), `merging` (:math:`\cdot`), and `least upper bound` (:math:`\sqcup`). A combined contract using these contract operations has the following properties:
 
 .. math::
 
@@ -203,7 +203,7 @@ For an example where contracts are combined, refer to :download:`test_contracts_
 
 .. .. For an example where contracts are split using `separation` operation, refer to :download:`test_contracts_separation.py <../../tests/test_contracts_separation.py>`.
 
-PyCASSE Contract Operations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PyCASSE Contract Operation Functions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: pycasse.contracts.conjunction
 .. autofunction:: pycasse.contracts.composition

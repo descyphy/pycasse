@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#a-g-contracts-operations">3.3. A/G Contracts Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#a-g-contracts-operations-in-pycasse">3.4. A/G Contracts Operations in PyCASSE</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#combining-contracts">3.4.1. Combining Contracts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pycasse-contract-operations">3.4.2. PyCASSE Contract Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycasse-contract-operation-functions">3.4.2. PyCASSE Contract Operation Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -326,7 +326,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dynamics</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary describing the dynamics of the component/system, defaults to <cite>None</cite></li>
-<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the component/system, defaults to ‘[]’</li>
+<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the system or the component, defaults to ‘[]’</li>
 <li><strong>print_sol</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, prints the behavior which shows the compatibility of the component/system, defaults to <cite>False</cite></li>
 </ul>
 </td>
@@ -351,7 +351,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dynamics</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary describing the dynamics of the component/system, defaults to <cite>None</cite></li>
-<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the component/system, defaults to ‘[]’</li>
+<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the system or the component, defaults to ‘[]’</li>
 <li><strong>print_sol</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, prints the behavior which shows the consistency of the component/system, defaults to <cite>False</cite></li>
 </ul>
 </td>
@@ -376,7 +376,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dynamics</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary describing the dynamics of the component/system, defaults to <cite>None</cite></li>
-<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the component/system, defaults to ‘[]’</li>
+<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the system or the component, defaults to ‘[]’</li>
 <li><strong>print_sol</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, prints the behavior which shows the feasibility of the component/system, defaults to <cite>False</cite></li>
 </ul>
 </td>
@@ -402,7 +402,7 @@
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>contract2refine</strong> (<a class="reference internal" href="#pycasse.contracts.contract" title="pycasse.contracts.contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycasse.contracts.contract</span></code></a>) – A contract to refine.</li>
 <li><strong>dynamics</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary describing the dynamics of the component/system, defaults to <cite>None</cite></li>
-<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the component/system, defaults to ‘[]’</li>
+<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the system or the component, defaults to ‘[]’</li>
 <li><strong>print_sol</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, prints the behavior which violates the refinement relationship, defaults to <cite>False</cite></li>
 </ul>
 </td>
@@ -452,9 +452,7 @@
 <div class="section" id="a-g-contracts-operations">
 <h2>3.3. A/G Contracts Operations<a class="headerlink" href="#a-g-contracts-operations" title="Permalink to this headline">¶</a></h2>
 <p>A/G contracts <span class="math notranslate nohighlight">\(C_1 = (V_1, A_1, G_1)\)</span> and <span class="math notranslate nohighlight">\(C_2 = (V_2, A_2, G_2)\)</span> can be combined using contract operations: <cite>conjunction</cite> (<span class="math notranslate nohighlight">\(\wedge\)</span>) and <cite>composition</cite> (<span class="math notranslate nohighlight">\(\otimes\)</span>). A combined contract using these contract operations can be computed as follows:
-..</p>
-<blockquote>
-<div>A/G contracts <span class="math notranslate nohighlight">\(C_1 = (V_1, A_1, G_1)\)</span> and <span class="math notranslate nohighlight">\(C_2 = (V_2, A_2, G_2)\)</span> can be combined using contract operations: <cite>conjunction</cite> (<span class="math notranslate nohighlight">\(\wedge\)</span>) (or <cite>greatest lower bound</cite> (<span class="math notranslate nohighlight">\(\sqcap\)</span>)), <cite>composition</cite> (<span class="math notranslate nohighlight">\(\otimes\)</span>), <cite>merging</cite> (<span class="math notranslate nohighlight">\(\cdot\)</span>), and <cite>least upper bound</cite> (<span class="math notranslate nohighlight">\(\sqcup\)</span>). A combined contract using these contract operations has the following properties:</div></blockquote>
+.. A/G contracts <span class="math notranslate nohighlight">\(C_1 = (V_1, A_1, G_1)\)</span> and <span class="math notranslate nohighlight">\(C_2 = (V_2, A_2, G_2)\)</span> can be combined using contract operations: <cite>conjunction</cite> (<span class="math notranslate nohighlight">\(\wedge\)</span>) (or <cite>greatest lower bound</cite> (<span class="math notranslate nohighlight">\(\sqcap\)</span>)), <cite>composition</cite> (<span class="math notranslate nohighlight">\(\otimes\)</span>), <cite>merging</cite> (<span class="math notranslate nohighlight">\(\cdot\)</span>), and <cite>least upper bound</cite> (<span class="math notranslate nohighlight">\(\sqcup\)</span>). A combined contract using these contract operations has the following properties:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}C_1 \wedge C_2 = &amp; \; (V_1 \cup V_2, A_1 \cup A_2, G_1 \cap G_2) \\
 C_1 \otimes C_2 = &amp; \; (V_1 \cup V_2, (A_1 \cap A_2) \cup \overline{(G_1 \cap G_2)}, G_1 \cap G_2)\end{split}\]</div>
@@ -473,8 +471,8 @@ C_1 \otimes C_2 = &amp; \; (V_1 \cup V_2, (A_1 \cap A_2) \cup \overline{(G_1 \ca
 </div>
 <p>For an example where contracts are combined, refer to <a class="reference download internal" download="" href="_downloads/997e10a4df4d2257d7203c592922c4ea/test_contracts_combine.py"><code class="xref download docutils literal notranslate"><span class="pre">test_contracts_combine.py</span></code></a>.</p>
 </div>
-<div class="section" id="pycasse-contract-operations">
-<h3>3.4.2. PyCASSE Contract Operations<a class="headerlink" href="#pycasse-contract-operations" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="pycasse-contract-operation-functions">
+<h3>3.4.2. PyCASSE Contract Operation Functions<a class="headerlink" href="#pycasse-contract-operation-functions" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="pycasse.contracts.conjunction">
 <code class="descclassname">pycasse.contracts.</code><code class="descname">conjunction</code><span class="sig-paren">(</span><em>c_list</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.conjunction" title="Permalink to this definition">¶</a></dt>

@@ -8,7 +8,7 @@ Bibiliography
 
 .. [Nuzzo19] \P. Nuzzo, J. Li, A. L. Sangiovanni-Vincentelli, Y. Xi, D. Li, *Stochastic Assume-Guarantee Contracts for Cyber-Physical System Design*, ACM Trans. on Embedded Computing Systems, Jan. 2019.
 
-.. [Oh19] \C. Oh, E. Kang, S. Shiraish, P. Nuzzo, *Optimizing assume-guarantee contracts for cyber-physical system design*, Design, Automation & Test in Europe Conference & Exhibition, Mar. 2019.
+.. .. [Oh19] \C. Oh, E. Kang, S. Shiraish, P. Nuzzo, *Optimizing assume-guarantee contracts for cyber-physical system design*, Design, Automation & Test in Europe Conference & Exhibition, Mar. 2019.
 
 .. [Oh22] \C. Oh, M. Lora, P. Nuzzo, *Quantitative verification and design space exploration under uncertainty with parametric stochastic contracts*, IEEE/ACM International Conference on Computer-Aided Design, Nov. 2022.
 
