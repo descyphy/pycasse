@@ -19,7 +19,7 @@ Assume a point-mass robot on a line where its location, velocity, and accelerati
 
 The dynamics of the point-mass robot :math:`M` on a line is given as :math:`x_{k+1} = A x_k + B u_k` where :math:`x_k = [s_k, v_k]^T` and :math:`u_k = [a_k]`.
 The goal is to synthesize the control input :math:`\mathbf{u}^{15} = u_0 u_1 \ldots u_{14}` where :math:`\forall k, u_k \in [-1, 1]` such that 
-the robot visits the regions :math:`\{ r | r \geq 3\}` and :math:`\{ r | r \leq 0\}` every :math:`5~s`, i.e., :math:`\phi_G := \mathbf{G}_{[0,10]} ((\mathbf{F}_{[0,5]} (s \geq 3)) \land (\mathbf{F}_{[0,5]} (s \leq 0)))`, is satisfied.
+the robot visits the regions :math:`\{ r | r \geq 3\}` and :math:`\{ r | r \leq 0\}` every :math:`5~s`, i.e., :math:`\phi_G := \mathbf{G}_{[0,10]} ((\mathbf{F}_{[0,5]} (s \geq 3)) \land (\mathbf{F}_{[0,5]} (s \leq 0)))` is satisfied.
 
 Given the initial state :math:`x_0 = [0, 0]^T`, PyCASSE can synthesize the control input by running the following Python script:
 
@@ -110,7 +110,7 @@ but this time, its plant is subject to Gaussian uncertainty :math:`w \sim Gaussi
 
 The dynamics of the point-mass robot :math:`M'` on a line is given as :math:`x_{k+1} = A x_k + B u_k + w_k` where :math:`x_k = [s_k, v_k]^T` and :math:`u_k = [a_k]`.
 The goal is to synthesize the control input :math:`\mathbf{u}^{10} = u_0 u_1 \ldots u_9` where :math:`\forall k, u_k \in [-1, 1]` such that 
-the robot eventually in :math:`10~s` reaches the region :math:`\{ r | r \geq 34\}` with probability larger than or equal to :math:`0.9`, i.e., :math:`\phi'_G := \mathbf{F}_{[0,10]} (\mathbb{P} \{ s \geq 34 \} \geq 0.9)`, is satisfied.
+the robot eventually in :math:`10~s` reaches the region :math:`\{ r | r \geq 34\}` with probability larger than or equal to :math:`0.9`, i.e., :math:`\phi'_G := \mathbf{F}_{[0,10]} (\mathbb{P} \{ s \geq 34 \} \geq 0.9)` is satisfied.
 
 Given the initial state :math:`x_0 = [0, 0]^T`, PyCASSE can synthesize the control input by running the following Python script:
 

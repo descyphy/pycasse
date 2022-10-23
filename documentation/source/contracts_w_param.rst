@@ -196,52 +196,57 @@ i.e., :math:`C_2 \preceq C_1(c)`, while :math:`M(\sigma) \models C_1(c)` can be 
 
 The set of optimal parameter values is :math:`(\sigma^*, c^*) = (1.147, 1.5)`, which is within the SAT region.
 
-.. Synthesizing Parameters for Components with Dynamics
-.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Synthesizing Parameters for Components with Dynamics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. .. image:: figs/test_parameteric_refinement_sys.png
-..    :width: 300
-..    :align: center
+.. figure:: figs/dyn_ststl.png
+   :width: 300
+   :align: center
 
-.. Consider the parameterized component :math:`M(\sigma)` which only accepts a nondeterministic input :math:`w`. 
-.. Two A/G contracts for :math:`M(\sigma)`, :math:`C_1(p) = (V_1,A_1,G_1(p))` and :math:`C_2 = (V_2,A_2,G_2)` can be created as follows:
+The dynamics of the point-mass robot :math:`M` on a line is given as :math:`x_{k+1} = A x_k + B u_k + w_k` where :math:`x_k = [s_k, v_k]^T` and :math:`u_k = [a_k]`.
+The goal is to synthesize optimal parameter values :math:`(p^*, c^*)` such that 
+the robot eventually in :math:`10~s` reaches the region :math:`\{ r | r \geq c\}` with probability larger than or equal to :math:`p`, i.e., :math:`\phi_G := \mathbf{F}_{[0,10]} (\mathbb{P} \{ s \geq c \} \geq p)` is satisfied.
 
-.. .. code-block:: python
+.. code-block:: python
 
-..    from pycasse import *
+   from pycasse import *
 
-..    # Build a contract
-..    c1 = contract('c1')                                   # Create a contract c1
-..    c1.add_param_vars(['p', 'sigma'], bounds = [[0, 1], [0.05, 2]]) # Set parameteric variables
-..    c1.add_nondeter_vars(['w'],  mean = [0], \
-..                cov = [['sigma^2']], dtypes=['GAUSSIAN']) # Set nondeterministic variables
-..    c1.set_assume('True')                                 # Set/define the assumptions
-..    c1.set_guaran('P[p] (w <= 1.5)')                      # Set/define the guarantees
-..    c1.saturate()                                         # Saturate c1
+   # Build a contract
+   c = contract('c')                               # Create a contract c
+   c.add_deter_vars(['s', 'v', 'a'], 
+      bounds = [[-100, 2000], [-5, 10], [-1, 2]])  # Set a deterministic variables
+   c.add_param_vars(['p', 'c'], 
+      bounds = [[0.8, 1], [20, 60]])
+   c.set_assume('G[0,9] (a == 1)')                 # Set/define the assumptions
+   c.set_guaran('F[0,10] (P[p] (s => c))')         # Set/define the guarantees
+   c.saturate()                                    # Saturate c
+   c.printInfo()                                   # Print c
 
-..    # Build a contract
-..    c2 = contract('c2')                                   # Create a contract c2
-..    c2.add_param_vars(['sigma'], bounds = [[0.05, 2]])    # Set parameteric variables
-..    c2.add_nondeter_vars(['w'],  mean = [0], \
-..                cov = [['sigma^2']], dtypes=['GAUSSIAN']) # Set nondeterministic variables
-..    c2.set_assume('True')                                 # Set/define the assumptions
-..    c2.set_guaran('P[0.9] (w <= 1.5)')                    # Set/define the guarantees
-..    c2.saturate()                                         # Saturate c2
-.. where :math:`V_1, V_2 := \{ w \}`, :math:`A_1, A_2 := \top`, :math:`G_1(p) := \mathbb{P} \{ w \leq 1.5 \} \geq p`,  
-.. and :math:`G_2 := \mathbb{P} \{ w \leq 1.5 \} \geq 0.9`.
+   # Dynamics
+   dynamics = {'x': ['s', 'v'], 
+      'u': ['a'],
+      'A': [[1, 1], [0, 1]],
+      'B': [[0], [1]], 
+      'Q': [[0, 0], [0, 0.5**2]]
+   }
 
-.. Given the cost function :math:`J(p, \sigma) = - p - \sigma`, the optimal parameter values which guarantee the refinement relationship,
-.. i.e., :math:`C_2(p) \preceq C_1`, while :math:`M(\sigma) \models C_2(p)` can be found by running:
+   # Initial conditions
+   init_conditions = ['s == 0', 'v == 0']
 
-.. .. code-block:: python
+where :math:`V := \{ s, v, a \}`, :math:`A := \mathbf{G}_{[0,9]} (a=1)`, :math:`G(p) := \mathbf{F}_{[0,10]} \mathbb{P} \{ c \leq s \} \geq p`.
 
-..    c2.find_opt_refine_param(c1, {'p': -1, 'sigma': -1}, N=200) # Find an optimal set of parameters for refinement to hold
-   
-.. .. image:: figs/test_parameteric_refinement_fig.png
-..    :width: 300
-..    :align: center
+Given the cost function :math:`J(p, c) = - 100 p - c`, the optimal parameter values which guarantee the refinement relationship,
+i.e., :math:`M \models C(p, c)` can be found by running:
 
-.. The set of optimal parameter values is :math:`(p^*, \sigma^*) = (1.147, 0.875)`, which is within the SAT region.
+.. code-block:: python
+   # Find an optimal parameter for p and c
+   c.find_opt_param({'p': -100, 'c': -1}, N = 200, dynamics = dynamics, init_conditions = init_conditions)
+
+.. image:: figs/test_dyn_ststl_param_fig.png
+   :width: 300
+   :align: center
+
+The set of optimal parameter values is :math:`(p^*, c^*) = (0.9438, 31.2500)`, which is within the SAT region.
 
 PyCASSE Parameter Synthesis Functions
 -------------------------------------

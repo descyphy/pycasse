@@ -24,7 +24,7 @@ c 3
 b_a 10000
 b_g 0.199301
 The set of optimal parameter values is {'p': 0.875, 'c': 3.0} with the cost -5.75 and the robustness estimate 0.199301239248598.
-Time elaspsed for MILP: 2.9299392700195312 [seconds].
+Time elaspsed for MILP: 1.9473257064819336 [seconds].
 
 Contract ID: c2
   Non-Deterministic Variables: 
@@ -45,4 +45,4 @@ sigma 0.0409375
 b_a 10000
 b_g 0.00476512
 The set of optimal parameter values is {'mean': -0.1, 'sigma': 0.0409375} with the cost -0.509375 and the robustness estimate 0.004765120792451935.
-Time elaspsed for MILP: 3.5911567211151123 [seconds].
+Time elaspsed for MILP: 2.6771328449249268 [seconds].

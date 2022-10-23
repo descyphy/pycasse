@@ -1,0 +1,37 @@
+$ python tests/parameteric_tests/test_dyn_ststl_param.py 
+
+Contract ID: c
+  Deterministic Variables: 
+    s, CONTINUOUS, [-100, 2000]
+    v, CONTINUOUS, [-5, 10]
+    a, CONTINUOUS, [-1, 2]
+  Parameteric Variables: 
+    p, CONTINUOUS, [0.8, 1]
+    c, CONTINUOUS, [20, 60]
+  Assumption: G[0,9] (a == 1)
+  Guarantee: F[0,10] (P[p] (s => c))
+  Saturated Guarantee: (G[0,9] (a == 1)) -> (F[0,10] (P[p] (s => c)))
+  isSat: True
+
+Finding an optimal set of parameters for contract c...
+Set parameter Username
+Academic license - for non-commercial use only - expires 2023-07-27
+s__0 0
+v__0 0
+a__0 1
+a__1 1
+a__2 1
+a__3 1
+a__4 1
+a__5 1
+a__6 1
+a__7 1
+a__8 1
+a__9 1
+a__10 -1
+p 0.94375
+c 31.25
+b_a 0
+b_g 0.353707
+The set of optimal parameter values is {'p': 0.94375, 'c': 31.25} with the cost -125.625 and the robustness estimate 0.3537069379257929.
+Time elaspsed for MILP: 24.795297622680664 [seconds].
