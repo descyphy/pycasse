@@ -136,8 +136,8 @@ class AdaptiveHighwayController:
                             if self.env.unwrapped.spec.id in ('highway-v0', 'merge-v0'):
                                 condition.append("({}_{} - {}_{} >= {})".format(self.state_var_name[0], vehicle_num_1, self.state_var_name[0], vehicle_num_2, 2*vehicle_len))
                                 condition.append("({}_{} - {}_{} >= {})".format(self.state_var_name[0], vehicle_num_2, self.state_var_name[0], vehicle_num_1, 2*vehicle_len))
-                                condition.append("({}_{} - {}_{} >= {})".format(self.state_var_name[1], vehicle_num_1, self.state_var_name[1], vehicle_num_2, vehicle_wid))
-                                condition.append("({}_{} - {}_{} >= {})".format(self.state_var_name[1], vehicle_num_2, self.state_var_name[1], vehicle_num_1, vehicle_wid))
+                                condition.append("({}_{} - {}_{} >= {})".format(self.state_var_name[1], vehicle_num_1, self.state_var_name[1], vehicle_num_2, 2*vehicle_wid))
+                                condition.append("({}_{} - {}_{} >= {})".format(self.state_var_name[1], vehicle_num_2, self.state_var_name[1], vehicle_num_1, 2*vehicle_wid))
                             elif self.env.unwrapped.spec.id == 'intersection-v0':
                                 condition.append("({}_{} - {}_{} >= {})".format(self.state_var_name[0], vehicle_num_1, self.state_var_name[0], vehicle_num_2, distance))
                                 condition.append("({}_{} - {}_{} >= {})".format(self.state_var_name[0], vehicle_num_2, self.state_var_name[0], vehicle_num_1, distance))
