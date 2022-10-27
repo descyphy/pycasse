@@ -8,15 +8,22 @@ PyCASSE User's Guide
 Welcome to PyCASSE, a Python tool: Contract-based Analysis for Stochastic Systems Exploration.
 PyCASSE enables automated reasoning with assume-guarantee (A/G) contracts expressed in Signal Temporal Logic (STL) and Stochastic Signal Temporal Logic (StSTL).
 
-.. Add bibtex for the tool
+.. figure:: figs/overview.png
+   :width: 400
+   :align: center
+
+Brief explanation of PyCASSE
 
 To cite PyCASSE in an academic work, please use the following bibtex entry::
 
-   @inproceedings{PyCASSE,
-      title={Python tool: Contract-based Analysis for Stochastic Systems Exploration},
-      author={Oh, Chanwook and Lora, Michele, and Nuzzo, Pierluigi},
-      year={2022}
-   } 
+   @inproceedings{Oh22,
+   author = {Oh, Chanwook and Lora, Michele and Nuzzo, Pierluigi},
+   title = {Quantitative verification and design space exploration under uncertainty with parametric stochastic contracts},
+   year = {2022},
+   booktitle = {Proceedings of the 41th International Conference on Computer-Aided Design},
+   location = {San Diego, CA, USA},
+   series = {ICCAD '22}
+   }
 
 .. toctree::
    :numbered:

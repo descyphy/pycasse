@@ -3,7 +3,7 @@ Examples
 
 All the exampels are located in the `examples` folder.
 
-* `contract_tests` contains examples which checks contract compatibility, consistency, and feasibility, along with composition/ conjunction of multiple contracts, and Refinements relationship between two contracts 
+* `contract_tests` contains examples which checks contract compatibility, consistency, and feasibility, along with composition/ conjunction of multiple contracts, and refinements relationship between two contracts.
 * `stl_tests` contains examples where STL is utilized to specify A/G contracts.
 * `ststl_test` contains examples where StSTL is utilized to specify A/G contracts.
 * `parametric_tests` contains examples where parameters are synthesized.

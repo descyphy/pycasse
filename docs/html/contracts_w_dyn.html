@@ -1,0 +1,388 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>4. Control Synthesis with A/G Contract &mdash; PyCASSE v1.0  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="5. Parameter Synthesis with A/G Contract" href="contracts_w_param.html" />
+    <link rel="prev" title="3. Assume-Guarantee (A/G) Contracts" href="contracts.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyCASSE v1.0
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">1. Installing PyCASSE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="specifications.html">2. Writing Specifications for PyCASSE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contracts.html">3. Assume-Guarantee (A/G) Contracts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Control Synthesis with A/G Contract</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#control-synthesis-with-stl-a-g-contract-in-pycasse">4.1. Control Synthesis with STL A/G Contract in PyCASSE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#control-synthesis-with-ststl-a-g-contract-in-pycasse">4.2. Control Synthesis with StSTL A/G Contract in PyCASSE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycasse-milpsolver-class">4.3. PyCASSE MILPSolver Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contracts_w_param.html">5. Parameter Synthesis with A/G Contract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">6. Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bib.html">7. Bibiliography</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyCASSE v1.0</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>4. Control Synthesis with A/G Contract</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/contracts_w_dyn.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="control-synthesis-with-a-g-contract">
+<h1>4. Control Synthesis with A/G Contract<a class="headerlink" href="#control-synthesis-with-a-g-contract" title="Permalink to this headline">¶</a></h1>
+<p>PyCASSE enables reasoning about the behavior of a component <span class="math notranslate nohighlight">\(M\)</span>, with given dynamics, using A/G contracts.
+In this chapter, we sythesize the control trajectory of a component with linear dynamics such that it implements a contract <span class="math notranslate nohighlight">\(C\)</span>, i.e., <span class="math notranslate nohighlight">\(M \models C\)</span>.</p>
+<div class="section" id="control-synthesis-with-stl-a-g-contract-in-pycasse">
+<h2>4.1. Control Synthesis with STL A/G Contract in PyCASSE<a class="headerlink" href="#control-synthesis-with-stl-a-g-contract-in-pycasse" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/dyn_stl_setup.png"><img alt="_images/dyn_stl_setup.png" src="_images/dyn_stl_setup.png" style="width: 200px;" /></a>
+</div>
+<p>Assume a point-mass robot on a line where its location, velocity, and acceleration are denoted as <span class="math notranslate nohighlight">\(s\)</span>, <span class="math notranslate nohighlight">\(v\)</span>, and <span class="math notranslate nohighlight">\(a\)</span>.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/dyn_stl.png"><img alt="_images/dyn_stl.png" src="_images/dyn_stl.png" style="width: 300px;" /></a>
+</div>
+<p>The dynamics of the point-mass robot <span class="math notranslate nohighlight">\(M\)</span> on a line is given as <span class="math notranslate nohighlight">\(x_{k+1} = A x_k + B u_k\)</span> where <span class="math notranslate nohighlight">\(x_k = [s_k, v_k]^T\)</span> and <span class="math notranslate nohighlight">\(u_k = [a_k]\)</span>.
+The goal is to synthesize the control input <span class="math notranslate nohighlight">\(\mathbf{u}^{15} = u_0 u_1 \ldots u_{14}\)</span> where <span class="math notranslate nohighlight">\(\forall k, u_k \in [-1, 1]\)</span> such that
+the robot visits the regions <span class="math notranslate nohighlight">\(\{ r | r \geq 3\}\)</span> and <span class="math notranslate nohighlight">\(\{ r | r \leq 0\}\)</span> every <span class="math notranslate nohighlight">\(5~s\)</span>, i.e., <span class="math notranslate nohighlight">\(\phi_G := \mathbf{G}_{[0,10]} ((\mathbf{F}_{[0,5]} (s \geq 3)) \land (\mathbf{F}_{[0,5]} (s \leq 0)))\)</span> is satisfied.</p>
+<p>Given the initial state <span class="math notranslate nohighlight">\(x_0 = [0, 0]^T\)</span>, PyCASSE can synthesize the control input by running the following Python script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pycasse</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c1"># Build a contract</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">contract</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">)</span>                                               <span class="c1"># Create a contract c</span>
+<span class="n">c</span><span class="o">.</span><span class="n">add_deter_vars</span><span class="p">([</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">],</span>
+   <span class="n">bounds</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>                  <span class="c1"># Set deterministic variables</span>
+<span class="n">c</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>                                            <span class="c1"># Set/define the assumptions</span>
+<span class="n">c</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;G[0,10] ((F[0,5] (s =&gt; 3)) &amp; (F[0,5] (s &lt;= 0)))&#39;</span><span class="p">)</span> <span class="c1"># Set/define the guarantees</span>
+<span class="n">c</span><span class="o">.</span><span class="n">saturate</span><span class="p">()</span>                                                    <span class="c1"># Saturate c</span>
+<span class="n">c</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                                                   <span class="c1"># Print c</span>
+
+<span class="c1"># Initialize a milp solver and add a contract</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">MILPSolver</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_contract</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+<span class="c1"># Build a linear system dynamics</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_dynamics</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">],</span> <span class="n">u</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="n">A</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span> <span class="n">B</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
+<span class="c1"># Add initial conditions</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_init_condition</span><span class="p">(</span><span class="s1">&#39;s == 0&#39;</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_init_condition</span><span class="p">(</span><span class="s1">&#39;v == 0&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add guarantee constraints</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">guarantee</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b_g&#39;</span><span class="p">)</span>
+
+<span class="c1"># Solve the problem using MILP solver</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">solved</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time elaspsed for MILP: </span><span class="si">{}</span><span class="s2"> [seconds].</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
+
+<span class="c1"># Print and plot the trajectory of the component/system</span>
+<span class="k">if</span> <span class="n">solved</span><span class="p">:</span>
+   <span class="c1"># Print the trajectory</span>
+   <span class="n">comp_traj</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">print_solution</span><span class="p">()</span>
+
+   <span class="c1"># Plot the trajectory</span>
+   <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+   <span class="n">fig</span><span class="o">.</span><span class="n">set_figwidth</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+   <span class="n">fig</span><span class="o">.</span><span class="n">set_figheight</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+   <span class="n">x</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>
+   <span class="n">thres1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="mi">16</span>
+   <span class="n">thres2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">16</span>
+   <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">comp_traj</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">])</span>
+   <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">thres1</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+   <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">thres2</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+   <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$Time [s]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
+   <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$s [m]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
+
+   <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">comp_traj</span><span class="p">[</span><span class="s1">&#39;v&#39;</span><span class="p">])</span>
+   <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$Time [s]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
+   <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$v [m/s]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
+
+   <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">comp_traj</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+   <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$Time [s]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
+   <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$a [m/s^2]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
+
+   <span class="c1"># Save the figure</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;test_dyn_stl_log_fig.pdf&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/dyn_stl_result.png"><img alt="_images/dyn_stl_result.png" src="_images/dyn_stl_result.png" style="width: 750px;" /></a>
+</div>
+<p>The figure on the left shows the trajectory of the robot’s location;
+the figure on the center shows the trajectory of the robot’s velocity;
+and the figure on the right shows the trajectory of the robot’s acceleration (control input).
+As shown in the above figure, the control input synthesized by PyCASSE guarantees the satisfaction of the STL specification <span class="math notranslate nohighlight">\(\phi_G\)</span>.</p>
+<p>For details, refer to <a class="reference download internal" download="" href="_downloads/67f3c6658e5e04f239791e50ff83a76c/test_dyn_stl.py"><code class="xref download docutils literal notranslate"><span class="pre">test_dyn_stl.py</span></code></a>.</p>
+</div>
+<div class="section" id="control-synthesis-with-ststl-a-g-contract-in-pycasse">
+<h2>4.2. Control Synthesis with StSTL A/G Contract in PyCASSE<a class="headerlink" href="#control-synthesis-with-ststl-a-g-contract-in-pycasse" title="Permalink to this headline">¶</a></h2>
+<p>Let’s assume the same point-mass robot on a line from the previous example,
+but this time, its plant is subject to Gaussian uncertainty <span class="math notranslate nohighlight">\(w \sim Gaussin([0, 0]^T, [[0, 0], [0, 0.5^2]])\)</span>.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/dyn_ststl.png"><img alt="_images/dyn_ststl.png" src="_images/dyn_ststl.png" style="width: 300px;" /></a>
+</div>
+<p>The dynamics of the point-mass robot <span class="math notranslate nohighlight">\(M'\)</span> on a line is given as <span class="math notranslate nohighlight">\(x_{k+1} = A x_k + B u_k + w_k\)</span> where <span class="math notranslate nohighlight">\(x_k = [s_k, v_k]^T\)</span> and <span class="math notranslate nohighlight">\(u_k = [a_k]\)</span>.
+The goal is to synthesize the control input <span class="math notranslate nohighlight">\(\mathbf{u}^{10} = u_0 u_1 \ldots u_9\)</span> where <span class="math notranslate nohighlight">\(\forall k, u_k \in [-1, 1]\)</span> such that
+the robot eventually in <span class="math notranslate nohighlight">\(10~s\)</span> reaches the region <span class="math notranslate nohighlight">\(\{ r | r \geq 34\}\)</span> with probability larger than or equal to <span class="math notranslate nohighlight">\(0.9\)</span>, i.e., <span class="math notranslate nohighlight">\(\phi'_G := \mathbf{F}_{[0,10]} (\mathbb{P} \{ s \geq 34 \} \geq 0.9)\)</span> is satisfied.</p>
+<p>Given the initial state <span class="math notranslate nohighlight">\(x_0 = [0, 0]^T\)</span>, PyCASSE can synthesize the control input by running the following Python script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pycasse</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c1"># Build a contract</span>
+<span class="n">c_prime</span> <span class="o">=</span> <span class="n">contract</span><span class="p">(</span><span class="s1">&#39;c_prime&#39;</span><span class="p">)</span>                    <span class="c1"># Create a contract c_prime</span>
+<span class="n">c_prime</span><span class="o">.</span><span class="n">add_deter_vars</span><span class="p">([</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">],</span>
+   <span class="n">bounds</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>   <span class="c1"># Set deterministic variables</span>
+<span class="n">c_prime</span><span class="o">.</span><span class="n">set_assume</span><span class="p">(</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>                       <span class="c1"># Set/define the assumptions</span>
+<span class="n">c_prime</span><span class="o">.</span><span class="n">set_guaran</span><span class="p">(</span><span class="s1">&#39;F[0,10] (P[0.9] (s =&gt; 34))&#39;</span><span class="p">)</span> <span class="c1"># Set/define the guarantees</span>
+<span class="n">c_prime</span><span class="o">.</span><span class="n">saturate</span><span class="p">()</span>                               <span class="c1"># Saturate c_prime</span>
+<span class="n">c_prime</span><span class="o">.</span><span class="n">printInfo</span><span class="p">()</span>                              <span class="c1"># Print c_prime</span>
+
+<span class="c1"># Initialize a milp solver and add a contract</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">MILPSolver</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_contract</span><span class="p">(</span><span class="n">c_prime</span><span class="p">)</span>
+
+<span class="c1"># Build a linear system dynamics</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_dynamics</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">],</span> <span class="n">u</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="n">A</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span> <span class="n">B</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">Q</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="o">**</span><span class="mi">2</span><span class="p">]])</span>
+
+<span class="c1"># Add initial conditions</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_init_condition</span><span class="p">(</span><span class="s1">&#39;s == 0&#39;</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_init_condition</span><span class="p">(</span><span class="s1">&#39;v == 0&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add guarantee constraints</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">c_prime</span><span class="o">.</span><span class="n">guarantee</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b_g&#39;</span><span class="p">)</span>
+
+<span class="c1"># Solve the problem using MILP solver</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">solved</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time elaspsed for MILP: </span><span class="si">{}</span><span class="s2"> [seconds].</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
+
+<span class="c1"># Print and plot the trajectory of the component/system</span>
+<span class="k">if</span> <span class="n">solved</span><span class="p">:</span>
+   <span class="c1"># Print the trajectory</span>
+   <span class="n">comp_traj</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">print_solution</span><span class="p">()</span>
+
+   <span class="c1"># Plot the trajectory</span>
+   <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+   <span class="n">x</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">))</span>
+
+   <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">comp_traj</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+   <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$Time [s]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
+   <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$a [m/s^2]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
+
+   <span class="c1"># Save the figure</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;test_dyn_ststl_log_fig.pdf&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/dyn_ststl_result.png"><img alt="_images/dyn_ststl_result.png" src="_images/dyn_ststl_result.png" style="width: 300px;" /></a>
+</div>
+<p>The above figure shows the trajectory of the robot’s acceleration (control input) synthesized by PyCASSE.
+To validate whether the the synthesized control input satisfies the StSTL specification <span class="math notranslate nohighlight">\(\phi'_G\)</span>, <span class="math notranslate nohighlight">\(10^5\)</span> MATLAB simulations were ran by using the synthesized control input.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="_images/dyn_ststl_simu.png"><img alt="_images/dyn_ststl_simu.png" src="_images/dyn_ststl_simu.png" style="width: 350px;" /></a>
+<p class="caption"><span class="caption-text"><span class="math notranslate nohighlight">\(10^5\)</span> simulation in MATLAB.</span></p>
+</div>
+<p>As shown in the simulation results, the control input synthesized by PyCASSE satisfies the StSTL specification <span class="math notranslate nohighlight">\(\phi'_G\)</span>.
+For details, refer to <a class="reference download internal" download="" href="_downloads/6adcc07034b165f45c67bc65101dafbb/test_dyn_ststl.py"><code class="xref download docutils literal notranslate"><span class="pre">test_dyn_ststl.py</span></code></a> and <a class="reference download internal" download="" href="_downloads/29f79737b4ac8c5f0bd6ebfab8369445/test_dyn_ststl_simu.m"><code class="xref download docutils literal notranslate"><span class="pre">test_dyn_ststl_simu.m</span></code></a>.</p>
+</div>
+<div class="section" id="pycasse-milpsolver-class">
+<h2>4.3. PyCASSE MILPSolver Class<a class="headerlink" href="#pycasse-milpsolver-class" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="contracts_w_param.html" class="btn btn-neutral float-right" title="5. Parameter Synthesis with A/G Contract" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="contracts.html" class="btn btn-neutral float-left" title="3. Assume-Guarantee (A/G) Contracts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2022, Chanwook Oh.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
