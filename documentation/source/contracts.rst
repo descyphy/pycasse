@@ -109,7 +109,7 @@ We can check whether :math:`C_2` and :math:`C_3` `refines` :math:`C_1` or not:
    c2.checkRefine(c1, print_sol=True)      # Check whether c2 refines c1, should not refine
    c3.checkRefine(c1, print_sol=True)      # Check whether c3 refines c1, should refine
 
-Similarly, it is also possible to check refinement between probabilistic contracts. For an example with STL contracts refer to :download:`test_contracts.py <../../tests/contract_tests/test_contracts.py>` and :download:`test_contracts_stl.py <../../tests/stl_tests/test_contracts_stl.py>`. For an example with StSTL contracts refer to :download:`test_contracts_ststl.py <../../tests/ststl_tests/test_contracts_ststl.py>`.
+Similarly, it is also possible to check refinement between probabilistic contracts. For an example with STL contracts refer to :download:`test_contracts.py <../../examples/contract_tests/test_contracts.py>` and :download:`test_contracts_stl.py <../../examples/stl_tests/test_contracts_stl.py>`. For an example with StSTL contracts refer to :download:`test_contracts_ststl.py <../../examples/ststl_tests/test_contracts_ststl.py>`.
 
 PyCASSE Contract Class
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -168,7 +168,7 @@ Assume that we have contracts :math:`C_1` and :math:`C_2`, we can combine them b
    c12_merge = merge(c1, c2)               # Merge of c1 and c2
    c12_merge.printInfo()                   # Print c12_merge
 
-For an example where contracts are combined, refer to :download:`test_contracts_combine.py <../../tests/contract_tests/test_contracts_combine.py>`. 
+For an example where contracts are combined, refer to :download:`test_contracts_combine.py <../../examples/contract_tests/test_contracts_combine.py>`. 
 
 .. Decomposing Contracts
 .. ^^^^^^^^^^^^^^^^^^^^^

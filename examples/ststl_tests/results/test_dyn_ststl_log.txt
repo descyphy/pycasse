@@ -1,0 +1,29 @@
+$ python examples/ststl_tests/test_dyn_ststl.py 
+
+Contract ID: c
+  Deterministic Variables: 
+    s, CONTINUOUS, [-100, 2000]
+    v, CONTINUOUS, [-5, 10]
+    a, CONTINUOUS, [-1, 1]
+  Assumption: True
+  Guarantee: F[0,10] (P[0.9] (s => 34))
+  Saturated Guarantee: F[0,10] (P[0.9] (s => 34))
+  isSat: True
+
+Set parameter Username
+Academic license - for non-commercial use only - expires 2023-07-27
+Time elaspsed for MILP: 0.003765583038330078 [seconds].
+
+s__0: 0.0
+v__0: 0.0
+a__0: 1.0000000000000482
+a__1: 1.0
+a__2: 1.0
+a__3: 1.0
+a__4: 1.0
+a__5: 1.0
+a__6: 1.0
+a__7: 1.0
+a__8: 1.0
+a__9: -1.0
+a__10: -1.0

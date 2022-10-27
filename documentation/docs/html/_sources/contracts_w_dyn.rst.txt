@@ -96,7 +96,7 @@ the figure on the center shows the trajectory of the robot's velocity;
 and the figure on the right shows the trajectory of the robot's acceleration (control input).
 As shown in the above figure, the control input synthesized by PyCASSE guarantees the satisfaction of the STL specification :math:`\phi_G`.
 
-For details, refer to :download:`test_dyn_stl.py <../../tests/stl_tests/test_dyn_stl.py>`.
+For details, refer to :download:`test_dyn_stl.py <../../examples/stl_tests/test_dyn_stl.py>`.
 
 Control Synthesis with StSTL A/G Contract in PyCASSE
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -179,7 +179,7 @@ To validate whether the the synthesized control input satisfies the StSTL specif
    :math:`10^5` simulation in MATLAB.
 
 As shown in the simulation results, the control input synthesized by PyCASSE satisfies the StSTL specification :math:`\phi'_G`.
-For details, refer to :download:`test_dyn_ststl.py <../../tests/ststl_tests/test_dyn_ststl.py>` and :download:`test_dyn_ststl_simu.m <../../tests/ststl_tests/test_dyn_ststl_simu.m>`.
+For details, refer to :download:`test_dyn_ststl.py <../../examples/ststl_tests/test_dyn_ststl.py>` and :download:`test_dyn_ststl_simu.m <../../examples/ststl_tests/test_dyn_ststl_simu.m>`.
 
 PyCASSE MILPSolver Class
 ^^^^^^^^^^^^^^^^^^^^^^^^

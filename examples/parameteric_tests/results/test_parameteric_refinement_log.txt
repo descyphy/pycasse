@@ -1,0 +1,11 @@
+$ python tests/parameteric_tests/test_parameteric_refinement.py 
+
+Finding an optimal set of parameters for contract refinement_check...
+Set parameter Username
+Academic license - for non-commercial use only - expires 2023-07-27
+sigma 1.14687
+p 0.875
+b_a 10000
+b_g 0.0302205
+The set of optimal parameter values is {'sigma': 1.1468749999999999, 'p': 0.875} with the cost -2.0218749999999996 and the robustness estimate 0.030220548266036706.
+Time elaspsed for MILP: 33.37289571762085 [seconds].

@@ -10,6 +10,14 @@ PyCASSE enables automated reasoning with assume-guarantee (A/G) contracts expres
 
 .. Add bibtex for the tool
 
+To cite PyCASSE in an academic work, please use the following bibtex entry::
+
+   @inproceedings{PyCASSE,
+      title={Python tool: Contract-based Analysis for Stochastic Systems Exploration},
+      author={Oh, Chanwook and Lora, Michele, and Nuzzo, Pierluigi},
+      year={2022}
+   } 
+
 .. toctree::
    :numbered:
    :maxdepth: 2

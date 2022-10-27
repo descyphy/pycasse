@@ -13,5 +13,3 @@ Bibiliography
 .. [Oh22] \C. Oh, M. Lora, P. Nuzzo, *Quantitative verification and design space exploration under uncertainty with parametric stochastic contracts*, IEEE/ACM International Conference on Computer-Aided Design, Nov. 2022.
 
 .. [Gurobi] \Gurobi Optimization, LLC, *Gurobi Optimizer Reference Manual*, 2020. Available: http://www.gurobi.com.
-
-.. .. [Cplex] \Cplex, I. I. (2009). V12. 1: User’s Manual for CPLEX. International Business Machines Corporation, 46(53), 157. Available: https://www.ibm.com/analytics/cplex-optimizer.

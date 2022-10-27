@@ -1,0 +1,48 @@
+$ python examples/parameteric_tests/test_parameteric.py 
+
+Contract ID: c1
+  Deterministic Variables: 
+    u, CONTINUOUS, [-0.5, 0.5]
+  Non-Deterministic Variables: 
+    w, GAUSSIAN
+    mean: [0]
+    cov: [[4]]
+  Parameteric Variables: 
+    p, CONTINUOUS, [0, 1]
+    c, CONTINUOUS, [-4, 4]
+  Assumption: True
+  Guarantee: P[p] (w + u <= c)
+  Saturated Guarantee: P[p] (w + u <= c)
+  isSat: True
+
+Finding an optimal set of parameters for contract c1...
+Set parameter Username
+Academic license - for non-commercial use only - expires 2023-07-27
+u__0 0.5
+p 0.875
+c 3
+b_a 10000
+b_g 0.199301
+The set of optimal parameter values is {'p': 0.875, 'c': 3.0} with the cost -5.75 and the robustness estimate 0.199301239248598.
+Time elaspsed for MILP: 1.9473257064819336 [seconds].
+
+Contract ID: c2
+  Non-Deterministic Variables: 
+    w, GAUSSIAN
+    mean: ['mean']
+    cov: [['sigma^2']]
+  Parameteric Variables: 
+    mean, CONTINUOUS, [-0.1, 0.1]
+    sigma, CONTINUOUS, [0.01, 0.1]
+  Assumption: True
+  Guarantee: P[0.99] (w <= 0)
+  Saturated Guarantee: P[0.99] (w <= 0)
+  isSat: True
+
+Finding an optimal set of parameters for contract c2...
+mean -0.1
+sigma 0.0409375
+b_a 10000
+b_g 0.00476512
+The set of optimal parameter values is {'mean': -0.1, 'sigma': 0.0409375} with the cost -0.509375 and the robustness estimate 0.004765120792451935.
+Time elaspsed for MILP: 2.6771328449249268 [seconds].

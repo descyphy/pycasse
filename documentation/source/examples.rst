@@ -1,6 +1,14 @@
 Examples
 ========
 
+All the exampels are located in the `examples` folder.
+
+* `contract_tests` contains examples which checks contract compatibility, consistency, and feasibility, along with composition/ conjunction of multiple contracts, and Refinements relationship between two contracts 
+* `stl_tests` contains examples where STL is utilized to specify A/G contracts.
+* `ststl_test` contains examples where StSTL is utilized to specify A/G contracts.
+* `parametric_tests` contains examples where parameters are synthesized.
+* `ICCAD2022` contains case studies for the paper [Oh22]_ published at ICCAD 2022.
+
 Parameter Synthesis using StSTL Contracts (ICCAD 2022)
 ------------------------------------------------------
 
@@ -28,7 +36,7 @@ i.e., :math:`\bigotimes_{i=1}^{N} C_i \otimes C_{N+1} \otimes C_{N+2} \preceq_{\
 
 The case study can be run::
 
-   ` python tests/ICCAD2022/sensor_experiment.py
+   $ python examples/ICCAD2022/sensor_experiment.py
 
 As a result, feasible regions for finding the set of optimal parameter values :math:`\pi_{safe} = (c_s, p_s)` when there exists a single fully specified sensor, i.e., :math:`N=1`, is :
 
@@ -72,7 +80,7 @@ In this case study, we search for the sets of optimal parameter values :math:`\p
 
 The case study can be run::
 
-   ` python tests/ICCAD2022/ACC_experiment.py
+   $ python examples/ICCAD2022/ACC_experiment.py
 
 As a result, feasible regions for finding the set of optimal parameter values :math:`\pi_{safe} = (c_s, p_s)`:
 

@@ -174,6 +174,14 @@
             
   <div class="section" id="examples">
 <h1>6. Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>All the exampels are located in the <cite>examples</cite> folder.</p>
+<ul class="simple">
+<li><cite>contract_tests</cite> contains examples which checks contract compatibility, consistency, and feasibility, along with composition/ conjunction of multiple contracts, and Refinements relationship between two contracts</li>
+<li><cite>stl_tests</cite> contains examples where STL is utilized to specify A/G contracts.</li>
+<li><cite>ststl_test</cite> contains examples where StSTL is utilized to specify A/G contracts.</li>
+<li><cite>parametric_tests</cite> contains examples where parameters are synthesized.</li>
+<li><cite>ICCAD2022</cite> contains case studies for the paper <a class="reference internal" href="bib.html#oh22" id="id1">[Oh22]</a> published at ICCAD 2022.</li>
+</ul>
 <div class="section" id="parameter-synthesis-using-ststl-contracts-iccad-2022">
 <h2>6.1. Parameter Synthesis using StSTL Contracts (ICCAD 2022)<a class="headerlink" href="#parameter-synthesis-using-ststl-contracts-iccad-2022" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="finding-parameters-for-multi-sensor-perception-system">
@@ -192,7 +200,7 @@ within the <span class="math notranslate nohighlight">\([0.2, 2]\)</span> range,
 i.e., <span class="math notranslate nohighlight">\(\bigotimes_{i=1}^{N} C_i \otimes C_{N+1} \otimes C_{N+2} \preceq_{\rho^*} C_{per}\)</span> and
 <span class="math notranslate nohighlight">\(M_{N+1} ( \sigma_{N+1} ) \models_{\rho^*} C ( p_{N+1} )\)</span>.</p>
 <p>The case study can be run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>` python tests/ICCAD2022/sensor_experiment.py
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python examples/ICCAD2022/sensor_experiment.py
 </pre></div>
 </div>
 <p>As a result, feasible regions for finding the set of optimal parameter values <span class="math notranslate nohighlight">\(\pi_{safe} = (c_s, p_s)\)</span> when there exists a single fully specified sensor, i.e., <span class="math notranslate nohighlight">\(N=1\)</span>, is :</p>
@@ -221,7 +229,7 @@ i.e., <span class="math notranslate nohighlight">\(\bigotimes_{i=1}^{N} C_i \oti
 <p><span class="math notranslate nohighlight">\(C_{comf}\)</span> requires that the acceleration of the ego vehicle be larger than or equal to <span class="math notranslate nohighlight">\(c_{c}~m/s^2\)</span> with a probability larger than or equal to <span class="math notranslate nohighlight">\(p_{c}\)</span>, to avoid abrupt decelerations under the same assumptions as <span class="math notranslate nohighlight">\(C_{safe}\)</span>.</p>
 <p><span class="math notranslate nohighlight">\(C_{comf} = (\phi_{A,comf}, \phi_{G,comf})\)</span> where <span class="math notranslate nohighlight">\(\phi_{A,comf} := (d \geq d_{target}) \land (|v| \leq 5)\)</span> and <span class="math notranslate nohighlight">\(\phi_{G,comf} := \mathbf{G}_{[0,20]} ( c_{c} - a_e ) ^{[p_{c}]}\)</span></p>
 <p>The case study can be run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>` python tests/ICCAD2022/ACC_experiment.py
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python examples/ICCAD2022/ACC_experiment.py
 </pre></div>
 </div>
 <p>As a result, feasible regions for finding the set of optimal parameter values <span class="math notranslate nohighlight">\(\pi_{safe} = (c_s, p_s)\)</span>:</p>

@@ -1,6 +1,13 @@
 Installing PyCASSE
 ==================
 
+* Download or clone the PyCASSE repository::
+
+   $ git clone https://github.com/descyphy/pycasse
+
+* Navigate to PyCASSE folder where ``setup.py`` is located
+
+
 Pre-requisites
 --------------
 * Install dependencies::
@@ -19,18 +26,9 @@ PyCASSE uses Gurobi [Gurobi]_ for solving mixed integer programs (MIP).
 * Get a Gurobi license
    * Faculty, students, or staff of an academic institution might be eligible for `a free academic license <https://www.gurobi.com/downloads/end-user-license-agreement-academic/>`_
 
-.. CPLEX
-.. ^^^^^
-.. We plan to give CPLEX [Cplex]_ as an option for solving mixed integer linear programs (MILP) in near future.
 
 PyCASSE
 -------
-* Download or clone the PyCASSE-git repository::
-
-   $ git clone https://github.com/descyphy/pycasse
-
-* Navigate to PyCASSE-git folder where ``setup.py`` is located
-
 * Install PyCASSE::
 
    $ pip3 install .

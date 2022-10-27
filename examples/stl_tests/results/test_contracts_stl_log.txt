@@ -1,0 +1,169 @@
+$ python examples/stl_tests/test_contracts_stl.py 
+
+Contract ID: c1
+  Deterministic Variables: 
+    x, CONTINUOUS, [-10000, 10000]
+    y, CONTINUOUS, [-10000, 10000]
+  Assumption: G[0,3] (x => 5)
+  Guarantee: G[0,3] (y => 2)
+  Saturated Guarantee: (G[0,3] (x => 5)) -> (G[0,3] (y => 2))
+  isSat: True
+
+====================================================================================
+Checking compatibility of the contract c1...
+Set parameter Username
+Academic license - for non-commercial use only - expires 2023-07-27
+Contract c1 is compatible.
+
+Printing a behavior that satisfies the assumptions of the contract c1...
+x__0: 10000.0
+x__1: 10000.0
+x__2: 10000.0
+x__3: 10000.0
+y__0: 10000.0
+y__1: 10000.0
+y__2: 10000.0
+y__3: 10000.0
+====================================================================================
+Checking consistency of the contract c1...
+Contract c1 is consistent.
+
+Printing a behavior that satisfies the saturated guarantees of the contract c1...
+x__0: 4.999900000000707
+x__1: 4.999900000000707
+x__2: 4.999900000000707
+x__3: 4.999900000000707
+y__0: 1.9999
+y__1: 1.9999
+y__2: 1.9999
+y__3: 1.9999
+====================================================================================
+Checking feasibility of the contract c1...
+Contract c1 is feasible.
+
+Printing a behavior that satisfies both the assumptions and guarantees of the contract c1...
+x__0: 10000.0
+x__1: 10000.0
+x__2: 10000.0
+x__3: 10000.0
+y__0: 10000.0
+y__1: 10000.0
+y__2: 10000.0
+y__3: 10000.0
+Contract ID: c2
+  Deterministic Variables: 
+    x, CONTINUOUS, [-10000, 10000]
+    y, CONTINUOUS, [-10000, 10000]
+  Assumption: F[0,3] (x => 5)
+  Guarantee: G[0,3] (y => 3)
+  Saturated Guarantee: (F[0,3] (x => 5)) -> (G[0,3] (y => 3))
+  isSat: True
+
+====================================================================================
+Checking compatibility of the contract c2...
+Contract c2 is compatible.
+
+Printing a behavior that satisfies the assumptions of the contract c2...
+x__0: 10000.0
+x__1: 10000.0
+x__2: 10000.0
+x__3: 10000.0
+y__0: 10000.0
+y__1: 10000.0
+y__2: 10000.0
+y__3: 10000.0
+====================================================================================
+Checking consistency of the contract c2...
+Contract c2 is consistent.
+
+Printing a behavior that satisfies the saturated guarantees of the contract c2...
+x__0: 4.999900000000707
+x__1: 4.999900000000707
+x__2: 4.999900000000707
+x__3: 4.999900000000707
+y__0: 2.9999
+y__1: 2.9999
+y__2: 2.9999
+y__3: 2.9999
+====================================================================================
+Checking feasibility of the contract c2...
+Contract c2 is feasible.
+
+Printing a behavior that satisfies both the assumptions and guarantees of the contract c2...
+x__0: 10000.0
+x__1: 10000.0
+x__2: 10000.0
+x__3: 10000.0
+y__0: 10000.0
+y__1: 10000.0
+y__2: 10000.0
+y__3: 10000.0
+Contract ID: c3
+  Deterministic Variables: 
+    x, CONTINUOUS, [-10000, 10000]
+    y, CONTINUOUS, [-10000, 10000]
+  Assumption: F[0,3] (x => 5)
+  Guarantee: F[1,3] (y => 3)
+  Saturated Guarantee: (F[0,3] (x => 5)) -> (F[1,3] (y => 3))
+  isSat: True
+
+====================================================================================
+Checking compatibility of the contract c3...
+Contract c3 is compatible.
+
+Printing a behavior that satisfies the assumptions of the contract c3...
+x__0: 10000.0
+x__1: 10000.0
+x__2: 10000.0
+x__3: 10000.0
+y__0: 10000.0
+y__1: 10000.0
+y__2: 10000.0
+y__3: 10000.0
+====================================================================================
+Checking consistency of the contract c3...
+Contract c3 is consistent.
+
+Printing a behavior that satisfies the saturated guarantees of the contract c3...
+x__0: 4.999900000000707
+x__1: 4.999900000000707
+x__2: 4.999900000000707
+x__3: 4.999900000000707
+y__0: -10000.0
+y__1: 10000.000000000002
+y__2: 10000.000000000002
+y__3: 10000.000000000002
+====================================================================================
+Checking feasibility of the contract c3...
+Contract c3 is feasible.
+
+Printing a behavior that satisfies both the assumptions and guarantees of the contract c3...
+x__0: 10000.0
+x__1: 10000.0
+x__2: 10000.0
+x__3: 10000.0
+y__0: 10000.0
+y__1: 10000.0
+y__2: 10000.0
+y__3: 10000.0
+====================================================================================
+Checking whether contract c2 refines contract c1...
+Checking assumptions condition for refinement...
+Checking guarantees condition for refinement...
+Contract c2 refines c1.
+
+====================================================================================
+Checking whether contract c3 refines contract c1...
+Checking assumptions condition for refinement...
+Checking guarantees condition for refinement...
+Guarantees condition for refinement violated. Contract c3 does not refine contract c1.
+
+Printing a counterexample which violates guarantees condition for refinement...
+x__0: 5.0
+x__1: 5.0
+x__2: 5.0
+x__3: 5.0
+y__0: 1.9999000000007072
+y__1: 1.9999999999999996
+y__2: 3.0
+y__3: 3.0

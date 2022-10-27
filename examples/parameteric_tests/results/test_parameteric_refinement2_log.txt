@@ -1,0 +1,36 @@
+$ python examples/parameteric_tests/test_parameteric_refinement2.py 
+
+Contract ID: c1
+  Non-Deterministic Variables: 
+    w, GAUSSIAN
+    mean: [0]
+    cov: [['sigma^2']]
+  Parameteric Variables: 
+    sigma, CONTINUOUS, [0.05, 2]
+    c, CONTINUOUS, [0, 2]
+  Assumption: True
+  Guarantee: P[0.9] (w <= c)
+  Saturated Guarantee: P[0.9] (w <= c)
+  isSat: True
+
+Contract ID: c2
+  Non-Deterministic Variables: 
+    w, GAUSSIAN
+    mean: [0]
+    cov: [['sigma^2']]
+  Parameteric Variables: 
+    sigma, CONTINUOUS, [0.05, 2]
+  Assumption: True
+  Guarantee: P[0.9] (w <= 1.5)
+  Saturated Guarantee: P[0.9] (w <= 1.5)
+  isSat: True
+
+Finding an optimal set of parameters for contract refinement_check...
+Set parameter Username
+Academic license - for non-commercial use only - expires 2023-07-27
+sigma 1.14687
+c 1.5
+b_a 10000
+b_g 0.0302205
+The set of optimal parameter values is {'sigma': 1.1468749999999999, 'c': 1.5} with the cost -9.968749999999998 and the robustness estimate 0.030220548266036745.
+Time elaspsed for MILP: 64.78047275543213 [seconds].

@@ -1,0 +1,603 @@
+$ python3 examples/ICCAD2022/sensor_experiment.py 
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 1 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Using license file /home/chanwook/gurobi.lic
+Academic license - for non-commercial use only
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65} with the robustness estimate 0.09225289808003012.
+Time elaspsed for MILP: 0.861159086227417 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 1 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9375, 'sigma1': 0.65} with the robustness estimate 0.0028216461708445717.
+Time elaspsed for MILP: 5.344447135925293 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 1 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9281250000000001, 'sigma1': 0.6781250000000001} with the robustness estimate 0.008603001777898744.
+Time elaspsed for MILP: 8.761544942855835 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 1 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.925, 'sigma1': 0.6921875000000001} with the robustness estimate 0.0035743099597868033.
+Time elaspsed for MILP: 18.706084728240967 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 1 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9234375, 'sigma1': 0.69921875} with the robustness estimate 0.00027853874484118357.
+Time elaspsed for MILP: 34.663106203079224 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 1 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65} with the robustness estimate 0.16699148239600992.
+Time elaspsed for MILP: 1.1110851764678955 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 1 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.80625, 'sigma1': 1.15625} with the robustness estimate 0.000814995006956365.
+Time elaspsed for MILP: 8.026737689971924 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 1 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.80625, 'sigma1': 1.15625} with the robustness estimate 0.000814995006956365.
+Time elaspsed for MILP: 15.279144048690796 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 1 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8031250000000001, 'sigma1': 1.1703125} with the robustness estimate 0.0019148264844348617.
+Time elaspsed for MILP: 34.04070329666138 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 1 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8015625000000001, 'sigma1': 1.1773437500000001} with the robustness estimate 0.0025360933060674107.
+Time elaspsed for MILP: 64.84527945518494 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 1 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65} with the robustness estimate 0.16699148239600992.
+Time elaspsed for MILP: 2.8656394481658936 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 1 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.80625, 'sigma1': 1.15625} with the robustness estimate 0.000814995006956365.
+Time elaspsed for MILP: 20.333839654922485 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 1 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.80625, 'sigma1': 1.15625} with the robustness estimate 0.000814995006956365.
+Time elaspsed for MILP: 40.5947048664093 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 1 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8031250000000001, 'sigma1': 1.1703125} with the robustness estimate 0.0019148264844348617.
+Time elaspsed for MILP: 101.54593086242676 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 1 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8015625000000001, 'sigma1': 1.1773437500000001} with the robustness estimate 0.0025360933060674107.
+Time elaspsed for MILP: 197.64002060890198 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 1 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65} with the robustness estimate 0.16699148239600992.
+Time elaspsed for MILP: 6.054050445556641 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 1 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.80625, 'sigma1': 1.15625} with the robustness estimate 0.000814995006956365.
+Time elaspsed for MILP: 40.83016633987427 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 1 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.80625, 'sigma1': 1.15625} with the robustness estimate 0.000814995006956365.
+Time elaspsed for MILP: 77.99772953987122 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 1 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8031250000000001, 'sigma1': 1.1703125} with the robustness estimate 0.0019148264844348617.
+Time elaspsed for MILP: 199.7010579109192 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 1 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8015625000000001, 'sigma1': 1.1773437500000001} with the robustness estimate 0.0025360933060674107.
+Time elaspsed for MILP: 381.3863437175751 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 1 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65} with the robustness estimate 0.16699148239600992.
+Time elaspsed for MILP: 11.43148684501648 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 1 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.80625, 'sigma1': 1.15625} with the robustness estimate 0.000814995006956476.
+Time elaspsed for MILP: 89.24373483657837 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 1 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.80625, 'sigma1': 1.15625} with the robustness estimate 0.000814995006956476.
+Time elaspsed for MILP: 174.88328981399536 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 1 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8031250000000001, 'sigma1': 1.1703125} with the robustness estimate 0.0019148264844348617.
+Time elaspsed for MILP: 430.8075692653656 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 1 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8015625000000001, 'sigma1': 1.1773437500000001} with the robustness estimate 0.0025360933060674107.
+Time elaspsed for MILP: 865.6846351623535 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 2 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.07502937316894531 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 2 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65} with the robustness estimate 0.1669914823960099.
+Time elaspsed for MILP: 7.112791299819946 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 2 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.65, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.0931207841929339.
+Time elaspsed for MILP: 14.382823467254639 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 2 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.875, 'p2': 0.925, 'sigma2': 0.65} with the robustness estimate 0.06430454389000306.
+Time elaspsed for MILP: 33.451582193374634 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 2 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8250000000000001, 'sigma1': 0.65, 'p2': 0.8375000000000001, 'sigma2': 0.9875} with the robustness estimate 0.013875139303971107.
+Time elaspsed for MILP: 64.86344122886658 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 2 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.1779155731201172 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 2 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65} with the robustness estimate 0.1669914823960099.
+Time elaspsed for MILP: 9.953771352767944 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 2 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.65, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.0931207841929339.
+Time elaspsed for MILP: 19.098428964614868 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 2 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.875, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.09312078419293388.
+Time elaspsed for MILP: 46.353686809539795 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 2 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.875, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.09312078419293388.
+Time elaspsed for MILP: 108.81726861000061 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 2 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.4232368469238281 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 2 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65} with the robustness estimate 0.1669914823960099.
+Time elaspsed for MILP: 21.932416200637817 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 2 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.65, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.0931207841929339.
+Time elaspsed for MILP: 46.334557056427 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 2 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.875, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.09312078419293388.
+Time elaspsed for MILP: 114.19405198097229 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 2 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.875, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.09312078419293388.
+Time elaspsed for MILP: 210.3330798149109 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 2 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.567455530166626 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 2 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65} with the robustness estimate 0.1669914823960099.
+Time elaspsed for MILP: 34.057891845703125 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 2 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.65, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.0931207841929339.
+Time elaspsed for MILP: 69.75796937942505 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 2 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.875, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.09312078419293388.
+Time elaspsed for MILP: 175.7080535888672 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 2 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.875, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.09312078419293388.
+Time elaspsed for MILP: 345.0301377773285 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 2 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 1.6655614376068115 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 2 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65} with the robustness estimate 0.1669914823960099.
+Time elaspsed for MILP: 68.49753761291504 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 2 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.65, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.0931207841929339.
+Time elaspsed for MILP: 159.93236565589905 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 2 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.875, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.09312078419293388.
+Time elaspsed for MILP: 378.88068175315857 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 2 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.8500000000000001, 'sigma1': 0.875, 'p2': 0.8500000000000001, 'sigma2': 0.875} with the robustness estimate 0.09312078419293388.
+Time elaspsed for MILP: 686.8786017894745 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 3 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.24561572074890137 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 3 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 11.422818183898926 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 3 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 26.501067876815796 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 3 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 53.78431844711304 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 3 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 108.48000288009644 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 3 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.27912330627441406 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 3 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 13.476483583450317 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 3 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 32.176376819610596 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 3 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 68.83254718780518 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 3 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 144.8579545021057 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 3 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.41072726249694824 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 3 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 20.260857343673706 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 3 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 52.51385188102722 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 3 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 119.94997429847717 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 3 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 262.6208255290985 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 3 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.650496244430542 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 3 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 29.810145616531372 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 3 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 79.03908157348633 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 3 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 177.68363904953003 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 3 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 378.33588695526123 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 3 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 1.478700876235962 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 3 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 50.858059883117676 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 3 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 142.50966477394104 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 3 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 326.7973518371582 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 3 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 698.1968445777893 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 4 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.2634761333465576 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 4 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.24744272232055664 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 4 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.37691593170166016 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 4 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 52.83729410171509 [seconds].
+
+===========================================
+Initiating parameter synthesis with 1 specified sensors, 4 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65, 'p4': 0.9, 'sigma4': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 140.10469889640808 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 4 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.3129394054412842 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 4 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.3210875988006592 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 4 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.3222370147705078 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 4 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 84.19770669937134 [seconds].
+
+===========================================
+Initiating parameter synthesis with 10 specified sensors, 4 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65, 'p4': 0.9, 'sigma4': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 177.4355390071869 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 4 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.5175895690917969 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 4 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.5218667984008789 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 4 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.5341074466705322 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 4 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 106.15895915031433 [seconds].
+
+===========================================
+Initiating parameter synthesis with 50 specified sensors, 4 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65, 'p4': 0.9, 'sigma4': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 275.97017335891724 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 4 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 0.7997374534606934 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 4 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 1.3037569522857666 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 4 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 1.235283374786377 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 4 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 146.1910743713379 [seconds].
+
+===========================================
+Initiating parameter synthesis with 100 specified sensors, 4 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65, 'p4': 0.9, 'sigma4': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 386.1308925151825 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 4 unspecified sensors, and 10 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 1.8891487121582031 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 4 unspecified sensors, and 100 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 2.137451648712158 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 4 unspecified sensors, and 200 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 2.2305386066436768 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 4 unspecified sensors, and 500 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+Cannot find a set of optimal parameter values.
+Time elaspsed for MILP: 246.87405157089233 [seconds].
+
+===========================================
+Initiating parameter synthesis with 200 specified sensors, 4 unspecified sensors, and 1000 partitions.
+Finding an optimal set of parameters for contract refinement_check...
+The set of optimal parameter values is {'p1': 0.9, 'sigma1': 0.65, 'p2': 0.9, 'sigma2': 0.65, 'p3': 0.9, 'sigma3': 0.65, 'p4': 0.9, 'sigma4': 0.65} with the robustness estimate 0.16699148239601014.
+Time elaspsed for MILP: 733.56778216362 [seconds].
