@@ -273,6 +273,180 @@
 </div>
 <div class="section" id="pycasse-contract-class">
 <h3>3.2.4. PyCASSE Contract Class<a class="headerlink" href="#pycasse-contract-class" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pycasse.contracts.contract">
+<em class="property">class </em><code class="descclassname">pycasse.contracts.</code><code class="descname">contract</code><span class="sig-paren">(</span><em>id=''</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.contract" title="Permalink to this definition">¶</a></dt>
+<dd><p>A contract class for defining a contract.</p>
+<dl class="method">
+<dt id="pycasse.contracts.contract.add_deter_vars">
+<code class="descname">add_deter_vars</code><span class="sig-paren">(</span><em>var_names</em>, <em>dtypes=None</em>, <em>bounds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.contract.add_deter_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds deterministic variables and their information to the contract.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var_names</strong> (<em>list</em>) – A list of names for controlled variables</li>
+<li><strong>dtypes</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of variable types for controlled variables, each entry can be either <cite>BINARY</cite>, <cite>INTEGER</cite>, or <cite>CONTINUOUS</cite>. If None, defaults to <cite>CONTINUOUS</cite>.</li>
+<li><strong>bounds</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of lower and upper bounds for controlled variables, defaults to <cite>[-10^4,10^4]</cite> for <cite>CONTINUOUS</cite> and <cite>INTEGER</cite> variables and <cite>[0,1]</cite> for a <cite>BINARY</cite> variable, defaults to <cite>None</cite>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycasse.contracts.contract.add_nondeter_vars">
+<code class="descname">add_nondeter_vars</code><span class="sig-paren">(</span><em>var_names</em>, <em>mean</em>, <em>cov</em>, <em>dtypes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.contract.add_nondeter_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds nondeterministic variables and their information to the contract.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>var_names</strong> (<em>list</em>) – A list of names for nondeterministic variables</li>
+<li><strong>mean</strong> (<em>list of floats</em>) – A mean vector of nondeterministic variables</li>
+<li><strong>cov</strong> (<em>list of lists of floats</em>) – A covariance matrix of nondeterministic variables</li>
+<li><strong>dtype</strong> (<em>list of strs</em><em>, </em><em>optional</em>) – Distribution types for nondeterministic variables, can only support <cite>GAUSSIAN</cite>, defaults to <cite>None</cite>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycasse.contracts.contract.checkCompat">
+<code class="descname">checkCompat</code><span class="sig-paren">(</span><em>dynamics=None</em>, <em>init_conditions=[]</em>, <em>print_sol=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.contract.checkCompat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks compatibility of the contract.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dynamics</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary describing the dynamics of the component/system, defaults to <cite>None</cite></li>
+<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the system or the component, defaults to ‘[]’</li>
+<li><strong>print_sol</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, prints the behavior which shows the compatibility of the component/system, defaults to <cite>False</cite></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><cite>True</cite> if compatible, <cite>False</cite> otherwise.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycasse.contracts.contract.checkConsis">
+<code class="descname">checkConsis</code><span class="sig-paren">(</span><em>dynamics=None</em>, <em>init_conditions=[]</em>, <em>print_sol=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.contract.checkConsis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks consistency of the contract</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dynamics</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary describing the dynamics of the component/system, defaults to <cite>None</cite></li>
+<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the system or the component, defaults to ‘[]’</li>
+<li><strong>print_sol</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, prints the behavior which shows the consistency of the component/system, defaults to <cite>False</cite></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><cite>True</cite> if compatible, <cite>False</cite> otherwise.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycasse.contracts.contract.checkFeas">
+<code class="descname">checkFeas</code><span class="sig-paren">(</span><em>dynamics=None</em>, <em>init_conditions=[]</em>, <em>print_sol=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.contract.checkFeas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks feasibility of the contract.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dynamics</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary describing the dynamics of the component/system, defaults to <cite>None</cite></li>
+<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the system or the component, defaults to ‘[]’</li>
+<li><strong>print_sol</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, prints the behavior which shows the feasibility of the component/system, defaults to <cite>False</cite></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><cite>True</cite> if compatible, <cite>False</cite> otherwise.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycasse.contracts.contract.checkRefine">
+<code class="descname">checkRefine</code><span class="sig-paren">(</span><em>contract2refine</em>, <em>dynamics=None</em>, <em>init_conditions=[]</em>, <em>print_sol=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.contract.checkRefine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the self contract refines another contract.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>contract2refine</strong> (<a class="reference internal" href="#pycasse.contracts.contract" title="pycasse.contracts.contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycasse.contracts.contract</span></code></a>) – A contract to refine.</li>
+<li><strong>dynamics</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary describing the dynamics of the component/system, defaults to <cite>None</cite></li>
+<li><strong>init_conditions</strong> (<em>list of str</em><em>, </em><em>optional</em>) – A list of str describing the initial conditions of the system or the component, defaults to ‘[]’</li>
+<li><strong>print_sol</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, prints the behavior which violates the refinement relationship, defaults to <cite>False</cite></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><cite>True</cite> if the refinement relationship holds, <cite>False</cite> otherwise.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycasse.contracts.contract.set_assume">
+<code class="descname">set_assume</code><span class="sig-paren">(</span><em>assumption</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.contract.set_assume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the assumption of the contract.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>assumption</strong> (<em>str</em>) – An STL or StSTL formula which characterizes the assumption set of the contract</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycasse.contracts.contract.set_guaran">
+<code class="descname">set_guaran</code><span class="sig-paren">(</span><em>guarantee</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.contract.set_guaran" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the guarantee of the contract.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>guarantee</strong> (<em>str</em>) – An STL or StSTL formula which characterizes the guarantee set of the contract</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="a-g-contracts-operations">
@@ -299,6 +473,48 @@ C_1 \otimes C_2 = &amp; \; (V_1 \cup V_2, (A_1 \cap A_2) \cup \overline{(G_1 \ca
 </div>
 <div class="section" id="pycasse-contract-operation-functions">
 <h3>3.4.2. PyCASSE Contract Operation Functions<a class="headerlink" href="#pycasse-contract-operation-functions" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="pycasse.contracts.conjunction">
+<code class="descclassname">pycasse.contracts.</code><code class="descname">conjunction</code><span class="sig-paren">(</span><em>c_list</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.conjunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the conjunction of two contracts</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>c1</strong> (<a class="reference internal" href="#pycasse.contracts.contract" title="pycasse.contracts.contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycasse.contracts.contract</span></code></a>) – A contract c1</li>
+<li><strong>c2</strong> (<a class="reference internal" href="#pycasse.contracts.contract" title="pycasse.contracts.contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycasse.contracts.contract</span></code></a>) – A contract c2</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A conjoined contract</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pycasse.contracts.contract" title="pycasse.contracts.contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycasse.contracts.contract</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pycasse.contracts.composition">
+<code class="descclassname">pycasse.contracts.</code><code class="descname">composition</code><span class="sig-paren">(</span><em>c_list</em>, <em>mode='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#pycasse.contracts.composition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the composition of the contracts in a list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c_list</strong> (list of <a class="reference internal" href="#pycasse.contracts.contract" title="pycasse.contracts.contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycasse.contracts.contract</span></code></a>) – A list of contracts</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A composed contract</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pycasse.contracts.contract" title="pycasse.contracts.contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycasse.contracts.contract</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 </div>
 </div>

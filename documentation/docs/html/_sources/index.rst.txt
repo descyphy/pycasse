@@ -17,12 +17,12 @@ Brief explanation of PyCASSE
 To cite PyCASSE in an academic work, please use the following bibtex entry::
 
    @inproceedings{Oh22,
-   author = {Oh, Chanwook and Lora, Michele and Nuzzo, Pierluigi},
-   title = {Quantitative verification and design space exploration under uncertainty with parametric stochastic contracts},
-   year = {2022},
-   booktitle = {Proceedings of the 41th International Conference on Computer-Aided Design},
-   location = {San Diego, CA, USA},
-   series = {ICCAD '22}
+      author = {Oh, Chanwook and Lora, Michele and Nuzzo, Pierluigi},
+      title = {Quantitative verification and design space exploration under uncertainty with parametric stochastic contracts},
+      year = {2022},
+      booktitle = {Proceedings of the 41th International Conference on Computer-Aided Design},
+      location = {San Diego, CA, USA},
+      series = {ICCAD '22}
    }
 
 .. toctree::

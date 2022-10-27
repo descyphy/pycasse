@@ -239,6 +239,7 @@ Given the cost function :math:`J(p, c) = - 100 p - c`, the optimal parameter val
 i.e., :math:`M \models C(p, c)` can be found by running:
 
 .. code-block:: python
+   
    # Find an optimal parameter for p and c
    c.find_opt_param({'p': -100, 'c': -1}, N = 200, dynamics = dynamics, init_conditions = init_conditions)
 
