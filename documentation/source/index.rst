@@ -3,16 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-PyCASSE User's Guide
-====================
-Welcome to PyCASSE, a Python tool: Contract-based Analysis for Stochastic Systems Exploration.
+.. figure:: figs/logo.png
+   :width: 300
+   :align: center
+
+Welcome to PyCASSE, a Python Contract-based Analysis for Stochastic Systems Exploration Toolbox.
 PyCASSE enables automated reasoning with assume-guarantee (A/G) contracts expressed in Signal Temporal Logic (STL) and Stochastic Signal Temporal Logic (StSTL).
 
 .. figure:: figs/overview.png
    :width: 400
    :align: center
 
-Brief explanation of PyCASSE
+.. Brief explanation of PyCASSE
 
 To cite PyCASSE in an academic work, please use the following bibtex entry::
 

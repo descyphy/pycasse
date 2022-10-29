@@ -1,6 +1,8 @@
 # PyCASSE
 
-PyCASSE is a **Py**thon tool: **C**ontract-based **A**nalysis for **S**tochastic **S**ystems **E**xploration (PyCASSE). It enables automated reasoning with assume-guarantee (A/G) contracts expressed in Signal Temporal Logic (STL) and Stochastic Signal Temporal Logic (StSTL).
+<img src="documentation/source/figs/logo.png" width="150"/>
+
+PyCASSE is a **Py**thon **C**ontract-based **A**nalysis for **S**tochastic **S**ystems **E**xploration Toolbox (PyCASSE). It enables automated reasoning with assume-guarantee (A/G) contracts expressed in Signal Temporal Logic (STL) and Stochastic Signal Temporal Logic (StSTL).
 
 <img src="documentation/source/figs/overview.png" width="300"/>
 
