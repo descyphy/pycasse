@@ -74,8 +74,8 @@ class Controller:
 
             # Find the corresponding bounds for of deter variables
             if self.env.unwrapped.spec.id in ('highway-v1', 'merge-v1'):
-                deter_bounds = np.append(deter_bounds, np.array([[-500, 500], [-500, 500], [0, velocity_bound], [-0.4*velocity_bound, 0.4*velocity_bound]]), axis=0)
-                deter_bounds = np.append(deter_bounds, np.array([[-acceleration_bound, acceleration_bound], [-0.4*acceleration_bound, 0.4*acceleration_bound]]), axis=0)
+                deter_bounds = np.append(deter_bounds, np.array([[-500, 500], [-500, 500], [0, velocity_bound], [-0.1*velocity_bound, 0.1*velocity_bound]]), axis=0)
+                deter_bounds = np.append(deter_bounds, np.array([[-acceleration_bound, acceleration_bound], [-0.1*acceleration_bound, 0.1*acceleration_bound]]), axis=0)
             elif self.env.unwrapped.spec.id == 'intersection-v1':
                 deter_bounds = np.append(deter_bounds, np.array([[-100, 100], [-100, 100], [-velocity_bound, velocity_bound], [-velocity_bound, velocity_bound]]), axis=0)
                 deter_bounds = np.append(deter_bounds, np.array([[-acceleration_bound, acceleration_bound], [-acceleration_bound, acceleration_bound]]), axis=0)

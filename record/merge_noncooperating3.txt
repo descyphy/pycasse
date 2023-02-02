@@ -1,0 +1,20 @@
+Total elapsed time: 20.0
+Total synthesis time: 90.31467461585999
+Vehicle States:
+   vehicle id: 0:
+      position: 150.0, 6.0
+      velocity: 0.0, 0.0
+      distance: 0.0
+      fuel consumption: 40.689680560548034
+   vehicle id: 1:
+      position: 149.99999999999994, 0.0
+      velocity: 0.0, 0.0
+      distance: 5.684341886080802e-14
+      fuel consumption: 10.000266666667358
+   vehicle id: 2:
+      position: 147.15033199650188, -12.5
+      velocity: 1.0362429103629438, 0.0
+      distance: 2.849668003498124
+      fuel consumption: 48.05452204902432
+Total distance: 2.8496680034981807
+Total fuel consumption: 98.74446927623971
