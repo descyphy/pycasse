@@ -8,10 +8,11 @@ from pycasse import Controller
 
 DEBUG = False
 SIMU_TIME = 20
-SIMU_FREQUENCY = 2 # 4 for noncooperating, 2 for cooperating
+SIMU_FREQUENCY = 4
 H = 3
 VEHICLE_NUM = 3
 SCENARIO = "cooperating"
+# SCENARIO = "noncooperating"
 if SCENARIO == "noncooperating":
     GROUP_NUM = VEHICLE_NUM
 elif SCENARIO == "cooperating":
@@ -29,9 +30,9 @@ env.configure({
         },
     "vehicle": {
         "controlled_vehicle": VEHICLE_NUM,
-        "controlled_spacing": [0, 0.1, 0.1, 0],
-        "controlled_start": [0, 1, 2, 3],
-        "controlled_target": [3, 1, 0, 0],
+        "controlled_spacing": [0, 0.3, 0.1],
+        "controlled_start": [0, 1, 2],
+        "controlled_target": [3, 2, 0],
         "uncontrolled_vehicle": 0,
         },
     "graphic": {

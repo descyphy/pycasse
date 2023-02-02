@@ -11,7 +11,7 @@ from pycasse import Controller
 DEBUG = False
 SIMU_TIME = 20
 SIMU_FREQUENCY = 4
-H = 2
+H = 3
 VEHICLE_NUM = 3
 SCENARIO = "cooperating"
 # SCENARIO = "noncooperating"

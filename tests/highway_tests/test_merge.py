@@ -10,9 +10,10 @@ from pycasse import Controller
 
 DEBUG = False
 SIMU_TIME = 20
-SIMU_FREQUENCY = 4 # 4 for noncooperating, 2 for cooperating
+SIMU_FREQUENCY = 4
 H = 3
 VEHICLE_NUM = 3
+# SCENARIO = "cooperating"
 SCENARIO = "noncooperating"
 if SCENARIO == "noncooperating":
     GROUP_NUM = VEHICLE_NUM
