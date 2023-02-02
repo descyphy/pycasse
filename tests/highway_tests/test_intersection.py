@@ -9,11 +9,12 @@ from highway_custom.util import write_json, read_json, HiddenPrints
 from pycasse import Controller
 
 DEBUG = False
-SIMU_TIME = 3
-SIMU_FREQUENCY = 2 # 4 for noncooperating, 2 for cooperating
-H = 1
-VEHICLE_NUM = 2
-SCENARIO = "noncooperating"
+SIMU_TIME = 20
+SIMU_FREQUENCY = 4
+H = 2
+VEHICLE_NUM = 3
+SCENARIO = "cooperating"
+# SCENARIO = "noncooperating"
 if SCENARIO == "noncooperating":
     GROUP_NUM = VEHICLE_NUM
 elif SCENARIO == "cooperating":
@@ -29,10 +30,9 @@ env.configure({
     "simulation_frequency": SIMU_FREQUENCY,
     "vehicle": {
         "controlled_vehicle": VEHICLE_NUM,
-        # Case 1
-        "controlled_speed": 3,
-        "controlled_spacing": [1.0, 1.3, 1.6, 2.2, 2.5, 2.8],
-        "controlled_target": [3, 0, 1, 2, 3, 0],
+        "controlled_speed": 5,
+        "controlled_spacing": [1.0, 1.3, 1.6],
+        "controlled_target": [2, 3, 1],
         "uncontrolled_vehicle": 0,
         },
     "road": {
@@ -41,8 +41,8 @@ env.configure({
         "num_way": 4,
         },
     "graphic": {
-        "show_trajectory": False,
-        "trajectory_frequency": 2,
+        "show_trajectory": True,
+        "trajectory_frequency": 1,
         }
 })
 env.reset()
@@ -60,7 +60,7 @@ pystl_controller = Controller(env, H * SIMU_FREQUENCY, debug = DEBUG)
 t = 0
 while not env.is_terminal() and t < SIMU_TIME * SIMU_FREQUENCY:
     viewer.record()
-    # viewer.display()
+    viewer.display()
 
     # Find the current states of the vehicles
     state = env.state()

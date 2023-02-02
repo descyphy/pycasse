@@ -17,7 +17,7 @@ class IntersectionEnv(AbstractEnv):
             "vehicle": {
                 "controlled_vehicle": 1,
                 "controlled_target": [1],
-                "controlled_speed": 4,
+                "controlled_speed": 5,
                 "controlled_spacing": [0.2],
                 "uncontrolled_vehicle": 50,
                 "uncontrolled_spacing": 0.5,
@@ -101,8 +101,6 @@ class IntersectionEnv(AbstractEnv):
                          StraightLane(start, end, line_type=[n, c], speed_limit=self.config["road"]["speed_limit"]))
 
         self.road = Road(self, network=net)
-        print("Hello")
-        print(self.road.network)
 
     def _make_vehicle(self) -> None:
         """
@@ -146,5 +144,5 @@ class IntersectionEnv(AbstractEnv):
 
 register(
     id='intersection-v1',
-    entry_point='highway.env:IntersectionEnv',
+    entry_point='highway_custom.env:IntersectionEnv',
 )
