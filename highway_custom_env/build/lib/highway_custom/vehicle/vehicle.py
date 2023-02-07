@@ -90,7 +90,7 @@ class Vehicle(RoadObject):
         v = cls(env, lane.position(x0, 0), lane.heading_at(x0), speed, follow, color)
         return v
 
-    def plan_route(self, destination: str, lane_id : Optional[int] = None, offset = 50) -> "ControlledVehicle":
+    def plan_route(self, destination: str, lane_id : Optional[int] = None, offset = 5) -> "ControlledVehicle":
         """
         Plan a route to a destination in the road network
 
