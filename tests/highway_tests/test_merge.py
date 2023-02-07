@@ -1,11 +1,9 @@
 import gym
 import numpy as np
-import os, sys
+import os
 
 import highway_custom
-from highway_custom.vehicle.vehicle import Vehicle
 from highway_custom.graphic import Graphic
-from highway_custom.util import write_json, read_json, HiddenPrints
 from pycasse import Controller
 
 DEBUG = False
@@ -13,14 +11,12 @@ SIMU_TIME = 20
 SIMU_FREQUENCY = 4
 H = 3
 VEHICLE_NUM = 3
-# SCENARIO = "cooperating"
-SCENARIO = "noncooperating"
+SCENARIO = "cooperating"
+# SCENARIO = "noncooperating"
 if SCENARIO == "noncooperating":
     GROUP_NUM = VEHICLE_NUM
 elif SCENARIO == "cooperating":
     GROUP_NUM = 1
-elif SCENARIO == "adaptive":
-    GROUP_NUM = None
 else:
     assert(False)
 
@@ -29,12 +25,10 @@ env.configure({
     "simulation_frequency": SIMU_FREQUENCY,
     "vehicle": {
         "controlled_vehicle": VEHICLE_NUM,
-        "controlled_spacing": [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        # "controlled_spacing": [0.6, 1, 1.2, 1.0, 0.82, 0.95, 1, 1, 1],
-        # Case 1
-        "controlled_start": [2, 1, 0, 2, 1, 0, 2, 1, 0],
-        "controlled_target": [0, 1, 2, 0, 1, 2, 0, 1, 2],
-        "uncontrolled_vehicle": 0,
+        "controlled_spacing": [0, 0, 0],
+        "controlled_start": [2, 1, 0],
+        "controlled_target": [0, 1, 2],
+        "uncontrolled_vehicle": 0
         },
     "graphic": {
         "show_trajectory": True,

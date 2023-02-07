@@ -17,8 +17,6 @@ if SCENARIO == "noncooperating":
     GROUP_NUM = VEHICLE_NUM
 elif SCENARIO == "cooperating":
     GROUP_NUM = 1
-elif SCENARIO == "adaptive":
-    GROUP_NUM = None
 else:
     assert(False)
 
@@ -30,10 +28,10 @@ env.configure({
         },
     "vehicle": {
         "controlled_vehicle": VEHICLE_NUM,
-        "controlled_spacing": [0, 0.3, 0.1],
+        "controlled_spacing": [0, 0, 0],
         "controlled_start": [0, 1, 2],
-        "controlled_target": [3, 2, 0],
-        "uncontrolled_vehicle": 0,
+        "controlled_target": [2, 1, 0],
+        "uncontrolled_vehicle": 0
         },
     "graphic": {
         "screen_width": 1200,  # [px]

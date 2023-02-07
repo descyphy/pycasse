@@ -151,7 +151,7 @@ class MergeEnv(AbstractEnv):
                 self,
                 lane_from = 'a',
                 lane_to = 'b',
-                speed=5,
+                speed = 10,
                 spacing=self.config["vehicle"]["uncontrolled_spacing"],
             )
             self.uncontrolled_vehicle.append(vehicle)

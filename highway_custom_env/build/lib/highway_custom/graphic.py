@@ -425,18 +425,18 @@ class VehicleGraphics(object):
         pygame.draw.rect(vehicle_surface, WorldSurface.darken(color), rect_roof, 0)
         pygame.draw.rect(vehicle_surface, cls.BLACK, rect, 1)
 
-        # Tires
-        tire_positions = [[surface.pix(tire_length), surface.pix(length / 2 - v.DEFAULT_WIDTH / 2)],
-                          [surface.pix(tire_length), surface.pix(length / 2 + v.DEFAULT_WIDTH / 2)],
-                          [surface.pix(length - tire_length), surface.pix(length / 2 - v.DEFAULT_WIDTH / 2)],
-                          [surface.pix(length - tire_length), surface.pix(length / 2 + v.DEFAULT_WIDTH / 2)]]
-        angle = np.arctan2(v.action[1], v.action[0])
-        tire_angles = [0, 0, angle, angle]
-        for tire_position, tire_angle in zip(tire_positions, tire_angles):
-            tire_surface = pygame.Surface((surface.pix(tire_length), surface.pix(tire_length)), pygame.SRCALPHA)
-            rect = (0, surface.pix(tire_length/2-tire_width/2), surface.pix(tire_length), surface.pix(tire_width))
-            pygame.draw.rect(tire_surface, cls.BLACK, rect, 0)
-            cls.blit_rotate(vehicle_surface, tire_surface, tire_position, np.rad2deg(-tire_angle))
+        # # Tires
+        # tire_positions = [[surface.pix(tire_length), surface.pix(length / 2 - v.DEFAULT_WIDTH / 2)],
+        #                   [surface.pix(tire_length), surface.pix(length / 2 + v.DEFAULT_WIDTH / 2)],
+        #                   [surface.pix(length - tire_length), surface.pix(length / 2 - v.DEFAULT_WIDTH / 2)],
+        #                   [surface.pix(length - tire_length), surface.pix(length / 2 + v.DEFAULT_WIDTH / 2)]]
+        # angle = np.arctan2(v.action[1], v.action[0])
+        # tire_angles = [0, 0, angle, angle]
+        # for tire_position, tire_angle in zip(tire_positions, tire_angles):
+        #     tire_surface = pygame.Surface((surface.pix(tire_length), surface.pix(tire_length)), pygame.SRCALPHA)
+        #     rect = (0, surface.pix(tire_length/2-tire_width/2), surface.pix(tire_length), surface.pix(tire_width))
+        #     pygame.draw.rect(tire_surface, cls.BLACK, rect, 0)
+        #     cls.blit_rotate(vehicle_surface, tire_surface, tire_position, np.rad2deg(-tire_angle))
 
         # Centered rotation
         h = v.heading if abs(v.heading) > 2 * np.pi / 180 else 0

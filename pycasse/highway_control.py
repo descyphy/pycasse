@@ -74,8 +74,8 @@ class Controller:
 
             # Find the corresponding bounds for of deter variables
             if self.env.unwrapped.spec.id in ('highway-v1', 'merge-v1'):
-                deter_bounds = np.append(deter_bounds, np.array([[-500, 500], [-500, 500], [0, velocity_bound], [-0.1*velocity_bound, 0.1*velocity_bound]]), axis=0)
-                deter_bounds = np.append(deter_bounds, np.array([[-acceleration_bound, acceleration_bound], [-0.1*acceleration_bound, 0.1*acceleration_bound]]), axis=0)
+                deter_bounds = np.append(deter_bounds, np.array([[-500, 500], [-500, 500], [0, velocity_bound], [-0.5*velocity_bound, 0.5*velocity_bound]]), axis=0)
+                deter_bounds = np.append(deter_bounds, np.array([[-acceleration_bound, acceleration_bound], [-0.5*acceleration_bound, 0.5*acceleration_bound]]), axis=0)
             elif self.env.unwrapped.spec.id == 'intersection-v1':
                 deter_bounds = np.append(deter_bounds, np.array([[-100, 100], [-100, 100], [-velocity_bound, velocity_bound], [-velocity_bound, velocity_bound]]), axis=0)
                 deter_bounds = np.append(deter_bounds, np.array([[-acceleration_bound, acceleration_bound], [-acceleration_bound, acceleration_bound]]), axis=0)
@@ -298,27 +298,25 @@ class Controller:
         return not status
 
     def _find_group(self, current_states, group_num):
-        if group_num is not None:
-            res = np.array_split(range(len(self.env.controlled_vehicle)), group_num)
-        else:
-            from pycasse.disjoint_set import DisjointSet
-            ds = DisjointSet(list(range(len(self.env.controlled_vehicle))))
-            #  print(current_states)
-            for i in range(1, len(self.env.controlled_vehicle)):
-                diff = current_states[:i, :2] - current_states[i, :2]
-                diff = np.linalg.norm(diff, axis = 1)
-                for j in range(len(diff)):
-                    if diff[j] <= self.PERCEPTION_RANGE:
-                        ds.union(i, j)
-                        #  print("joining {}, {}".format(i, j))
-            res = ds.result()
+        # if group_num is not None:
+        #     res = np.array_split(range(len(self.env.controlled_vehicle)), group_num)
+        # else:
+        #     from pycasse.disjoint_set import DisjointSet
+        #     ds = DisjointSet(list(range(len(self.env.controlled_vehicle))))
+        #     #  print(current_states)
+        #     for i in range(1, len(self.env.controlled_vehicle)):
+        #         diff = current_states[:i, :2] - current_states[i, :2]
+        #         diff = np.linalg.norm(diff, axis = 1)
+        #         for j in range(len(diff)):
+        #             if diff[j] <= self.PERCEPTION_RANGE:
+        #                 ds.union(i, j)
+        #                 #  print("joining {}, {}".format(i, j))
+        #     res = ds.result()
 
-            if len(res) < len(self.env.controlled_vehicle):
-                res = [list(range(len(self.env.controlled_vehicle)))]
+        #     if len(res) < len(self.env.controlled_vehicle):
+        #         res = [list(range(len(self.env.controlled_vehicle)))]
 
-        #  print(res)
-        #  input()
-        return res
+        return np.array_split(range(len(self.env.controlled_vehicle)), group_num)
 
     def find_control(self, time):
         """ Find control for all the groups of cooperating vehicles (or a vehicle if only one in the group).

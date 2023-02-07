@@ -3,15 +3,13 @@ import numpy as np
 import os, sys
 
 import highway_custom
-from highway_custom.vehicle.vehicle import Vehicle
 from highway_custom.graphic import Graphic
-from highway_custom.util import write_json, read_json, HiddenPrints
 from pycasse import Controller
 
 DEBUG = False
 SIMU_TIME = 20
 SIMU_FREQUENCY = 4
-H = 3
+H = 4
 VEHICLE_NUM = 3
 SCENARIO = "cooperating"
 # SCENARIO = "noncooperating"
@@ -19,8 +17,6 @@ if SCENARIO == "noncooperating":
     GROUP_NUM = VEHICLE_NUM
 elif SCENARIO == "cooperating":
     GROUP_NUM = 1
-elif SCENARIO == "adaptive":
-    GROUP_NUM = None
 else:
     assert(False)
 
@@ -31,9 +27,9 @@ env.configure({
     "vehicle": {
         "controlled_vehicle": VEHICLE_NUM,
         "controlled_speed": 5,
-        "controlled_spacing": [1.0, 1.3, 1.6],
+        "controlled_spacing": [1.2, 1, 1],
         "controlled_target": [2, 3, 1],
-        "uncontrolled_vehicle": 0,
+        "uncontrolled_vehicle": 0
         },
     "road": {
         "lane_length": 50,
