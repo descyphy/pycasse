@@ -73,9 +73,12 @@ class Controller:
             deter_vars = deter_vars + x + u
 
             # Find the corresponding bounds for of deter variables
-            if self.env.unwrapped.spec.id in ('highway-v1', 'merge-v1'):
+            if self.env.unwrapped.spec.id == 'highway-v1':
                 deter_bounds = np.append(deter_bounds, np.array([[-500, 500], [-500, 500], [0, velocity_bound], [-0.5*velocity_bound, 0.5*velocity_bound]]), axis=0)
                 deter_bounds = np.append(deter_bounds, np.array([[-acceleration_bound, acceleration_bound], [-0.5*acceleration_bound, 0.5*acceleration_bound]]), axis=0)
+            elif self.env.unwrapped.spec.id =='merge-v1':
+                deter_bounds = np.append(deter_bounds, np.array([[-500, 500], [-500, 500], [0, velocity_bound], [-0.5*velocity_bound, 0.5*velocity_bound]]), axis=0)
+                deter_bounds = np.append(deter_bounds, np.array([[-acceleration_bound, acceleration_bound], [-0.6*acceleration_bound, 0.6*acceleration_bound]]), axis=0)
             elif self.env.unwrapped.spec.id == 'intersection-v1':
                 deter_bounds = np.append(deter_bounds, np.array([[-100, 100], [-100, 100], [-velocity_bound, velocity_bound], [-velocity_bound, velocity_bound]]), axis=0)
                 deter_bounds = np.append(deter_bounds, np.array([[-acceleration_bound, acceleration_bound], [-acceleration_bound, acceleration_bound]]), axis=0)
@@ -143,10 +146,6 @@ class Controller:
                                 condition.append("({}_{} - {}_{} >= {})".format(self.state_var_name[0], vehicle_num_2, self.state_var_name[0], vehicle_num_1, distance))
                                 condition.append("({}_{} - {}_{} >= {})".format(self.state_var_name[1], vehicle_num_1, self.state_var_name[1], vehicle_num_2, distance))
                                 condition.append("({}_{} - {}_{} >= {})".format(self.state_var_name[1], vehicle_num_2, self.state_var_name[1], vehicle_num_1, distance))
-                                # condition.append("({}_{} - {}_{} >= {} + {}_{} - {}_{})".format(self.state_var_name[0], vehicle_num_1, self.state_var_name[0], vehicle_num_2, distance, self.state_var_name[2], vehicle_num_2, self.state_var_name[2], vehicle_num_1))
-                                # condition.append("({}_{} - {}_{} >= {} + {}_{} - {}_{})".format(self.state_var_name[0], vehicle_num_2, self.state_var_name[0], vehicle_num_1, distance, self.state_var_name[2], vehicle_num_1, self.state_var_name[2], vehicle_num_2))
-                                # condition.append("({}_{} - {}_{} >= {} + {}_{} - {}_{})".format(self.state_var_name[1], vehicle_num_1, self.state_var_name[1], vehicle_num_2, distance, self.state_var_name[3], vehicle_num_2, self.state_var_name[2], vehicle_num_1))
-                                # condition.append("({}_{} - {}_{} >= {} + {}_{} - {}_{})".format(self.state_var_name[1], vehicle_num_2, self.state_var_name[1], vehicle_num_1, distance, self.state_var_name[3], vehicle_num_1, self.state_var_name[2], vehicle_num_2))
                             guarantees_condition.append("({})".format(" | ".join(condition)))
                 if len(guarantees_condition) == 1:
                     guarantees_formula = "G[0,{}] {}".format(self.H, " & ".join(guarantees_condition))
@@ -270,13 +269,13 @@ class Controller:
             self.model.model.update()
 
             # Solve and fetch the solution for the control
-            self.model.model.write("MILP_adaptive.lp")
+            self.model.model.write("MILP.lp")
             solved = self.model.solve()
             if self.debug and solved:
                 self.model.print_solution()
             if not solved:
                 self.model.model.computeIIS()
-                self.model.model.write("MILP_adaptive.ilp")
+                self.model.model.write("MILP.ilp")
 
             # Fetch the control
             if solved:
@@ -287,7 +286,7 @@ class Controller:
             else:
                 print("Failing vehicles: {}".format(group))
                 self.model.model.computeIIS()
-                self.model.model.write("MILP_adaptive.ilp")
+                self.model.model.write("MILP.ilp")
                 for vehicle_num in group:
                     self.control[vehicle_num] = [[0.0, 0.0] for t in range(self.H)]
             status &= solved

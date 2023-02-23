@@ -1,30 +1,30 @@
-Total elapsed time: 20.0
-Total synthesis time: 2028.4265506267548
+Total elapsed time: 15.0
+Total synthesis time: 2290.144567489624
 Vehicle States:
    vehicle id: 0:
-      position: 141.91378664068154, 6.0
-      velocity: 0.7102002925339548, 0.0
-      distance: 3.0862133593184637
-      fuel consumption: 38.96701581917742
+      position: 134.6158237527522, 6.0
+      velocity: 2.383282856443657, 0.0
+      distance: 10.384176247247808
+      fuel consumption: 25.029756543270338
    vehicle id: 1:
-      position: 142.4434809965197, 0.0
-      velocity: 0.5298788096952194, 0.0
-      distance: 2.556519003480304
-      fuel consumption: 12.061850513633665
+      position: 128.79250785104065, 0.0
+      velocity: 3.862220228307251, 0.0
+      distance: 16.207492148959346
+      fuel consumption: 24.26543488487402
    vehicle id: 2:
-      position: 146.0559134383651, -12.5
-      velocity: 1.342667765663009, 0.0
-      distance: 3.94408656163489
-      fuel consumption: 62.10142316330641
+      position: 131.5712422263637, -12.5
+      velocity: 4.680319434574358, 0.0
+      distance: 18.428757773636306
+      fuel consumption: 44.23776028768621
    vehicle id: 3:
-      position: 148.6246125927033, 6.000000000000001
-      velocity: 0.4682169897178028, -1.4210854715202004e-14
-      distance: 1.3753874072966994
-      fuel consumption: 31.649305135086266
+      position: 140.6158237527522, 6.0
+      velocity: 2.383282856418191, 0.0
+      distance: 9.384176247247808
+      fuel consumption: 24.063245920465363
    vehicle id: 4:
-      position: 148.89664820147954, 0.0
-      velocity: 0.3756091229006415, 0.0
-      distance: 1.103351798520464
-      fuel consumption: 9.624390877099358
-Total distance: 12.065558130250821
-Total fuel consumption: 154.4039855083031
+      position: 138.83656420906019, 0.0
+      velocity: 2.8351582961117856, 0.0
+      distance: 11.163435790939815
+      fuel consumption: 11.629438033745146
+Total distance: 65.56803820803108
+Total fuel consumption: 129.22563567004107

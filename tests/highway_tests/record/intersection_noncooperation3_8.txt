@@ -1,5 +1,5 @@
 Total elapsed time: 11.375
-Total synthesis time: 193.7907965183258
+Total synthesis time: 197.34100437164307
 Vehicle States:
    vehicle id: 0:
       position: -3.0000000000000355, 9.55594547001256

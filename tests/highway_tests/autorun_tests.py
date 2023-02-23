@@ -1,8 +1,7 @@
 import os, sys, subprocess
 
 dir_path = os.sep.join(sys.argv[0].split(os.sep)[:-1])
-# program_list = ['test_highway.py', 'test_merge.py', 'test_intersection.py']
-program_list = ['test_intersection.py']
+program_list = ['test_highway.py', 'test_merge.py', 'test_intersection.py']
 
 for program in program_list:
     for freq in [2, 4, 8, 16]:

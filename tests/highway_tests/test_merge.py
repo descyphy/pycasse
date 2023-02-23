@@ -7,8 +7,8 @@ from highway_custom.graphic import Graphic
 from pycasse import Controller
 
 DEBUG = False
-SIMU_TIME = 20
-H = 3
+SIMU_TIME = 15 # [s]
+H = 4 # [s]
 VEHICLE_NUM = int(sys.argv[1])
 COOP = True if sys.argv[2] == 'True' else False
 SIMU_FREQUENCY = int(sys.argv[3])

@@ -1,25 +1,25 @@
-Total elapsed time: 20.0
-Total synthesis time: 376.78558254241943
+Total elapsed time: 15.0
+Total synthesis time: 392.63090920448303
 Vehicle States:
    vehicle id: 0:
-      position: 142.98360673741863, 6.0
-      velocity: 0.3535280913326915, 0.0
-      distance: 2.0163932625813743
-      fuel consumption: 34.410754208459736
+      position: 137.79444789344313, 6.0
+      velocity: 3.4401424791115005, 0.0
+      distance: 7.2055521065568655
+      fuel consumption: 24.031675402326627
    vehicle id: 1:
-      position: 148.25249514554758, 0.0
-      velocity: 0.6078277754618284, 0.0
-      distance: 1.7475048544524157
-      fuel consumption: 10.892172224539365
+      position: 138.91703126599938, 0.0
+      velocity: 6.279475802322622, 0.0
+      distance: 11.082968734000616
+      fuel consumption: 22.356436704225704
    vehicle id: 2:
-      position: 146.53547111578368, -12.5
-      velocity: 1.2050535249447876, 0.0
-      distance: 3.464528884216321
-      fuel consumption: 59.30864477200568
+      position: 132.35989178818667, -12.5
+      velocity: 4.552285990145265, 0.0
+      distance: 17.640108211813327
+      fuel consumption: 43.167797573204375
    vehicle id: 3:
-      position: 148.9836067374186, 6.0
-      velocity: 0.3535280913326915, 0.0
-      distance: 1.0163932625814027
-      fuel consumption: 29.345157689553545
-Total distance: 8.244820263831514
-Total fuel consumption: 133.95672889455832
+      position: 143.79444789344316, 6.0
+      velocity: 3.4401424791115005, 0.0
+      distance: 6.205552106556837
+      fuel consumption: 22.73913568928961
+Total distance: 42.134181158927646
+Total fuel consumption: 112.2950453690463
