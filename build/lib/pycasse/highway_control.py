@@ -269,13 +269,13 @@ class Controller:
             self.model.model.update()
 
             # Solve and fetch the solution for the control
-            self.model.model.write("MILP_adaptive.lp")
+            self.model.model.write("MILP.lp")
             solved = self.model.solve()
             if self.debug and solved:
                 self.model.print_solution()
             if not solved:
                 self.model.model.computeIIS()
-                self.model.model.write("MILP_adaptive.ilp")
+                self.model.model.write("MILP.ilp")
 
             # Fetch the control
             if solved:
@@ -286,7 +286,7 @@ class Controller:
             else:
                 print("Failing vehicles: {}".format(group))
                 self.model.model.computeIIS()
-                self.model.model.write("MILP_adaptive.ilp")
+                self.model.model.write("MILP.ilp")
                 for vehicle_num in group:
                     self.control[vehicle_num] = [[0.0, 0.0] for t in range(self.H)]
             status &= solved

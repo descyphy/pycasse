@@ -340,7 +340,7 @@ class ASTObject():
             if neg:
                 if self.operator == "U":
                     self.operator = "R"
-                    self.formula = "({}) F[{},{}] ({})".format(self.children_list[0].formula, int(self.interval[0]), int(self.interval[1]), self.children_list[1].formula)
+                    self.formula = "({}) R[{},{}] ({})".format(self.children_list[0].formula, int(self.interval[0]), int(self.interval[1]), self.children_list[1].formula)
                     self.formula = self.formula.replace("U[", "R[")
                 elif self.operator == "R":
                     self.operator = "U"

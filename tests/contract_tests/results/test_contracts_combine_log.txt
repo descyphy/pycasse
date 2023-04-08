@@ -12,7 +12,7 @@ Contract ID: c1
 ====================================================================================
 Checking compatibility of the contract c1...
 Set parameter Username
-Academic license - for non-commercial use only - expires 2023-07-27
+Academic license - for non-commercial use only - expires 2024-02-01
 Contract c1 is compatible.
 
 Printing a behavior that satisfies the assumptions of the contract c1...
@@ -56,6 +56,7 @@ y__1: 10000.0
 y__2: 10000.0
 y__3: 10000.0
 y__4: 10000.0
+
 Contract ID: c2
   Deterministic Variables: 
     y, CONTINUOUS, [-10000, 10000]
@@ -94,11 +95,12 @@ y__1: 0.0
 y__2: 0.0
 y__3: 0.0
 y__4: 0.0
+
 Contract ID: c1^c2
   Deterministic Variables: 
     x, CONTINUOUS, [-10000, 10000]
     y, CONTINUOUS, [-10000, 10000]
-  Assumption: (G[0,3] (x => 5)) | (True)
+  Assumption: True
   Guarantee: ((G[0,3] (x => 5)) -> (F[1,4] (y => 1))) & (G[0,4] (y <= 0))
   Saturated Guarantee: ((G[0,3] (x => 5)) -> (F[1,4] (y => 1))) & (G[0,4] (y <= 0))
   isSat: True
@@ -107,19 +109,101 @@ Contract ID: c1^c2
 Checking compatibility of the contract c1^c2...
 Contract c1^c2 is compatible.
 
+Printing a behavior that satisfies the assumptions of the contract c1^c2...
+x__0: 10000.0
+x__1: 10000.0
+x__2: 10000.0
+x__3: 10000.0
+x__4: 10000.0
+y__0: 10000.0
+y__1: 10000.0
+y__2: 10000.0
+y__3: 10000.0
+y__4: 10000.0
 ====================================================================================
 Checking consistency of the contract c1^c2...
 Contract c1^c2 is consistent.
 
+Printing a behavior that satisfies the saturated guarantees of the contract c1^c2...
+x__0: 4.999900000000707
+x__1: 4.999900000000707
+x__2: 4.999900000000707
+x__3: 4.999900000000707
+x__4: -10000.0
+y__0: 0.0
+y__1: 0.0
+y__2: 0.0
+y__3: 0.0
+y__4: 0.0
 ====================================================================================
 Checking feasibility of the contract c1^c2...
 Contract c1^c2 is feasible.
+
+Printing a behavior that satisfies both the assumptions and guarantees of the contract c1^c2...
+x__0: 4.999900000000707
+x__1: 4.999900000000707
+x__2: 4.999900000000707
+x__3: 4.999900000000707
+x__4: -10000.0
+y__0: 0.0
+y__1: 0.0
+y__2: 0.0
+y__3: 0.0
+y__4: 0.0
+
+Contract ID: c1+c2
+  Deterministic Variables: 
+    x, CONTINUOUS, [-10000, 10000]
+    y, CONTINUOUS, [-10000, 10000]
+  Assumption: G[0,3] (x => 5)
+  Guarantee: ((G[0,3] (x => 5)) -> (F[1,4] (y => 1))) & (G[0,4] (y <= 0))
+  Saturated Guarantee: ((G[0,3] (x => 5)) -> (F[1,4] (y => 1))) & (G[0,4] (y <= 0))
+  isSat: True
+
+====================================================================================
+Checking compatibility of the contract c1+c2...
+Contract c1+c2 is compatible.
+
+Printing a behavior that satisfies the assumptions of the contract c1+c2...
+x__0: 10000.0
+x__1: 10000.0
+x__2: 10000.0
+x__3: 10000.0
+x__4: 10000.0
+y__0: 10000.0
+y__1: 10000.0
+y__2: 10000.0
+y__3: 10000.0
+y__4: 10000.0
+====================================================================================
+Checking consistency of the contract c1+c2...
+Contract c1+c2 is consistent.
+
+Printing a behavior that satisfies the saturated guarantees of the contract c1+c2...
+x__0: 4.999900000000707
+x__1: 4.999900000000707
+x__2: 4.999900000000707
+x__3: 4.999900000000707
+x__4: -10000.0
+y__0: 0.0
+y__1: 0.0
+y__2: 0.0
+y__3: 0.0
+y__4: 0.0
+====================================================================================
+Checking feasibility of the contract c1+c2...
+Contract c1+c2 is not feasible.
+
+G[0,3] (x => 5)
+(!((G[0,3] (x => 5)) -> (F[1,4] (y => 1)))) | (!(G[0,4] (y <= 0)))
+(F[1,4] (y => 1)) & (G[0,4] (y <= 0))
+((G[0,3] (x => 5)) -> (F[1,4] (y => 1))) & (G[0,4] (y <= 0))
 
 Contract ID: c1*c2
   Deterministic Variables: 
     x, CONTINUOUS, [-10000, 10000]
     y, CONTINUOUS, [-10000, 10000]
-  Assumption: ((G[0,3] (x => 5)) & (True)) | (!((G[0,3] (x => 5)) -> (F[1,4] (y => 1)))) | (!(G[0,4] (y <= 0)))
+  Assumption: (G[0,3] (x => 5)) | (!((G[0,3] (x => 5)) -> (F[1,4] (y => 1)))) | (!(G[0,4] (y <= 0)))
   Guarantee: ((G[0,3] (x => 5)) -> (F[1,4] (y => 1))) & (G[0,4] (y <= 0))
   Saturated Guarantee: ((G[0,3] (x => 5)) -> (F[1,4] (y => 1))) & (G[0,4] (y <= 0))
   isSat: True
@@ -129,10 +213,10 @@ Checking compatibility of the contract c1*c2...
 Contract c1*c2 is compatible.
 
 Printing a behavior that satisfies the assumptions of the contract c1*c2...
-x__0: 5.000000000000556
-x__1: 5.000000000000556
-x__2: 5.000000000000556
-x__3: 5.000000000000556
+x__0: 4.999899999999444
+x__1: 4.999899999999444
+x__2: 4.999899999999444
+x__3: 4.999899999999444
 x__4: -10000.0
 y__0: 10000.0
 y__1: 1.0

@@ -36,5 +36,5 @@ c3.checkCompat(print_sol=True)     # Check compatibility of c3
 c3.checkConsis(print_sol=True)     # Check consistency of c3
 c3.checkFeas(print_sol=True)       # Check feasiblity of c3
 
-c2.checkRefine(c1, print_sol=True) # Check whether c2 refines c1
-c3.checkRefine(c1, print_sol=True) # Check whether c3 refines c1
+c2.checkRefine(c1, print_sol=True) # Check whether c2 refines c1, should refine
+c3.checkRefine(c1, print_sol=True) # Check whether c3 refines c1, should not refine

@@ -26,9 +26,17 @@ c12_conj = conjunction([c1, c2])      # Conjunction of c1 and c2
 c12_conj.saturate()                   # Saturate c12_conj
 c12_conj.printInfo()                  # Print c12_conj
 
-c12_conj.checkCompat()                # Check compatibility of c12_conj
-c12_conj.checkConsis()                # Check consistency of c12_conj
-c12_conj.checkFeas()                  # Check feasiblity of c12_conj
+c12_conj.checkCompat(print_sol=True)  # Check compatibility of c12_conj
+c12_conj.checkConsis(print_sol=True)  # Check consistency of c12_conj
+c12_conj.checkFeas(print_sol=True)    # Check feasiblity of c12_conj
+
+c12_merg = merge([c1, c2])            # Merge of c1 and c2
+c12_merg.saturate()                   # Saturate c12_merg
+c12_merg.printInfo()                  # Print c12_merg
+
+c12_merg.checkCompat(print_sol=True)  # Check compatibility of c12_merg
+c12_merg.checkConsis(print_sol=True)  # Check consistency of c12_merg
+c12_merg.checkFeas(print_sol=True)    # Check feasiblity of c12_merg
 
 c12_comp = composition([c1, c2])      # Composition of c1 and c2
 c12_comp.saturate()                   # Saturate c12_comp

@@ -738,7 +738,7 @@ class contract:
 
     def __str__(self):
         """ Prints information of the contract """
-        res = ""
+        res = "\n"
         res += "Contract ID: {}\n".format(self.id)
         if len(self.deter_var_list):
             res += "  Deterministic Variables: \n"
@@ -804,8 +804,8 @@ def conjunction(c_list):
                 # Initialize a conposed contract object
                 conjoined = deepcopy(c)
                 conjoined.id = '{}'.format(c.id)
-                assumption_str += "({})".format(c.assumption_str)
-                guarantee_str += "({})".format(c.sat_guarantee_str)
+                assumption_str = merge_formulas("True", c.assumption_str, isAnd=True)
+                guarantee_str = merge_formulas("True", c.sat_guarantee_str, isAnd=True)
 
                 first_contract = False
             else:
@@ -816,8 +816,8 @@ def conjunction(c_list):
                 merge_variables(conjoined, c)
 
                 # Find assumptions and guarantees
-                assumption_str += " | ({})".format(c.assumption_str)
-                guarantee_str += " & ({})".format(c.sat_guarantee_str)
+                assumption_str = merge_formulas(assumption_str, c.assumption_str, isAnd=False)
+                guarantee_str = merge_formulas(guarantee_str, c.sat_guarantee_str, isAnd=True)
 
         conjoined.set_assume(assumption_str)   
         conjoined.set_guaran(guarantee_str)
@@ -853,8 +853,8 @@ def merge(c_list):
                 # Initialize a conposed contract object
                 merged = deepcopy(c)
                 merged.id = '{}'.format(c.id)
-                assumption_str += "({})".format(c.assumption_str)
-                guarantee_str += "({})".format(c.sat_guarantee_str)
+                assumption_str = merge_formulas("True", c.assumption_str, isAnd=True)
+                guarantee_str = merge_formulas("True", c.sat_guarantee_str, isAnd=True)
 
                 first_contract = False
             else:
@@ -865,8 +865,8 @@ def merge(c_list):
                 merge_variables(merged, c)
 
                 # Find assumptions and guarantees
-                assumption_str += " & ({})".format(c.assumption_str)
-                guarantee_str += " & ({})".format(c.sat_guarantee_str)
+                assumption_str = merge_formulas(assumption_str, c.assumption_str, isAnd=True)
+                guarantee_str = merge_formulas(guarantee_str, c.sat_guarantee_str, isAnd=True)
 
         merged.set_assume(assumption_str)   
         merged.set_guaran(guarantee_str)
@@ -902,10 +902,15 @@ def composition(c_list, mode = 'default'):
                 # Initialize a conposed contract object
                 composed = deepcopy(c)
                 composed.id = '{}'.format(c.id)
-                assumption_str1 += "({})".format(c.assumption_str)
-                assumption_str2 += "(!({}))".format(c.sat_guarantee_str)
-                guarantee_str += "({})".format(c.guarantee_str)
-                sat_guarantee_str += "({})".format(c.sat_guarantee_str)
+                
+                # assumption_str1 += "({})".format(c.assumption_str)
+                # assumption_str2 += "(!({}))".format(c.sat_guarantee_str)
+                # guarantee_str += "({})".format(c.guarantee_str)
+                # sat_guarantee_str += "({})".format(c.sat_guarantee_str)
+                assumption_str1 = merge_formulas("True", c.assumption_str, isAnd=True)
+                assumption_str2 = merge_formulas("True", c.sat_guarantee_str, isAnd=True, negate=True)
+                guarantee_str = merge_formulas("True", c.guarantee_str, isAnd=True)
+                sat_guarantee_str = merge_formulas("True", c.sat_guarantee_str, isAnd=True)
 
                 first_contract = False
             else:
@@ -916,10 +921,19 @@ def composition(c_list, mode = 'default'):
                 merge_variables(composed, c)
 
                 # Find assumptions
-                assumption_str1 += " & ({})".format(c.assumption_str)
-                assumption_str2 += " | (!({}))".format(c.sat_guarantee_str)
-                guarantee_str += " & ({})".format(c.guarantee_str)
-                sat_guarantee_str += " & ({})".format(c.sat_guarantee_str)
+                # assumption_str1 += " & ({})".format(c.assumption_str)
+                # assumption_str2 += " | (!({}))".format(c.sat_guarantee_str)
+                # guarantee_str += " & ({})".format(c.guarantee_str)
+                # sat_guarantee_str += " & ({})".format(c.sat_guarantee_str)
+                assumption_str1 = merge_formulas(assumption_str1, c.assumption_str, isAnd=True)
+                assumption_str2 = merge_formulas(assumption_str2, c.sat_guarantee_str, isAnd=False, negate=True)
+                guarantee_str = merge_formulas(guarantee_str, c.guarantee_str, isAnd=True)
+                sat_guarantee_str = merge_formulas(sat_guarantee_str, c.sat_guarantee_str, isAnd=True)
+
+        print(assumption_str1)
+        print(assumption_str2)
+        print(guarantee_str)
+        print(sat_guarantee_str)
 
         if mode == 'default':
             composed.set_assume("({}) | {}".format(assumption_str1, assumption_str2))
@@ -1002,6 +1016,27 @@ def separation(c, c2):
     separation.isSat = True
 
     return separation
+
+def merge_formulas(f1, f2, isAnd=True, negate=False):
+    # Merge two formulas
+    if isAnd:
+        if f1 == "False" or (negate and f2 == "True") or (not negate and f2 == "False"):
+            return "False"
+        elif f1 == "True":
+            return "!({})".format(f2) if negate else f2
+        elif f2 == "True":
+            return f1
+        else:
+            return "({}) & (!({}))".format(f1, f2) if negate else "({}) & ({})".format(f1, f2)
+    else:
+        if f1 == "True" or (negate and f2 == "False") or (not negate and f2 == "True"):
+            return "True"
+        elif f1 == "False":
+            return "!({})".format(f2) if negate else f2
+        elif f2 == "False":
+            return f1
+        else:
+            return "({}) | (!({}))".format(f1, f2) if negate else "({}) & ({})".format(f1, f2)
 
 def merge_variables(c1, c2):
     # Merge deterministic variables
