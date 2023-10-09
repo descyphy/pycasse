@@ -1,30 +1,30 @@
 Total elapsed time: 20.0
-Total synthesis time: 676.0548009872437
+Total synthesis time: 514.7095487117767
 Vehicle States:
    vehicle id: 0:
-      position: -2.9999999999915135, -33.5784827148872
-      velocity: -1.6989076812023995e-11, -5.0
-      distance: 27.4215172851128
-      fuel consumption: 6.2442777659002715
+      position: -3.0000000000001354, -32.48055127539736
+      velocity: -6.008997083980051e-14, -5.0
+      distance: 28.51944872460264
+      fuel consumption: 2.1870011847079027
    vehicle id: 1:
-      position: 42.000162580250965, -2.9999999999999973
-      velocity: 5.0, -7.105427357601002e-15
-      distance: 23.999837419749035
-      fuel consumption: 14.10513444525369
+      position: 37.18775816302066, -2.9999999999999925
+      velocity: 5.0, 0.0
+      distance: 28.81224183697934
+      fuel consumption: 22.910849998082377
    vehicle id: 2:
-      position: -25.350185652292396, 3.000000000000008
-      velocity: -4.999999999897085, 8.756992429719701e-15
-      distance: 35.649814347707604
-      fuel consumption: 39.31479369588567
+      position: -45.16200513360761, 2.9999999999999973
+      velocity: -4.999999999912325, -1.9139564966256052e-14
+      distance: 15.837994866392393
+      fuel consumption: 23.034472082549655
    vehicle id: 3:
-      position: -33.144448652591514, 3.000000000000019
-      velocity: -4.999999999912291, 0.0
-      distance: 32.855551347408486
-      fuel consumption: 11.044728781971106
+      position: -31.831948724244302, 3.0
+      velocity: -4.999999999919822, 6.123233998228043e-16
+      distance: 34.1680512757557
+      fuel consumption: 6.8349839248278705
    vehicle id: 4:
-      position: -3.0, -38.454942948288334
-      velocity: 0.0, -5.0
-      distance: 27.545057051711666
-      fuel consumption: 21.23745803554113
-Total distance: 147.4717774516896
-Total fuel consumption: 91.94639272455186
+      position: -3.000000004746633, -36.08610255091688
+      velocity: -8.830944864257617e-10, -5.0
+      distance: 29.913897449083123
+      fuel consumption: 24.138552526317195
+Total distance: 137.2516341528132
+Total fuel consumption: 79.105859716485

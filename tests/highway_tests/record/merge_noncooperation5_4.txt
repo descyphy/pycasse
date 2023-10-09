@@ -1,30 +1,30 @@
-Total elapsed time: 7.25
-Total synthesis time: 93.2779610157013
+Total elapsed time: 15.0
+Total synthesis time: 289.45758533477783
 Vehicle States:
    vehicle id: 0:
-      position: 66.49999999999989, -1.2401667009670434
-      velocity: 9.999999999999744, 5.0
-      distance: 78.83317838231444
-      fuel consumption: 21.629440263584023
+      position: 141.24441330289045, 6.0
+      velocity: 5.003724464739776, 0.0
+      distance: 3.7555866971095497
+      fuel consumption: 31.757615936942795
    vehicle id: 1:
-      position: 72.5, 0.0
-      velocity: 9.999942857142855, 0.0
-      distance: 72.5
-      fuel consumption: 5.714285714475409e-05
+      position: 143.84710356404966, 0.0
+      velocity: 2.537195247933937, 0.0
+      distance: 1.152896435950339
+      fuel consumption: 8.629644011987738
    vehicle id: 2:
-      position: 60.00103410209516, 0.20636670096714307
-      velocity: 6.8577337726258065, -0.6464985969953129
-      distance: 90.89150464939881
-      fuel consumption: 29.548764824380644
+      position: 136.1518918455133, -12.5
+      velocity: 9.692828841196501, 0.0
+      distance: 13.84810815448671
+      fuel consumption: 44.2247794260405
    vehicle id: 3:
-      position: 82.49999999999996, 5.1272727272742715
-      velocity: 10.0, 1.9818181818154663
-      distance: 67.50564163751474
-      fuel consumption: 19.751515151525698
+      position: 149.84369057915725, 6.0
+      velocity: 0.6252376833778044, 3.552713678800501e-15
+      distance: 0.1563094208427458
+      fuel consumption: 31.94445928632576
    vehicle id: 4:
-      position: 88.5, 0.0
-      velocity: 10.0, 0.0
-      distance: 61.5
-      fuel consumption: 0.0
-Total distance: 371.230324669228
-Total fuel consumption: 70.92977738234751
+      position: 149.53838231831617, 2.14999999999972
+      velocity: 0.12309804844937844, 0.1499999999988848
+      distance: 2.198997699871911
+      fuel consumption: 19.938574050246558
+Total distance: 21.111898408261254
+Total fuel consumption: 136.49507271154334

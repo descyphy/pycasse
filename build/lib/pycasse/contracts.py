@@ -902,11 +902,6 @@ def composition(c_list, mode = 'default'):
                 # Initialize a conposed contract object
                 composed = deepcopy(c)
                 composed.id = '{}'.format(c.id)
-                
-                # assumption_str1 += "({})".format(c.assumption_str)
-                # assumption_str2 += "(!({}))".format(c.sat_guarantee_str)
-                # guarantee_str += "({})".format(c.guarantee_str)
-                # sat_guarantee_str += "({})".format(c.sat_guarantee_str)
                 assumption_str1 = merge_formulas("True", c.assumption_str, isAnd=True)
                 assumption_str2 = merge_formulas("True", c.sat_guarantee_str, isAnd=True, negate=True)
                 guarantee_str = merge_formulas("True", c.guarantee_str, isAnd=True)
@@ -920,20 +915,11 @@ def composition(c_list, mode = 'default'):
                 # Merge variables
                 merge_variables(composed, c)
 
-                # Find assumptions
-                # assumption_str1 += " & ({})".format(c.assumption_str)
-                # assumption_str2 += " | (!({}))".format(c.sat_guarantee_str)
-                # guarantee_str += " & ({})".format(c.guarantee_str)
-                # sat_guarantee_str += " & ({})".format(c.sat_guarantee_str)
+                # Find assumptions and guarantees
                 assumption_str1 = merge_formulas(assumption_str1, c.assumption_str, isAnd=True)
                 assumption_str2 = merge_formulas(assumption_str2, c.sat_guarantee_str, isAnd=False, negate=True)
                 guarantee_str = merge_formulas(guarantee_str, c.guarantee_str, isAnd=True)
                 sat_guarantee_str = merge_formulas(sat_guarantee_str, c.sat_guarantee_str, isAnd=True)
-
-        print(assumption_str1)
-        print(assumption_str2)
-        print(guarantee_str)
-        print(sat_guarantee_str)
 
         if mode == 'default':
             composed.set_assume("({}) | {}".format(assumption_str1, assumption_str2))
@@ -947,6 +933,7 @@ def composition(c_list, mode = 'default'):
         
         return composed
 
+# TODO: Implement quotient and separation
 def quotient(c, c2):
     """ Returns the quotient c/c2.
 

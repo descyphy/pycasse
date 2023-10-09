@@ -933,6 +933,7 @@ def composition(c_list, mode = 'default'):
         
         return composed
 
+# TODO: Implement quotient and separation
 def quotient(c, c2):
     """ Returns the quotient c/c2.
 

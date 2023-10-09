@@ -1,30 +1,30 @@
 Total elapsed time: 15.0
-Total synthesis time: 2827.742347240448
+Total synthesis time: 2873.0482411384583
 Vehicle States:
    vehicle id: 0:
-      position: 134.65808755569748, 6.0
-      velocity: 3.677124424641079, 0.0
-      distance: 10.341912444302523
-      fuel consumption: 34.744486983066224
+      position: 134.8366210528862, 6.0
+      velocity: 3.613645847862699, 0.0
+      distance: 10.163378947113813
+      fuel consumption: 33.08393871386926
    vehicle id: 1:
-      position: 135.34780034761914, 0.0
-      velocity: 2.397468768656836, 0.0
-      distance: 9.652199652380858
-      fuel consumption: 7.912806388245826
+      position: 135.4162830384621, 0.0
+      velocity: 2.5800223962469317, 0.0
+      distance: 9.583716961537903
+      fuel consumption: 7.527083494917861
    vehicle id: 2:
-      position: 129.08581401800345, -12.5
-      velocity: 5.3115392970148605, 0.0
-      distance: 20.914185981996553
-      fuel consumption: 50.26449851518056
+      position: 129.4327037669945, -12.5
+      velocity: 5.223440313144238, 0.0
+      distance: 20.567296233005493
+      fuel consumption: 51.13243551519824
    vehicle id: 3:
-      position: 149.44342990825282, 6.0
-      velocity: 1.9802485893656012, 0.0
-      distance: 0.5565700917471759
-      fuel consumption: 37.2213724388003
+      position: 149.4490525506442, 6.0
+      velocity: 1.9602775833309352, 0.0
+      distance: 0.5509474493557889
+      fuel consumption: 37.28241589705627
    vehicle id: 4:
-      position: 149.97931529938776, 3.5214886562329184e-16
-      velocity: 0.005253257298136305, 9.71445146547012e-17
-      distance: 0.02068470061223593
-      fuel consumption: 14.902864195036273
-Total distance: 41.485552871039346
-Total fuel consumption: 145.04602852032917
+      position: 149.99248413193368, 4.845163983566159e-16
+      velocity: 0.00190879188994586, 1.2728533504979822e-16
+      distance: 0.007515868066320763
+      fuel consumption: 15.14576235167715
+Total distance: 40.87285545907932
+Total fuel consumption: 144.17163597271878

@@ -1,30 +1,30 @@
-Total elapsed time: 12.0625
-Total synthesis time: 2152.5304527282715
+Total elapsed time: 8.25
+Total synthesis time: 1370.9072091579437
 Vehicle States:
    vehicle id: 0:
-      position: -3.0000000000000484, 6.547141285211877
-      velocity: -2.8115547730617157e-14, -4.749999999999972
-      distance: 67.54714128521188
-      fuel consumption: 6.20981240841401
+      position: -3.0, 24.75
+      velocity: -1.3904693015415166e-14, -5.0
+      distance: 85.75
+      fuel consumption: 1.4210854715202004e-14
    vehicle id: 1:
-      position: -7.243443053066876, -2.9999999999999383
-      velocity: 0.37055596537018687, -3.1086244689496305e-16
-      distance: 73.24344305306687
-      fuel consumption: 9.360849688550488
+      position: -14.439531166691507, -2.999999999999997
+      velocity: 4.034561104474875, -3.1086244689504386e-16
+      distance: 80.43953116669151
+      fuel consumption: 0.965438895525125
    vehicle id: 2:
-      position: 0.44170287030236266, -5.0749148178104235
-      velocity: -0.2760151963504347, 0.5266303987909359
-      distance: 61.970050031587164
-      fuel consumption: 27.173416086554514
+      position: 1.3559918124929926, -13.759565175088516
+      velocity: -0.6745714106122627, 4.886325091354593
+      distance: 64.56897660469565
+      fuel consumption: 7.788246310098041
    vehicle id: 3:
-      position: 4.935305445164039, 2.99999999999999
-      velocity: -2.9646277797998692, 6.123233995736766e-16
-      distance: 70.93530544516403
-      fuel consumption: 11.766309976669035
+      position: 13.90625, 2.99999999999999
+      velocity: -3.75, 6.123233995736766e-16
+      distance: 79.90625
+      fuel consumption: 1.25
    vehicle id: 4:
-      position: -3.00000000000001, -16.3124
-      velocity: 0.0, -5.0
-      distance: 49.6876
-      fuel consumption: 6.769109100339186
-Total distance: 323.38353981502996
-Total fuel consumption: 61.27949726052723
+      position: -3.00000000000004, 2.750004433723667
+      velocity: -0.005680788333876308, -4.999974515659645
+      distance: 68.75000443372366
+      fuel consumption: 0.0057276335453909375
+Total distance: 379.41476220511083
+Total fuel consumption: 10.00941283916857

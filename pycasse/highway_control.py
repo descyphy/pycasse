@@ -88,12 +88,16 @@ class Controller:
         self.contract.add_deter_vars(deter_vars, bounds = deter_bounds)
         # self.contract.printInfo()
 
-    def optimize_model(self, current_states, group_num = None):
+    def optimize_model(self, current_states, group_num = None, num_try = 0):
         """ Loads the setup of the highway environment.
 
         :param data: [description]
         :type data: [type]
         """
+
+        # Use quantitative mode if the first try fails
+        if num_try >= 1:
+            self.model.mode = 'Quantitative'
 
         # Add a model for each group of cooperating vehicles (or a vehicle)
         group_split = self._find_group(current_states, group_num)
@@ -111,7 +115,7 @@ class Controller:
                 assumptions_condition = []
                 for vehicle_id in range(len(self.env.controlled_vehicle)):
                     if vehicle_id not in group:
-                        assumptions_condition.extend(["(({}_{} >= -0.1) & ({}_{} <= 0.1))".format(n, vehicle_id, n, vehicle_id) for n in self.control_var_name])
+                        assumptions_condition.extend(["(({}_{} >= -0.2) & ({}_{} <= 0.2))".format(n, vehicle_id, n, vehicle_id) for n in self.control_var_name])
                         # assumptions_condition.extend(["({}_{} == 0)".format(n, vehicle_id) for n in self.control_var_name])
                 if len(assumptions_condition) == 1:
                     assumptions_formula = "G[0,{}] {}".format(self.H, " & ".join(assumptions_condition))
@@ -169,7 +173,11 @@ class Controller:
 
             # Add the contract specifications
             self.model.add_constraint(parser(assumptions_formula)[0][0], name='b_a')
-            self.model.add_constraint(parser(guarantees_formula)[0][0], name='b_g')
+            self.model.model.write("MILP.lp")
+            if num_try != 0:
+                self.model.add_constraint(parser(guarantees_formula)[0][0], hard=False, name='b_g')
+            else:
+                self.model.add_constraint(parser(guarantees_formula)[0][0], name='b_g')
 
             # Region constraints
             for vehicle_id in group:
@@ -249,8 +257,10 @@ class Controller:
                             objective_func += 2 * (len(self.env.controlled_vehicle)-vehicle_num)*goal_x + 2 * (len(self.env.controlled_vehicle)-vehicle_num) * goal_y
 
             # Set objectives
-            # sl,elf.model.model.setObjective(objective_func, GRB.MAXIMIZE)
-            self.model.model.setObjective(objective_func, GRB.MINIMIZE)
+            if num_try >= 1:
+                self.model.model.setObjective(objective_func-10*self.model.soft_constraint_vars[0], GRB.MINIMIZE)
+            else:
+                self.model.model.setObjective(objective_func, GRB.MINIMIZE)
 
             # print(objective_func)
 
@@ -284,15 +294,19 @@ class Controller:
                     tmp_output = self.model.fetch_solution(variables, self.H)
                     self.control[vehicle_num] = tmp_output
             else:
-                print("Failing vehicles: {}".format(group))
-                self.model.model.computeIIS()
-                self.model.model.write("MILP.ilp")
-                for vehicle_num in group:
-                    self.control[vehicle_num] = [[0.0, 0.0] for t in range(self.H)]
-            status &= solved
-        
+                if num_try >= 2:
+                    # self.model.model.computeIIS()
+                    # self.model.model.write("MILP.ilp")
+                    for vehicle_num in group:
+                        self.control[vehicle_num] = [[0.0, 0.0] for t in range(self.H)]
+                    solved = False
+                    status &= solved
+                else:
+                    self.model.reset()
+                    not_solved = self.optimize_model(current_states, group_num = group_num, num_try = num_try+1)
+                    status &= not not_solved
+
             self.model.reset()
-            # input()
 
         return not status
 
